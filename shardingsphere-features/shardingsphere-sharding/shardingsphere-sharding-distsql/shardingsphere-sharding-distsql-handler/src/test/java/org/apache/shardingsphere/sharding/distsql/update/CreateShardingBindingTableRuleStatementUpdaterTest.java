@@ -19,12 +19,10 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingBindingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
@@ -34,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingBindingTableRuleStatementUpdaterTest {
@@ -54,12 +51,6 @@ public final class CreateShardingBindingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createDuplicatedSQLStatement(), getCurrentRuleConfig());
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithCanNotBindShardingTable() throws DistSQLException {
-        CreateShardingBindingTableRulesStatement statement = new CreateShardingBindingTableRulesStatement(Collections.singletonList(new BindingTableRuleSegment("t_1,t_2")));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, getCurrentRuleConfig());
-    }
-    
     private CreateShardingBindingTableRulesStatement createSQLStatement() {
         return new CreateShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
     }
@@ -72,9 +63,7 @@ public final class CreateShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        ShardingTableRuleConfiguration tableRule1 = new ShardingTableRuleConfiguration("t_1");
-        tableRule1.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column_name", "algorithmName"));
-        result.getTables().add(tableRule1);
+        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
         return result;
     }
