@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
@@ -27,9 +28,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,10 +69,12 @@ public final class PostgreSQLDatabaseTypeTest {
     }
     
     @Test
-    public void assertContainsSystemSchema() {
-        assertTrue(new PostgreSQLDatabaseType().containsSystemSchema("information_schema"));
-        assertTrue(new PostgreSQLDatabaseType().containsSystemSchema("pg_catalog"));
-        assertFalse(new MySQLDatabaseType().containsSystemSchema("postgres"));
-        assertFalse(new MySQLDatabaseType().containsSystemSchema("sharding_db"));
+    public void assertGetSystemDatabases() {
+        assertThat(new PostgreSQLDatabaseType().getSystemDatabases(), is(Sets.newHashSet("postgres")));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "pg_catalog")));
     }
 }

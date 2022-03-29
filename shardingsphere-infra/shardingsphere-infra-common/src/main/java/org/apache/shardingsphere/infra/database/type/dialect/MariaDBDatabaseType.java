@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,7 +63,12 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        return Collections.emptyMap();
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

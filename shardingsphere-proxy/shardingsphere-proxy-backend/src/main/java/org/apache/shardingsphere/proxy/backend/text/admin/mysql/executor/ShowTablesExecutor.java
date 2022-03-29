@@ -67,7 +67,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private QueryResult getQueryResult(final String schemaName) {
-        if (!databaseType.containsSystemSchema(schemaName) && !ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
+        if (!databaseType.getSystemSchemas().contains(schemaName) && !ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> {
