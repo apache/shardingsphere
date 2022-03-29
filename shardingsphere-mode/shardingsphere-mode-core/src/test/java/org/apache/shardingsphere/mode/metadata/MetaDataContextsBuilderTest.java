@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.fixture.FixtureRule;
@@ -35,6 +38,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -69,6 +73,34 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
+    }
+    
+    @Test
+    public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.emptyList(), new Properties());
+        builder.addSystemSchemas(new MySQLDatabaseType());
+        MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
+        assertThat(actual.getMetaDataMap().size(), is(4));
+        assertTrue(actual.getMetaDataMap().containsKey("information_schema"));
+        assertTrue(actual.getMetaDataMap().containsKey("performance_schema"));
+        assertTrue(actual.getMetaDataMap().containsKey("mysql"));
+        assertTrue(actual.getMetaDataMap().containsKey("sys"));
+        assertThat(actual.getMetaDataMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+    }
+    
+    @Test
+    public void assertGetSchemaMap() {
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.emptyList(), new Properties());
+        builder.addSystemSchemas(new MySQLDatabaseType());
+        ShardingSphereSchema actual = builder.getSchemaMap("information_schema");
+        TableMetaData tableMetaData = actual.get("tables");
+        assertThat(tableMetaData.getName(), is("tables"));
+        assertThat(tableMetaData.getColumns().size(), is(21));
+        assertThat(tableMetaData.getIndexes().size(), is(0));
+        assertThat(tableMetaData.getConstrains().size(), is(0));
     }
     
     private void assertRules(final MetaDataContexts actual) {
