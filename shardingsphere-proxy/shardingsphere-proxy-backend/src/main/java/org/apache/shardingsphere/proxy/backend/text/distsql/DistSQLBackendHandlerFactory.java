@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -53,11 +56,15 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RQLStatement) {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
-        checkLockedSchema(connectionSession);
         if (sqlStatement instanceof RDLStatement) {
+            checkLockedSchema(connectionSession);
             return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
+            if (sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement || sqlStatement instanceof UpdatableScalingRALStatement) {
+                return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
+            }
+            checkLockedSchema(connectionSession);
             return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
