@@ -194,7 +194,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDisableStateChanged() {
-        final StatusContainedRule statusContainedRule = mock(StatusContainedRule.class);
+        StatusContainedRule statusContainedRule = mock(StatusContainedRule.class);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(statusContainedRule));
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
