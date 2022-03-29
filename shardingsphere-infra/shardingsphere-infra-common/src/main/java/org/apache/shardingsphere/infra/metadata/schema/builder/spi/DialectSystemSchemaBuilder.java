@@ -45,7 +45,7 @@ public interface DialectSystemSchemaBuilder extends DatabaseTypeAwareSPI, Single
      * @return system schema content
      */
     default Optional<String> getSystemSchemaPath(final String schemaName) {
-        URL url = getClass().getResource("/schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml");
+        URL url = getClass().getResource("schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml");
         return Optional.ofNullable(url).map(URL::getFile);
     }
 }
