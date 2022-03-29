@@ -14,3 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+name: sys_config
+columns:
+  variable:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: variable
+    primaryKey: true
+  value:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: value
+    primaryKey: false
+  set_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: set_time
+    primaryKey: false
+  set_by:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: set_by
+    primaryKey: false
+indexes:
+  primary:
+    name: PRIMARY

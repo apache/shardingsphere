@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -55,8 +56,8 @@ public final class FixtureDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getSystemDatabases() {
-        return Collections.emptyList();
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
     }
     
     @Override
