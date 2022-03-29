@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,19 +68,19 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
-        SQLStatement sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+        SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
         textProtocolBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
-                : TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
+                : TextProtocolBackendHandlerFactory.newInstance(databaseType, packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
-    private SQLStatement parseSql(final String sql, final String schemaName) {
+    private SQLStatement parseSql(final String sql, final DatabaseType databaseType) {
         if (sql.isEmpty()) {
             return new EmptyStatement();
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
+        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(databaseType.getName(),
                 metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
         return sqlStatementParserEngine.parse(sql, false);
     }
