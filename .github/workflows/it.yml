@@ -41,10 +41,39 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dcheckstyle.skip=true
 
 jobs:
+  build-it-image:
+    name: build-it-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build IT image
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Save IT image
+        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+      - name: Upload IT image
+        uses: actions/upload-artifact@v3
+        with: 
+          name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
+  
   it-empty-rule:
     name: empty rule
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    needs: build-it-image
     strategy:
       matrix:
         env: [ docker ]
@@ -52,29 +81,32 @@ jobs:
         database: [ MySQL, PostgreSQL ]
         scenario: [ empty_rules ]
     steps:
+      - uses: actions/checkout@v2
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
+          key: shardingsphere-it-cache-${{ github.sha }}
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-single-rule:
     name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     strategy:
       matrix:
         env: [ docker ]
@@ -82,29 +114,32 @@ jobs:
         database: [ MySQL, PostgreSQL ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
     steps:
+      - uses: actions/checkout@v2
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
+          key: shardingsphere-it-cache-${{ github.sha }}
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-mixture-rule:
     name: mixture rule
     needs: [ it-empty-rule, it-single-rule ]
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     strategy:
       matrix:
         env: [ docker ]
@@ -112,23 +147,26 @@ jobs:
         database: [ MySQL, PostgreSQL ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
     steps:
+      - uses: actions/checkout@v2
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
+          key: shardingsphere-it-cache-${{ github.sha }}
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics
