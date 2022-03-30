@@ -1206,7 +1206,7 @@ public final class SQLParserTestCases {
     private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "drop-cast")
-    private final List<DropCastStatementTestCase> dropCastTestCases = new LinkedList<>();
+    private final List<DropCastStatementTestCase> dropCastStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
