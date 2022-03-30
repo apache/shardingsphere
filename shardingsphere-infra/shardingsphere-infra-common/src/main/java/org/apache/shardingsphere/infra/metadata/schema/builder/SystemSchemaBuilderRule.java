@@ -75,13 +75,13 @@ public enum SystemSchemaBuilderRule {
     }
     
     /**
-     * Judge whether current table is schema table or not.
+     * Judge whether current table is system table or not.
      * 
      * @param schema schema
      * @param tableName table name
-     * @return whether current table is schema table or not
+     * @return whether current table is system table or not
      */
-    public static boolean isSchemaTable(final String schema, final String tableName) {
+    public static boolean isSystemTable(final String schema, final String tableName) {
         for (SystemSchemaBuilderRule each : values()) {
             if (each.getSchema().equals(schema) && each.getTables().contains(tableName)) {
                 return true;

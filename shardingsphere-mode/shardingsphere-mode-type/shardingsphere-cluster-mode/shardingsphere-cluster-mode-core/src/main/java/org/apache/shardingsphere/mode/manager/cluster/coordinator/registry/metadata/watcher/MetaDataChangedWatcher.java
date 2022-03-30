@@ -85,7 +85,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         Optional<String> schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
         Optional<String> tableName = SchemaMetaDataNode.getTableName(event.getKey());
         return schemaName.isPresent() && tableName.isPresent() 
-                && !SystemSchemaBuilderRule.isSchemaTable(schemaName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
+                && !SystemSchemaBuilderRule.isSystemTable(schemaName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
     }
     
     private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {
