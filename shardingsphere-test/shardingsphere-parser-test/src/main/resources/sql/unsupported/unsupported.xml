@@ -5549,15 +5549,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case7" value="DROP AGGREGATE IF EXISTS foo(no_such_schema.no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case8" value="DROP AGGREGATE IF EXISTS foo(no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case9" value="DROP AGGREGATE IF EXISTS no_such_schema.foo(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case10" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case11" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case12" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case13" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case14" value="DROP AGGREGATE test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case15" value="DROP AGGREGATE test_aggregate_exists(int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case16" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case17" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case18" value="DROP CAST (text AS text);" db-types="PostgreSQL"/>
@@ -8800,12 +8791,6 @@
     <sql-case id="low_do_by_postgresql_source_test_case29" value="do $$ declare x text[]; begin x := &apos;{1.23, 4.56}&apos;::numeric[]; end $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case30" value="do $$ declare y int := x + 1;          x int := 42; begin   raise notice &apos;x = %, y = %&apos;, x, y; end; $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case31" value="do $outer$ begin   for i in 1..10 loop    begin     execute $ex$       do $$       declare x int = 0;       begin         x := 1 / x;       end;       $$;     $ex$;   exception when division_by_zero then     raise notice &apos;caught division by zero&apos;;   end;   end loop; end; $outer$;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case1" value="drop aggregate 314159 (int);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case2" value="drop aggregate newcnt (float4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case3" value="drop aggregate newcnt (nonesuch);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case4" value="drop aggregate newcnt1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case5" value="drop aggregate nonesuch (int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case6" value="drop aggregate;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case13" value="drop function ();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case14" value="drop function 314159();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>
