@@ -4247,4 +4247,11 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_character_charset">
+        <projections start-index="7" stop-index="24">
+    <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+            <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
