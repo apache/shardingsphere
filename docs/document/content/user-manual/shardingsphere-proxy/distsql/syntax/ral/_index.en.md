@@ -10,39 +10,39 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                            | Function                                                                                                    | Example                                        |
 |:---------------------------------------------------- |:----------------------------------------------------------------------------------------------------------- |:---------------------------------------------- |
-| set readwrite_splitting hint source = [auto / write] | For current connection, set readwrite splitting routing strategy (automatic or forced to write data source) | set readwrite_splitting hint source = write    |
-| set sharding hint database_value = yy                | For current connection, set sharding value for database sharding only, yy: sharding value                   | set sharding hint database_value = 100         |
-| add sharding hint database_value xx= yy              | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | add sharding hint database_value t_order = 100 |
-| add sharding hint table_value xx = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | add sharding hint table_value t_order = 100    |
-| clear hint                                           | For current connection, clear all hint settings                                                             | clear hint                                     |
-| clear [sharding hint / readwrite_splitting hint]     | For current connection, clear hint settings of sharding or readwrite splitting                              | clear readwrite_splitting hint                 |
-| show [sharding / readwrite_splitting] hint status    | For current connection, query hint settings of sharding or readwrite splitting                              | show readwrite_splitting hint status           |
+| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set readwrite splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write    |
+| SET SHARDING HINT DATABASE_VALUE = yy                | For current connection, set sharding value for database sharding only, yy: sharding value                   | SET SHARDING HINT DATABASE_VALUE = 100         |
+| ADD SHARDING HINT DATABASE_VALUE tableName= yy              | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | ADD SHARDING HINT DATABASE_VALUE t_order = 100 |
+| ADD SHARDING HINT TABLE_VALUE tableName = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | ADD SHARDING HINT TABLE_VALUE t_order = 100    |
+| CLEAR HINT SETTINGS                                            | For current connection, clear all hint settings                                                             | CLEAR HINT                                     |
+| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or readwrite splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
+| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or readwrite splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
 
 ## Scaling
 
 | Statement                                            | Function                                                          | Example                                  |
 |:---------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------- |
-| show scaling list                                    | Query running list                                                | show scaling list                        |
-| show scaling status xx                               | Query scaling status, xx: jobId                                   | show scaling status 1234                 |
-| start scaling xx                                     | Start scaling, xx: jobId                                          | start scaling 1234                       |
-| stop scaling xx                                      | Stop scaling, xx: jobId                                           | stop scaling 1234                        |
-| drop scaling xx                                      | Drop scaling, xx: jobId                                           | drop scaling 1234                        |
-| reset scaling xx                                     | reset progress, xx: jobId                                         | reset scaling 1234                       |
-| check scaling xx                                     | Data consistency check with algorithm in `server.yaml`, xx: jobId | check scaling 1234                       |
-| show scaling check algorithms                        | Show available consistency check algorithms                       | show scaling check algorithms            |
-| check scaling {jobId} by type(name={algorithmType})  | Data consistency check with defined algorithm                     | check scaling 1234 by type(name=DEFAULT) |
-| stop scaling source writing xx                       | The source ShardingSphere data source is discontinued, xx: jobId  | stop scaling source writing 1234         |
-| restore scaling source writing xx                    | Restore source data source writing, xx: jobId                     | restore scaling source writing 1234      |
-| apply scaling xx                                     | Switch to target ShardingSphere metadata, xx: jobId               | apply scaling 1234                       |
+| SHOW SCALING LIST                                    | Query running list                                                | SHOW SCALING LIST                        |
+| SHOW SCALING STATUS jobId                               | Query scaling status, xx: jobId                                   | SHOW SCALING LIST 1234                 |
+| START SCALING jobId                                     | Start scaling, xx: jobId                                          | START SCALING 1234                       |
+| STOP SCALING jobId                                      | Stop scaling, xx: jobId                                           | STOP SCALING 1234                        |
+| DROP SCALING jobId                                      | Drop scaling, xx: jobId                                           | DROP SCALING 1234                        |
+| RESET SCALING jobId                                     | reset progress, xx: jobId                                         | RESET SCALING 1234                       |
+| CHECK SCALING jobId                                     | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK SCALING 1234                       |
+| SHOW SCALING CHECK ALGORITHMS                        | Show available consistency check algorithms                       | SHOW SCALING CHECK ALGORITHMS            |
+| CHECK SCALING {jobId} by type(name={algorithmType})  | Data consistency check with defined algorithm                     | CHECK SCALING 1234 by type(name=DEFAULT) |
+| STOP SCALING SOURCE WRITING jobId                       | The source ShardingSphere data source is discontinued, xx: jobId  | STOP SCALING SOURCE WRITING 1234         |
+| RESTORE SCALING SOURCE WRITING jobId                    | Restore source data source writing, xx: jobId                     | RESTORE SCALING SOURCE WRITING 1234      |
+| APPLY SCALING jobId                                       | Switch to target ShardingSphere metadata, xx: jobId               | APPLY SCALING 1234                       |
 
 ## Circuit Breaker
 
 | Statement                                                     | Function                           | Example                                    |
 |:------------------------------------------------------------- |:---------------------------------- |:------------------------------------------ |
-| [enable / disable] readwrite_splitting read xxx [from schema] | Enable or disable read data source | enable readwrite_splitting read resource_0 |
-| [enable / disable] instance [IP=xxx, PORT=xxx / instanceId]   | Enable or disable proxy instance   | disable instance 127.0.0.1@3307            |
-| show instance list                                            | Query proxy instance information   | show instance list                         |
-| show readwrite_splitting read resources [from schema]         | Query all read resources status    | show readwrite_splitting read resources    |
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM schemaName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
+| [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | Enable or disable proxy instance   | DISABLE INSTANCE 127.0.0.1@3307            |
+| SHOW INSTANCE LIST                                            | Query proxy instance information   | SHOW INSTANCE LIST                         |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM schemaName]         | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
 
 ## Global Rule
 
@@ -58,20 +58,20 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                                                   | Function                                                                           | Example                                   |
 |:--------------------------------------------------------------------------- |:---------------------------------------------------------------------------------- |:----------------------------------------- |
-| show instance mode                                                          | Query the mode configuration of the proxy                                          | show instance mode                        |
-| count schema rules [from schema]                                            | Query the number of rules in a schema                                              | count schema rules                               |
-| set variable proxy_property_name = xx                                       | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore            | set variable sql_show = true            |  
-| set variable transaction_type = xx                                          | Modify transaction_type of the current connection, supports LOCAL, XA, BASE        | set variable transaction_type = XA        |
-| set variable agent_plugins_enabled = [true / false]                         | Set whether the agent plugins are enabled, the default value is false              | set variable agent_plugins_enabled = true |
-| show all variables                                                          | Query proxy all properties configuration                                           | show all variables                        |
-| show variable variable_name                                                 | Query proxy variable, name is split by underscore                                  | show variable sql_show                    |
-| preview SQL                                                                 | Preview the actual SQLs                                                            | preview select * from t_order             |
-| parse SQL                                                                   | Parse SQL and output abstract syntax tree                                          | parse select * from t_order               |
-| refresh table metadata                                                      | Refresh the metadata of all tables                                                 | refresh table metadata                    |
-| refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1  |
-| show table metadata tableName [, tableName] ...                             | Query table metadata                                                               | show table metadata t_order                        |
-| export schema config [from schema_name] [, file="file_path"]                | Query / export resources and rule configuration in schema                          | export schema config from readwrite_splitting_db   |
-| show rules used resource resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | show rules used resource ds_0 from schemaName  |
+| SHOW INSTANCE MODE                                                         | Query the mode configuration of the proxy                                          | SHOW INSTANCE MODE                        |
+| COUNT SCHEMA RULES [FROM schema]                                            | Query the number of rules in a schema                                              | count schema rules                               |
+| SET VARIABLE proxy_property_name = xx                                       | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore            | SET VARIABLE sql_show = true            |  
+| SET VARIABLE transaction_type = xx                                          | Modify transaction_type of the current connection, supports LOCAL, XA, BASE        | SET VARIABLE transaction_type = XA        |
+| SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                         | Set whether the agent plugins are enabled, the default value is false              | SET VARIABLE agent_plugins_enabled = TRUE |
+| SHOW ALL VARIABLES                                                          | Query proxy all properties configuration                                           | SHOW ALL VARIABLES                        |
+| SHOW VARIABLE variable_name                                                 | Query proxy variable, name is split by underscore                                  | SHOW VARIABLE sql_show                    |
+| PREVIEW SQL                                                                 | Preview the actual SQLs                                                            | PREVIEW SELECT * FROM t_order             |
+| PARSE SQL                                                                   | Parse SQL and output abstract syntax tree                                          | PARSE SELECT * FROM t_order               |
+| REFRESH TABLE METADATA                                                      | Refresh the metadata of all tables                                                 | REFRESH TABLE METADATA                    |
+| REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | Refresh the metadata of a table                                                    | REFRESH TABLE METADATA t_order FROM resource ds_1  |
+| SHOW TABLE METADATA tableName [, tableName] ...                             | Query table metadata                                                               | SHOW TABLE METADATA t_order                        |
+| EXPORT SCHEMA CONFIG [FROM schema_name] [, file="file_path"]                | Query / export resources and rule configuration in schema                          | EXPORT SCHEMA CONFIG FROM readwrite_splitting_db   |
+| SHOW RULES USED RESOURCE resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | SHOW RULES USED RESOURCE ds_0 FROM schemaName  |
 
 ## Notice
 

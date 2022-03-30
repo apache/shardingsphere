@@ -139,6 +139,8 @@ public enum SQLVisitorRule {
     ALTER_TRIGGER("AlterTrigger", SQLStatementType.DDL),
     
     DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
+
+    DROP_EVENT_TRIGGER("DropEventTrigger", SQLStatementType.DDL),
     
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
@@ -444,7 +446,9 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
     
-    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL);
+    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
+
+    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL);
     
     private final String name;
     
