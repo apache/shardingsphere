@@ -161,6 +161,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
@@ -599,7 +600,7 @@ public final class SQLParserTestCases {
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
 
     @XmlElement(name = "drop-event-trigger")
-    private final List<DropTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
+    private final List<DropEventTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-domain")
     private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
