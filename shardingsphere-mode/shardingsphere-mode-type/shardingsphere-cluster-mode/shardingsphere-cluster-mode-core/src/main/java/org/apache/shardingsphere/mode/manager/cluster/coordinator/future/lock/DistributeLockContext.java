@@ -54,6 +54,9 @@ public final class DistributeLockContext implements LockContext {
     
     @Override
     public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        if (null == schemaName) {
+            return Optional.empty();
+        }
         ShardingSphereGlobalLock result = globalLocks.get(schemaName);
         if (null == result) {
             result = crateGlobalLock(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
@@ -130,6 +133,11 @@ public final class DistributeLockContext implements LockContext {
         String schema = event.getSchema();
         String ownerInstanceId = event.getOwnerInstanceId();
         if (isSameInstanceId(ownerInstanceId)) {
+            ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schema);
+            if (null == shardingSphereGlobalLock) {
+                return;
+            }
+            shardingSphereGlobalLock.releaseLockedState(schema);
             globalLocks.remove(schema);
             return;
         }

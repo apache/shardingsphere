@@ -215,7 +215,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         if (null == metaData) {
             throw new RuntimeException("Can not get metaData by schemaName " + schemaName);
         }
-        return metaData.getSchema().getTables();
+        return metaData.getDefaultSchema().getTables();
     }
     
     private void addDataSourceConfigToMySQL(final PipelineDataSourceConfiguration sourceDataSourceConfig, final PipelineDataSourceConfiguration targetDataSourceConfig) {
