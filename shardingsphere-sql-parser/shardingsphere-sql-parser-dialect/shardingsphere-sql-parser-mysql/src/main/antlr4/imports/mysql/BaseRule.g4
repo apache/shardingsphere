@@ -104,6 +104,7 @@ identifier
     | identifierKeywordsAmbiguous4SystemVariables
     | customKeyword
     | DOUBLE_QUOTED_TEXT
+    | UNDERSCORE_CHARSET
     ;
     
 identifierKeywordsUnambiguous
