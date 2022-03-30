@@ -98,6 +98,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
@@ -132,6 +133,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
@@ -166,6 +168,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
