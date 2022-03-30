@@ -32,9 +32,7 @@ public enum H2RepositoryPropertyKey implements TypedPropertyKey {
     
     USER("user", "", String.class),
     
-    PASSWORD("password", "", String.class),
-    
-    DRIVER_CLASS("driver_class", "", String.class);
+    PASSWORD("password", "", String.class);
     
     private final String key;
     

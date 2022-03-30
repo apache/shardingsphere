@@ -24,8 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * H2 repository.
@@ -39,8 +49,6 @@ public final class H2Repository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PASSWORD = "";
     
-    private static final String DEFAULT_DRIVER_CLASS = "org.h2.Driver";
-    
     private static final String SEPARATOR = "/";
     
     private String jdbcUrl;
@@ -49,15 +57,11 @@ public final class H2Repository implements StandalonePersistRepository {
     
     private String password;
     
-    private String driverClass;
-    
     private Connection connection;
     
     @Override
     public void setProps(final Properties props) {
         H2RepositoryProperties localRepositoryProperties = new H2RepositoryProperties(props);
-        driverClass = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(H2RepositoryPropertyKey.DRIVER_CLASS))).orElse(DEFAULT_DRIVER_CLASS);
         jdbcUrl = Optional.ofNullable(
                 Strings.emptyToNull(localRepositoryProperties.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         user = Optional.ofNullable(
@@ -69,7 +73,6 @@ public final class H2Repository implements StandalonePersistRepository {
     
     @SneakyThrows
     private void init() {
-        Class.forName(driverClass);
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS REPOSITORY");
@@ -112,9 +115,9 @@ public final class H2Repository implements StandalonePersistRepository {
     }
     
     @Override
-    public void persist(final String key, String value) {
+    public void persist(final String key, final String value) {
         // Single quotation marks are the keywords executed by H2. Replace with double quotation marks.
-        value = value.replace("'", "\"");
+        String insensitiveValue = value.replace("'", "\"");
         String[] paths = Lists.newArrayList(key.split(SEPARATOR))
                 .stream().filter(each -> StringUtils.isNotBlank(each)).toArray(String[]::new);
         String tempPrefix = "";
@@ -135,25 +138,23 @@ public final class H2Repository implements StandalonePersistRepository {
             }
             String keyValue = get(key);
             if (StringUtils.isBlank(keyValue)) {
-                insert(key, value, parent);
+                insert(key, insensitiveValue, parent);
             } else {
-                update(key, value);
+                update(key, insensitiveValue);
             }
-        } catch (final Exception ex) {
+        } catch (final SQLException ex) {
             log.error("Persist h2 data to key: {} failed", key, ex);
         }
     }
     
-    @SneakyThrows
-    private void insert(final String key, final String value, final String parent) {
+    private void insert(final String key, final String value, final String parent) throws SQLException {
         try (PreparedStatement statement =
                      connection.prepareStatement("INSERT INTO REPOSITORY VALUES('" + UUID.randomUUID() + "','" + key + "','" + value + "','" + parent + "')")) {
             statement.executeUpdate();
         }
     }
     
-    @SneakyThrows
-    private void update(final String key, final String value) {
+    private void update(final String key, final String value) throws SQLException {
         try (PreparedStatement statement =
                      connection.prepareStatement("UPDATE REPOSITORY SET value = '" + value + "' WHERE key = '" + key + "'")) {
             statement.executeUpdate();
