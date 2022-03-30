@@ -597,6 +597,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-event-trigger")
+    private final List<DropTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-domain")
     private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
@@ -1284,6 +1287,7 @@ public final class SQLParserTestCases {
         putAll(dropDimensionTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
+        putAll(dropEventTriggerTestCase, result);
         putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
         putAll(dropPolicyTestCase, result);

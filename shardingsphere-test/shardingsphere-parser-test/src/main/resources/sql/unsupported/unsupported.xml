@@ -5814,14 +5814,6 @@
     <sql-case id="drop_by_postgresql_source_test_case28" value="DROP COLLATION test0 RESTRICT;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case29" value="DROP COLLATION test0, test_schema.test11, test5;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case30" value="DROP COLLATION test0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case31" value="DROP EVENT TRIGGER end_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case32" value="DROP EVENT TRIGGER has_volatile_rewrite;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case33" value="DROP EVENT TRIGGER regress_event_trigger_drop_objects;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case34" value="DROP EVENT TRIGGER regress_event_trigger_report_dropped;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case35" value="DROP EVENT TRIGGER regress_event_trigger_report_end;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case36" value="DROP EVENT TRIGGER sql_drop_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case37" value="DROP EVENT TRIGGER start_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case38" value="DROP EVENT TRIGGER undroppable;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
