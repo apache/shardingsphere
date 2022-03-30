@@ -31,7 +31,8 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
     
     @Override
     public Map<String, String> getJavaClassTemplateMap() {
-        Map<String, String> result = new HashMap<>(3, 1);
+        Map<String, String> result = new HashMap<>(4, 1);
+        result.put("java/main/SpringNamespaceMyBatisExampleMain.ftl", "ExampleMain.java");
         result.put("java/repository/mybatis/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
         result.put("java/repository/mybatis/OrderRepository.ftl", "repository/OrderRepository.java");
         result.put("java/repository/mybatis/AddressRepository.ftl", "repository/AddressRepository.java");

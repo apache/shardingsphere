@@ -67,14 +67,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-<#assign featureName="" />
-<#if feature?split(",")?size gt 1>
-    <#assign featureName="Mixed" />
-<#else>
-    <#list feature?split("-") as item>
-        <#assign featureName=featureName + item?cap_first />
-    </#list>
-</#if>
 public final class Configuration {
     
     private static final String HOST = "${host}";

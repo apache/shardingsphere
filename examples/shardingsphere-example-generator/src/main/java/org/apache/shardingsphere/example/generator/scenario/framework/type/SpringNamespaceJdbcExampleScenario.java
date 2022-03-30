@@ -32,7 +32,8 @@ public final class SpringNamespaceJdbcExampleScenario implements FrameworkExampl
     
     @Override
     public Map<String, String> getJavaClassTemplateMap() {
-        Map<String, String> result = new HashMap<>(3, 1);
+        Map<String, String> result = new HashMap<>(4, 1);
+        result.put("java/main/SpringNamespaceJdbcExampleMain.ftl", "ExampleMain.java");
         result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
         result.put("java/repository/jdbc/OrderRepository.ftl", "repository/OrderRepository.java");
         result.put("java/repository/jdbc/AddressRepository.ftl", "repository/AddressRepository.java");

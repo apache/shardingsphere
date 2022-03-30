@@ -38,24 +38,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-<#assign frameworkName="" />
-<#list framework?split("-") as item>
-    <#assign frameworkName=frameworkName + item?cap_first />
-</#list>
-<#assign featureName="" />
-<#if feature?split(",")?size gt 1>
-    <#assign featureName="Mixed" />
-<#else>
-    <#list feature?split("-") as item>
-        <#assign featureName=featureName + item?cap_first />
-    </#list>
-</#if>
 <#if framework?contains("spring")>
 @Service
 </#if>
 public final class ExampleService {
     
-    private static final Logger logger = LoggerFactory.getLogger(ExampleService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExampleService.class);
     
     private final OrderRepository orderRepository;
     
@@ -101,16 +89,16 @@ public final class ExampleService {
     }
     
     private void processSuccess() throws SQLException {
-        logger.info("-------------- Process Success Begin ---------------");
+        LOGGER.info("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
         deleteData(orderIds);
         printData();
-        logger.info("-------------- Process Success Finish --------------");
+        LOGGER.info("-------------- Process Success Finish --------------");
     }
     
     private List<Long> insertData() throws SQLException {
-        logger.info("---------------------------- Insert Data ----------------------------");
+        LOGGER.info("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
@@ -138,7 +126,7 @@ public final class ExampleService {
     }
     
     private void deleteData(final List<Long> orderIds) throws SQLException {
-        logger.info("---------------------------- Delete Data ----------------------------");
+        LOGGER.info("---------------------------- Delete Data ----------------------------");
         long count = 1;
         for (Long each : orderIds) {
         <#if feature?contains("shadow")>
@@ -151,17 +139,17 @@ public final class ExampleService {
     }
     
     private void printData() throws SQLException {
-        logger.info("---------------------------- Print Order Data -----------------------");
+        LOGGER.info("---------------------------- Print Order Data -----------------------");
         for (Object each : this.selectAll()) {
-            logger.info(each.toString());
+            LOGGER.info(each.toString());
         }
-        logger.info("---------------------------- Print OrderItem Data -------------------");
+        LOGGER.info("---------------------------- Print OrderItem Data -------------------");
         for (Object each : orderItemRepository.selectAll()) {
-            logger.info(each.toString());
+            LOGGER.info(each.toString());
         } 
-        logger.info("---------------------------- Print Address Data -------------------");
+        LOGGER.info("---------------------------- Print Address Data -------------------");
         for (Object each : addressRepository.selectAll()) {
-            logger.info(each.toString());
+            LOGGER.info(each.toString());
         }
     }
     
