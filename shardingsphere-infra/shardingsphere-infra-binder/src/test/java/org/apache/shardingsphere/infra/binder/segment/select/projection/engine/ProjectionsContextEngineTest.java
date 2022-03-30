@@ -220,7 +220,7 @@ public final class ProjectionsContextEngineTest {
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchema()).thenReturn(schema);
+        when(metaData.getSchemaByName("schema")).thenReturn(schema);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         return new SelectStatementContext(Collections.singletonMap("schema", metaData), Collections.emptyList(), selectStatement, "schema");
     }

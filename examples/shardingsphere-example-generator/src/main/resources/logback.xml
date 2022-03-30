@@ -19,7 +19,7 @@
 <configuration>
     <property name="log.context.name" value="shardingsphere-example-generator" />
     <property name="log.charset" value="UTF-8" />
-    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <property name="log.pattern" value="%msg %n" />
     <contextName>${log.context.name}</contextName>
     
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

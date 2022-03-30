@@ -59,12 +59,17 @@ public final class H2DatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
+    public DatabaseType getTrunkDatabaseType() {
+        return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
     }
     
     @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

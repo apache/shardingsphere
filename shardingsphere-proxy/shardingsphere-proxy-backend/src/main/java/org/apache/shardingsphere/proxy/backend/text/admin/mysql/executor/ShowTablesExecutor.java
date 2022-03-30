@@ -67,7 +67,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private QueryResult getQueryResult(final String schemaName) {
-        if (!databaseType.containsSystemSchema(schemaName) && !ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
+        if (!databaseType.getSystemSchemas().contains(schemaName) && !ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> {
@@ -80,7 +80,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<String> getAllTableNames(final String schemaName) {
-        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
+        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
             Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
             return pattern.isPresent() ? result.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : result;

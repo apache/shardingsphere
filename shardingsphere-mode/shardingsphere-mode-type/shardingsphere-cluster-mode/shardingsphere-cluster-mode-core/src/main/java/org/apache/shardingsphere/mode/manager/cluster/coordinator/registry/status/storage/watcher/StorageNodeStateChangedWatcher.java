@@ -64,7 +64,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new PrimaryStateChangedEvent(schema));
             }
             return Optional.of(new DisabledStateChangedEvent(schema, Type.DELETED == event.getType()
-                    || StorageNodeStatus.DISABLE.name().toLowerCase().equals(storageNodeDataSource.getStatus())));
+                    || StorageNodeStatus.DISABLED.name().toLowerCase().equals(storageNodeDataSource.getStatus())));
         }
         return Optional.empty();
     }

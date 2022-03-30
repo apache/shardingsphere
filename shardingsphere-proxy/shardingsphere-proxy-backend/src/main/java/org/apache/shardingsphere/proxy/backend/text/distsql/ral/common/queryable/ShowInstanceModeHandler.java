@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -54,8 +54,11 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
-        return Collections.singleton(Arrays.asList(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), instanceContext.getModeConfiguration().getType(),
-                null == repositoryConfiguration ? "" : repositoryConfiguration.getType(), null == repositoryConfiguration ? "" : PropertiesConverter.convert(repositoryConfiguration.getProps()),
-                String.valueOf(instanceContext.getModeConfiguration().isOverwrite())));
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        String modeType = instanceContext.getModeConfiguration().getType();
+        String repositoryType = null == repositoryConfiguration ? "" : repositoryConfiguration.getType();
+        String props = null == repositoryConfiguration || null == repositoryConfiguration.getProps() ? "" : new Gson().toJson(repositoryConfiguration.getProps());
+        String overwrite = String.valueOf(instanceContext.getModeConfiguration().isOverwrite());
+        return Collections.singleton(Arrays.asList(instanceId, modeType, repositoryType, props, overwrite));
     }
 }

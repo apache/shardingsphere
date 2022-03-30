@@ -20,11 +20,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
-    <name>${r'${project.artifactId}'}</name>
     <version>${shardingsphereVersion}</version>
+    <name>${r'${project.artifactId}'}</name>
     
     <dependencies>
     <#if framework=="jdbc">
@@ -46,6 +45,7 @@
             <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
+        
     </#if>
     <#if framework?contains("jpa")>
         <dependency>
@@ -73,6 +73,18 @@
             <artifactId>spring-context-support</artifactId>
             <version>5.2.15.RELEASE</version>
         </dependency>
+        <#if framework?contains("spring-boot-starter")>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        </#if>
     <#elseif framework=="spring-boot-starter-jdbc">
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -118,12 +130,33 @@
             <version>5.2.15.RELEASE</version>
         </dependency>
     </#if>
+        
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.10</version>
+        </dependency>
     </dependencies>
     
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>

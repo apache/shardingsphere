@@ -99,13 +99,13 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource, final String groupName) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            long replicationDelayTime = getSecondsBehindMaster(statement) * 1000L;
-            if (replicationDelayTime < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
+            long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
+            if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLE, replicationDelayTime)));
+                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
             } else {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE, replicationDelayTime)));
+                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED, replicationDelayMilliseconds)));
             }
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
