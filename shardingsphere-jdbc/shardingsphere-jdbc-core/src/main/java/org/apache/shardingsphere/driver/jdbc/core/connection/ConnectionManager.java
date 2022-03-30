@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -43,6 +45,7 @@ import javax.sql.DataSource;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -165,6 +168,70 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
             forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
         } else {
             connectionTransaction.rollback();
+        }
+    }
+    
+    /**
+     * Rollback to savepoint.
+     *
+     * @param savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
+        }
+    }
+    
+    /**
+     * Set savepoint.
+     *
+     * @param savepointName savepoint name
+     * @return savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public Savepoint setSavepoint(final String savepointName) throws SQLException {
+        if (!connectionTransaction.isInTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        ShardingSphereSavepoint result = new ShardingSphereSavepoint(savepointName);
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
+        }
+        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
+        return result;
+    }
+    
+    /**
+     * Set savepoint.
+     *
+     * @return savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public Savepoint setSavepoint() throws SQLException {
+        if (!connectionTransaction.isInTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        ShardingSphereSavepoint result = new ShardingSphereSavepoint();
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, result.getSavepointName());
+        }
+        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, result.getSavepointName()));
+        return result;
+    }
+    
+    /**
+     * Release savepoint.
+     *
+     * @param savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        if (!connectionTransaction.isInTransaction()) {
+            return;
+        }
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }
     }
     
