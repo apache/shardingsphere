@@ -5814,14 +5814,6 @@
     <sql-case id="drop_by_postgresql_source_test_case28" value="DROP COLLATION test0 RESTRICT;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case29" value="DROP COLLATION test0, test_schema.test11, test5;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case30" value="DROP COLLATION test0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case31" value="DROP EVENT TRIGGER end_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case32" value="DROP EVENT TRIGGER has_volatile_rewrite;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case33" value="DROP EVENT TRIGGER regress_event_trigger_drop_objects;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case34" value="DROP EVENT TRIGGER regress_event_trigger_report_dropped;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case35" value="DROP EVENT TRIGGER regress_event_trigger_report_end;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case36" value="DROP EVENT TRIGGER sql_drop_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case37" value="DROP EVENT TRIGGER start_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case38" value="DROP EVENT TRIGGER undroppable;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
@@ -8510,7 +8502,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case51" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE DATABASE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case52" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE ROLE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case53" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE TABLESPACE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
-    <sql-case id="low_create_by_postgresql_source_test_case54" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;DROP EVENT TRIGGER&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case55" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;) and tag in (&apos;CREATE FUNCTION&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case56" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;, &apos;CREATE FUNCTION&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case57" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;, &apos;create skunkcabbage&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
@@ -9056,12 +9047,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case4" value="drop aggregate newcnt1;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case5" value="drop aggregate nonesuch (int4);" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case6" value="drop aggregate;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case7" value="drop event trigger if exists regress_event_trigger2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case8" value="drop event trigger if exists regress_event_trigger2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case9" value="drop event trigger no_rewrite_allowed;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case10" value="drop event trigger regress_event_trigger3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case11" value="drop event trigger regress_event_trigger;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case12" value="drop event trigger regress_event_trigger_end;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case13" value="drop function ();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case14" value="drop function 314159();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>

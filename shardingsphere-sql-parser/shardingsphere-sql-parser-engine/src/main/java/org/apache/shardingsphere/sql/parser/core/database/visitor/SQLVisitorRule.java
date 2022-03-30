@@ -137,6 +137,8 @@ public enum SQLVisitorRule {
     ALTER_TRIGGER("AlterTrigger", SQLStatementType.DDL),
     
     DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
+
+    DROP_EVENT_TRIGGER("DropEventTrigger", SQLStatementType.DDL),
     
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
