@@ -19,22 +19,20 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -50,16 +48,15 @@ public final class SystemSchemaBuilder {
      * @param databaseType database type
      * @return ShardingSphere schema map
      */
-    @SneakyThrows
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
         TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
-            Collection<File> schemaFiles = getSchemaFiles(each, databaseType);
-            if (schemaFiles.isEmpty()) {
+            Collection<InputStream> schemaStreams = getSchemaStreams(each, databaseType);
+            if (schemaStreams.isEmpty()) {
                 continue;
             }
-            result.put(each, createSchema(schemaFiles, swapper));
+            result.put(each, createSchema(schemaStreams, swapper));
         }
         return result;
     }
@@ -69,20 +66,20 @@ public final class SystemSchemaBuilder {
         return databaseType.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
-    private static Collection<File> getSchemaFiles(final String schemaName, final DatabaseType databaseType) {
-        URL url = SystemSchemaBuilder.class.getClassLoader().getResource("schema/" + databaseType.getName().toLowerCase() + "/" + schemaName);
-        if (null == url) {
-            return Collections.emptyList();
+    private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
+        String databaseTypeName = databaseType.getName().toLowerCase();
+        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseTypeName, schemaName);
+        Collection<InputStream> result = new LinkedList<>();
+        for (String each : builderRule.getTables()) {
+            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseTypeName + "/" + schemaName + "/" + each + ".yaml"));
         }
-        File[] files = new File(url.getFile()).listFiles();
-        return null == files ? Collections.emptyList() : Arrays.asList(files);
+        return result;
     }
     
-    @SneakyThrows
-    private static ShardingSphereSchema createSchema(final Collection<File> schemaFiles, final TableMetaDataYamlSwapper swapper) {
-        Map<String, TableMetaData> tables = new LinkedHashMap<>(schemaFiles.size(), 1);
-        for (File file : schemaFiles) {
-            YamlTableMetaData metaData = YamlEngine.unmarshal(file, YamlTableMetaData.class);
+    private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final TableMetaDataYamlSwapper swapper) {
+        Map<String, TableMetaData> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
+        for (InputStream each : schemaStreams) {
+            YamlTableMetaData metaData = new Yaml().loadAs(each, YamlTableMetaData.class);
             tables.put(metaData.getName(), swapper.swapToObject(metaData));
         }
         return new ShardingSphereSchema(tables);
