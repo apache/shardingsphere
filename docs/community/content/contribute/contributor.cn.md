@@ -9,7 +9,7 @@ chapter = true
 ## 提交 issue
 
  - 在提交 issue 之前，请经过充分的搜索，确定该 issue 不是通过简单的检索即可以解决的问题。
- - 查看 [issue列表](https://github.com/apache/shardingsphere/issues)，确定该 issue 不是一个重复的问题。
+ - 查看 [issue 列表](https://github.com/apache/shardingsphere/issues)，确定该 issue 不是一个重复的问题。
  - [新建](https://github.com/apache/shardingsphere/issues/new/choose)一个 issue 并选择您的 issue 类型。
  - 使用一个清晰并有描述性的标题来定义 issue。
  - 根据模板填写必要信息。
@@ -42,7 +42,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 **2. 选择 issue**
 
- - 请在选择您要修改的 issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个 issue 并设置正确的标签。
+ - 请在选择您要修改的 issue。如果是您新发现的问题或想提供 issue 中没有的功能增强，请先新建一个 issue 并设置正确的标签。
  - 在选中相关的 issue 之后，请回复以表明您当前正在这个 issue 上工作。并在回复的时候为自己设置一个 deadline，添加至回复内容中。
  - 在[开发者列表](/cn/contribute/contributor/)中找到一个导师，导师会在设计与功能实现上给予即时的反馈。
 

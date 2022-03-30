@@ -101,8 +101,7 @@ public final class GovernanceRepositoryAPIImplTest {
         assertTrue(actual.contains("1"));
     }
     
-    // TODO seems CuratorZookeeperRepository will cause get wrong value from cache, comment it for now. It depend on unit test cases ordering.
-    //@Test
+    @Test
     public void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);

@@ -237,7 +237,7 @@ The text of each license is the standard Apache 2.0 license.
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
-    groovy 4.0.0: https://groovy.apache.org/, Apache 2.0
+    groovy 4.0.1: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-core 1.27.1: https://github.com/grpc/grpc, Apache 2.0

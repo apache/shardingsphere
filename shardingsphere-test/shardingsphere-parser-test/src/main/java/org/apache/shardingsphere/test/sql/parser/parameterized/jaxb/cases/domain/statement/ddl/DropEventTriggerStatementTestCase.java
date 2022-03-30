@@ -15,40 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Connection status.
+ * Drop Event Trigger test case.
  */
-public final class ConnectionStatus {
-    
-    private final ResourceLock resourceLock = new ResourceLock();
-    
-    private volatile boolean isUsing;
-    
-    /**
-     * Switch connection status to using.
-     */
-    public void switchToUsing() {
-        isUsing = true;
-    }
-    
-    /**
-     * Switch connection status to released.
-     */
-    public void switchToReleased() {
-        if (isUsing) {
-            isUsing = false;
-            resourceLock.doNotify();
-        }
-    }
-    
-    /**
-     * Wait until connection release.
-     */
-    public void waitUntilConnectionRelease() {
-        while (isUsing) {
-            resourceLock.doAwait();
-        }
-    }
+public class DropEventTriggerStatementTestCase extends SQLParserTestCase {
 }

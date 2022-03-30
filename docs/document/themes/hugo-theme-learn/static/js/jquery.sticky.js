@@ -38,6 +38,7 @@
     },
     $window = $(window),
     $document = $(document),
+    $TableOfContents = $('#TableOfContents'),
     sticked = [],
     windowHeight = $window.height(),
     scroller = function() {
@@ -64,6 +65,7 @@
                 'z-index': ''
               });
             s.stickyElement.parent().removeClass(s.className);
+            $TableOfContents.removeClass('sticky');
             s.stickyElement.trigger('sticky-end', [s]);
             s.currentTop = null;
           }
@@ -92,8 +94,9 @@
               .css('position', 'fixed')
               .css('top', newTop)
               .css('z-index', s.zIndex);
-
+            
             s.stickyElement.parent().addClass(s.className);
+            $TableOfContents.addClass('sticky')
 
             if (s.currentTop === null) {
               s.stickyElement.trigger('sticky-start', [s]);

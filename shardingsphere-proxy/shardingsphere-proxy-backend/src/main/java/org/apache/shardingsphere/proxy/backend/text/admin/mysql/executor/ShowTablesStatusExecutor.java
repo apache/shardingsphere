@@ -62,7 +62,7 @@ public final class ShowTablesStatusExecutor implements DatabaseAdminQueryExecuto
         if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames().stream()
+        List<MemoryQueryResultDataRow> rows = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().getAllTableNames().stream()
                 .map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }

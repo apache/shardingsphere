@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-
-import java.util.Map;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Dialect system schema builder.
+ * Drop aggregate statement test case.
  */
-public interface DialectSystemSchemaBuilder extends DatabaseTypeAwareSPI, SingletonSPI {
-    
-    /**
-     * Build.
-     *
-     * @param schemaName schema name
-     * @return ShardingSphere schema map
-     */
-    Map<String, ShardingSphereSchema> build(String schemaName);
+public final class DropAggregateStatementTestCase extends SQLParserTestCase {
 }

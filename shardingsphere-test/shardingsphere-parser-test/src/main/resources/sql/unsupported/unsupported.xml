@@ -103,7 +103,6 @@
     <sql-case id="create_by_mysql_source_test_case47" value="CREATE FUNCTION bug_13627_f() returns int BEGIN rename table t1 to t2; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case48" value="CREATE FUNCTION bug_13627_f() returns int BEGIN rename user &apos;mysqltest_2&apos; to &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case49" value="CREATE FUNCTION bug_13627_f() returns int BEGIN unlock tables; return 1; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case50" value="CREATE FUNCTION crc(_text TEXT) RETURNS BIGINT(20) UNSIGNED DETERMINISTIC RETURN CONV(LEFT(MD5(_text),16),16,10)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case52" value="CREATE FUNCTION f(f1 VARCHAR(64) CHARACTER SET ucs2 COLLATE ucs2_unicode_ci) RETURNS VARCHAR(64) CHARACTER SET ucs2 COLLATE ucs2_danish_ci BEGIN DECLARE f2 VARCHAR(64) CHARACTER SET ucs2 COLLATE ucs2_swedish_ci; DECLARE f3 VARCHAR(64) CHARACTER SET ucs2 COLLATE ucs2_bin; SET f1= concat(collation(f1), &apos; &apos;, collation(f2), &apos; &apos;, collation(f3)); RETURN f1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case53" value="CREATE FUNCTION f(f1 VARCHAR(64) CHARACTER SET ucs2) RETURNS VARCHAR(64) CHARACTER SET ucs2 BEGIN DECLARE f2 VARCHAR(64) COLLATE ucs2_unicode_ci; RETURN &apos;str&apos;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case54" value="CREATE FUNCTION f(f1 VARCHAR(64) CHARACTER SET ucs2) RETURNS VARCHAR(64) COLLATE ucs2_unicode_ci BEGIN RETURN &apos;str&apos;; END" db-types="MySQL"/>
@@ -137,7 +136,6 @@
     <sql-case id="create_by_mysql_source_test_case131" value="CREATE PROCEDURE bug22580_proc_1() BEGIN CALL bug22580_proc_2(); END|" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case132" value="CREATE PROCEDURE bug22580_proc_2() BEGIN DROP TABLE IF EXISTS bug22580_tmp; CREATE TEMPORARY TABLE bug22580_tmp (a INT); DROP TABLE bug22580_tmp; END|" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case133" value="CREATE PROCEDURE bug24117() BEGIN DECLARE t3c1 ENUM(&apos;abc&apos;); DECLARE mycursor CURSOR FOR SELECT c1 FROM t3; OPEN mycursor; FLUSH TABLES; FETCH mycursor INTO t3c1; CLOSE mycursor; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case136" value="CREATE PROCEDURE bug6866 (_a1 int) BEGIN SELECT * FROM tv WHERE a1 = _a1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case139" value="CREATE PROCEDURE cr(IN start BIGINT) BEGIN SET @idx =start; WHILE (@idx &gt; 0) DO CREATE TABLESPACE x; DROP TABLESPACE x; SET @idx = @idx - 1; END WHILE; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case144" value="CREATE PROCEDURE ddse_access() DROP TABLE mysql.innodb_index_stats(i INTEGER)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case146" value="CREATE PROCEDURE information_schema.is() BEGIN END" db-types="MySQL"/>
@@ -244,8 +242,6 @@
     <sql-case id="create_by_mysql_source_test_case331" value="CREATE TABLE `t1` ( `a b` INT, `c&quot;d` INT, `e``f` INT, PRIMARY KEY (`a b`, `c&quot;d`, `e``f`) ) ENGINE=MyISAM DEFAULT CHARSET=latin1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case332" value="CREATE TABLE `t1` ( `a b` INT, `c&quot;d` INT, `e``f` INT, PRIMARY KEY (`a b`, `c&quot;d`, `e``f`) ) ENGINE=MyISAM DEFAULT CHARSET=latin1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case333" value="CREATE TABLE `t``\&quot;&quot;e` (a INT, PRIMARY KEY (a)) ENGINE=InnoDB PARTITION BY RANGE (a) SUBPARTITION BY HASH (a) (PARTITION `p0``\&quot;&quot;e` VALUES LESS THAN (100) (SUBPARTITION `sp0``\&quot;&quot;e`, SUBPARTITION `sp1``\&quot;&quot;e`), PARTITION `p1``\&quot;&quot;e` VALUES LESS THAN (MAXVALUE) (SUBPARTITION `sp2``\&quot;&quot;e`, SUBPARTITION `sp3``\&quot;&quot;e`))" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case334" value="CREATE TABLE at(_bin binary(16), _vbn varbinary(16), _tbl tinyblob, _ttx tinytext, _blb blob)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case335" value="CREATE TABLE at(_bit bit(64), _tin tinyint(8), _boo bool, _sms smallint signed, _smu smallint unsigned, _mes mediumint signed, _meu mediumint unsigned, _ins int signed, _inu int unsigned, _bis bigint signed, _biu bigint unsigned, _dec decimal (5,2), _flo float, _dou double, _yea year, _jsn json, _chr char(12), _vch varchar(12), _bin binary(255), _vbn varbinary(255), _tbl tinyblob, _ttx tinytext, _blb blob, _txt text, _mbb mediumblob, _mtx mediumtext, _lbb longblob, _ltx longtext, _pnt point, _dat date default &apos;1988-12-15&apos;, _dtt datetime default &apos;2015-10-24 12:00:00&apos;, _smp timestamp default &apos;2015-10-24 14:00:00&apos;, _tim time default&apos; 07:08:09&apos;, _enu enum(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;), _set set(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case336" value="CREATE TABLE b15776 (a blob(2147483647), b blob(2147483648), c blob(4294967295), a1 text(2147483647), b1 text(2147483648), c1 text(4294967295) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case337" value="CREATE TABLE b15776 (a blob(4294967296))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case338" value="CREATE TABLE b15776 (a blob(999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))" db-types="MySQL"/>
@@ -453,7 +449,6 @@
     <sql-case id="create_by_mysql_source_test_case568" value="CREATE TABLE t2 (f1 INT PRIMARY KEY INVISIBLE, f2 INT, CONSTRAINT FOREIGN KEY (f1) REFERENCES t1(f2))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case569" value="CREATE TABLE t2 (i INT, j DOUBLE DEFAULT (SQRT(i)), k DOUBLE DEFAULT (DEFAULT(j)))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case570" value="CREATE TABLE t2 (pk INTEGER PRIMARY KEY) TABLESPACE ``" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case571" value="CREATE TABLE t2 AS SELECT COALESCE(5, -5) AS c1, COALESCE(5, 5.5) AS c2, COALESCE(5, 5.5e5) AS c3, COALESCE(5, &apos;5&apos;) AS c4, COALESCE(20010101, date &apos;2005-05-05&apos;) AS c5, COALESCE(010101, time &apos;05:05:05.555555&apos;) AS c6, COALESCE(010101, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c7, COALESCE(20010101, NOW(0)) AS c8, COALESCE(5.55, 88.8) AS c11, COALESCE(5.5, 5.5e5) AS c12, COALESCE(5.5, &apos;5&apos;) AS c13, COALESCE(010101.5, date &apos;2005-05-05&apos;) AS c14, COALESCE(5.5, time &apos;05:05:05.555555&apos;) AS c15, COALESCE(010101.5, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c16, COALESCE(5.5e5, &apos;5&apos;) AS c21, COALESCE(2004041e1, date &apos;2005-05-05&apos;) AS c22, COALESCE(150505.0e5, time &apos;05:05:05.555555&apos;) AS c23, COALESCE(2004041e1, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c24, COALESCE(&apos;010101&apos;, date &apos;2005-05-05&apos;) AS c31, COALESCE(&apos;5&apos;, time &apos;05:05:05.555555&apos;) AS c32, COALESCE(&apos;010101&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c33, COALESCE(date &apos;2005-05-05&apos;, time &apos;05:05:05.555555&apos;) AS c41, COALESCE(date &apos;2005-05-05&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c42, COALESCE(time &apos;05:05:05.555555&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c51, COALESCE(x&apos;c3a5&apos;, &apos;1&apos;) AS c61, COALESCE(x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c62, COALESCE(_utf8mb4 x&apos;c3a5&apos;, &apos;1&apos;) AS c63, COALESCE(_utf8mb4 x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c64, COALESCE(JSON_OBJECT(&apos;a&apos;, 1), NULL) AS c71" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case572" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case573" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case574" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
@@ -464,9 +459,6 @@
     <sql-case id="create_by_mysql_source_test_case579" value="CREATE TABLE t2(f1 INT, f2 INT INVISIBLE)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case580" value="CREATE TABLE t3 (a INT PRIMARY KEY, d INT DEFAULT (-a + 1), c INT DEFAULT (DEFAULT(d)) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case581" value="CREATE TABLE t3 (a int DEFAULT 10, b varchar(64) DEFAULT &quot;Default&quot;, c varchar(64) DEFAULT &quot;Default&quot;, d int unsigned DEFAULT 9, e varchar(255) DEFAULT &quot;Default-filler.filler.filler.&quot;, PRIMARY KEY (a,b,c,d)) charset latin1 PARTITION BY RANGE COLUMNS (a, b) SUBPARTITION BY LINEAR KEY (d, c) SUBPARTITIONS 4 (PARTITION pNeg VALUES LESS THAN (0, &quot;&quot;), PARTITION `p0-9` VALUES LESS THAN (9, MAXVALUE), PARTITION p10 VALUES LESS THAN (10, MAXVALUE), PARTITION `p11-100` VALUES LESS THAN (99, MAXVALUE))" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case582" value="CREATE TABLE t3 AS SELECT GREATEST(5, -5) AS c1, GREATEST(5, 5.5) AS c2, GREATEST(5, 5.5e5) AS c3, GREATEST(5, &apos;5&apos;) AS c4, GREATEST(20010101, date &apos;2005-05-05&apos;) AS c5, GREATEST(010101, time &apos;05:05:05.555555&apos;) AS c6, GREATEST(010101, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c7, GREATEST(20010101, NOW(0)) AS c8, GREATEST(5.55, 88.8) AS c11, GREATEST(5.5, 5.5e5) AS c12, GREATEST(5.5, &apos;5&apos;) AS c13, GREATEST(010101.5, date &apos;2005-05-05&apos;) AS c14, GREATEST(5.5, time &apos;05:05:05.555555&apos;) AS c15, GREATEST(010101.5, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c16, GREATEST(5.5e5, &apos;5&apos;) AS c21, GREATEST(2004041e1, date &apos;2005-05-05&apos;) AS c22, GREATEST(150505.0e5, time &apos;05:05:05.555555&apos;) AS c23, GREATEST(2004041e1, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c24, GREATEST(&apos;010101&apos;, date &apos;2005-05-05&apos;) AS c31, GREATEST(&apos;5&apos;, time &apos;05:05:05.555555&apos;) AS c32, GREATEST(&apos;010101&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c33, GREATEST(date &apos;2005-05-05&apos;, time &apos;05:05:05.555555&apos;) AS c41, GREATEST(date &apos;2005-05-05&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c42, GREATEST(time &apos;05:05:05.555555&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c51, GREATEST(x&apos;c3a5&apos;, &apos;1&apos;) AS c61, GREATEST(x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c62, GREATEST(_utf8mb4 x&apos;c3a5&apos;, &apos;1&apos;) AS c63, GREATEST(_utf8mb4 x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c64" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case583" value="CREATE TABLE t3 AS SELECT hex(&apos;c8eb4b15cb0948bb&apos;),hex(_bin),hex(_blb) FROM at" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case584" value="CREATE TABLE t3 AS SELECT unhex(_bin) FROM at" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case585" value="CREATE TABLE t4 (s1 CHAR(50) CHARACTER SET latin1, s2 CHAR(50) CHARACTER SET cp932, d DECIMAL(10,2))| CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case586" value="CREATE TABLE t5 ( f1 INT, f2 INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(f1,f2) ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case587" value="CREATE TABLE t6 ( a INT, b INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(a,b) SUBPARTITION BY KEY(a,b) SUBPARTITIONS 2 ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL"/>
@@ -721,7 +713,6 @@
     <sql-case id="create_by_mysql_source_test_case1053" value="create procedure bug6600() unlock table t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1055" value="create procedure bug7047() alter procedure bug7047" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1058" value="create procedure bug7743 ( searchstring char(28) ) begin declare var mediumint(8) unsigned; select a into var from t4 where b = 2 and c = binary searchstring limit 1; show warnings; select var; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1061" value="create procedure bug8116(in _userid int) select * from t3 where userid = _userid" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1066" value="create procedure bug8850() begin truncate table t1; insert t1 values (1); rollback; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1069" value="create procedure bug9367() begin declare v int; declare c cursor for select s1 from t1; open c; show warnings; fetch c into v; select v; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1081" value="create procedure foo() create function bar() returns double return 2.3" db-types="MySQL"/>
@@ -814,7 +805,6 @@
     <sql-case id="create_by_mysql_source_test_case1234" value="create table `#mysql50#abc``def` ( id int )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1235" value="create table `` (a int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1236" value="create table ```a` (i int)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1237" value="create table `about:text` ( _id int not null auto_increment, `about:text` varchar(255) not null default &apos;&apos;, primary key (_id) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1238" value="create table `t1a``b` (col1 char(2))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1239" value="create table `t``1`(a int) engine=myisam" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1240" value="create table `t``1`(a int) engine=myisam" db-types="MySQL"/>
@@ -1083,7 +1073,6 @@
     <sql-case id="select_by_mysql_source_test_case79" value="SELECT * FROM t1 LEFT JOIN ( t3, LATERAL ( SELECT * FROM t2 WHERE table_id = t3.id ) l1 ) ON TRUE" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case80" value="SELECT * FROM t1 LEFT JOIN t2 IGNORE INDEX(PRIMARY) ON t2.a = &apos;test1&apos; AND t2.b = &apos;20161213&apos; WHERE t1.a = &apos;test1&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case81" value="SELECT * FROM t1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case82" value="SELECT * FROM t1 WHERE a = NAME_CONST(&apos;reportDate&apos;, _binary&apos;2009-01-09&apos; COLLATE &apos;binary&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case83" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case84" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case85" value="SELECT * FROM t1, LATERAL ( SELECT MAX(1) FROM t2 GROUP BY t1.f1 ) AS l1" db-types="MySQL"/>
@@ -1244,8 +1233,6 @@
     <sql-case id="select_by_mysql_source_test_case240" value="SELECT CRC32(INSERT(&apos;foodyear&apos;, 1, 4, &apos;good&apos;))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case241" value="SELECT CURRENT_TIME(6) RLIKE &apos;^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case242" value="SELECT CURRENT_TIMESTAMP(6) RLIKE &apos;^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case243" value="SELECT DATEDIFF((_binary &apos;12012-05-19 09:06:07&apos; | _binary &apos;12012-05-19 09:06:07&apos;), &apos;2012-05-21 09:06:07&apos;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case244" value="SELECT DATEDIFF((_binary &apos;2012-05-19 09:06:07&apos; | _binary &apos;2012-05-19 09:06:07&apos;), &apos;2012-05-21 09:06:07&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case245" value="SELECT DEFAULT(c) from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case246" value="SELECT DEFAULT(d) from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case247" value="SELECT DISTINCT GROUPING(i), GROUPING(j) FROM t1 GROUP BY i,j WITH ROLLUP" db-types="MySQL"/>
@@ -1268,9 +1255,6 @@
     <sql-case id="select_by_mysql_source_test_case264" value="SELECT GROUPING(table2.col_time) AS field1 FROM t1 AS table1,t1 as table2 WHERE table2.pk = 1 GROUP BY table2.col_time WITH ROLLUP ORDER BY GROUPING(table2.col_time)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case265" value="SELECT HEX(LPAD(&apos;&apos;, 42, TRIM(BOTH c1 FROM x&apos;ff&apos;))) FROM t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case266" value="SELECT HEX(LPAD(&apos;&apos;, 42, TRIM(x&apos;ffff&apos; FROM c1))) FROM t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case267" value="SELECT HEX(_bin &amp; _bin), HEX(_bin &amp; _vbn), HEX(_vbn &amp; _bin), HEX(_vbn &amp; _vbn) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case268" value="SELECT HEX(_bin ^ _bin), HEX(_bin ^ _vbn), HEX(_vbn ^ _bin), HEX(_vbn ^ _vbn) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case269" value="SELECT HEX(_bin | _bin), HEX(_bin | _vbn), HEX(_vbn | _bin), HEX(_vbn | _vbn) FROM at" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case270" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case271" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | NULL))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case272" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x40 | 0x40))" db-types="MySQL"/>
@@ -1365,8 +1349,6 @@
     <sql-case id="select_by_mysql_source_test_case361" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t) AS result" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case362" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case363" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case364" value="SELECT SUBTIME((_binary &apos;12007-12-31 23:59:59.999999&apos; | _binary &apos;12007-12-31 23:59:59.999999&apos;),&apos;1 1:1:1.000002&apos;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case365" value="SELECT SUBTIME((_binary &apos;2012-05-19 09:06:07&apos; | _binary &apos;2012-05-19 09:06:07&apos;),&apos;1 1:1:1.000002&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case366" value="SELECT SUBTIME(UTC_DATE, &apos;04:44:03.014042&apos;) FROM dual" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case367" value="SELECT SUBTIME(col_timestamp_3_not_null_key , SYSDATE()) AS c1 FROM t1 WHERE col_timestamp_1_not_null_key NOT IN (col_datetime_4_key , GREATEST(DATE(&apos;2006-04-26&apos;), UTC_DATE())) ORDER BY col_datetime_6 , col_time_2_not_null_key , col_time_5_not_null_key" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case368" value="SELECT SUM(1) OVER w FROM (SELECT * FROM t1,t2 WHERE t1.id=t2.user_id) t SELECT  SUM(id) OVER (PARTITION BY sex ORDER BY id ROWS UNBOUNDED PRECEDING) summ, sex FROM t1" db-types="MySQL"/>
@@ -1414,217 +1396,6 @@
     <sql-case id="select_by_mysql_source_test_case410" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case411" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count, LAST_VALUE(b) OVER w lastval FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case412" value="SELECT VARIANCE(b) over w `var`, FIRST_VALUE(b) over w fv, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 FOLLOWING AND 2 FOLLOWING)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case413" value="SELECT _bin &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case414" value="SELECT _bin &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case415" value="SELECT _bin ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case416" value="SELECT _bin ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case417" value="SELECT _bin | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case418" value="SELECT _bin | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case419" value="SELECT _binary &apos;1&apos; + 0" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case420" value="SELECT _binary &apos;12&apos; &lt;&lt; 1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case421" value="SELECT _binary &apos;12&apos; | &apos;12&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case422" value="SELECT _binary &apos;12&apos; | 0x0001" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case423" value="SELECT _binary &apos;12&apos; | 1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case424" value="SELECT _binary &apos;12&apos; | _binary &apos;12&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case425" value="SELECT _bis &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case426" value="SELECT _bis &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case427" value="SELECT _bis ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case428" value="SELECT _bis ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case429" value="SELECT _bis | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case430" value="SELECT _bis | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case431" value="SELECT _bit &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case432" value="SELECT _bit &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case433" value="SELECT _bit ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case434" value="SELECT _bit ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case435" value="SELECT _bit | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case436" value="SELECT _bit | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case437" value="SELECT _biu &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case438" value="SELECT _biu &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case439" value="SELECT _biu ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case440" value="SELECT _biu ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case441" value="SELECT _biu | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case442" value="SELECT _biu | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case443" value="SELECT _blb &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case444" value="SELECT _blb ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case445" value="SELECT _blb | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case446" value="SELECT _boo &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case447" value="SELECT _boo &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case448" value="SELECT _boo ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case449" value="SELECT _boo ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case450" value="SELECT _boo | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case451" value="SELECT _boo | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case452" value="SELECT _chr &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case453" value="SELECT _chr &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case454" value="SELECT _chr ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case455" value="SELECT _chr ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case456" value="SELECT _chr | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case457" value="SELECT _chr | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case458" value="SELECT _dat &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case459" value="SELECT _dat &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case460" value="SELECT _dat ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case461" value="SELECT _dat ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case462" value="SELECT _dat | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case463" value="SELECT _dat | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case464" value="SELECT _dec &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case465" value="SELECT _dec &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case466" value="SELECT _dec ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case467" value="SELECT _dec ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case468" value="SELECT _dec | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case469" value="SELECT _dec | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case470" value="SELECT _dou &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case471" value="SELECT _dou &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case472" value="SELECT _dou ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case473" value="SELECT _dou ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case474" value="SELECT _dou | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case475" value="SELECT _dou | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case476" value="SELECT _dtt &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case477" value="SELECT _dtt &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case478" value="SELECT _dtt ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case479" value="SELECT _dtt ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case480" value="SELECT _dtt | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case481" value="SELECT _dtt | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case482" value="SELECT _enu &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case483" value="SELECT _enu &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case484" value="SELECT _enu ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case485" value="SELECT _enu ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case486" value="SELECT _enu | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case487" value="SELECT _enu | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case488" value="SELECT _flo &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case489" value="SELECT _flo &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case490" value="SELECT _flo ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case491" value="SELECT _flo ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case492" value="SELECT _flo | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case493" value="SELECT _flo | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case494" value="SELECT _id FROM t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case495" value="SELECT _id FROM t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case496" value="SELECT _id FROM t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case497" value="SELECT _id FROM t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case498" value="SELECT _ins &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case499" value="SELECT _ins &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case500" value="SELECT _ins ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case501" value="SELECT _ins ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case502" value="SELECT _ins | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case503" value="SELECT _ins | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case504" value="SELECT _inu &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case505" value="SELECT _inu &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case506" value="SELECT _inu ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case507" value="SELECT _inu ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case508" value="SELECT _inu | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case509" value="SELECT _inu | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case510" value="SELECT _jsn &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case511" value="SELECT _jsn &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case512" value="SELECT _jsn ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case513" value="SELECT _jsn ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case514" value="SELECT _jsn | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case515" value="SELECT _jsn | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case516" value="SELECT _lbb &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case517" value="SELECT _lbb ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case518" value="SELECT _lbb | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case519" value="SELECT _ltx &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case520" value="SELECT _ltx &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case521" value="SELECT _ltx ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case522" value="SELECT _ltx ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case523" value="SELECT _ltx | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case524" value="SELECT _ltx | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case525" value="SELECT _mbb &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case526" value="SELECT _mbb ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case527" value="SELECT _mbb | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case528" value="SELECT _mes &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case529" value="SELECT _mes &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case530" value="SELECT _mes ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case531" value="SELECT _mes ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case532" value="SELECT _mes | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case533" value="SELECT _mes | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case534" value="SELECT _meu &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case535" value="SELECT _meu &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case536" value="SELECT _meu ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case537" value="SELECT _meu ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case538" value="SELECT _meu | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case539" value="SELECT _meu | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case540" value="SELECT _mtx &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case541" value="SELECT _mtx &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case542" value="SELECT _mtx ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case543" value="SELECT _mtx ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case544" value="SELECT _mtx | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case545" value="SELECT _mtx | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case546" value="SELECT _pnt &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case547" value="SELECT _pnt &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case548" value="SELECT _pnt ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case549" value="SELECT _pnt ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case550" value="SELECT _pnt | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case551" value="SELECT _pnt | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case552" value="SELECT _set &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case553" value="SELECT _set &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case554" value="SELECT _set ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case555" value="SELECT _set ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case556" value="SELECT _set | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case557" value="SELECT _set | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case558" value="SELECT _smp &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case559" value="SELECT _smp &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case560" value="SELECT _smp ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case561" value="SELECT _smp ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case562" value="SELECT _smp | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case563" value="SELECT _smp | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case564" value="SELECT _sms &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case565" value="SELECT _sms &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case566" value="SELECT _sms ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case567" value="SELECT _sms ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case568" value="SELECT _sms | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case569" value="SELECT _sms | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case570" value="SELECT _smu &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case571" value="SELECT _smu &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case572" value="SELECT _smu ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case573" value="SELECT _smu ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case574" value="SELECT _smu | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case575" value="SELECT _smu | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case576" value="SELECT _tbl &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case577" value="SELECT _tbl &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case578" value="SELECT _tbl ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case579" value="SELECT _tbl ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case580" value="SELECT _tbl | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case581" value="SELECT _tbl | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case582" value="SELECT _tim &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case583" value="SELECT _tim &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case584" value="SELECT _tim ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case585" value="SELECT _tim ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case586" value="SELECT _tim | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case587" value="SELECT _tim | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case588" value="SELECT _tin &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case589" value="SELECT _tin &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case590" value="SELECT _tin ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case591" value="SELECT _tin ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case592" value="SELECT _tin | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case593" value="SELECT _tin | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case594" value="SELECT _ttx &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case595" value="SELECT _ttx &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case596" value="SELECT _ttx ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case597" value="SELECT _ttx ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case598" value="SELECT _ttx | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case599" value="SELECT _ttx | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case600" value="SELECT _txt &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case601" value="SELECT _txt &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case602" value="SELECT _txt ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case603" value="SELECT _txt ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case604" value="SELECT _txt | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case605" value="SELECT _txt | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case606" value="SELECT _vbn &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case607" value="SELECT _vbn &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case608" value="SELECT _vbn ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case609" value="SELECT _vbn ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case610" value="SELECT _vbn | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case611" value="SELECT _vbn | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case612" value="SELECT _vch &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case613" value="SELECT _vch &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case614" value="SELECT _vch ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case615" value="SELECT _vch ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case616" value="SELECT _vch | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case617" value="SELECT _vch | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case618" value="SELECT _yea &amp; 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case619" value="SELECT _yea &amp; x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case620" value="SELECT _yea ^ 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case621" value="SELECT _yea ^ x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case622" value="SELECT _yea | 2147483647 FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case623" value="SELECT _yea | x&apos;cafebabe&apos; FROM at" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case624" value="SELECT `B30896461`.`testFn`()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case625" value="SELECT `B30896461`.`testFn`()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case626" value="SELECT `B30896461`.`testfn`()" db-types="MySQL"/>
@@ -1669,7 +1440,6 @@
     <sql-case id="select_by_mysql_source_test_case665" value="SELECT attrs.* FROM t_json, JSON_TABLE(json_col, &apos;$[*]&apos; COLUMNS (nickname JSON PATH &apos;$.nickname&apos;)) as attrs" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case666" value="SELECT b, b IN (&apos;20161213&apos;), b in (&apos;20161213&apos;, 0) FROM t2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case667" value="SELECT b, b in (&apos;121314&apos;), b in (&apos;121314&apos;, 0) FROM t3" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case668" value="SELECT bin_to_uuid(_bin), bin_to_uuid(_vbn), bin_to_uuid(_tbl), bin_to_uuid(_ttx), bin_to_uuid(_blb) FROM at" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case669" value="SELECT bin_to_uuid(x&apos;&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case670" value="SELECT bin_to_uuid(x&apos;&apos;, true)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case671" value="SELECT bug18589_f1(REPEAT(&quot;a&quot;, 767))" db-types="MySQL"/>
@@ -1705,24 +1475,6 @@
     <sql-case id="select_by_mysql_source_test_case701" value="SELECT db_name.very_long_fn_name_111111111111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222999999999999999999999()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case702" value="SELECT derived0.cnct AS subq FROM t1 LEFT JOIN LATERAL (WITH RECURSIVE dt AS (SELECT t1.a AS a UNION SELECT (dt.a + 1) FROM dt WHERE dt.a &lt; 10) SELECT t1.a * CONCAT(COUNT(0), &apos;.&apos;, FLOOR(AVG(dt.a))) AS cnct FROM dt) derived0 ON TRUE" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case703" value="SELECT g.calc_var, g.if_var, g.case_var FROM ( SELECT unq_id, IF ( var_fld  &gt; 5000, (     1 / var_fld ) , 5000 ) calc_var, IF ( var_fld  &gt; 5000, ( 00001 / var_fld ) , 5000 ) if_var, CASE  var_fld  &gt; 5000 WHEN TRUE THEN ( 1 / var_fld ) ELSE 5000 END case_var FROM test_grids_1 ) g JOIN test_grid_dtl_1 d USING (unq_id) ORDER BY 1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case704" value="SELECT hex(_bin &amp; x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case705" value="SELECT hex(_bin ^ x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case706" value="SELECT hex(_bin | x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case707" value="SELECT hex(_blb &amp; x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case708" value="SELECT hex(_blb ^ x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case709" value="SELECT hex(_blb | x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case710" value="SELECT hex(_lbb &amp; x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case711" value="SELECT hex(_lbb ^ x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case712" value="SELECT hex(_lbb | x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case713" value="SELECT hex(_mbb &amp; x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case714" value="SELECT hex(_mbb ^ x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case715" value="SELECT hex(_mbb | x&apos;cafebabe&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case716" value="SELECT hex(_tbl &amp; x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case717" value="SELECT hex(_tbl ^ x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case718" value="SELECT hex(_tbl | x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case719" value="SELECT hex(_vbn &amp; x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case720" value="SELECT hex(_vbn ^ x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case721" value="SELECT hex(_vbn | x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;) FROM at" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case722" value="SELECT i FROM t1 WHERE EXISTS (SELECT i, j, SUM(k) FROM t1 AS t2 WHERE t1.i=t2.i GROUP BY i,j WITH ROLLUP HAVING SUM(k) &gt; 40 ORDER BY GROUPING(i),i, GROUPING(j),j)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case723" value="SELECT i, &apos;sum&apos; FROM (SELECT i, SUM(j) AS &apos;sum&apos; FROM t1 GROUP BY i WITH ROLLUP ORDER BY GROUPING(i),i) AS tmp WHERE i is NULL" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case724" value="SELECT i, GROUPING(i+j), AVG(k) from t1 GROUP BY i,i+j WITH ROLLUP HAVING AVG(k) + 20 &lt; 35 ORDER BY i" db-types="MySQL"/>
@@ -1916,8 +1668,6 @@
     <sql-case id="select_by_mysql_source_test_case918" value="select _latin1&apos;B&apos; in (_latin2&apos;a&apos;,_latin1&apos;b&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case919" value="select _latin2&apos;B&apos; between _latin1&apos;a&apos; and _latin1&apos;b&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case920" value="select _latin2&apos;B&apos; in (_latin1&apos;a&apos;,_latin1&apos;b&apos;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case921" value="select _rowid,t1._rowid,skey,sval from t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case922" value="select _rowid,t1._rowid,skey,sval from t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case923" value="select a, not(not(a)) from t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case924" value="select a.id, b.category as catid, b.state as stateid, b.county as countyid from t1 a, t2 b ignore index (primary) where (a.token =&apos;a71250b7ed780f6ef3185bfffe027983&apos;) and (a.count = b.id)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case925" value="select abs(3 &quot;three&quot;)" db-types="MySQL"/>
@@ -2150,7 +1900,6 @@
     <sql-case id="insert_by_mysql_source_test_case9" value="INSERT INTO `t``\&quot;&quot;e` VALUES (0), (2), (6), (10), (14), (18), (22)" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case10" value="INSERT INTO aes_ecb (a) VALUES (&apos;a&apos;), (&apos;Жоро&apos;), (REPEAT(&apos;a&apos;, 10))" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case11" value="INSERT INTO all_types VALUES ( NULL,     # BOOLEAN NULL,     # BIT NULL,     # TINYINT NULL,     # SMALLINT NULL,     # MEDIUMINT NULL,     # INTEGER NULL,     # BIGINT NULL,     # TINYINT_UNSIGNED NULL,     # SMALLINT_UNSIGNED NULL,     # MEDIUMINT_UNSIGNED NULL,     # INTEGER_UNSIGNED NULL,     # BIGINT_UNSIGNED NULL,     # FLOAT NULL,     # DOUBLE NULL,     # DECIMAL(65, 2) NULL,     # DATE NULL,     # TIME NULL,     # YEAR NULL,     # DATETIME NULL,     # TIMESTAMP NULL,     # CHAR NULL,     # VARCHAR NULL,     # TINYTEXT NULL,     # TEXT NULL,     # MEDIUMTEXT NULL,     # LONGTEXT NULL,     # BINARY NULL,     # VARBINARY NULL,     # TINYBLOB NULL,     # BLOB NULL,     # MEDIUMBLOB NULL,     # LONGBLOB NULL,     # ENUM NULL);    # SET INSERT INTO all_types VALUES ( FALSE,                                                               # BOOLEAN b&apos;0000000000000000000000000000000000000000000000000000000000000000&apos;, # BIT -128,                                                                # TINYINT -32768,                                                              # SMALLINT -8388608,                                                            # MEDIUMINT -2147483648,                                                         # INTEGER -9223372036854775808,                                                # BIGINT 0,                                                                   # TINYINT_UNSIGNED 0,                                                                   # SMALLINT_UNSIGNED 0,                                                                   # MEDIUMINT_UNSIGNED 0,                                                                   # INTEGER_UNSIGNED 0,                                                                   # BIGINT_UNSIGNED -3.402823466E+38,                                                    # FLOAT -1.7976931348623157E+308,                                            # DOUBLE -999999999999999999999999999999999999999999999999999999999999999.99, # DECIMAL(65, 2) &apos;1000-01-01&apos;,                                                        # DATE &apos;-838:59:59.000000&apos;,                                                 # TIME 1901,                                                                # YEAR &apos;1000-01-01 00:00:00&apos;,                                               # DATETIME &apos;1970-01-02 00:00:01&apos;,                                               # TIMESTAMP &apos;&apos;,                                                                  # CHAR &apos;&apos;,                                                                  # VARCHAR &apos;&apos;,                                                                  # TINYTEXT &apos;&apos;,                                                                  # TEXT &apos;&apos;,                                                                  # MEDIUMTEXT &apos;&apos;,                                                                  # LONGTEXT &apos;&apos;,                                                                  # BINARY &apos;&apos;,                                                                  # VARBINARY &apos;&apos;,                                                                  # TINYBLOB &apos;&apos;,                                                                  # BLOB &apos;&apos;,                                                                  # MEDIUMBLOB &apos;&apos;,                                                                  # LONGBLOB &apos;red&apos;,                                                               # ENUM &apos;&apos;);                                                                 # SET INSERT INTO all_types VALUES ( TRUE,                                                                # BOOLEAN b&apos;1111111111111111111111111111111111111111111111111111111111111111&apos;, # BIT 127,                                                                 # TINYINT 32767,                                                               # SMALLINT 8388607,                                                             # MEDIUMINT 2147483647,                                                          # INTEGER 9223372036854775807,                                                 # BIGINT 255,                                                                 # TINYINT_UNSIGNED 65535,                                                               # SMALLINT_UNSIGNED 16777215,                                                            # MEDIUMINT_UNSIGNED 4294967295,                                                          # INTEGER_UNSIGNED 18446744073709551615,                                                # BIGINT_UNSIGNED 3.402823466E+38,                                                     # FLOAT 1.7976931348623157E+308,                                             # DOUBLE 999999999999999999999999999999999999999999999999999999999999999.99,  # DECIMAL(65, 2) &apos;9999-12-31&apos;,                                                        # DATE &apos;838:59:59.000000&apos;,                                                  # TIME 2155,                                                                # YEAR &apos;9999-12-31 23:59:59&apos;,                                               # DATETIME &apos;2038-01-19 03:14:07&apos;,                                               # TIMESTAMP &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # CHAR &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # VARCHAR &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # TINYTEXT &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # TEXT &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # MEDIUMTEXT &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # LONGTEXT &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # BINARY &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # VARBINARY &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # TINYBLOB &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # BLOB &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # MEDIUMBLOB &apos;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&apos;,                     # LONGBLOB &apos;purple&apos;,                                                            # ENUM &apos;three&apos;);                                                            # SET SELECT COUNT(*) AS should_be_0 FROM information_schema.COLUMN_STATISTICS" db-types="MySQL"/>
-    <sql-case id="insert_by_mysql_source_test_case12" value="INSERT INTO at ( _bit, _tin, _boo, _sms, _smu, _mes, _meu, _ins, _inu, _bis, _biu, _dec, _flo, _dou, _yea, _jsn, _chr, _vch, _bin, _vbn, _tbl, _ttx, _blb, _txt, _mbb, _mtx, _lbb, _ltx, _pnt, _enu, _set ) VALUES ( 64, 64, true, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 2005, cast(&apos;{&quot;a&quot;: 3}&apos; as json), &quot;abcdefghijkl&quot;, &quot;abcdefghijkl&quot;, x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFEBABE11111111&apos;, x&apos;CAFEBABE00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111CAFEBABE&apos;, x&apos;CAFEBABE000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000CAFE1111CAFE1111&apos;, &quot;abcdefg&quot;, x&apos;cafebabe&apos;, &quot;abcdefg&quot;, x&apos;cafebabe&apos;, &quot;abcdefg&quot;, x&apos;cafebabe&apos;, &quot;abcdefg&quot;, st_geomfromtext(&apos;point(1 1)&apos;), 1, 1 )" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case13" value="INSERT INTO dd_check_table(t) SELECT CONCAT(id, &apos;-&apos;, name, &apos;-&apos;, IFNULL(options, &apos;NULL&apos;), &apos;-&apos;, IFNULL(INSERT(se_private_data, INSTR(se_private_data, &apos;server_version&apos;), 20, &apos;server_version=x&apos;), &apos;NULL&apos;), &apos;-&apos;, comment, &apos;-&apos;, engine) FROM mysql.tablespaces WHERE name = &apos;mysql&apos;" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case14" value="INSERT INTO t (c) VALUES (REPEAT(&apos;1&apos;,65537))" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case15" value="INSERT INTO t (c) VALUES (REPEAT(&apos;2&apos;,65536))" db-types="MySQL"/>
@@ -2291,7 +2040,6 @@
     <sql-case id="insert_by_mysql_source_test_case151" value="INSERT INTO t3 VALUES( REPEAT( &apos;a&apos;, 65535 ), 2 )" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case152" value="INSERT INTO t4 SELECT c31, CONCAT(c32, REPEAT(&apos;a&apos;, @max_allowed_packet-1)) FROM t3" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case153" value="INSERT INTO test.proc VALUES (&apos;sp&apos;,&apos;bug24805140&apos;,&apos;PROCEDURE&apos;,&apos;bug24805140&apos;,&apos;SQL&apos;, &apos;CONTAINS_SQL&apos;,&apos;NO&apos;,&apos;DEFINER&apos;,&apos;out a int&apos;,&apos;&apos;, &apos;begin select requesting_trx_id from &apos; &apos;information_schema.INNODB_LOCK_WAITS limit 1 into a; end&apos;, &apos;root@localhost&apos;,&apos;2016-10-05 21:44:21&apos;, &apos;2016-10-05 21:44:21&apos;, &apos;ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,&apos; &apos;NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,&apos; &apos;NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&apos;, &apos;&apos;,&apos;utf8&apos;,&apos;utf8_general_ci&apos;,&apos;latin1_swedish_ci&apos;, &apos;begin select requesting_trx_id from &apos; &apos;information_schema.INNODB_LOCK_WAITS limit 1 into a; end&apos;), (&apos;sp&apos;,&apos;proc2&apos;,&apos;PROCEDURE&apos;,&apos;proc2&apos;,&apos;SQL&apos;, &apos;CONTAINS_SQL&apos;,&apos;NO&apos;,&apos;DEFINER&apos;,&apos;out b int&apos;,&apos;&apos;, &apos;begin select   @@show_compatibility_56 into b; end&apos;, &apos;root@localhost&apos;,&apos;2016-10-05 21:55:05&apos;, &apos;2016-10-05 21:55:05&apos;,&apos;ONLY_FULL_GROUP_BY,&apos; &apos;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,&apos; &apos;NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,&apos; &apos;NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&apos;,&apos;&apos;, &apos;utf8&apos;,&apos;utf8_general_ci&apos;,&apos;latin1_swedish_ci&apos;, &apos;begin select   @@show_compatibility_56 into b; end&apos;)" db-types="MySQL"/>
-    <sql-case id="insert_by_mysql_source_test_case154" value="INSERT into at(_bin,_blb) VALUES(&apos;c8eb4b15cb0948bb&apos;,&apos;c8eb4b15cb0948bb&apos;)" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case155" value="insert ignore t1 values (1, repeat(&apos;a&apos;,210), repeat(&apos;b&apos;, 310))" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case156" value="insert ignore t1 values (2, repeat(0xD0B1,215), repeat(0xD0B1, 310))" db-types="MySQL"/>
     <sql-case id="insert_by_mysql_source_test_case157" value="insert into  (select * from t1) values (5)" db-types="MySQL"/>
@@ -2348,8 +2096,6 @@
     <sql-case id="update_by_mysql_source_test_case22" value="update t1 set b=repeat(left(b,1),255) where a between 1 and 5" db-types="MySQL"/>
     <sql-case id="update_by_mysql_source_test_case23" value="update t1 set b=repeat(left(b,1),65) where a between 67 and 70" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case1" value="DELETE /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ FROM t1 WHERE f1 = TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case2" value="DELETE FROM t1 WHERE _id &lt; 8" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case3" value="DELETE FROM t1 WHERE _id &lt; 8" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case4" value="DELETE FROM t1 WHERE c12 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case5" value="DELETE FROM t1 WHERE c12 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case6" value="DELETE FROM t1, t2 USING t1 INNER JOIN t2 WHERE t1.c11 = t2.c21 AND t2.c22 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL"/>
@@ -2357,8 +2103,6 @@
     <sql-case id="delete_by_mysql_source_test_case8" value="DELETE t1 PARTITION (pNeg), t3 FROM t1, t3 FLUSH STATUS" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case9" value="delete from (select * from t1)" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case10" value="delete from (select * from t1) as t1, t1 as t2" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case11" value="delete from mysql.user where user=_binary&apos;mysqltest_1&apos;" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case12" value="delete from mysql.user where user=_binary&apos;mysqltest_1&apos;" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case1" value="(VALUES ROW(1)) ORDER BY &apos;1&apos;" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case2" value="(VALUES ROW(1)) ORDER BY &apos;1&apos; DESC" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case3" value="(VALUES ROW(1)) ORDER BY (SELECT 1)" db-types="MySQL"/>
@@ -5790,15 +5534,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case7" value="DROP AGGREGATE IF EXISTS foo(no_such_schema.no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case8" value="DROP AGGREGATE IF EXISTS foo(no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case9" value="DROP AGGREGATE IF EXISTS no_such_schema.foo(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case10" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case11" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case12" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case13" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case14" value="DROP AGGREGATE test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case15" value="DROP AGGREGATE test_aggregate_exists(int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case16" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case17" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case18" value="DROP CAST (text AS text);" db-types="PostgreSQL"/>
@@ -5814,14 +5549,6 @@
     <sql-case id="drop_by_postgresql_source_test_case28" value="DROP COLLATION test0 RESTRICT;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case29" value="DROP COLLATION test0, test_schema.test11, test5;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case30" value="DROP COLLATION test0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case31" value="DROP EVENT TRIGGER end_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case32" value="DROP EVENT TRIGGER has_volatile_rewrite;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case33" value="DROP EVENT TRIGGER regress_event_trigger_drop_objects;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case34" value="DROP EVENT TRIGGER regress_event_trigger_report_dropped;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case35" value="DROP EVENT TRIGGER regress_event_trigger_report_end;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case36" value="DROP EVENT TRIGGER sql_drop_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case37" value="DROP EVENT TRIGGER start_rls_command;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case38" value="DROP EVENT TRIGGER undroppable;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
@@ -5844,34 +5571,6 @@
     <sql-case id="drop_by_postgresql_source_test_case60" value="DROP FOREIGN DATA WRAPPER postgresql CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case61" value="DROP FOREIGN DATA WRAPPER test_fdw;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case62" value="DROP FOREIGN DATA WRAPPER test_fdw_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case63" value="DROP FOREIGN TABLE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case64" value="DROP FOREIGN TABLE IF EXISTS no_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case65" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case66" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case67" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case68" value="DROP FOREIGN TABLE foreign_part;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case69" value="DROP FOREIGN TABLE foreign_schema.foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case70" value="DROP FOREIGN TABLE ft1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case71" value="DROP FOREIGN TABLE ft2 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case72" value="DROP FOREIGN TABLE ft2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case73" value="DROP FOREIGN TABLE ft2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case74" value="DROP FOREIGN TABLE ft_part1, ft_part2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case75" value="DROP FOREIGN TABLE ft_part2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case76" value="DROP FOREIGN TABLE ft_part_1_1, ft_part_1_2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case77" value="DROP FOREIGN TABLE ft_part_1_2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case78" value="DROP FOREIGN TABLE no_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case79" value="DROP GROUP IF EXISTS regress_test_g1, regress_test_g2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case80" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case81" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case82" value="DROP GROUP regress_test_g1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case83" value="DROP GROUP regress_test_g2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case84" value="DROP MATERIALIZED VIEW IF EXISTS no_such_mv;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case85" value="DROP MATERIALIZED VIEW IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case86" value="DROP MATERIALIZED VIEW concur_reindex_matview;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case87" value="DROP MATERIALIZED VIEW mv_unspecified_types;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case88" value="DROP MATERIALIZED VIEW mvtest_mv1 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case89" value="DROP MATERIALIZED VIEW ptif_test_matview;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case90" value="DROP MATERIALIZED VIEW tid_matview;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case102" value="DROP OPERATOR CLASS IF EXISTS no_such_schema.widget_ops USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case103" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case104" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
@@ -8538,7 +8237,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case51" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE DATABASE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case52" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE ROLE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case53" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;CREATE TABLESPACE&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
-    <sql-case id="low_create_by_postgresql_source_test_case54" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;DROP EVENT TRIGGER&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case55" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;) and tag in (&apos;CREATE FUNCTION&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case56" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;, &apos;CREATE FUNCTION&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case57" value="create event trigger regress_event_trigger2 on ddl_command_start    when tag in (&apos;create table&apos;, &apos;create skunkcabbage&apos;)    execute procedure test_event_trigger();" db-types="PostgreSQL"/>
@@ -9078,25 +8776,11 @@
     <sql-case id="low_do_by_postgresql_source_test_case29" value="do $$ declare x text[]; begin x := &apos;{1.23, 4.56}&apos;::numeric[]; end $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case30" value="do $$ declare y int := x + 1;          x int := 42; begin   raise notice &apos;x = %, y = %&apos;, x, y; end; $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case31" value="do $outer$ begin   for i in 1..10 loop    begin     execute $ex$       do $$       declare x int = 0;       begin         x := 1 / x;       end;       $$;     $ex$;   exception when division_by_zero then     raise notice &apos;caught division by zero&apos;;   end;   end loop; end; $outer$;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case1" value="drop aggregate 314159 (int);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case2" value="drop aggregate newcnt (float4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case3" value="drop aggregate newcnt (nonesuch);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case4" value="drop aggregate newcnt1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case5" value="drop aggregate nonesuch (int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case6" value="drop aggregate;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case7" value="drop event trigger if exists regress_event_trigger2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case8" value="drop event trigger if exists regress_event_trigger2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case9" value="drop event trigger no_rewrite_allowed;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case10" value="drop event trigger regress_event_trigger3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case11" value="drop event trigger regress_event_trigger;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case12" value="drop event trigger regress_event_trigger_end;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case13" value="drop function ();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case14" value="drop function 314159();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case17" value="drop index;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case18" value="drop instance rule nonesuch on noplace;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case19" value="drop materialized view mvtest_error;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case20" value="drop materialized view parallel_mat_view;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case32" value="drop operator class custom_opclass using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case33" value="drop operator class part_test_int4_ops2 using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>

@@ -77,7 +77,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isLogicSchemaChanged(final DataChangedEvent event) {
-        return SchemaMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).isPresent();
+        return SchemaMetaDataNode.getDatabaseNameBySchemaPath(event.getKey()).isPresent();
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
@@ -85,12 +85,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {
-        String schemaName = SchemaMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).get();
+        String databaseName = SchemaMetaDataNode.getDatabaseNameBySchemaPath(event.getKey()).get();
         if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
-            return Optional.of(new SchemaAddedEvent(schemaName));
+            return Optional.of(new SchemaAddedEvent(databaseName));
         }
         if (DataChangedEvent.Type.DELETED == event.getType()) {
-            return Optional.of(new SchemaDeletedEvent(schemaName));
+            return Optional.of(new SchemaDeletedEvent(databaseName));
         }
         return Optional.empty();
     }

@@ -58,7 +58,12 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

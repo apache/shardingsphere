@@ -4237,4 +4237,21 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_underscore_charset" >
+        <projections start-index="7" stop-index="14">
+            <column-projection name="_code" start-index="7" stop-index="11"/>
+            <column-projection name="_a" start-index="13" stop-index="14"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_character_charset">
+        <projections start-index="7" stop-index="24">
+    <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+            <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

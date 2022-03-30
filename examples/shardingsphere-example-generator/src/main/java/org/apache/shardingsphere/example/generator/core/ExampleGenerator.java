@@ -19,9 +19,9 @@ package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Example generator.
@@ -36,11 +36,11 @@ public interface ExampleGenerator {
      * Generate file.
      * 
      * @param templateConfig template configuration
-     * @param dataModel data model
+     * @param configuration example configuration
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    void generate(Configuration templateConfig, Map<String, String> dataModel) throws IOException, TemplateException;
+    void generate(Configuration templateConfig, YamlExampleConfiguration configuration) throws IOException, TemplateException;
     
     /**
      * Get generator type.

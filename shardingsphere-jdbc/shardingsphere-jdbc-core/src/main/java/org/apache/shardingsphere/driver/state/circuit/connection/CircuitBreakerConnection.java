@@ -26,7 +26,10 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
+import java.sql.Savepoint;
 import java.sql.Statement;
 
 /**
@@ -90,6 +93,26 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public void rollback() {
+    }
+    
+    @Override
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        throw new SQLFeatureNotSupportedException("rollback savepoint");
+    }
+    
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        throw new SQLFeatureNotSupportedException("setSavepoint");
+    }
+
+    @Override
+    public Savepoint setSavepoint(final String name) throws SQLException {
+        throw new SQLFeatureNotSupportedException("setSavepoint name");
+    }
+
+    @Override
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        throw new SQLFeatureNotSupportedException("releaseSavepoint");
     }
     
     @Override
