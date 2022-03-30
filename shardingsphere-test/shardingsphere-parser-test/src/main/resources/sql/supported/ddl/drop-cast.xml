@@ -26,4 +26,3 @@
     <sql-case id="drop_cast_if_exists_case4" value="DROP CAST IF EXISTS (no_such_type1 AS INTEGER);" db-types="PostgreSQL"/>
     <sql-case id="drop_cast_if_exists_case5" value="DROP CAST IF EXISTS (text AS text);" db-types="PostgreSQL"/>
 </sql-cases>
-    
