@@ -20,26 +20,21 @@ package org.apache.shardingsphere.infra.metadata.database.loader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Database loader.
  */
 public final class DatabaseLoader {
-    
-    private static final Map<String, DialectSystemSchemaBuilder> DIALECT_SYSTEM_SCHEMA_BUILDERS
-            = SingletonSPIRegistry.getSingletonInstancesMap(DialectSystemSchemaBuilder.class, DialectSystemSchemaBuilder::getDatabaseType);
     
     /**
      * Load database.
@@ -56,24 +51,18 @@ public final class DatabaseLoader {
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.put(schemaName, SchemaLoader.load(dataSourceMap, rules, props));
-        findDialectSystemSchemaBuilder(databaseType).ifPresent(optional -> schemas.putAll(optional.build(schemaName)));
+        schemas.putAll(SystemSchemaBuilder.build(schemaName, databaseType));
         return new ShardingSphereDatabase(schemas);
     }
     
     /**
      * Load database.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param databaseType database type
      * @return loaded database
      */
-    public static ShardingSphereDatabase load(final String schemaName, final DatabaseType databaseType) {
-        Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
-        findDialectSystemSchemaBuilder(databaseType).ifPresent(optional -> schemas.putAll(optional.build(schemaName)));
-        return new ShardingSphereDatabase(schemas);
-    }
-    
-    private static Optional<DialectSystemSchemaBuilder> findDialectSystemSchemaBuilder(final DatabaseType databaseType) {
-        return Optional.ofNullable(DIALECT_SYSTEM_SCHEMA_BUILDERS.get(databaseType.getName()));
+    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType) {
+        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseName, databaseType));
     }
 }

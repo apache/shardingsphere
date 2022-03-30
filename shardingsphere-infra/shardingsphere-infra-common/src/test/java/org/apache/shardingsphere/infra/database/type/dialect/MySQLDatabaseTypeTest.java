@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
@@ -27,7 +28,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -70,11 +70,15 @@ public final class MySQLDatabaseTypeTest {
     }
     
     @Test
-    public void assertContainsSystemSchema() {
-        assertTrue(new MySQLDatabaseType().containsSystemSchema("information_schema"));
-        assertTrue(new MySQLDatabaseType().containsSystemSchema("performance_schema"));
-        assertTrue(new MySQLDatabaseType().containsSystemSchema("mysql"));
-        assertTrue(new MySQLDatabaseType().containsSystemSchema("sys"));
-        assertFalse(new MySQLDatabaseType().containsSystemSchema("sharding_db"));
+    public void assertGetSystemDatabases() {
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("information_schema"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("performance_schema"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("mysql"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("sys"));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new MySQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys")));
     }
 }

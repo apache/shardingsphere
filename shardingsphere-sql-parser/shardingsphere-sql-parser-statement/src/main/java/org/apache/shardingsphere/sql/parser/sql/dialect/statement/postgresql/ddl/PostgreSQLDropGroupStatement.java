@@ -15,40 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Connection status.
+ * PostgreSQL drop group statement.
  */
-public final class ConnectionStatus {
-    
-    private final ResourceLock resourceLock = new ResourceLock();
-    
-    private volatile boolean isUsing;
-    
-    /**
-     * Switch connection status to using.
-     */
-    public void switchToUsing() {
-        isUsing = true;
-    }
-    
-    /**
-     * Switch connection status to released.
-     */
-    public void switchToReleased() {
-        if (isUsing) {
-            isUsing = false;
-            resourceLock.doNotify();
-        }
-    }
-    
-    /**
-     * Wait until connection release.
-     */
-    public void waitUntilConnectionRelease() {
-        while (isUsing) {
-            resourceLock.doAwait();
-        }
-    }
+@ToString
+public final class PostgreSQLDropGroupStatement extends DropGroupStatement implements PostgreSQLStatement {
 }

@@ -79,11 +79,11 @@ public final class Configuration {
     
     private static final String HOST = "${host}";
     
-    private static final int PORT = ${(port)?c};
+    private static final int PORT = ${port};
     
     private static final String USER_NAME = "${username}";
     
-    private static final String PASSWORD = "${(password)?string}";
+    private static final String PASSWORD = "${password}";
     
     public DataSource createDataSource() throws SQLException {
     <#if mode=="memory">

@@ -87,6 +87,14 @@
     {{ partial "custom-header.html" . }}
   </head>
   <body class="" data-url="{{ .RelPermalink }}">
+    <header>
+      <div class="wrap">
+        {{ partial "logo.html" . }}
+        
+        {{ partial "language.html" . }}
+      </div>
+    </header>
+    <div class="wrap">
     {{ partial "menu.html" . }}
         <section id="body">
         <div id="overlay"></div>

@@ -106,7 +106,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         Map<String, ShardingSphereSchema> schemas = mockSchemas();
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, 
@@ -117,7 +117,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultSchema.LOGIC_NAME, metaData.getSchema(), props, rules);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultSchema.LOGIC_NAME, metaData.getDefaultSchema(), props, rules);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();

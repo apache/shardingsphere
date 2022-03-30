@@ -59,7 +59,9 @@ public enum SQLVisitorRule {
     ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
     
     ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
-    
+
+    DROP_FOREIGN_TABLE("DropForeignTable", SQLStatementType.DDL),
+
     ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
@@ -87,6 +89,8 @@ public enum SQLVisitorRule {
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
+    
+    DROP_GROUP("DropGroup", SQLStatementType.DDL),
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
     
@@ -436,7 +440,9 @@ public enum SQLVisitorRule {
     
     DROP_OWNED("DropOwned", SQLStatementType.DDL),
     
-    DROP_OPERATOR("DropOperator", SQLStatementType.DDL);
+    DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
+    
+    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL);
     
     private final String name;
     

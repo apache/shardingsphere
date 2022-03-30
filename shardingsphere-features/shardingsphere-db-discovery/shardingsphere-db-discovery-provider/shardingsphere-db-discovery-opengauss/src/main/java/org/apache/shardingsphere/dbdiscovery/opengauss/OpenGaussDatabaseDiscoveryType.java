@@ -106,7 +106,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
                 log.error("An exception occurred while find data source urls", ex);
             }
             ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
-                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE)));
+                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
         }
     }
     

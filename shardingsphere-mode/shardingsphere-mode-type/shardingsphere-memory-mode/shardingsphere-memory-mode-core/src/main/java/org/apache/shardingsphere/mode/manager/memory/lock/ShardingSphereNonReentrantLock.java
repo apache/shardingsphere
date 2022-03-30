@@ -46,9 +46,13 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
     }
     
     private synchronized boolean innerTryLock(final long timeout) {
+        if (locked) {
+            return false;
+        }
         try {
             if (innerLock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
                 locked = true;
+                return true;
             }
             return false;
         } catch (final InterruptedException ignored) {
@@ -57,9 +61,11 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
     }
     
     @Override
-    public void releaseLock(final String lockName) {
-        innerLock.unlock();
-        locked = false;
+    public synchronized void releaseLock(final String lockName) {
+        if (locked) {
+            innerLock.unlock();
+            locked = false;
+        }
     }
     
     @Override

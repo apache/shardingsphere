@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.schema.builder.dialect.MySQLSystemSchemaBuilder
-org.apache.shardingsphere.infra.metadata.schema.builder.dialect.PostgreSQLSystemSchemaBuilder
+org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.mybatis.fixture.ClassBasedDatasourceStandardShardingAlgorithmFixture
+org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.mybatis.fixture.ClassBasedOrderStandardShardingAlgorithmFixture
+org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.mybatis.fixture.ClassBasedOrderItemStandardShardingAlgorithmFixture
