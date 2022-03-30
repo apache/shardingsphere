@@ -41,10 +41,33 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dcheckstyle.skip=true
 
 jobs:
+  build-it-image:
+    name: build-it-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build IT image
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Save IT image
+        run: docker save apache/shardingsphere-proxy-test:latest > /tmp/shardingsphere-proxy-test.tar
+      - name: Upload IT image
+        uses: actions/upload-artifact@v3
+        with: 
+          name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
+  
   it-empty-rule:
     name: empty rule
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    needs: build-it-image
     strategy:
       matrix:
         env: [ docker ]
@@ -65,16 +88,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+      - name: Load IT image
+        run: docker load /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-single-rule:
     name: single rule
-    needs: it-empty-rule
+    needs: build-it-image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     strategy:
       matrix:
         env: [ docker ]
@@ -95,16 +122,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+      - name: Load IT image
+        run: docker load /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-mixture-rule:
     name: mixture rule
-    needs: [ it-empty-rule, it-single-rule ]
+    needs: build-it-image
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     strategy:
       matrix:
         env: [ docker ]
@@ -125,8 +156,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+      - name: Load IT image
+        run: docker load /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
