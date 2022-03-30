@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
@@ -86,7 +86,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
@@ -102,7 +102,7 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-single-rule:
     name: single rule
@@ -121,7 +121,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
@@ -137,7 +137,7 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-mixture-rule:
     name: mixture rule
@@ -156,7 +156,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
@@ -172,7 +172,7 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics
