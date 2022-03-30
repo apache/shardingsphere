@@ -139,10 +139,10 @@ public final class SchemaMetaDataNode {
      * @param schemaPath schema path
      * @return schema name
      */
-    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getDatabaseNameBySchemaPath(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
