@@ -45,7 +45,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
                         final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
-        schemaMetaData.getSchema().put(viewName, tableMetaData);
+        schemaMetaData.getDefaultSchema().put(viewName, tableMetaData);
         if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
         }

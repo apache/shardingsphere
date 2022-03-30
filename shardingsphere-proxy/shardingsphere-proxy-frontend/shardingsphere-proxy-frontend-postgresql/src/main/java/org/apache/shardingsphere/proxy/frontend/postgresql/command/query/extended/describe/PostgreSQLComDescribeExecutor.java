@@ -126,7 +126,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         String schemaName = connectionSession.getSchemaName();
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getSchema().get(logicTableName);
+        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,13 +36,16 @@ public final class SQLStatementParserEngineFactory {
      * Get SQL statement parser engine.
      *
      * @param databaseType name of database type
-     * @param sqlParserRule  sql parser rule
+     * @param sqlStatementCacheOption SQL statement cache option
+     * @param parseTreeCacheOption parse tree cache option
+     * @param isParseComment is parse comment
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final SQLParserRule sqlParserRule) {
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, 
+                                                                       final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         SQLStatementParserEngine result = ENGINES.get(databaseType);
         if (null == result) {
-            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlParserRule));
+            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption, isParseComment));
         }
         return result;
     }

@@ -119,6 +119,10 @@ execute
     | dropExtension
     | dropPolicy
     | dropOwned
+    | dropForeignTable
     | dropOperator
+    | dropMaterializedView
+    | dropGroup
+    | dropEventTrigger
     ) SEMI_?
     ;

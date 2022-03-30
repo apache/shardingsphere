@@ -45,7 +45,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                         final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
         sqlStatement.getTables().forEach(each -> {
-            schemaMetaData.getSchema().remove(each.getTableName().getIdentifier().getValue());
+            schemaMetaData.getDefaultSchema().remove(each.getTableName().getIdentifier().getValue());
             database.remove(each.getTableName().getIdentifier().getValue());
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());

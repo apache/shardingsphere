@@ -98,7 +98,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private ShardingSphereMetaData mockShardingSphereMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getSchema().getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
+        when(result.getDefaultSchema().getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     

@@ -29,12 +29,12 @@ import java.util.LinkedList;
  * SQL statement abstract class.
  */
 @Getter
-@Setter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
+    @Setter
     private int parameterCount;
     
-    private Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
-    private Collection<CommentSegment> commentSegments = new LinkedList<>();
+    private final Collection<CommentSegment> commentSegments = new LinkedList<>();
 }

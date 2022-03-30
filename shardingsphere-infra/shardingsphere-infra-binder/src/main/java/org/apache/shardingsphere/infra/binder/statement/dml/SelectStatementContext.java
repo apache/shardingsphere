@@ -102,13 +102,13 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private PaginationContext paginationContext;
     
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
-                                  final SelectStatement sqlStatement, final String defaultSchemaName) {
+                                  final SelectStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
+        subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
-        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
@@ -117,24 +117,29 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
-                                                                        final List<Object> parameters, final String defaultSchemaName) {
+                                                                        final List<Object> parameters, final String defaultDatabaseName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultSchemaName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultDatabaseName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
         return result;
     }
     
-    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
-        String schemaName = tablesContext.getDatabaseName().orElse(defaultSchemaName);
-        ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
+    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultDatabaseName) {
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+        ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
-            throw new SchemaNotExistedException(schemaName);
+            if (tablesContext.getTables().isEmpty()) {
+                return new ShardingSphereSchema();
+            } else {
+                throw new SchemaNotExistedException(databaseName);
+            }
         }
-        return metaData.getSchema();
+        String schemaName = tablesContext.getSchemaNames().stream().findFirst().orElse(databaseName);
+        return metaData.getSchemaByName(schemaName);
     }
     
     /**

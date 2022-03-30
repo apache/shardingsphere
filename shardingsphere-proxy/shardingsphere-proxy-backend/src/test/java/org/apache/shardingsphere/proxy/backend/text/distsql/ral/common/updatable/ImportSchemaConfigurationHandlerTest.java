@@ -83,7 +83,7 @@ public final class ImportSchemaConfigurationHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(schemaName));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(contextManager.getMetaDataContexts().getMetaData(schemaName)).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);

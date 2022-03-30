@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -38,6 +39,15 @@ public final class SQLParserRule implements GlobalRule {
         sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
+    }
+    
+    /**
+     * Convert to parser configuration.
+     * 
+     * @return parser configuration
+     */
+    public ParserConfiguration toParserConfiguration() {
+        return new ParserConfiguration(sqlStatementCache, parseTreeCache, sqlCommentParseEnabled);
     }
     
     @Override
