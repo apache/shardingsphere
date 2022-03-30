@@ -93,11 +93,13 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Download IT image
+        if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: it-image
           path: /tmp/
       - name: Load IT image
+        if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
@@ -126,11 +128,13 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Download IT image
+        if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: it-image
           path: /tmp/
       - name: Load IT image
+        if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
@@ -159,11 +163,13 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Download IT image
+        if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
           name: it-image
           path: /tmp/
       - name: Load IT image
+        if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
