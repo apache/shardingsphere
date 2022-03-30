@@ -4253,7 +4253,7 @@
             <simple-table name="T_RATION_INFO" alias="T" start-index="22" stop-index="36" />
         </from>
         <projections start-index="7" stop-index="15">
-            <column-projection name="USER_NO" alias="T" start-index="7" stop-index="15">
+            <column-projection name="USER_NO" start-index="7" stop-index="15">
                 <owner name="T" start-index="7" stop-index="7" />
             </column-projection>>
         </projections>
