@@ -62,7 +62,7 @@ jobs:
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Save IT image
-        run: docker save apache/shardingsphere-proxy-test:latest > /tmp/shardingsphere-proxy-test.tar
+        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload IT image
         uses: actions/upload-artifact@v3
         with: 
@@ -99,6 +99,8 @@ jobs:
         with:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
+      - name: ls
+        run: ls -hR /tmp/shardingsphere-proxy-test.tar
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
