@@ -106,7 +106,7 @@ jobs:
   
   it-single-rule:
     name: single rule
-    needs: build-it-image
+    needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -141,7 +141,7 @@ jobs:
   
   it-mixture-rule:
     name: mixture rule
-    needs: build-it-image
+    needs: [ it-empty-rule, it-single-rule ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
