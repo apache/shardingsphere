@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,43 +32,61 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("mysql.information_schema", Arrays.asList("columns", "tables", "views")),
+    MYSQL_INFORMATION_SCHEMA("mysql", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    MYSQL_MYSQL("mysql.mysql", Collections.singletonList("db")),
+    MYSQL_MYSQL("mysql", "mysql", Sets.newHashSet("db")),
     
-    MYSQL_PERFORMANCE_SCHEMA("mysql.performance_schema", Collections.singletonList("accounts")),
+    MYSQL_PERFORMANCE_SCHEMA("mysql", "performance_schema", Sets.newHashSet("accounts")),
     
-    MYSQL_SYS("mysql.sys", Collections.singletonList("sys")),
+    MYSQL_SYS("mysql", "sys", Sets.newHashSet("sys")),
     
-    POSTGRESQL_INFORMATION_SCHEMA("postgresql.information_schema", Arrays.asList("columns", "tables", "views")),
+    POSTGRESQL_INFORMATION_SCHEMA("postgresql", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    POSTGRESQL_PG_CATALOG("postgresql.pg_catalog", Arrays.asList("pg_database", "pg_tablespace"));
+    POSTGRESQL_PG_CATALOG("postgresql", "pg_catalog", Sets.newHashSet("pg_database", "pg_tablespace"));
     
     private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>();
     
-    private final String schemaPath;
+    private final String databaseType;
+    
+    private final String schema;
     
     private final Collection<String> tables;
     
     static {
         for (SystemSchemaBuilderRule each : values()) {
-            SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getSchemaPath(), each);
+            SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getDatabaseType() + "." + each.getSchema(), each);
         }
     }
 
     /**
      * Value of builder rule.
      * 
-     * @param databaseTypeName database type name
+     * @param databaseType database type
      * @param schema schema
      * @return builder rule
      */
-    public static SystemSchemaBuilderRule valueOf(final String databaseTypeName, final String schema) {
-        String schemaPath = databaseTypeName + "." + schema;
+    public static SystemSchemaBuilderRule valueOf(final String databaseType, final String schema) {
+        String schemaPath = databaseType + "." + schema;
         SystemSchemaBuilderRule result = SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.get(schemaPath);
         if (null == result) {
             throw new IllegalArgumentException(String.format("Can not find builder rule: `%s`", schemaPath));
         }
         return result;
+    }
+    
+    /**
+     * Judge whether current table is schema table or not.
+     * 
+     * @param schema schema
+     * @param tableName table name
+     * @return whether current table is schema table or not
+     */
+    public static boolean isSchemaTable(final String schema, final String tableName) {
+        for (SystemSchemaBuilderRule each : values()) {
+            if (each.getSchema().equals(schema) && each.getTables().contains(tableName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
