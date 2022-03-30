@@ -32,17 +32,17 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("mysql", "information_schema", Sets.newHashSet("columns", "tables", "views")),
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    MYSQL_MYSQL("mysql", "mysql", Sets.newHashSet("db")),
+    MYSQL_MYSQL("MySQL", "mysql", Sets.newHashSet("db")),
     
-    MYSQL_PERFORMANCE_SCHEMA("mysql", "performance_schema", Sets.newHashSet("accounts")),
+    MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", Sets.newHashSet("accounts")),
     
-    MYSQL_SYS("mysql", "sys", Sets.newHashSet("sys")),
+    MYSQL_SYS("MySQL", "sys", Sets.newHashSet("sys")),
     
-    POSTGRESQL_INFORMATION_SCHEMA("postgresql", "information_schema", Sets.newHashSet("columns", "tables", "views")),
+    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    POSTGRESQL_PG_CATALOG("postgresql", "pg_catalog", Sets.newHashSet("pg_database", "pg_tablespace"));
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_database", "pg_tablespace"));
     
     private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>();
     
