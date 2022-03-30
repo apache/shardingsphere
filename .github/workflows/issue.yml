@@ -28,7 +28,7 @@ on:
 jobs:
   comment-action:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'issue_comment' }}
+    if: ${{ github.event_name == 'issue_comment' } && {github.repository == 'apache/shardingsphere'}}
     steps:
       - name: Print Issue Comment
         run: |
