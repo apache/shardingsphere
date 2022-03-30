@@ -99,7 +99,7 @@ jobs:
         with:
           name: it-image
       - name: Load IT image
-        run: docker load /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
@@ -133,7 +133,7 @@ jobs:
         with:
           name: it-image
       - name: Load IT image
-        run: docker load /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
@@ -167,7 +167,7 @@ jobs:
         with:
           name: it-image
       - name: Load IT image
-        run: docker load /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
