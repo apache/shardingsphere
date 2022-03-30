@@ -85,7 +85,7 @@ public final class SetVariableBackendHandlerTest {
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(metaData.getSchema()).thenReturn(schema);
+            when(metaData.getDefaultSchema()).thenReturn(schema);
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;

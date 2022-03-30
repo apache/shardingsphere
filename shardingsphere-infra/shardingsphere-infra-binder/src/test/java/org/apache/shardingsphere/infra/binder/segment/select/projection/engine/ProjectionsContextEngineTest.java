@@ -52,8 +52,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -222,9 +220,7 @@ public final class ProjectionsContextEngineTest {
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>();
-        schemaMap.put("schema", schema);
-        when(metaData.getSchemas()).thenReturn(schemaMap);
+        when(metaData.getSchemaByName("schema")).thenReturn(schema);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         return new SelectStatementContext(Collections.singletonMap("schema", metaData), Collections.emptyList(), selectStatement, "schema");
     }

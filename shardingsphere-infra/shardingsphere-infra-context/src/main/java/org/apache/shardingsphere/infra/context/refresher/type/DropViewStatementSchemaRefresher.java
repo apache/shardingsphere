@@ -44,7 +44,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
                         final Collection<String> logicDataSourceNames, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
         sqlStatement.getViews().forEach(each -> {
-            schemaMetaData.getSchema().remove(each.getTableName().getIdentifier().getValue());
+            schemaMetaData.getDefaultSchema().remove(each.getTableName().getIdentifier().getValue());
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
         Collection<MutableDataNodeRule> rules = schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
