@@ -143,7 +143,6 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(databaseMetaData));
         metaDataContexts.getMetaDataMap().put(schemaName, newMetaDataContexts.getMetaData(schemaName));
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName));
-        persistSystemDatabase();
         renewAllTransactionContext();
     }
     
@@ -183,14 +182,6 @@ public final class ContextManager implements AutoCloseable {
         metaData.getDefaultSchema().put(changedTableMetaData.getName(), changedTableMetaData);
         databaseMetaData.put(changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(databaseMetaData));
-    }
-    
-    private void persistSystemDatabase() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> persistSchemas(key, value.getSchemas()));
-    }
-    
-    private void persistSchemas(final String databaseName, final Map<String, ShardingSphereSchema> schemaMap) {
-        schemaMap.forEach((key, value) -> metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(databaseName, key, value)));
     }
     
     private void alterSingleTableDataNodes(final String schemaName, final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
