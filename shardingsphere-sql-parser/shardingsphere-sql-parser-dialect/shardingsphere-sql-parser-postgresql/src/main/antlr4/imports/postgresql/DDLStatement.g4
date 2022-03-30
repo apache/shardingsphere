@@ -1747,10 +1747,6 @@ dropTrigger
     : DROP TRIGGER existClause? qualifiedName ON tableName dropBehavior?
     ;
 
-dropEventTrigger
-    : DROP EVENT TRIGGER existClause? name dropBehavior?
-    ;
-
 dropType
     : DROP TYPE existClause? anyNameList dropBehavior?
     ;
