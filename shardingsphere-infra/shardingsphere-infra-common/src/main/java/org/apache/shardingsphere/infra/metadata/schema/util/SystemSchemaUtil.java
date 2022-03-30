@@ -31,6 +31,7 @@ public class SystemSchemaUtil {
     
     /**
      * Judge whether sql statement contains system schema or not.
+     * 
      * @param databaseType databaseType
      * @param schemaNames schema names
      * @param sessionSchemaName session schema name
