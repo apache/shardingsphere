@@ -51,6 +51,12 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-shardingsphere-it-${{ hashFiles('**/pom.xml') }}
+      - name: Set up JDK 8
+        if: steps.cache-maven-repository.outputs.cache-hit != 'true'
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
       - name: Download third-part dependencies
         if: steps.cache-maven-repository.outputs.cache-hit != 'true'
         run: ./mvnw -T2C -B dependency:go-offline -fn && find ~/.m2/repository/org/apache/shardingsphere -delete -type d -iname *SNAPSHOT && find ~/.m2/repository/org/apache/shardingsphere -iname maven-metadata-*.xml -delete
