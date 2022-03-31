@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Compute node instance online process trigger event.
+ * Show processlist trigger event.
  */
+@RequiredArgsConstructor
 @Getter
-public final class InstanceOnlineProcessTriggerEvent implements GovernanceEvent {
+public final class ShowProcessListTriggerEvent implements GovernanceEvent {
     
-    private final String path;
-    
-    public InstanceOnlineProcessTriggerEvent(final String path) {
-        this.path = path;
-    }
+    private final InstanceDefinition instanceDefinition;
 }

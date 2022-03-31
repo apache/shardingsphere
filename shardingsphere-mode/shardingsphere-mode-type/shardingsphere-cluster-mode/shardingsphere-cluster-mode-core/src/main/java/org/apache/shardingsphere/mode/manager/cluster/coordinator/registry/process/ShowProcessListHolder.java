@@ -26,36 +26,58 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Process holder.
+ * Show process list holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProcessHolder {
+public class ShowProcessListHolder {
     
-    private static final ProcessHolder INSTANCE = new ProcessHolder();
+    private static final ShowProcessListHolder INSTANCE = new ShowProcessListHolder();
     
     private final Map<String, YamlExecuteProcessContext> processContextMap = new ConcurrentHashMap<>();
     
     /**
-     * Get process holder.
+     * Get show process list holder.
      *
-     * @return process holder
+     * @return show process list holder
      */
-    public static ProcessHolder getInstance() {
+    public static ShowProcessListHolder getInstance() {
         return INSTANCE;
     }
     
+    /**
+     * Put execute process context.
+     * 
+     * @param executionId execution id
+     * @param processContext process context
+     */
     public void put(final String executionId, final YamlExecuteProcessContext processContext) {
         processContextMap.put(executionId, processContext);
     }
     
+    /**
+     * Get execute process context.
+     * 
+     * @param executionId execution id
+     * @return execute process context
+     */
     public YamlExecuteProcessContext get(final String executionId) {
         return processContextMap.get(executionId);
     }
     
+    /**
+     * Remove execute process context.
+     * 
+     * @param executionId execution id
+     */
     public void remove(final String executionId) {
         processContextMap.remove(executionId);
     }
     
+    /**
+     * Get all execute process context.
+     * 
+     * @return collection execute process context
+     */
     public Collection<YamlExecuteProcessContext> getAll() {
         return processContextMap.values();
     }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -40,11 +41,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineProcessTriggerEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
@@ -52,6 +53,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -253,16 +255,6 @@ public final class ClusterContextManagerCoordinator {
         contextManager.getInstanceContext().deleteComputeNodeInstance(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition()));
     }
     
-    @Subscribe
-    public void reportProcess(final InstanceOnlineProcessTriggerEvent event) {
-        Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ProcessHolder.getInstance().getAll();
-        // TODO batch persist
-        for (YamlExecuteProcessContext each : yamlExecuteProcessContexts) {
-            registryCenter.getRepository().persist(ProcessNode.getExecutionPath(each.getExecutionID()), YamlEngine.marshal(each));
-        }
-        registryCenter.getRepository().delete(event.getPath());
-    }
-    
     /**
      * Renew with new schema version.
      * 
@@ -273,6 +265,24 @@ public final class ClusterContextManagerCoordinator {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = metaDataPersistService.getDataSourceService().load(event.getSchemaName(), event.getActiveVersion());
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getSchemaRuleService().load(event.getSchemaName(), event.getActiveVersion());
         contextManager.alterDataSourceAndRuleConfiguration(event.getSchemaName(), dataSourcePropertiesMap, ruleConfigs);
+    }
+    
+    /**
+     * Trigger show process list.
+     *
+     * @param event show process list trigger event
+     */
+    @Subscribe
+    public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
+        InstanceDefinition instanceDefinition = event.getInstanceDefinition();
+        if (!instanceDefinition.getInstanceId().getId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
+            return;
+        }
+        Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ShowProcessListHolder.getInstance().getAll();
+        for (YamlExecuteProcessContext each : yamlExecuteProcessContexts) {
+            registryCenter.getRepository().persist(ProcessNode.getExecutionPath(each.getExecutionID()), YamlEngine.marshal(each));
+        }
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()));
     }
     
     private void persistSchema(final String schemaName) {

@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -38,8 +36,10 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -59,30 +59,33 @@ public final class ProcessRegistrySubscriber {
      *
      * @param event get children request event.
      */
-    @SneakyThrows
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC));
-        onlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getOnlineProcessTriggerNodePath(each, InstanceType.JDBC), "ON"));
-        Collection<String> proxyOnlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY));
-        proxyOnlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getOnlineProcessTriggerNodePath(each, InstanceType.PROXY), "ON"));
-        // loop until trigger is deleted
-        out : while(true) {
-            Thread.sleep(10);
-            for(String each : onlineComputeNodes) {
-                String value = repository.get(ComputeNode.getOnlineInstanceNodePath(each, InstanceType.JDBC));
-                if ("process_trigger".equalsIgnoreCase(value)) {
-                    continue out;
-                }
+        triggerShowProcess();
+        waitUntilShowProcessIsReady();
+        sendShowProcessListAndDelete();
+    }
+    
+    private void triggerShowProcess() {
+        Arrays.stream(InstanceType.values()).forEach(instanceType -> {
+            Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+            onlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getProcessTriggerInstanceNodePath(each, instanceType), ""));
+        });
+    }
+    
+    @SneakyThrows
+    private void waitUntilShowProcessIsReady() {
+        while (true) {
+            TimeUnit.MILLISECONDS.sleep(10);
+            Collection<String> processTriggers = Arrays.stream(InstanceType.values())
+                    .flatMap(instanceType -> repository.getChildrenKeys(ComputeNode.getProcessTriggerInstanceTypeNodePatch(instanceType)).stream()).collect(Collectors.toList());
+            if (processTriggers.isEmpty()) {
+                return;
             }
-            for(String each : proxyOnlineComputeNodes) {
-                String value = repository.get(ComputeNode.getOnlineInstanceNodePath(each, InstanceType.PROXY));
-                if ("process_trigger".equalsIgnoreCase(value)) {
-                    continue out;
-                }
-            }
-           break;
         }
+    }
+    
+    private void sendShowProcessListAndDelete() {
         List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getExecutionNodesPath());
         Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(ProcessNode.getExecutionPath(key))).collect(Collectors.toList());
         ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
@@ -97,7 +100,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        ProcessHolder.getInstance().put(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
+        ShowProcessListHolder.getInstance().put(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
     }
     
     /**
@@ -108,7 +111,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         String executionID = event.getExecutionID();
-        YamlExecuteProcessContext yamlExecuteProcessContext = ProcessHolder.getInstance().get(executionID);
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(executionID);
         ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
             if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
@@ -124,12 +127,12 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = ProcessHolder.getInstance().get(event.getExecutionID());
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(event.getExecutionID());
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
             if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
                 return;
             }
         }
-        ProcessHolder.getInstance().remove(event.getExecutionID());
+        ShowProcessListHolder.getInstance().remove(event.getExecutionID());
     }
 }

@@ -78,12 +78,33 @@ public final class ComputeNode {
     }
     
     /**
-     * Get online process trigger node path.
-     *
-     * @return path of online process trigger node path
+     * Get process trigger node path.
+     * 
+     * @return path of process trigger node path
      */
-    public static String getOnlineProcessTriggerNodePath(final String instanceId, final InstanceType instanceType) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase(), instanceId, PROCESS_TRIGGER);
+    public static String getProcessTriggerNodePatch() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER);
+    }
+    
+    /**
+     * Get process trigger instance type node path.
+     *
+     * @param instanceType instance type
+     * @return path of process trigger instance type node path
+     */
+    public static String getProcessTriggerInstanceTypeNodePatch(final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase());
+    }
+    
+    /**
+     * Get process trigger instance node path.
+     *
+     * @param instanceId instance id
+     * @param instanceType instance type
+     * @return path of process trigger instance node path
+     */
+    public static String getProcessTriggerInstanceNodePath(final String instanceId, final InstanceType instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId);
     }
     
     /**
@@ -163,12 +184,24 @@ public final class ComputeNode {
      * @return instance id
      */
     public static Optional<InstanceDefinition> getInstanceDefinitionByInstanceOnlinePath(final String onlineInstancePath) {
-        Pattern pattern = Pattern.compile(getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([0-9.@]*)" + "(/process_trigger)?$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(onlineInstancePath);
         return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
     }
     
     private static InstanceType getInstanceType(final String instanceType) {
         return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
+    }
+    
+    /**
+     * Get instance definition by process trigger path.
+     *
+     * @param processTriggerPath process trigger path
+     * @return InstanceDefinition
+     */
+    public static Optional<InstanceDefinition> getInstanceDefinitionByProcessTriggerPath(final String processTriggerPath) {
+        Pattern pattern = Pattern.compile(getProcessTriggerNodePatch() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(processTriggerPath);
+        return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
     }
 }
