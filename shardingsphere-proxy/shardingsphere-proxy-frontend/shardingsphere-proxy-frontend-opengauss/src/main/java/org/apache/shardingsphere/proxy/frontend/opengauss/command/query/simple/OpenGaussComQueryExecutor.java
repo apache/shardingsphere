@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple;
+package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -53,9 +53,9 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Command query executor for PostgreSQL.
+ * Command query executor for openGauss.
  */
-public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
+public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLConnectionContext connectionContext;
     
@@ -64,10 +64,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
-                                      final ConnectionSession connectionSession) throws SQLException {
+    public OpenGaussComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
+                                     final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"),
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("openGauss"),
                 comQueryPacket.getSql(), Optional::empty, connectionSession);
     }
     
