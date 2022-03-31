@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.lock.LockContext;
 
@@ -34,6 +35,7 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
+        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
         ShardingSphereLock result = locks.get(schemaName);
         if (null != result) {
             return result;
@@ -56,6 +58,9 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public boolean isLockedSchema(final String schemaName) {
+        if (null == schemaName) {
+            return false;
+        }
         ShardingSphereLock shardingSphereLock = locks.get(schemaName);
         return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
     }

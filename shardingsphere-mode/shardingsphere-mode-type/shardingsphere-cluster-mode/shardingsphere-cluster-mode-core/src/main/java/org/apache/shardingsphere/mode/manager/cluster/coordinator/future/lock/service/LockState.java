@@ -22,5 +22,5 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.s
  */
 public enum LockState {
     
-    INITIALIZATION, LOCKED, UNLOCKED
+    LOCKED, UNLOCKED
 }
