@@ -44,6 +44,8 @@ import java.util.Collections;
  */
 public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
+    private static final String PG_CATALOG = "pg_catalog";
+    
     private static final String DAT_COMPATIBILITY = "PG";
     
     private final String sql;
@@ -61,8 +63,8 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         try (CalciteConnection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false").unwrap(CalciteConnection.class)) {
-            connection.getRootSchema().add("pg_catalog", new ReflectiveSchema(constructOgCatalog()));
-            connection.setSchema("pg_catalog");
+            connection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
+            connection.setSchema(PG_CATALOG);
             try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
                 mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet)));
