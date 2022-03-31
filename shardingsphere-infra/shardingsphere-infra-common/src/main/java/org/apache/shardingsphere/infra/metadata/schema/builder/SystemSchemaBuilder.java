@@ -67,11 +67,10 @@ public final class SystemSchemaBuilder {
     }
     
     private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        String databaseTypeName = databaseType.getName().toLowerCase();
-        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseTypeName, schemaName);
+        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getName(), schemaName);
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseTypeName + "/" + schemaName + "/" + each + ".yaml"));
+            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getName().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
         }
         return result;
     }
