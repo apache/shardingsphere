@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.opengauss.schema;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * TODO we should refactor this with our federation modules.
  * System catalog schema of openGauss.
  */
 @RequiredArgsConstructor
