@@ -36,11 +36,11 @@ import java.util.Map.Entry;
  * YAML proxy configuration swapper.
  */
 public final class YamlProxyConfigurationSwapper {
-    
+
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-    
+
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-    
+
     /**
      * Swap YAML proxy configuration to proxy configuration.
      *
@@ -53,21 +53,24 @@ public final class YamlProxyConfigurationSwapper {
                 yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
         return new ProxyConfiguration(schemaConfigs, globalConfig);
     }
-    
+
     private Map<String, DataSourceGeneratedSchemaConfiguration> swapSchemaConfigurations(final YamlProxyConfiguration yamlConfig) {
         Map<String, DataSourceGeneratedSchemaConfiguration> result = new LinkedHashMap<>(yamlConfig.getSchemaConfigurations().size(), 1);
+        boolean isDataSourceAggregation = yamlConfig.getServerConfiguration().getProps().containsKey("data-source-aggregation-enabled")
+                && (boolean) yamlConfig.getServerConfiguration().getProps().get("data-source-aggregation-enabled");
         for (Entry<String, YamlProxySchemaConfiguration> entry : yamlConfig.getSchemaConfigurations().entrySet()) {
-            Map<String, DataSourceConfiguration> schemaDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources());
+            Map<String, DataSourceConfiguration> schemaDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getSchemaName(), isDataSourceAggregation);
             Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
             result.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(schemaDataSourceConfigs, schemaRuleConfigs));
         }
         return result;
     }
-    
-    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs) {
+
+    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String schemaName,
+                                                                              final boolean isDataSourceAggregation) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlConfigs.entrySet()) {
-            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue()));
+            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue(), schemaName, entry.getKey(), isDataSourceAggregation));
         }
         return result;
     }

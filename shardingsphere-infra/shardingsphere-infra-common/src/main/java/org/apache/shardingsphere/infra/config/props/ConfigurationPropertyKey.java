@@ -117,7 +117,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy backend driver type. Default driver is JDBC.
      */
-    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class);
+    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class),
+
+    /**
+     * Whether enable data source aggregation, default false.
+     */
+    DATA_SOURCE_AGGREGATION_ENABLED("data-source-aggregation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     
