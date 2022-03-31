@@ -267,7 +267,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private void verifyDataConsistencyCheck(final JobConfigurationPOJO jobConfigPOJO, final JobConfiguration jobConfig) {
         verifyManualMode(jobConfig);
-        verifyJobNotStopped(jobConfigPOJO);
         verifySourceWritingStopped(jobConfig);
     }
     

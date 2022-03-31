@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@ToString
 public abstract class AbstractJobId implements JobId {
     
     @NonNull

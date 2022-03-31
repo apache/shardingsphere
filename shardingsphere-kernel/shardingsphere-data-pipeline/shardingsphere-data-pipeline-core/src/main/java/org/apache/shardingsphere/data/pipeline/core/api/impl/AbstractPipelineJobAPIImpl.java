@@ -48,7 +48,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void stop(final String jobId) {
         log.info("Stop pipeline job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        verifyJobNotStopped(jobConfigPOJO);
+        if (jobConfigPOJO.isDisabled()) {
+            return;
+        }
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);

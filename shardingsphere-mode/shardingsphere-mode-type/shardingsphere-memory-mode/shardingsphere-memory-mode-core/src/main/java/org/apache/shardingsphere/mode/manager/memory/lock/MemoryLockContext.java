@@ -35,11 +35,18 @@ public final class MemoryLockContext implements LockContext {
     @Override
     public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
         ShardingSphereLock result = locks.get(schemaName);
-        if (null == result) {
+        if (null != result) {
+            return Optional.of(result);
+        }
+        synchronized (locks) {
+            result = locks.get(schemaName);
+            if (null != result) {
+                return Optional.of(result);
+            }
             result = new ShardingSphereNonReentrantLock(new ReentrantLock());
             locks.put(schemaName, result);
+            return Optional.of(result);
         }
-        return Optional.of(result);
     }
     
     @Override
