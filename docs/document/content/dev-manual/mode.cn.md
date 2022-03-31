@@ -14,6 +14,7 @@ chapter = true
 | *已知实现类*                    | *详细说明*                  |
 | ----------------------------- | -------------------------- |
 | FileRepository                | 基于 File 的持久化           |
+| H2Repository                  | 基于 H2 的持久化             |
 
 ## ClusterPersistRepository
 

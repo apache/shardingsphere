@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -53,16 +54,20 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        if (null == schemaName) {
-            return Optional.empty();
-        }
+    public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
+        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
         ShardingSphereGlobalLock result = globalLocks.get(schemaName);
-        if (null == result) {
-            result = crateGlobalLock(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
-            globalLocks.put(schemaName, result);
+        if (null != result) {
+            return result;
         }
-        return Optional.of(result);
+        result = crateGlobalLock(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
+        globalLocks.put(schemaName, result);
+        return result;
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        return Optional.ofNullable(globalLocks.get(schemaName));
     }
     
     private ShardingSphereGlobalLock crateGlobalLock(final String ownerInstanceId) {
@@ -71,6 +76,9 @@ public final class DistributeLockContext implements LockContext {
     
     @Override
     public synchronized boolean isLockedSchema(final String schemaName) {
+        if (null == schemaName) {
+            return false;
+        }
         return getGlobalLock(schemaName).map(shardingSphereGlobalLock -> shardingSphereGlobalLock.isLocked(schemaName)).orElse(false);
     }
     

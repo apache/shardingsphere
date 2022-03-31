@@ -11,39 +11,39 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 | 语句                                                  | 说明                                                            | 示例                                           |
 |:---------------------------------------------------- |:-------------------------------------------------------------- |:---------------------------------------------- |
-| set readwrite_splitting hint source = [auto / write] | 针对当前连接，设置读写分离的路由策略（自动路由或强制到写库）              | set readwrite_splitting hint source = write    |
-| set sharding hint database_value = yy                | 针对当前连接，设置 hint 仅对数据库分片有效，并添加分片值，yy：数据库分片值 | set sharding hint database_value = 100         |
-| add sharding hint database_value xx = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | add sharding hint database_value t_order= 100 |
-| add sharding hint table_value xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | add sharding hint table_value t_order = 100   |
-| clear hint                                           | 针对当前连接，清除 hint 所有设置                                    | clear hint                                    |
-| clear [sharding hint / readwrite_splitting hint]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置     | clear readwrite_splitting hint                |
-| show [sharding / readwrite_splitting] hint status    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置     | show readwrite_splitting hint status          |
+| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | 针对当前连接，设置读写分离的路由策略（自动路由或强制到写库）              | SET READWRITE_SPLITTING HINT SOURCE = write    |
+| SET SHARDING HINT DATABASE_VALUE = yy                | 针对当前连接，设置 hint 仅对数据库分片有效，并添加分片值，yy：数据库分片值 | SET SHARDING HINT DATABASE_VALUE = 100         |
+| ADD SHARDING HINT DATABASE_VALUE tableName = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
+| ADD SHARDING HINT TABLE_VALUE tableName xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
+| CLEAR HINT SETTINGS                                          | 针对当前连接，清除 hint 所有设置                                    | CLEAR HINT                                   |
+| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置     | CLEAR READWRITE_SPLITTING HINT                |
+| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置     | SHOW READWRITE_SPLITTING HINT STATUS          |
 
 ## 弹性伸缩
 
 | 语句                                                 | 说明                                                           | 示例                                            |
 |:--------------------------------------------------- |:------------------------------------------------------------- |:----------------------------------------------- |
-| show scaling list                                   | 查询运行列表                                                    | show scaling list                               |
-| show scaling status xx                              | 查询任务状态，xx：任务 id                                         | show scaling status 1234                        |
-| start scaling xx                                    | 开始运行任务，xx：任务 id                                         | start scaling 1234                              |
-| stop scaling xx                                     | 停止运行任务，xx：任务 id                                         | stop scaling 12345                              |
-| drop scaling xx                                     | 移除任务，xx：任务 id                                            | drop scaling 1234                               |
-| reset scaling xx                                    | 重置任务进度，xx：任务 id                                         | reset scaling 1234                              |
-| check scaling xx                                    | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id         | check scaling 1234                              |
-| show scaling check algorithms                       | 展示可用的一致性校验算法                                          | show scaling check algorithms                   |
-| check scaling {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                                  | check scaling 1234 by type(name=DEFAULT)        |
-| stop scaling source writing xx                      | 旧的 ShardingSphere 数据源停写，xx：任务 id                        | stop scaling source writing 1234                |
-| restore scaling source writing xx                   | 旧的 ShardingSphere 数据源恢复写，xx：任务 id                      | restore scaling source writing 1234             |
-| apply scaling xx                                    | 切换至新的 ShardingSphere 元数据，xx：任务 id                      | apply scaling 1234                              |
+| SHOW SCALING LIST                                   | 查询运行列表                                                    | SHOW SCALING LIST                               |
+| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING LIST 1234                        |
+| START SCALING jobId                                    | 开始运行任务，xx：任务 id                                         | START SCALING 1234                              |
+| STOP SCALING jobId                                     | 停止运行任务，xx：任务 id                                         | STOP SCALING 12345                              |
+| DROP SCALING jobId                                     | 移除任务，xx：任务 id                                            | DROP SCALING 1234                               |
+| RESET SCALING jobId                                    | 重置任务进度，xx：任务 id                                         | RESET SCALING 1234                              |
+| CHECK SCALING jobId                                    | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id         | CHECK SCALING 1234                              |
+| SHOW SCALING CHECK ALGORITHMS                       | 展示可用的一致性校验算法                                          | SHOW SCALING CHECK ALGORITHMS                   |
+| CHECK SCALING {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                                  | CHECK SCALING 1234 by type(name=DEFAULT)        |
+| STOP SCALING SOURCE WRITING jobId                      | 旧的 ShardingSphere 数据源停写，xx：任务 id                        | STOP SCALING SOURCE WRITING 1234                |
+| RESTORE SCALING SOURCE WRITING jobId                   | 旧的 ShardingSphere 数据源恢复写，xx：任务 id                      | RESTORE SCALING SOURCE WRITING 1234             |
+| APPLY SCALING jobId                                    | 切换至新的 ShardingSphere 元数据，xx：任务 id                      | APPLY SCALING 1234                              |
 
 ## 熔断
 
 | 语句                                                           | 说明                                                | 示例                                            |
 |:------------------------------------------------------------- |:-------------------------------------------------- |:----------------------------------------------  |
-| [enable / disable] readwrite_splitting read xxx [from schema] | 启用 / 禁用读库                                      | enable readwrite_splitting read resource_0      |
-| [enable / disable] instance [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | disable instance 127.0.0.1@3307            |
-| show instance list                                            | 查询 proxy 实例信息                                  | show instance list                              |
-| show readwrite_splitting read resources [from schema]         | 查询所有读库的状态                                    | show readwrite_splitting read resources         |
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM schemaName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0      |
+| [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | DISABLE INSTANCE 127.0.0.1@3307            |
+| SHOW INSTANCE LIST                                            | 查询 proxy 实例信息                                  | SHOW INSTANCE LIST                              |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM schemaName]         | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES         |
 
 ## 全局规则
 
@@ -59,20 +59,20 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 | 语句                                                                         | 说明                                                         | 示例                                            |
 |:--------------------------------------------------------------------------- |:----------------------------------------------------------- |:----------------------------------------------- |
-| show instance mode                                                          | 查询当前 proxy 的 mode 配置                                    | show instance mode                                |
-| count schema rules [from schema]                                            | 查询 schema 中的规则数量                                      | count schema rules                               |
-| set variable proxy_property_name = xx                                       | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/) ，需使用下划线命名 | set variable sql_show = true            |
-| set variable transaction_type = xx                                          | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                     | set variable transaction_type = XA               |
-| set variable agent_plugins_enabled = [true / false]                         | 设置 agent 插件的启用状态，默认值 false                         | set variable agent_plugins_enabled = true        |
-| show all variables                                                          | 查询 proxy 所有的属性配置                                      | show all variables                               |
-| show variable variable_name                                                 | 查询 proxy 属性，需使用下划线命名                            | show variable sql_show                           |
-| preview SQL                                                                 | 预览实际 SQL                                                  | preview select * from t_order                    |
-| parse SQL                                                                   | 解析 SQL 并输出抽象语法树                                        parse select * from t_order                      |
-| refresh table metadata                                                      | 刷新所有表的元数据                                              | refresh table metadata                          |
-| refresh table metadata [tableName / tableName from resource resourceName]   | 刷新指定表的元数据                                              | refresh table metadata t_order from resource ds_1 |
-| show table metadata tableName [, tableName] ...                             | 查询表的元数据                                                 | show table metadata t_order                       |
-| export schema config [from schema_name] [, file="file_path"]                | 查询 / 导出 schema 中的资源和规则配置                            | export schema config from readwrite_splitting_db  |
-| show rules used resource resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | show rules used resource ds_0 from schemaName     |
+| SHOW INSTANCE MODE                                                          | 查询当前 proxy 的 mode 配置                                    | SHOW INSTANCE MODE                                |
+| COUNT SCHEMA RULES [FROM schema]                                            | 查询 schema 中的规则数量                                      | COUNT SCHEMA RULES                               |
+| SET VARIABLE proxy_property_name = xx                                       | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/) ，需使用下划线命名 | SET VARIABLE sql_show = true            |
+| SET VARIABLE transaction_type = xx                                          | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                     | SET VARIABLE transaction_type = XA               |
+| SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                         | 设置 agent 插件的启用状态，默认值 false                         | SET VARIABLE agent_plugins_enabled = TRUE        |
+| SHOW ALL VARIABLES                                                          | 查询 proxy 所有的属性配置                                      | SHOW ALL VARIABLES                               |
+| SHOW VARIABLE variable_name                                                 | 查询 proxy 属性，需使用下划线命名                            | SHOW VARIABLE sql_show                           |
+| PREVIEW SQL                                                                 | 预览实际 SQL                                                  | PREVIEW SELECT * FROM t_order                    |
+| PARSE SQL                                                                   | 解析 SQL 并输出抽象语法树                                        PARSE SELECT * FROM t_order                      |
+| REFRESH TABLE METADATA                                                      | 刷新所有表的元数据                                              | REFRESH TABLE METADATA                          |
+| REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | 刷新指定表的元数据                                              | REFRESH TABLE METADATA t_order FROM resource ds_1 |
+| SHOW TABLE METADATA tableName [, tableName] ...                             | 查询表的元数据                                                 | SHOW TABLE METADATA t_order                       |
+| EXPORT SCHEMA CONFIG [FROM schema_name] [, file="file_path"]                | 查询 / 导出 schema 中的资源和规则配置                            | EXPORT SCHEMA CONFIG FROM readwrite_splitting_db  |
+| SHOW RULES USED RESOURCE resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | SHOW RULES USED RESOURCE ds_0 FROM schemaName     |
 
 ## 注意事项
 
