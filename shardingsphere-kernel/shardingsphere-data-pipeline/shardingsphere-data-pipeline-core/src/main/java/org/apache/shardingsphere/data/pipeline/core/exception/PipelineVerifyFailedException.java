@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.exception;
 
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.List;
 
 /**
- * Abstract job id.
+ * Pipeline verify failed exception.
  */
 @Getter
-@Setter
-@ToString
-public abstract class AbstractJobId implements JobId {
+public final class PipelineVerifyFailedException extends RuntimeException {
     
-    @NonNull
-    private String type;
+    private static final long serialVersionUID = 1L;
     
-    @NonNull
-    private String formatVersion;
+    public PipelineVerifyFailedException() {
+    }
     
-    @NonNull
-    private List<String> subTypes;
+    public PipelineVerifyFailedException(final String message) {
+        super(message);
+    }
     
-    @NonNull
-    private String schemaName;
+    public PipelineVerifyFailedException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
+    public PipelineVerifyFailedException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public PipelineVerifyFailedException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }
