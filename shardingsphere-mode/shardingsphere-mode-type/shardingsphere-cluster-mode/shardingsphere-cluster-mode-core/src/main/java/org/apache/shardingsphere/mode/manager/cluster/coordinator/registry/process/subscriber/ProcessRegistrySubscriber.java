@@ -67,6 +67,7 @@ public final class ProcessRegistrySubscriber {
     }
     
     private void triggerShowProcess() {
+        repository.delete(ComputeNode.getProcessTriggerNodePatch());
         Arrays.stream(InstanceType.values()).forEach(instanceType -> {
             Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
             onlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getProcessTriggerInstanceNodePath(each, instanceType), ""));
