@@ -17,12 +17,51 @@
   -->
 
 <sql-parser-test-cases>
-    <create-login sql-case-id="create_login" />
-    <create-login sql-case-id="create_login_with_password"/>
-    <create-login sql-case-id="create_login_with_hashed_password"/>
-    <create-login sql-case-id="create_login_with_default_database"/>
-    <create-login sql-case-id="create_login_with_expired_password"/>
-    <create-login sql-case-id="create_login_to_credential"/>
-    <create-login sql-case-id="create_login_with_certificate"/>
-    <create-login sql-case-id="create_login_with_asym_key"/>
+    <create-login sql-case-id="create_login">
+        <login name="login_dev_new" start-index="13" stop-index="25"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_password">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_hashed_password">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_default_database">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_expired_password">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_to_credential">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+
+    <create-login sql-case-id="create_login_with_windows">
+        <login name="[domain\login1]" start-index="13" stop-index="27"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_certificate">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_asym_key">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+
+    <create-login sql-case-id="create_login_with_sid">
+        <login name="login1" start-index="13" stop-index="18"/>
+    </create-login>
+    
+    <create-login sql-case-id="create_login_with_multiple_arguments">
+        <login name="[login1]" start-index="13" stop-index="20"/>
+    </create-login>
+
+    <create-login sql-case-id="create_login_from_external_provider">
+        <login name="[bob@contoso.com]" start-index="13" stop-index="29"/>
+    </create-login>
 </sql-parser-test-cases>

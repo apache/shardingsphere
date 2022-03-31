@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.login;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.login.ExpectedLogin;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Create login statement test case.
+ * Expected login.
  */
 @Getter
-public final class CreateLoginStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "login")
-    private ExpectedLogin login;
+@Setter
+public final class ExpectedLogin extends AbstractExpectedIdentifierSQLSegment {
 }
