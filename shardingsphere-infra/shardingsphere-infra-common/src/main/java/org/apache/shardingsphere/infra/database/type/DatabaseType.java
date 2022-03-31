@@ -70,11 +70,18 @@ public interface DatabaseType {
     Optional<String> getDataSourceClassName();
     
     /**
-     * Get system schemas.
+     * Get system database schema map.
      * 
+     * @return system database schema map
+     */
+    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
+    
+    /**
+     * Get system schemas.
+     *
      * @return system schemas
      */
-    Map<String, Collection<String>> getSystemSchemas();
+    Collection<String> getSystemSchemas();
     
     /**
      * Get schema.
@@ -109,20 +116,5 @@ public interface DatabaseType {
      * @throws SQLException SQL exception
      */
     default void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
-    }
-    
-    /**
-     * Judge whether contains system schema or not.
-     * 
-     * @param schemaName schema name
-     * @return whether contains system schema or not
-     */
-    default boolean containsSystemSchema(final String schemaName) {
-        for (Collection<String> each : getSystemSchemas().values()) {
-            if (each.contains(schemaName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

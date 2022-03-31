@@ -235,8 +235,6 @@ public final class JDBCBackendConnectionTest {
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         Connection connection = prepareCachedConnections();
         cachedConnections.put("ignoredDataSourceName", connection);
-        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
-        prepareConnectionStatus(connectionStatus);
         backendConnection.closeConnections(false);
         verify(connection, times(1)).close();
         assertTrue(cachedConnections.isEmpty());
@@ -245,8 +243,6 @@ public final class JDBCBackendConnectionTest {
     
     @Test
     public void assertCloseConnectionsCorrectlyWhenForceRollbackAndNotInTransaction() throws SQLException {
-        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
-        prepareConnectionStatus(connectionStatus);
         connectionSession.getTransactionStatus().setInTransaction(false);
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
@@ -255,8 +251,6 @@ public final class JDBCBackendConnectionTest {
     
     @Test
     public void assertCloseConnectionsCorrectlyWhenForceRollbackAndInTransaction() throws SQLException {
-        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
-        prepareConnectionStatus(connectionStatus);
         connectionSession.getTransactionStatus().setInTransaction(true);
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
@@ -265,8 +259,6 @@ public final class JDBCBackendConnectionTest {
     
     @Test
     public void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() throws SQLException {
-        ConnectionStatus connectionStatus = mock(ConnectionStatus.class);
-        prepareConnectionStatus(connectionStatus);
         Connection connection = prepareCachedConnections();
         SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(connection).close();
@@ -313,13 +305,6 @@ public final class JDBCBackendConnectionTest {
         Connection connection = mock(Connection.class);
         cachedConnections.put("ignoredDataSourceName", connection);
         return connection;
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void prepareConnectionStatus(final ConnectionStatus connectionStatus) {
-        Field field = JDBCBackendConnection.class.getDeclaredField("connectionStatus");
-        field.setAccessible(true);
-        field.set(backendConnection, connectionStatus);
     }
     
     @SuppressWarnings("unchecked")

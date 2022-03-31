@@ -131,7 +131,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getSchemaConfigs(), new ConfigurationProperties(parameter.getProps()));
         for (String each : schemaNames) {
-            if (databaseType.containsSystemSchema(each)) {
+            if (databaseType.getSystemSchemas().contains(each)) {
                 continue;
             }
             result.addSchema(each, databaseType, createSchemaConfiguration(each, metaDataPersistService, parameter), props);
@@ -150,7 +150,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereDatabase> databaseMap) {
         databaseMap.entrySet().forEach(entry ->
                 entry.getValue().getSchemas().entrySet().forEach(schema ->
-                        metaDataPersistService.getSchemaMetaDataService().persist(schema.getKey(), schema.getValue())));
+                        metaDataPersistService.getSchemaMetaDataService().persist(entry.getKey(), schema.getKey(), schema.getValue())));
     }
     
     private ContextManager createContextManager(final ClusterPersistRepository repository, final MetaDataPersistService metaDataPersistService,

@@ -97,22 +97,24 @@ public final class SchemaMetaDataNode {
     /**
      * Get meta data tables path.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @return tables path
      */
-    public static String getMetaDataTablesPath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, TABLES_NODE);
+    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
+        return String.join("/", getDatabaseNamePath(databaseName), schemaName, TABLES_NODE);
     }
     
     /**
      * Get table meta data path.
-     * 
+     *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
      * @return table meta data path
      */
-    public static String getTableMetaDataPath(final String schemaName, final String table) {
-        return String.join("/", getMetaDataTablesPath(schemaName), table);
+    public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
+        return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
     }
     
     private static String getFullMetaDataPath(final String schemaName, final String node) {
@@ -126,9 +128,9 @@ public final class SchemaMetaDataNode {
      * @return schema name
      */
     public static Optional<String> getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
@@ -137,7 +139,7 @@ public final class SchemaMetaDataNode {
      * @param schemaPath schema path
      * @return schema name
      */
-    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
+    public static Optional<String> getDatabaseNameBySchemaPath(final String schemaPath) {
         Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
@@ -150,9 +152,9 @@ public final class SchemaMetaDataNode {
      * @return table name
      */
     public static Optional<String> getTableName(final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
@@ -183,9 +185,9 @@ public final class SchemaMetaDataNode {
      * @return version
      */
     public static Optional<String> getVersionByDataSourcesPath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "/versions/([\\w\\-]+)/dataSources", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)" + "/versions/([\\w\\-]+)/dataSources", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
@@ -195,8 +197,8 @@ public final class SchemaMetaDataNode {
      * @return version
      */
     public static Optional<String> getVersionByRulesPath(final String rulesNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "/versions/([\\w\\-]+)/rules", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)" + "/versions/([\\w\\-]+)/rules", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(rulesNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
 }

@@ -529,7 +529,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) capacityUnit?
     ;
 
 maxsizeClause

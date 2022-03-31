@@ -113,7 +113,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterDatabase(event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterSchema(event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
     }
     
     /**
@@ -282,7 +282,7 @@ public final class ClusterContextManagerCoordinator {
     private void disableDataSources(final StatusContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry ->
-                StorageNodeStatus.DISABLE.name().toLowerCase().equals(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         disableDataSources.entrySet().stream().forEach(entry -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(entry.getKey()), true)));
     }
 }

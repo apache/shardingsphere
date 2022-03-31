@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
+import groovy.lang.Closure;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.junit.Test;
 
@@ -106,5 +107,33 @@ public final class InlineExpressionParserTest {
         List<String> expected = new InlineExpressionParser(expression.toString()).splitAndEvaluate();
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+    }
+
+    @Test
+    public void assertValidInlineExpression() {
+        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_$->{\"new_order1\"}");
+        boolean actualExpression2 = InlineExpressionParser.isInlineExpression("t_${\"new_order2\"}");
+        assertThat(actualExpression1, is(true));
+        assertThat(actualExpression2, is(true));
+    }
+
+    @Test
+    public void assertInValidInLineExpression() {
+        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}");
+        assertThat(actualExpression1, is(false));
+    }
+
+    @Test
+    public void assertHandlePlaceHolder() {
+        String actualExpression1 = InlineExpressionParser.handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}");
+        String actualExpression2 = InlineExpressionParser.handlePlaceHolder("t_${[\"new$->{1+2}\"]}");
+        assertThat(actualExpression1, is("t_${[\"new${1+2}\"]}"));
+        assertThat(actualExpression2, is("t_${[\"new${1+2}\"]}"));
+    }
+
+    @Test
+    public void assertEvaluateClosure() {
+        Closure<?> closure = new InlineExpressionParser("${1+2}").evaluateClosure();
+        assertThat(closure.call().toString(), is("3"));
     }
 }

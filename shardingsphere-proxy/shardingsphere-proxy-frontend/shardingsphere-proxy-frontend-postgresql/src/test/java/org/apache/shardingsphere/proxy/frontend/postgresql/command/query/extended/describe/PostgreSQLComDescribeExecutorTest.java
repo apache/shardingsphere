@@ -31,15 +31,15 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.After;
 import org.junit.Before;
@@ -82,7 +82,8 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     private static final String TABLE_NAME = "t_order";
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", 
+            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
     
     private ContextManager contextManagerBefore;
     
@@ -118,7 +119,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
     }
     
     @Test
