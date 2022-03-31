@@ -39,13 +39,6 @@
             <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
-    <#elseif framework?contains("spring-boot-starter")>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
-            <version>${r'${project.version}'}</version>
-        </dependency>
-        
     </#if>
     <#if framework?contains("jpa")>
         <dependency>
@@ -73,7 +66,13 @@
             <artifactId>spring-context-support</artifactId>
             <version>5.2.15.RELEASE</version>
         </dependency>
-        <#if framework?contains("spring-boot-starter")>
+    </#if>
+    <#if framework?contains("spring-boot-starter")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
@@ -84,8 +83,8 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>2.2.0.RELEASE</version>
         </dependency>
-        </#if>
-    <#elseif framework=="spring-boot-starter-jdbc">
+    </#if>
+    <#if framework=="spring-boot-starter-jdbc">
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>

@@ -19,10 +19,9 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
-
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import java.sql.SQLException;
 

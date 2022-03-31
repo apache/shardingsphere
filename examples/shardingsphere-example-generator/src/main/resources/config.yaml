@@ -41,6 +41,7 @@ frameworks:
   - spring-boot-starter-jdbc
   - spring-boot-starter-jpa
   - spring-boot-starter-mybatis
+  - spring-namespace-jdbc
   - spring-namespace-jpa
   - spring-namespace-mybatis
 

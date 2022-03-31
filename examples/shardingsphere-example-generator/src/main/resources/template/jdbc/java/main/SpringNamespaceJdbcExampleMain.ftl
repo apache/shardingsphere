@@ -19,9 +19,9 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import java.sql.SQLException;
 
 public final class ExampleMain {
