@@ -42,15 +42,16 @@ import java.util.Collections;
 /**
  * Select database executor for openGauss.
  */
-@Getter
 public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String DAT_COMPATIBILITY = "PG";
     
     private final String sql;
     
+    @Getter
     private QueryResultMetaData queryResultMetaData;
     
+    @Getter
     private MergedResult mergedResult;
     
     public OpenGaussSelectDatabaseExecutor(final String sql) {
