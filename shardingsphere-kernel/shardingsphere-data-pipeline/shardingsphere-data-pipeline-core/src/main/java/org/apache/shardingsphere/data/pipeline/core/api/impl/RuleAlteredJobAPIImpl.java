@@ -224,12 +224,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
-            throw new RuntimeException("Not necessary to restore source writing");
+            return;
         }
         boolean isLocked = lock.isLocked(schemaName);
         if (!isLocked) {
             log.info("restoreClusterWriteDB, isLocked false, schemaName={}", schemaName);
-            throw new RuntimeException("Not necessary to restore source writing");
+            return;
         }
         lock.releaseLock(schemaName);
     }
