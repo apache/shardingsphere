@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rev
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SecurableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UserNameContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.LoginSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -309,7 +310,13 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new SQLServerCreateLoginStatement();
+        SQLServerCreateLoginStatement result = new SQLServerCreateLoginStatement();
+        if (null != ctx.ignoredNameIdentifier()) {
+            LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+            result.setLoginSegment(loginSegment);
+        }
+        return result;
     }
     
     @Override
