@@ -123,5 +123,7 @@ execute
     | dropOperator
     | dropMaterializedView
     | dropGroup
+    | dropEventTrigger
+    | dropAggregate
     ) SEMI_?
     ;
