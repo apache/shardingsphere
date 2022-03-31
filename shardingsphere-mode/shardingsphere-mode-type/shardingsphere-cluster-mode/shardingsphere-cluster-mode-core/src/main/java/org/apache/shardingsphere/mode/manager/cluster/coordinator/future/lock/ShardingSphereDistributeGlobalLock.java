@@ -147,12 +147,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean isLocked(final String lockName) {
-        LockState lockState = synchronizedLockState.get();
-        boolean result = LockState.LOCKED == lockState;
-        if (!result) {
-            log.info("isLocked false, lockState={}, globalLock.hashCode={}", lockState, hashCode());
-        }
-        return result;
+        return LockState.LOCKED == synchronizedLockState.get();
     }
     
     private boolean isAckCompleted() {
