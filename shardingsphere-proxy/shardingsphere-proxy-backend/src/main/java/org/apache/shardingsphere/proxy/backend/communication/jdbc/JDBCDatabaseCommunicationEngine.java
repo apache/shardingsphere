@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -84,8 +87,9 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         this.backendConnection = backendConnection;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
-        federationExecutor = FederationExecutorFactory.newInstance(schemaName, metaDataContexts.getOptimizerContext(),
+        String databaseName = backendConnection.getConnectionSession().getSchemaName();
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaNames().stream().findFirst().orElse(databaseName);
+        federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
     
@@ -119,8 +123,10 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
                 logicSQL, getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         // TODO move federation route logic to binder
-        if (executionContext.getRouteContext().isFederated() 
-                || logicSQL.getSqlStatementContext().getDatabaseType().containsSystemSchema(backendConnection.getConnectionSession().getSchemaName())) {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        String defaultSchemaName = backendConnection.getConnectionSession().getSchemaName();
+        if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext 
+                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), defaultSchemaName))) {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);

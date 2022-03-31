@@ -1814,3 +1814,27 @@ SEND
 MEMBER
     : M E M B E R
     ;
+
+HASHED
+    : H A S H E D
+    ;
+
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
+CHECK_EXPIRATION
+    : C H E C K UL_ E X P I R A T I O N
+    ;
+
+CHECK_POLICY
+    : C H E C K UL_ P O L I C Y
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;

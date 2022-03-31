@@ -21,9 +21,11 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
 import org.apache.shardingsphere.example.generator.core.GenerateUtil;
+import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,9 +34,11 @@ import java.util.Map;
 public final class ProxyExampleGenerator implements ExampleGenerator {
     
     @Override
-    public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
-        for (String eachFramework : dataModel.get("frameworks").split(",")) {
-            for (String eachFeature : GenerateUtil.generateCombination(dataModel.get("features").split(","))) {
+    public void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
+        for (String eachFramework : configuration.getFrameworks()) {
+            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
+                // TODO refactor proxy process
+                Map<String, String> dataModel = new LinkedHashMap<>();
                 generate(templateConfig, dataModel, eachFramework, eachFeature);
             }
         }

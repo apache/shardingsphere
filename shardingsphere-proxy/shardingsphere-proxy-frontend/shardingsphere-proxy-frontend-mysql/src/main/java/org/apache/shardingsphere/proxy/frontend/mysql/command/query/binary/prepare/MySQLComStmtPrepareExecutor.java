@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
@@ -66,6 +67,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
+        failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
@@ -81,6 +83,15 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return createPackets(statementId, projectionCount, parameterCount);
     }
     
+    private void failedIfContainsMultiStatements() {
+        // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
+        if (connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)
+                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()
+                && packet.getSql().contains(";")) {
+            throw new UnsupportedPreparedStatementException();
+        }
+    }
+    
     private int getProjectionCount(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
@@ -90,7 +101,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         return 0;
     }
-
+    
     private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));

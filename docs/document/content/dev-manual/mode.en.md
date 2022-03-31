@@ -14,6 +14,7 @@ chapter = true
 | *Implementation Class*        | *Description*                             |
 | ----------------------------- | ----------------------------------------- |
 | FileRepository                | File persistence                          |
+| H2Repository                  | H2 persistence                            |
 
 ## ClusterPersistRepository
 

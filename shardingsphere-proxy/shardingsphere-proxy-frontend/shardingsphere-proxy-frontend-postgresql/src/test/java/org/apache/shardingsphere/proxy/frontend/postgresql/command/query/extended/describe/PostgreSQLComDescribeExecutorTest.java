@@ -119,7 +119,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
     }
     
     @Test

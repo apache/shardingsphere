@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
@@ -45,10 +46,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
@@ -326,6 +329,24 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
+        String schemaName = event.getSchemaName();
+        try {
+            restoreSourceWriting(schemaName);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("restore source writing failed, schemaName={}", schemaName, ex);
+        }
         PipelineSimpleLock.getInstance().releaseLock(event.getSchemaName());
+    }
+    
+    private void restoreSourceWriting(final String schemaName) {
+        log.info("restoreSourceWriting, schemaName={}", schemaName);
+        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        if (null != lock && lock.isLocked(schemaName)) {
+            log.info("Source writing is still stopped on schema '{}', restore it now", schemaName);
+            lock.releaseLock(schemaName);
+        }
     }
 }

@@ -55,7 +55,7 @@ public final class KernelProcessor {
     }
     
     private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData.getName(), metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData.getName(), metaData.getDefaultSchema(), props, metaData.getRuleMetaData().getRules());
         return sqlRewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), logicSQL.getSqlStatementContext(), routeContext);
     }
     

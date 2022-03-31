@@ -295,7 +295,7 @@ createUserWithoutLoginClause
 optionsList
     : DEFAULT_SCHEMA EQ_ schemaName
     | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
-    | SID EQ_ (NCHAR_TEXT | HEX_DIGIT_)
+    | SID EQ_ sid
     | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
     ;
 
@@ -363,7 +363,73 @@ alterRole
     ;
 
 createLogin
-    : CREATE LOGIN
+    : CREATE LOGIN ignoredNameIdentifier (createLoginForSQLServerClause | createLoginForAzureSQLDatabaseClause | createLoginForAzureManagedInstanceClause
+    | createLoginForAzureSynapseAnalyticsClause | createLoginForAnalyticsPlatformSystemClause)
+    ;
+
+createLoginForSQLServerClause
+    : WITH createLoginForSQLServerOptionList | FROM sources
+    ;
+
+createLoginForSQLServerOptionList
+    : PASSWORD EQ_ (stringLiterals | hashedPassword HASHED) (MUST_CHANGE)? (COMMA_ createLoginForSQLServerOptionListClause (COMMA_ createLoginForSQLServerOptionListClause)*)?
+    ;
+
+createLoginForSQLServerOptionListClause
+    : SID EQ_ sid | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    | CHECK_EXPIRATION EQ_ (ON | OFF) | CHECK_POLICY EQ_ (ON | OFF) | CREDENTIAL EQ_ identifier
+    ;
+
+hashedPassword
+    : HEX_DIGIT_
+    ;
+
+sid
+    : NCHAR_TEXT | HEX_DIGIT_
+    ;
+
+sources
+    : WINDOWS (WITH windowsOptions (COMMA_ windowsOptions)*)? | CERTIFICATE identifier | ASYMMETRIC KEY identifier
+    ;
+
+windowsOptions
+    : DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    ;
+
+createLoginForAzureSQLDatabaseClause
+    : FROM EXTERNAL PROVIDER | WITH createLoginForAzureSQLDatabaseOptionList (COMMA_ createLoginForAzureSQLDatabaseOptionList)*
+    ;
+
+createLoginForAzureSQLDatabaseOptionList
+    : PASSWORD EQ_ stringLiterals (COMMA_ SID EQ_ sid)?
+    ;
+
+createLoginForAzureManagedInstanceClause
+    : (FROM EXTERNAL PROVIDER)? WITH azureManagedInstanceOptionList (COMMA_ azureManagedInstanceOptionList)*
+    ;
+
+azureManagedInstanceOptionList
+    : PASSWORD EQ_ stringLiterals | SID EQ_ sid | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    ;
+
+createLoginForAzureSynapseAnalyticsClause
+    : WITH createLoginForAzureSynapseAnalyticsOptionList
+    ;
+
+createLoginForAzureSynapseAnalyticsOptionList
+    : PASSWORD EQ_ stringLiterals (COMMA_ SID EQ_ sid)?
+    ;
+
+createLoginForAnalyticsPlatformSystemClause
+    : WITH createLoginForAnalyticsPlatformSystemOptionList | FROM WINDOWS
+    ;
+
+createLoginForAnalyticsPlatformSystemOptionList
+    : PASSWORD EQ_ stringLiterals (MUST_CHANGE)? (COMMA_ createLoginForAnalyticsPlatformSystemOptionListClause (COMMA_ createLoginForAnalyticsPlatformSystemOptionListClause)*)?
+    ;
+
+createLoginForAnalyticsPlatformSystemOptionListClause
+    : CHECK_EXPIRATION EQ_ (ON | OFF) | CHECK_POLICY EQ_ (ON | OFF)
     ;
 
 dropLogin

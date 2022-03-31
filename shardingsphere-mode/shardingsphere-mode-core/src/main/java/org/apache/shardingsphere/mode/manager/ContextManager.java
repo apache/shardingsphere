@@ -179,7 +179,7 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
         alterSingleTableDataNodes(schemaName, metaData, changedTableMetaData);
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName);
-        metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
+        metaData.getDefaultSchema().put(changedTableMetaData.getName(), changedTableMetaData);
         databaseMetaData.put(changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(databaseMetaData));
     }
@@ -200,7 +200,7 @@ public final class ContextManager implements AutoCloseable {
     private void deleteTableSchema(final String schemaName, final String deletedTable) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName);
-        metaData.getSchema().remove(deletedTable);
+        metaData.getDefaultSchema().remove(deletedTable);
         databaseMetaData.remove(deletedTable);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(databaseMetaData));
     }
@@ -395,9 +395,9 @@ public final class ContextManager implements AutoCloseable {
     private void loadTableMetaData(final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
         TableMetaData tableMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(tableName, new TableMetaData());
         if (!tableMetaData.getColumns().isEmpty()) {
-            metaDataContexts.getMetaData(schemaName).getSchema().put(tableName, tableMetaData);
+            metaDataContexts.getMetaData(schemaName).getDefaultSchema().put(tableName, tableMetaData);
             metaDataContexts.getMetaDataPersistService().ifPresent(optional ->
-                    optional.getSchemaMetaDataService().persist(schemaName, schemaName, metaDataContexts.getMetaData(schemaName).getSchema()));
+                    optional.getSchemaMetaDataService().persist(schemaName, schemaName, metaDataContexts.getMetaData(schemaName).getDefaultSchema()));
         }
     }
     

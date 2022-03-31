@@ -33,6 +33,12 @@ public final class PostgreSQLColumnTypeTest {
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
     }
     
+    @Test
+    public void assertValueOfJDBCTypeForBooleanType() {
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BOOLEAN);
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BOOL));
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfJDBCTypeExThrown() {
         PostgreSQLColumnType.valueOfJDBCType(Types.REF_CURSOR);

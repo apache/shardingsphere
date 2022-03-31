@@ -60,15 +60,16 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     private void buildExportableMap(final ShardingSphereMetaData metaData) {
         Optional<ExportableRule> exportableRule = getExportableRule(metaData);
         exportableRule.ifPresent(op -> {
-            Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE));
+            Map<String, Object> exportable = exportableRule.get()
+                    .export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE));
             exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap());
-            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap());
+            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap());
         });
     }
     
     private Optional<ExportableRule> getExportableRule(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE))).findAny();
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE))).findAny();
     }
     
     private Collection<Collection<Object>> buildData(final ReadwriteSplittingRuleConfiguration configuration) {

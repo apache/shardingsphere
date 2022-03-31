@@ -45,7 +45,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CreateTrafficRuleHandlerTest {
+public final class CreateTrafficRuleHandlerTest {
     
     static {
         ShardingSphereServiceLoader.register(TrafficAlgorithm.class);
@@ -107,7 +107,7 @@ public class CreateTrafficRuleHandlerTest {
         return Collections.singletonList(trafficRuleConfiguration);
     }
     
-    private CreateTrafficRuleStatement getSQLStatement(final TrafficRuleSegment...segments) {
+    private CreateTrafficRuleStatement getSQLStatement(final TrafficRuleSegment... segments) {
         return new CreateTrafficRuleStatement(Arrays.asList(segments));
     }
 }

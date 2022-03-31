@@ -33,6 +33,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind.OpenGaussComBatchBindExecutor;
+import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple.OpenGaussComQueryExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
@@ -44,7 +45,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute.PostgreSQLComExecuteExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -82,7 +82,7 @@ public final class OpenGaussCommandExecutorFactoryTest {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         when(queryPacket.getSql()).thenReturn("");
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, queryPacket, connectionSession, connectionContext);
-        assertTrue(actual instanceof PostgreSQLComQueryExecutor);
+        assertTrue(actual instanceof OpenGaussComQueryExecutor);
     }
     
     @Test
