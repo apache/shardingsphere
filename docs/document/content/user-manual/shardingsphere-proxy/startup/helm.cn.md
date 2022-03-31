@@ -2,6 +2,7 @@
 title = "使用 Helm"
 weight = 3
 +++
+# ShardingSphere-Proxy Helm Chart
 ## **太长不看版**
 
 ```
@@ -56,9 +57,9 @@ helm uninstall shardingsphere-proxy
 helm uninstall 会默认删除所有发布记录，如果需要留下发布记录，请加上 ```--keep-history```
 
 ## 配置项说明
-## Parameters
+### Parameters
 
-### Global parameters
+#### Global parameters
 
 | Name                        | Description                                                                     | Value |
 | --------------------------- | ------------------------------------------------------------------------------- | ----- |
@@ -66,7 +67,7 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 | `global.resources.requests` | The requested resources for the shardingsphere-proxy,mysql,zookeeper containers | `{}`  |
 
 
-### mysql parameters
+#### mysql parameters
 
 | Name                   | Description               | Value  |
 | ---------------------- | ------------------------- | ------ |
@@ -75,7 +76,7 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 | `mysql.storagerequest` | mysql持久化存储需要的空间           | `nil`  |
 
 
-### zookeeper parameters
+#### zookeeper parameters
 
 | Name                       | Description                   | Value  |
 | -------------------------- | ----------------------------- | ------ |
@@ -84,7 +85,7 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 | `zookeeper.storagerequest` | zookeeper持久化存储需要的空间           | `nil`  |
 
 
-### shardingsphere-proxy parameters
+#### shardingsphere-proxy parameters
 
 | Name                     | Description                                | Value                         |
 | ------------------------ | ------------------------------------------ | ----------------------------- |
@@ -98,7 +99,7 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 | `proxyport`              | 启动端口                                       | `3307`                        |
 
 
-相关配置详见 shardingsphere 文档
+### 相关配置详见 shardingsphere 文档
 
 [YAML 配置 :: ShardingSphere (apache.org)](https://shardingsphere.apache.org/document/5.1.0/cn/user-manual/shardingsphere-jdbc/yaml-config/)
 

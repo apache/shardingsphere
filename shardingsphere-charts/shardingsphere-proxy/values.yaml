@@ -55,7 +55,7 @@ image:
   repository: apache/shardingsphere-proxy
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "5.1.0"
+  tag: "5.1.1"
 ## Deployment Parameters
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
