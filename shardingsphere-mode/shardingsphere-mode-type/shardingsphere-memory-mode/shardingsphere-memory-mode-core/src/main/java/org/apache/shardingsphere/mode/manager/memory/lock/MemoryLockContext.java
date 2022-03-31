@@ -58,6 +58,10 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public boolean isLockedSchema(final String schemaName) {
-        return null != schemaName && null != locks.get(schemaName) && locks.get(schemaName).isLocked(schemaName);
+        if (null == schemaName) {
+            return false;
+        }
+        ShardingSphereLock shardingSphereLock = locks.get(schemaName);
+        return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
     }
 }
