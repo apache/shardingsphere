@@ -44,7 +44,7 @@ public enum SystemSchemaBuilderRule {
     
     POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_database", "pg_tablespace"));
     
-    private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>();
+    private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>(values().length, 1);
     
     private final String databaseType;
     
