@@ -41,7 +41,6 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     
-    // TODO it's less than CHECK_ACK_INTERVAL_MILLISECONDS, is it OK?
     private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 2 * 100;
     
     private final InstanceContext instanceContext;
@@ -58,7 +57,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         this.instanceContext = instanceContext;
         this.ownerInstanceId = ownerInstanceId;
         this.lockService = lockService;
-        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.INITIALIZATION : LockState.LOCKED);
+        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.UNLOCKED : LockState.LOCKED);
         initLockedInstances(instanceContext);
     }
     
@@ -93,7 +92,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         do {
             if (lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId))) {
                 if (isAckOK(timeout - count)) {
-                    boolean result = synchronizedLockState.compareAndSet(LockState.INITIALIZATION, LockState.LOCKED);
+                    boolean result = synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKED);
                     log.info("innerTryLock, result={}, lockName={}, lockState={}, globalLock.hashCode={}", result, lockName, synchronizedLockState.get(), hashCode());
                     return result;
                 }
@@ -101,8 +100,6 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             sleepInterval();
             count += CHECK_ACK_INTERVAL_MILLISECONDS;
         } while (timeout > count);
-        // TODO if lock state set to UNLOCKED, the next CAS in tryLock might be failed
-        synchronizedLockState.compareAndSet(LockState.INITIALIZATION, LockState.UNLOCKED);
         log.info("innerTryLock timeout, lockName={}", lockName);
         return false;
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -54,9 +55,7 @@ public final class DistributeLockContext implements LockContext {
     
     @Override
     public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
-        if (null == schemaName) {
-            throw new IllegalArgumentException("schemaName is null");
-        }
+        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
         ShardingSphereGlobalLock result = globalLocks.get(schemaName);
         if (null != result) {
             return result;
@@ -77,6 +76,9 @@ public final class DistributeLockContext implements LockContext {
     
     @Override
     public synchronized boolean isLockedSchema(final String schemaName) {
+        if (null == schemaName) {
+            return false;
+        }
         return getGlobalLock(schemaName).map(shardingSphereGlobalLock -> shardingSphereGlobalLock.isLocked(schemaName)).orElse(false);
     }
     
