@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
@@ -33,12 +34,14 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Global distribute lock of ShardingSphere.
  */
+@Slf4j
 public final class ShardingSphereDistributeGlobalLock implements ShardingSphereGlobalLock {
     
     private static final int CHECK_ACK_INTERVAL_MILLISECONDS = 1000;
     
     private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     
+    // TODO it's less than CHECK_ACK_INTERVAL_MILLISECONDS, is it OK?
     private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 2 * 100;
     
     private final InstanceContext instanceContext;
@@ -83,19 +86,24 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     private boolean innerTryLock(final String lockName, final long timeout) {
         if (LockState.LOCKED == synchronizedLockState.get()) {
+            log.info("innerTryLock, already locked, lockName={}", lockName);
             return false;
         }
         long count = 0;
         do {
             if (lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId))) {
                 if (isAckOK(timeout - count)) {
-                    return synchronizedLockState.compareAndSet(LockState.INITIALIZATION, LockState.LOCKED);
+                    boolean result = synchronizedLockState.compareAndSet(LockState.INITIALIZATION, LockState.LOCKED);
+                    log.info("innerTryLock, result={}, lockName={}, lockState={}, globalLock.hashCode={}", result, lockName, synchronizedLockState.get(), hashCode());
+                    return result;
                 }
             }
             sleepInterval();
             count += CHECK_ACK_INTERVAL_MILLISECONDS;
         } while (timeout > count);
+        // TODO if lock state set to UNLOCKED, the next CAS in tryLock might be failed
         synchronizedLockState.compareAndSet(LockState.INITIALIZATION, LockState.UNLOCKED);
+        log.info("innerTryLock timeout, lockName={}", lockName);
         return false;
     }
     
@@ -108,6 +116,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             sleepInterval();
             count += CHECK_ACK_INTERVAL_MILLISECONDS;
         } while (timeout > count);
+        log.info("isAckOK timeout");
         return false;
     }
     
@@ -120,7 +129,9 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public void releaseLock(final String lockName) {
+        log.info("releaseLock, lockName={}", lockName);
         if (LockState.LOCKED != synchronizedLockState.get()) {
+            log.info("releaseLock, state is not locked, ignore, lockName={}", lockName);
             return;
         }
         lockService.releaseLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));

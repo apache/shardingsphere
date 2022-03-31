@@ -33,13 +33,25 @@ public final class StandaloneLockContext implements LockContext {
     private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
     
     @Override
-    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+    public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
         ShardingSphereLock result = locks.get(schemaName);
-        if (null == result) {
+        if (null != result) {
+            return result;
+        }
+        synchronized (locks) {
+            result = locks.get(schemaName);
+            if (null != result) {
+                return result;
+            }
             result = new ShardingSphereNonReentrantLock(new ReentrantLock());
             locks.put(schemaName, result);
+            return result;
         }
-        return Optional.of(result);
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        return Optional.ofNullable(locks.get(schemaName));
     }
     
     @Override

@@ -32,13 +32,14 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -87,7 +88,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private void checkModeConfig() {
         ModeConfiguration modeConfig = PipelineContext.getModeConfig();
         Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
+        Preconditions.checkArgument("Cluster".equalsIgnoreCase(modeConfig.getType()), "Mode must be `Cluster`.");
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
@@ -156,11 +157,37 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }, LinkedHashMap::putAll);
     }
     
+    private void verifyManualMode(final JobConfiguration jobConfig) {
+        RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (null != ruleAlteredContext.getCompletionDetectAlgorithm()) {
+            throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
+        }
+    }
+    
+    private void verifyJobNotCompleted(final JobConfiguration jobConfig) {
+        if (RuleAlteredJobProgressDetector.isJobCompleted(jobConfig.getHandleConfig().getJobShardingCount(), getProgress(jobConfig).values())) {
+            throw new PipelineVerifyFailedException("Job is completed, it's not necessary to do it.");
+        }
+    }
+    
+    private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
+        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        if (null == lock || !lock.isLocked(schemaName)) {
+            throw new PipelineVerifyFailedException("Source writing is not stopped.");
+        }
+    }
+    
     @Override
     public void stopClusterWriteDB(final String jobId) {
         checkModeConfig();
         log.info("stopClusterWriteDB for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyManualMode(jobConfig);
+        verifyJobNotStopped(jobConfigPOJO);
+        verifyJobNotCompleted(jobConfig);
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
         stopClusterWriteDB(schemaName, jobId);
     }
@@ -168,10 +195,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String schemaName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getLockContext();
-        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
-        if (null == lock) {
-            log.info("stopClusterWriteDB, lock is null");
-            throw new RuntimeException("Stop source writing failed");
+        ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(schemaName);
+        if (lock.isLocked(schemaName)) {
+            throw new RuntimeException("Already stopped.");
         }
         boolean tryLockSuccess = lock.tryLock(schemaName);
         log.info("stopClusterWriteDB, tryLockSuccess={}", tryLockSuccess);
@@ -184,7 +210,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void restoreClusterWriteDB(final String jobId) {
         checkModeConfig();
         log.info("restoreClusterWriteDB for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyManualMode(jobConfig);
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
         restoreClusterWriteDB(schemaName, jobId);
     }
@@ -195,13 +223,14 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
-            throw new RuntimeException("Not necessary to restore source writing");
+            return;
         }
         boolean isLocked = lock.isLocked(schemaName);
         if (!isLocked) {
             log.info("restoreClusterWriteDB, isLocked false, schemaName={}", schemaName);
-            throw new RuntimeException("Not necessary to restore source writing");
+            return;
         }
+        log.info("restoreClusterWriteDB, before releaseLock, schemaName={}, jobId={}", schemaName, jobId);
         lock.releaseLock(schemaName);
     }
     
@@ -236,11 +265,18 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         return null != ruleAlteredContext.getDataConsistencyCheckAlgorithm();
     }
     
+    private void verifyDataConsistencyCheck(final JobConfigurationPOJO jobConfigPOJO, final JobConfiguration jobConfig) {
+        verifyManualMode(jobConfig);
+        verifySourceWritingStopped(jobConfig);
+    }
+    
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyDataConsistencyCheck(jobConfigPOJO, jobConfig);
         return dataConsistencyCheck(jobConfig);
     }
     
@@ -258,7 +294,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyDataConsistencyCheck(jobConfigPOJO, jobConfig);
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         DataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, DataConsistencyCheckAlgorithm.class);
         return dataConsistencyCheck0(jobConfig, checkAlgorithm);
@@ -298,7 +336,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void switchClusterConfiguration(final String jobId) {
         checkModeConfig();
         log.info("Switch cluster configuration for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyJobNotStopped(jobConfigPOJO);
+        verifyJobNotCompleted(jobConfig);
         switchClusterConfiguration(jobConfig);
     }
     
@@ -310,7 +351,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             Optional<Boolean> checkResultOptional = repositoryAPI.getJobCheckResult(jobId);
             if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
-                throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
+                throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");
             }
         }
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
@@ -336,8 +377,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void reset(final String jobId) {
         checkModeConfig();
         log.info("Scaling job {} reset target table", jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        verifyJobStopped(jobConfigPOJO);
         try {
-            new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobId));
+            new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobConfigPOJO));
         } catch (final SQLException ex) {
             throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
         }
