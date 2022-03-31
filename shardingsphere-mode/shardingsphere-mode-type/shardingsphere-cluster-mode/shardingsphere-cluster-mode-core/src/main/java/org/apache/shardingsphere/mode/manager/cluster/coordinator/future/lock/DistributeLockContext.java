@@ -53,16 +53,22 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+    public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
         if (null == schemaName) {
-            return Optional.empty();
+            throw new IllegalArgumentException("schemaName is null");
         }
         ShardingSphereGlobalLock result = globalLocks.get(schemaName);
-        if (null == result) {
-            result = crateGlobalLock(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
-            globalLocks.put(schemaName, result);
+        if (null != result) {
+            return result;
         }
-        return Optional.of(result);
+        result = crateGlobalLock(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
+        globalLocks.put(schemaName, result);
+        return result;
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        return Optional.ofNullable(globalLocks.get(schemaName));
     }
     
     private ShardingSphereGlobalLock crateGlobalLock(final String ownerInstanceId) {

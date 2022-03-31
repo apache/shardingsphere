@@ -341,6 +341,7 @@ public final class RuleAlteredJobWorker {
     }
     
     private void restoreSourceWriting(final String schemaName) {
+        log.info("restoreSourceWriting, schemaName={}", schemaName);
         LockContext lockContext = PipelineContext.getContextManager().getLockContext();
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null != lock && lock.isLocked(schemaName)) {

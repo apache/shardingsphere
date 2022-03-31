@@ -129,6 +129,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public void releaseLock(final String lockName) {
+        log.info("releaseLock, lockName={}", lockName);
         if (LockState.LOCKED != synchronizedLockState.get()) {
             log.info("releaseLock, state is not locked, ignore, lockName={}", lockName);
             return;
