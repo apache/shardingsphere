@@ -17,12 +17,12 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-cast sql-case-id="drop_cast_if_exists_case1" />
-    <drop-cast sql-case-id="drop_cast_if_exists_case2" />
-    <drop-cast sql-case-id="drop_cast_if_exists_case3" />
-    <drop-cast sql-case-id="drop_cast_if_exists_case4" />
-    <drop-cast sql-case-id="drop_cast_if_exists_case5" />
-    <drop-cast sql-case-id="drop_cast_case1" />
-    <drop-cast sql-case-id="drop_cast_case2" />
-    <drop-cast sql-case-id="drop_cast_case3" />
+    <drop-cast sql-case-id="drop_cast_if_exists_integer_as_no_such_schema" />
+    <drop-cast sql-case-id="drop_cast_if_exists_integer_as_no_such_type2" />
+    <drop-cast sql-case-id="drop_cast_if_exists_no_such_schema_as_integer" />
+    <drop-cast sql-case-id="drop_cast_if_exists_no_such_type1_as_integer" />
+    <drop-cast sql-case-id="drop_cast_if_exists_text_as_text" />
+    <drop-cast sql-case-id="drop_cast_int4_as_casttesttype" />
+    <drop-cast sql-case-id="drop_cast_text_as_casttesttype" />
+    <drop-cast sql-case-id="drop_cast_text_as_text" />
 </sql-parser-test-cases>
