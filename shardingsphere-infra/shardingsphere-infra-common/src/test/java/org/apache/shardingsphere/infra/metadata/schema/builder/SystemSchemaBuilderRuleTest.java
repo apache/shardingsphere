@@ -17,29 +17,33 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SystemSchemaBuilderRuleTest {
     
     @Test
     public void assertValueOfSchemaPathSuccess() {
-        String databaseName = new MySQLDatabaseType().getName().toLowerCase();
-        String schemaName = "information_schema";
-        SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(databaseName, schemaName);
+        SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getName(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actual.getTables(), is(Arrays.asList("columns", "tables", "views")));
+        assertThat(actual.getTables(), is(Sets.newHashSet("columns", "tables", "views")));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfSchemaPathFailure() {
-        String databaseName = new MySQLDatabaseType().getName().toLowerCase();
-        String schemaName = "test";
-        SystemSchemaBuilderRule.valueOf(databaseName, schemaName);
+        SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getName(), "test");
+    }
+    
+    @Test
+    public void assertIsisSystemTable() {
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
+        assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
 }
