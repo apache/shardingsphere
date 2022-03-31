@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
@@ -61,7 +62,8 @@ public final class DistSQLBackendHandlerFactory {
             return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
-            if (sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement || sqlStatement instanceof UpdatableScalingRALStatement) {
+            if (sqlStatement instanceof CommonDistSQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement
+                    || sqlStatement instanceof UpdatableScalingRALStatement) {
                 return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
             }
             checkLockedSchema(connectionSession);
