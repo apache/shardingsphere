@@ -126,5 +126,6 @@ execute
     | dropCast
     | dropEventTrigger
     | dropAggregate
+    | dropCollation
     ) SEMI_?
     ;

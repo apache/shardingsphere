@@ -448,7 +448,9 @@ public enum SQLVisitorRule {
     
     DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
 
-    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL);
+    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL),
+    
+    DROP_COLLATION("DropCollation", SQLStatementType.DDL);
     
     private final String name;
     
