@@ -60,7 +60,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build IT image
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+        run: ./mvnw -T1C -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Save IT image
         run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload IT image
@@ -196,7 +196,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -DskipITs -DskipTests
+        run: ./mvnw -T1C -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
   
@@ -218,6 +218,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -DskipITs -DskipTests
+        run: ./mvnw -T1C -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Pit.env.opentelemetry
