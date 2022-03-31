@@ -4248,6 +4248,17 @@
         </from>
     </select>
 
+    <select sql-case-id="select_table_with_capacity_unit_charset">
+        <from>
+            <simple-table name="T_RATION_INFO" alias="T" start-index="22" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="15">
+            <column-projection name="USER_NO" start-index="7" stop-index="15">
+                <owner name="T" start-index="7" stop-index="7" />
+            </column-projection>>
+         </projections>
+    </select>
+
     <select sql-case-id="select_with_character_charset">
         <projections start-index="7" stop-index="24">
     <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->

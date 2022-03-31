@@ -120,5 +120,6 @@
     <sql-case id="select_with_schema_name_in_table" value="SELECT order_id FROM public.t_order WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_database_name_and_schema_name_in_table" value="SELECT order_id FROM sharding_db.public.t_order WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_underscore_charset" value="SELECT _code,_a FROM t_order" db-types="MySQL" />
+    <sql-case id="select_table_with_capacity_unit_charset" value="SELECT T.USER_NO FROM T_RATION_INFO T" db-types="Oracle" />
     <sql-case id="select_with_character_charset" value="SELECT _binary 'abc' as a" db-types="MySQL" />
 </sql-cases>
