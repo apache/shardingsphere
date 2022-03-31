@@ -25,5 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class OgCatalog {
     
+    // CHECKSTYLE:OFF
     public final OgDatabase[] pg_database;
+    // CHECKSTYLE:ON
 }

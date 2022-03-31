@@ -25,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class OgDatabase {
     
+    // CHECKSTYLE:OFF
     public final String datname;
     
-    public final String datcompatibility; 
+    public final String datcompatibility;
+    // CHECKSTYLE:ON
 }
