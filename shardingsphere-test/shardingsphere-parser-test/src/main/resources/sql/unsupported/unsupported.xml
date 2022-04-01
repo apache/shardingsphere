@@ -58,12 +58,10 @@
     <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
     <sql-case id="create_by_mysql_source_test_case1" value="CREATE  VIEW v1 AS SELECT GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a) FROM t1 AS `߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789` GROUP BY a WITH ROLLUP" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case2" value="CREATE DEFINER = u1@192.129.12.11 VIEW v3 as SELECT * FROM t1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case3" value="CREATE DEFINER = u1@localhost FUNCTION f2() RETURNS int BEGIN DECLARE n int; DECLARE m int; SET n:= (SELECT min(a) FROM t1); SET m:= (SELECT max(a) FROM t1); RETURN n &lt; m; END ;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case4" value="CREATE DEFINER=CURRENT_USER() FUNCTION should_not_parse RETURNS STRING SONAME &quot;should_not_parse.so&quot;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case5" value="CREATE DEFINER=baz@localhost PROCEDURE my_db.baz_proc() BEGIN set ROLE all; INSERT into my_db.t1 values(4) on duplicate key UPDATE id = values(id) + 400; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case6" value="CREATE DEFINER=event_u2@192.1.1.140 EVENT e3 ON SCHEDULE AT &apos;2037-01-01 00:00:00&apos; DISABLE DO SET @a = 5" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case7" value="CREATE DEFINER=event_u2@192.1.1.140 EVENT e4 ON SCHEDULE AT &apos;2037-01-01 00:00:00&apos; DISABLE DO SET @a = 5" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case8" value="CREATE DEFINER=mysqltest_u1@localhost FUNCTION f_evil () RETURNS INT SQL SECURITY INVOKER BEGIN SET @a:= CURRENT_USER(); SET @b:= (SELECT COUNT(*) FROM t1); RETURN @b; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case9" value="CREATE DEFINER=root@localhost PROCEDURE p1() BEGIN UPDATE t1, t2 SET a = 1 WHERE regexp_like(t1.subject, t2.pattern); END|" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case10" value="CREATE DEFINER=someone@somewhere FUNCTION should_not_parse RETURNS STRING SONAME &quot;should_not_parse.so&quot;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case11" value="CREATE DEFINER=trig_u2@xyz.com TRIGGER trig3 BEFORE INSERT ON t1 FOR EACH ROW SET @sum = 1" db-types="MySQL"/>
@@ -85,7 +83,6 @@
     <sql-case id="create_by_mysql_source_test_case29" value="CREATE FUNCTION bug21975() returns int BEGIN grant select on t1 to &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case30" value="CREATE FUNCTION bug21975() returns int BEGIN revoke all privileges on *.* from &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case31" value="CREATE FUNCTION bug21975() returns int BEGIN revoke select on t1 from &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case32" value="CREATE FUNCTION bug27563() RETURNS INT(11) DETERMINISTIC BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;70100&apos; SET @a:= &apos;killed&apos;; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET @a:= &apos;exception&apos;; SET DEBUG_SYNC= &apos;now SIGNAL in_sync WAIT_FOR kill&apos;; RETURN 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case33" value="CREATE FUNCTION bug_13627_f() returns int BEGIN DROP TRIGGER test1; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case34" value="CREATE FUNCTION bug_13627_f() returns int BEGIN LOCK TABLE t1 READ; return 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case35" value="CREATE FUNCTION bug_13627_f() returns int BEGIN alter view v1 as select 1; return 1; END" db-types="MySQL"/>
@@ -113,7 +110,6 @@
     <sql-case id="create_by_mysql_source_test_case59" value="CREATE FUNCTION f1() RETURNS INT BEGIN SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY; RETURN 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case60" value="CREATE FUNCTION f1() RETURNS INT BEGIN SET SESSION TRANSACTION READ ONLY; RETURN 1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case61" value="CREATE FUNCTION f1() RETURNS INTEGER BEGIN CALL db1.p1(); RETURN 1; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case78" value="CREATE FUNCTION f3() RETURNS int BEGIN DECLARE a, b int; DROP TEMPORARY TABLE IF EXISTS t3; CREATE TEMPORARY TABLE t3 (id INT); INSERT INTO t3 VALUES (1), (2), (3); SET a:= (SELECT COUNT(*) FROM t3); SET b:= (SELECT COUNT(*) FROM t3 t3_alias); RETURN a + b; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case80" value="CREATE FUNCTION f4_show_warnings() RETURNS TEXT BEGIN SHOW WARNINGS; RETURN &quot;yeah, not so much&quot;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case81" value="CREATE FUNCTION fn(a int) RETURNS int DETERMINISTIC BEGIN RETURN a; END |" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case91" value="CREATE FUNCTION service_get_write_locks RETURNS INT SONAME &quot;$LOCKING_SERVICE&quot;" db-types="MySQL"/>
@@ -175,7 +171,6 @@
     <sql-case id="create_by_mysql_source_test_case216" value="CREATE PROCEDURE p1() CREATE VIEW v1 AS SELECT * FROM t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case217" value="CREATE PROCEDURE p1() LOAD DATA INFILE &apos;../../std_data/loaddata_utf8.dat&apos; INTO TABLE t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case218" value="CREATE PROCEDURE p1() RENAME TABLE t2 TO t3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case219" value="CREATE PROCEDURE p1() SET @a :=1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case220" value="CREATE PROCEDURE p1() SET PASSWORD FOR u1@h = &apos;12345&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case221" value="CREATE PROCEDURE p1() SET SESSION TRANSACTION READ ONLY" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case222" value="CREATE PROCEDURE p1() SET SESSION TRANSACTION READ ONLY, ISOLATION LEVEL SERIALIZABLE" db-types="MySQL"/>
@@ -197,21 +192,17 @@
     <sql-case id="create_by_mysql_source_test_case250" value="CREATE PROCEDURE p3() BEGIN DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SELECT &apos;H1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;H2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;H3&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should be handled by H3. END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case252" value="CREATE PROCEDURE p3(n INT) DO LAG(1, n) OVER()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case253" value="CREATE PROCEDURE p4() BEGIN DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SELECT &apos;H1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;H2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;H3&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should be handled by H2. END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case254" value="CREATE PROCEDURE p4(arg VARCHAR(2)) BEGIN DECLARE var VARCHAR(1); SET var := arg; SELECT arg, var; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case255" value="CREATE PROCEDURE p5() BEGIN DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SELECT &apos;H1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;H2&apos; AS HandlerId; BEGIN DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;H3&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should be handled by H3. END; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case256" value="CREATE PROCEDURE p5() BEGIN DECLARE EXIT HANDLER FOR 1292 BEGIN SELECT &apos;Handler for 1292&apos; AS Msg; SIGNAL SQLSTATE &apos;01000&apos; SET MYSQL_ERRNO = 1234; SHOW WARNINGS; END; INSERT INTO t2 SELECT CAST(999999 AS SIGNED INTEGER), CAST(CONCAT(CAST(&apos;2X&apos; AS UNSIGNED INTEGER), &apos;999999XX&apos;) AS SIGNED INTEGER), CAST(CONCAT(CAST(&apos;3X&apos; AS UNSIGNED INTEGER), &apos;999999XX&apos;) AS SIGNED INTEGER); END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case257" value="CREATE PROCEDURE p5(arg CHAR(2)) BEGIN DECLARE var CHAR(1); SET var := arg; SELECT arg, var; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case259" value="CREATE PROCEDURE p6() BEGIN DECLARE CONTINUE HANDLER FOR 1292 BEGIN SHOW WARNINGS; SELECT &apos;Handler for 1292&apos; Msg; END; INSERT INTO t2 SELECT CAST(CONCAT(CAST(&apos;1X&apos; AS UNSIGNED INTEGER), &apos;999999XX&apos;) AS SIGNED INTEGER), CAST(CONCAT(CAST(&apos;2X&apos; AS UNSIGNED INTEGER), &apos;999999XX&apos;) AS SIGNED INTEGER), CAST(CONCAT(CAST(&apos;3X&apos; AS UNSIGNED INTEGER), &apos;999999XX&apos;) AS SIGNED INTEGER); END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case260" value="CREATE PROCEDURE p6() BEGIN DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN SELECT &apos;H1&apos; AS HandlerId; SIGNAL SQLSTATE &apos;HY000&apos;; # Should *not* be handled by H1. END; SELECT &apos;S1&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; # Should be handled by H1. END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case261" value="CREATE PROCEDURE p6() BEGIN SELECT CAST(&apos;6x&apos; as unsigned integer); SHOW WARNINGS; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case262" value="CREATE PROCEDURE p6(arg DECIMAL(2)) BEGIN DECLARE var DECIMAL(1); SET var := arg; SELECT arg, var; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case263" value="CREATE PROCEDURE p7() BEGIN DECLARE CONTINUE HANDLER FOR SQLWARNING BEGIN SELECT &apos;H1&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should *not* be handled by H1. END; SELECT &apos;S1&apos; AS SignalId; SIGNAL SQLSTATE &apos;01000&apos;; # Should be handled by H1. END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case265" value="CREATE PROCEDURE p7_show_warnings () BEGIN SHOW VARIABLES LIKE &apos;foo&apos;; SHOW WARNINGS; SELECT &quot;(SHOW WARNINGS does not have to come last)&quot;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case266" value="CREATE PROCEDURE p8() BEGIN DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;H1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN SELECT &apos;H2&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should *not* be handled by H1. END; SELECT &apos;S1&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; # Should be handled by H2. END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case267" value="CREATE PROCEDURE p8b_show_warnings () BEGIN SHOW WARNINGS; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case268" value="CREATE PROCEDURE p9() BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H1:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H1:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H2:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H2:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H3:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H3:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H4:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H4:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H5:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H5:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;01000&apos; SELECT &apos;Wrong:H6:1&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLWARNING SELECT &apos;Wrong:H6:2&apos; AS HandlerId; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN SELECT &apos;H2&apos; AS HandlerId; SIGNAL SQLSTATE &apos;01000&apos;; # Should *not* be handled by H1. END; SELECT &apos;S6&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; END; SELECT &apos;S5&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; END; SELECT &apos;S4&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; END; SELECT &apos;S3&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; END; SELECT &apos;S2&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; END; SELECT &apos;S1&apos; AS SignalId; SIGNAL SQLSTATE &apos;HY000&apos;; # Should be handled by H2. END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case269" value="CREATE PROCEDURE p_install() BEGIN INSTALL PLUGIN no_such_plugin SONAME &apos;no_such_object&apos;; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case270" value="CREATE PROCEDURE p_suid(IN i INT) SQL SECURITY DEFINER SET @c:= 0" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case271" value="CREATE PROCEDURE peter1 () BEGIN DECLARE v INTEGER DEFAULT 1234; DECLARE CONTINUE HANDLER FOR SQLWARNING BEGIN SHOW WARNINGS; SELECT &quot;handler done: &quot;,v; END; CREATE TABLE gg (smallint_column SMALLINT); CALL peter2(v); END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case274" value="CREATE PROCEDURE peter_p1 () BEGIN DECLARE x CONDITION FOR SQLSTATE &apos;42000&apos;; DECLARE EXIT HANDLER FOR x BEGIN SHOW WARNINGS; RESIGNAL x SET MYSQL_ERRNO = 9999; END; BEGIN DECLARE EXIT HANDLER FOR x BEGIN SHOW WARNINGS; RESIGNAL x SET SCHEMA_NAME = &apos;test&apos;, MYSQL_ERRNO= 1232; END; /* Raises ER_WRONG_VALUE_FOR_VAR : 1231, SQLSTATE 42000 */ SET @@sql_mode=NULL; END; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case275" value="CREATE PROCEDURE peter_p2 () BEGIN DECLARE x CONDITION for SQLSTATE &apos;42000&apos;; DECLARE EXIT HANDLER FOR x BEGIN SHOW WARNINGS; RESIGNAL x SET MESSAGE_TEXT = &apos;Hi, I am a useless error message&apos;, MYSQL_ERRNO = 9999; END; CALL peter_p1(); END" db-types="MySQL"/>
@@ -227,7 +218,6 @@
     <sql-case id="create_by_mysql_source_test_case312" value="CREATE PROCEDURE test_hint (hint_str VARCHAR(255), var_str VARCHAR(64)) BEGIN SET @orig_q= CONCAT(&quot;SELECT VARIABLE_VALUE FROM performance_schema.session_variables where VARIABLE_NAME = &apos;&quot;,  var_str, &quot;&apos;&quot;); SET @hint_q= CONCAT(&quot;SELECT /*+ &quot;, hint_str, &quot;*/ VARIABLE_VALUE&quot; , &quot; FROM performance_schema.session_variables where VARIABLE_NAME = &apos;&quot;,  var_str, &quot;&apos;&quot;); PREPARE orig_stmt FROM @orig_q; PREPARE hint_stmt FROM @hint_q; EXECUTE orig_stmt; EXECUTE hint_stmt; EXECUTE orig_stmt; DEALLOCATE PREPARE orig_stmt; DEALLOCATE PREPARE hint_stmt; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case313" value="CREATE PROCEDURE test_if_commit() BEGIN ROLLBACK; SELECT IF (COUNT(*) &gt; 0, &quot;YES&quot;, &quot;NO&quot;) AS &quot;IMPLICIT COMMIT&quot; FROM trans; DELETE FROM trans; COMMIT; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case314" value="CREATE PROCEDURE test_round(in arg bigint) BEGIN DECLARE i int; SET i = 0; WHILE (i &gt;= -20) DO BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;22003&apos; SHOW ERRORS; SELECT arg, i, round(arg, i); END; SET i = i - 1; END WHILE; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case315" value="CREATE PROCEDURE test_round_fn() BEGIN DECLARE num_digits int; SET num_digits := 3; CREATE TEMPORARY TABLE tmp_test ( number double ); INSERT INTO tmp_test VALUES (1),(0); SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test; SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test WHERE Round(number, 3) &gt;= 0; SELECT number, Round(number, num_digits) &gt; 0, Round(number, 3) &gt; 0 FROM tmp_test WHERE Round(number, num_digits) &gt;= 0; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case316" value="CREATE PROCEDURE test_round_unsigned(in arg bigint unsigned) BEGIN DECLARE i int; SET i = 0; WHILE (i &gt;= -20) DO BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;22003&apos; SHOW ERRORS; SELECT arg, i, round(arg, i); END; SET i = i - 1; END WHILE; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case321" value="CREATE ROLE of" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case322" value="CREATE ROLE r1 IDENTIFIED BY &apos;test&apos;" db-types="MySQL"/>
@@ -470,26 +460,16 @@
     <sql-case id="create_by_mysql_source_test_case673" value="CREATE TEMPORARY TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case674" value="CREATE TEMPORARY TABLE t6(a INT) ENGINE = MERGE UNION = ()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case675" value="CREATE TRIGGER BUG_12490 BEFORE UPDATE ON t_bug_12490 FOR EACH ROW HELP CONTENTS" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case676" value="CREATE TRIGGER ai AFTER INSERT ON t1 FOR EACH ROW SET @a:= NEW.at" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case677" value="CREATE TRIGGER bi_t5 BEFORE INSERT ON t5 FOR EACH ROW SET @a:= (SELECT COUNT(*) FROM t1)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case678" value="CREATE TRIGGER bi_t6 BEFORE INSERT ON t6 FOR EACH ROW SET @a:= (SELECT COUNT(*) FROM t2)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case679" value="CREATE TRIGGER bug21975 BEFORE INSERT ON t1 FOR EACH ROW BEGIN grant select on t1 to &apos;mysqltest_1&apos;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case680" value="CREATE TRIGGER bug21975 BEFORE INSERT ON t1 FOR EACH ROW BEGIN revoke all privileges on *.* from &apos;mysqltest_1&apos;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case681" value="CREATE TRIGGER bug21975 BEFORE INSERT ON t1 FOR EACH ROW BEGIN revoke select on t1 from &apos;mysqltest_1&apos;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case682" value="CREATE TRIGGER f BEFORE INSERT ON t1 FOR EACH ROW BEGIN INSERT INTO t1 ( `int` ) VALUES (4 ),( 8 ),( 2 )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case683" value="CREATE TRIGGER f BEFORE INSERT ON t1 FOR EACH ROW BEGIN UPDATE A SET `pk`=1 WHERE `pk`=0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case684" value="CREATE TRIGGER t1_BI BEFORE INSERT ON t1 FOR EACH ROW SET NEW.id := -1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case685" value="CREATE TRIGGER t1_au AFTER UPDATE ON t1 FOR EACH ROW CREATE SERVER s FOREIGN DATA WRAPPER mysql OPTIONS (USER &apos;Remote&apos;, HOST &apos;192.168.1.106&apos;, DATABASE &apos;test&apos;)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case686" value="CREATE TRIGGER t1_au AFTER UPDATE ON t1 FOR EACH ROW START SLAVE" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case687" value="CREATE TRIGGER t1_au AFTER UPDATE ON t1 FOR EACH ROW STOP SLAVE" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case689" value="CREATE TRIGGER t1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:= (SELECT COUNT(*) FROM t1)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case690" value="CREATE TRIGGER t1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=0" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case691" value="CREATE TRIGGER t1_bu BEFORE UPDATE ON t1 FOR EACH ROW ALTER SERVER s OPTIONS (password &apos;1&apos;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case692" value="CREATE TRIGGER t1_trg_after_del AFTER DELETE ON t1 FOR EACH ROW SET @a := 1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case693" value="CREATE TRIGGER t1bu BEFORE UPDATE ON bug22580_t1 FOR EACH ROW BEGIN CALL bug22580_proc_1(); END|" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case694" value="CREATE TRIGGER testtrigger_1 BEFORE INSERT ON testtable_1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case695" value="CREATE TRIGGER testtrigger_1 BEFORE INSERT ON testtable_1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case696" value="CREATE TRIGGER tr0_bi BEFORE INSERT ON t1 FOR EACH ROW PRECEDES tr1_bi SET @a:=0" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case697" value="CREATE TRIGGER tr1 AFTER DELETE ON t1 FOR EACH ROW BEGIN INSERT INTO t1 SELECT * FROM t1 AS A" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case698" value="CREATE TRIGGER tr1 AFTER UPDATE ON t1 FOR EACH ROW ALTER DATABASE db1 CHARACTER SET latin1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case699" value="CREATE TRIGGER tr1 AFTER UPDATE ON t1 FOR EACH ROW ALTER USER &apos;u1&apos;@&apos;localhost&apos; PASSWORD EXPIRE" db-types="MySQL"/>
@@ -512,51 +492,7 @@
     <sql-case id="create_by_mysql_source_test_case716" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN rename table t1 to t2; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case717" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN rename user &apos;mysqltest_2&apos; to &apos;mysqltest_1&apos;; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case718" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN unlock tables; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case719" value="CREATE TRIGGER tr1_1_bi BEFORE INSERT ON t1 FOR EACH ROW FOLLOWS tr1_bi SET @a:=0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case720" value="CREATE TRIGGER tr1_ai AFTER INSERT ON t1 FOR EACH ROW FOLLOWS tr1_bi SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case721" value="CREATE TRIGGER tr1_au AFTER UPDATE ON t1 FOR EACH ROW FOLLOWS tr1_bu SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case722" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case723" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case724" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case725" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case726" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case727" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case728" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case729" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case730" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case731" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case732" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case733" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case734" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case735" value="CREATE TRIGGER tr1_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case736" value="CREATE TRIGGER tr1_bu BEFORE UPDATE ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case737" value="CREATE TRIGGER tr1_bu BEFORE UPDATE ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case738" value="CREATE TRIGGER tr1_bu BEFORE UPDATE ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case739" value="CREATE TRIGGER tr1_bu BEFORE UPDATE ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case740" value="CREATE TRIGGER tr2_au AFTER UPDATE ON t1 FOR EACH ROW FOLLOWS tr1_bi SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case741" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW FOLLOWS tr0_bi SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case742" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW PRECEDES tr0_bi SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case743" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case744" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case745" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case746" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case747" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case748" value="CREATE TRIGGER tr2_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=2" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case749" value="CREATE TRIGGER tr2_bu BEFORE UPDATE ON t1 FOR EACH ROW FOLLOWS tr1_bi SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case750" value="CREATE TRIGGER tr2_bu BEFORE UPDATE ON t1 FOR EACH ROW FOLLOWS tr1_bu SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case751" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW FOLLOWS tr2_bi SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case752" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case753" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case759" value="CREATE TRIGGER trg27563 BEFORE INSERT ON t1 FOR EACH ROW BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE &apos;70100&apos; SET @a:= &apos;killed&apos;; DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET @a:= &apos;exception&apos;; INSERT INTO t2 VALUES(0); SET DEBUG_SYNC= &apos;now SIGNAL in_sync WAIT_FOR kill&apos;; INSERT INTO t2 VALUES(1); END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case760" value="CREATE TRIGGER trig_t1_ins BEFORE INSERT ON t1 FOR EACH ROW BEGIN SET @aux = GET_LOCK(2,1)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case761" value="CREATE TRIGGER trigger_before_update BEFORE UPDATE ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case762" value="CREATE TRIGGER trigger_before_update BEFORE UPDATE ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case763" value="CREATE TRIGGER trigger_before_update_with_join BEFORE UPDATE ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case764" value="CREATE TRIGGER trigger_for_insert_select BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case765" value="CREATE TRIGGER trigger_for_load_infile BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case766" value="CREATE TRIGGER trigger_for_normal_insert BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case767" value="CREATE TRIGGER trigger_for_normal_replace BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case768" value="CREATE TRIGGER trigger_for_replace_select BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case774" value="CREATE USER ACCOUNT LOCK user6@localhost" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case775" value="CREATE USER ACCOUNT UNLOCK user5@localhost" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case776" value="CREATE USER IF NOT EXISTS event_u2@192.1.1.140" db-types="MySQL"/>
@@ -628,9 +564,6 @@
     <sql-case id="create_by_mysql_source_test_case856" value="create aggregate function bug16896() returns int return 1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case858" value="create definer=some_user@`` sql security invoker view v1 as select 1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case865" value="create function `f``1` () returns int return 5" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case866" value="create function bug10015_2() returns int begin declare i, s int; set i:= (select min(id) from t1); set s:= (select max(id) from t1); return (s - i); end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case867" value="create function bug10015_4(i int) returns int begin declare m int; set m:= (select max(id) from t2); insert into t2 values (i, m); return m; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case868" value="create function bug10015_6(i int) returns int begin declare continue handler for sqlexception set @error_in_func:= 1; if (i = 5) then insert into t2 values (4, 0), (1, 0); end if; return i; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case869" value="create function bug10015_7() returns int begin commit; return 1; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case870" value="create function bug10015_7() returns int begin start transaction; return 1; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case872" value="create function bug13825_0() returns int begin rollback to savepoint x; return 1; end" db-types="MySQL"/>
@@ -659,16 +592,8 @@
     <sql-case id="create_by_mysql_source_test_case912" value="create function f1() returns int begin declare res int" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case915" value="create function f1() returns int begin drop event e2; return 1; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case916" value="create function f1() returns int begin show create event e1; return 1; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case930" value="create function f3() returns int begin declare n int; declare m int; set n:= (select min(data) from t1); set m:= (select max(data) from t1); return n &lt; m; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case934" value="create function f6() returns int begin declare n int; set n:= f1(); return (select count(*) from t1 where data &lt;= f7() and data &lt;= n); end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case939" value="create function f9() returns int begin declare a, b int; drop temporary table if exists t3; create temporary table t3 (id int); insert into t3 values (1), (2), (3); set a:= (select count(*) from t3); set b:= (select count(*) from t3 t3_alias); return a + b; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case946" value="create function func_20713_a() returns int(11) begin declare id int; declare continue handler for sqlexception set id=null; set @in_func := 1; set id = (select id from bogus_table_20713 where id = 3); set @in_func := 2; return id; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case947" value="create function func_20713_b() returns int(11) begin declare id int; declare continue handler for sqlstate value &apos;42S02&apos; set id=null; set @in_func := 1; set id = (select id from bogus_table_20713 where id = 3); set @in_func := 2; return id; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case948" value="create function func_25345() returns int(11) begin call proc_25345(); return 1; end |" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case949" value="create function func_25345_b() returns int(11) begin declare c1 cursor for select a from table_25345_a; declare c2 cursor for select b from table_25345_b; return 1; end |" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case950" value="create function func_26093_a(x int) returns int begin set @invoked := @invoked + 1; return x; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case951" value="create function func_26093_b(x int, y int) returns int begin set @invoked := @invoked + 1; return x; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case953" value="create function func_8407_b() returns int begin declare x int default 0; declare continue handler for sqlstate &apos;42S02&apos; begin set x:= x+1000; end; case (select 1 from no_such_view limit 1) when 1 then set x:= x+1; when 2 then set x:= x+2; else set x:= x+100; end case; set x:=x + 500; return x; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case956" value="create function p(x int, x char(10)) begin end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case961" value="create or replace view v1 (c,d,e,f) as select a,b, a in (select a+2 from t1), a = all (select a from t1) from t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case962" value="create procedure ``() select 1" db-types="MySQL"/>
@@ -785,8 +710,6 @@
     <sql-case id="create_by_mysql_source_test_case1184" value="create procedure p_create() begin declare i int default 1; set @lock_table_stmt=&quot;lock table &quot;; set @drop_table_stmt=&quot;drop table &quot;; while i &lt; @@global.table_definition_cache + 1 do set @table_name=concat(&quot;t_&quot;, i); set @opt_comma=if(i=1, &quot;&quot;, &quot;, &quot;); set @lock_table_stmt=concat(@lock_table_stmt, @opt_comma, @table_name, &quot; read&quot;); set @drop_table_stmt=concat(@drop_table_stmt, @opt_comma, @table_name); set @create_table_stmt=concat(&quot;create table if not exists &quot;, @table_name, &quot; (a int)&quot;); prepare stmt from @create_table_stmt; execute stmt; deallocate prepare stmt; set i= i+1; end while; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1188" value="create procedure proc_1() install plugin my_plug soname &apos;\\root\\some_plugin.dll&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1193" value="create procedure proc_25345() begin declare c1 cursor for select a from table_25345_a; declare c2 cursor for select b from table_25345_b; select 1 as result; end |" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1200" value="create procedure proc_33618_c(num int) begin declare count1 int default &apos;0&apos;; declare vb varchar(30); declare last_row int; while(num&gt;=1) do set num=num-1; begin declare cur1 cursor for select `a` from t_33618; declare continue handler for not found set last_row = 1; set last_row:=0; open cur1; rep1: repeat begin declare cur2 cursor for select `b` from t_33618; fetch cur1 into vb; if (last_row = 1) then leave rep1; end if; end; until last_row=1 end repeat; close cur1; end; end while; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1201" value="create procedure proc_33618_h(num int) begin declare count1 int default &apos;0&apos;; declare vb varchar(30); declare last_row int; while(num&gt;=1) do set num=num-1; begin declare cur1 cursor for select `a` from t_33618; declare continue handler for not found set last_row = 1; set last_row:=0; open cur1; rep1: repeat begin declare exit handler for 1062 begin end; fetch cur1 into vb; if (last_row = 1) then leave rep1; end if; end; until last_row=1 end repeat; close cur1; end; end while; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1202" value="create procedure proc_bug19733() begin declare v int default 0; while v &lt; 100 do create index i on t3 (s1); drop index i on t3; set v = v + 1; end while; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1208" value="create procedure solver(initial_leftm varchar(200), initial_rightm varchar(200)) begin declare initial_leftm_j  json; declare initial_rightm_j json; set initial_leftm_j  = cast(initial_leftm as json), initial_rightm_j = cast(initial_rightm as json); with recursive number_of_lines (value) as (select json_length(initial_rightm_j)), number_of_columns (value) as (select json_length(json_extract(initial_leftm_j,&quot;$[0]&quot;))), line_numbers (n) as ( select 0 union all select n+1 from line_numbers, number_of_lines where n&lt;(value-1) ), column_numbers (n) as ( select 0 union all select n+1 from line_numbers, number_of_columns where n&lt;(value-1) ), equations (null_if_done, leftm, rightm, pivot_lines, pivot_columns) as ( select 0, initial_leftm_j, initial_rightm_j, cast(&quot;&quot; as char(200)), cast(&quot;&quot; as char(200)) union all select cur_pivot.cur_pivot_line , ( select &quot;[&quot; || group_concat( ( select &quot;[&quot; || group_concat( json_extract(json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;), &quot;$[&quot; || cn.n || &quot;]&quot;) - (case when find_in_set(ln.n,eq.pivot_lines)=0 and ln.n&lt;&gt;cur_pivot.cur_pivot_line then json_extract(json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;), &quot;$[&quot; || cur_pivot.cur_pivot_column || &quot;]&quot;) * json_extract(json_extract(eq.leftm, &quot;$[&quot; || cur_pivot.cur_pivot_line || &quot;]&quot;), &quot;$[&quot; || cn.n || &quot;]&quot;) / cur_pivot.cur_pivot_value else 0 end) order by cn.n separator &apos;,&apos;) || &quot;]&quot; from column_numbers cn ) order by ln.n separator &apos;,&apos;) || &quot;]&quot; from line_numbers ln ), ( select &quot;[&quot; || group_concat( json_extract(eq.rightm, &quot;$[&quot; || ln.n || &quot;]&quot;) - (case when find_in_set(ln.n,eq.pivot_lines)=0 and ln.n&lt;&gt;cur_pivot.cur_pivot_line then json_extract(json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;), &quot;$[&quot; || cur_pivot.cur_pivot_column || &quot;]&quot;) * json_extract(eq.rightm, &quot;$[&quot; || cur_pivot.cur_pivot_line || &quot;]&quot;) / cur_pivot.cur_pivot_value else 0 end) order by ln.n separator &apos;,&apos;) || &quot;]&quot; from line_numbers ln ), coalesce(cur_pivot.cur_pivot_line, &quot;&quot;) || &quot;,&quot; || eq.pivot_lines, coalesce(cur_pivot.cur_pivot_column, &quot;&quot;) || &quot;,&quot; || eq.pivot_columns from equations eq left join lateral ( select ln.n as cur_pivot_line, cn.n as cur_pivot_column, ( json_extract(json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;), &quot;$[&quot; || cn.n || &quot;]&quot;) ) as cur_pivot_value from line_numbers ln join column_numbers cn where find_in_set(ln.n,eq.pivot_lines)=0 and json_extract(json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;), &quot;$[&quot; || cn.n || &quot;]&quot;) &lt;&gt; 0 order by cur_pivot_line,cur_pivot_column limit 1 ) as cur_pivot on 1 where eq.null_if_done is not null ), final_equations as ( select * from equations where null_if_done is null ) select json_extract(eq.leftm, &quot;$[&quot; || ln.n || &quot;]&quot;)  as left_member, json_extract(eq.rightm, &quot;$[&quot; || ln.n || &quot;]&quot;) as right_member, free.value as list_of_free_unknowns from final_equations eq, line_numbers ln, ( select group_concat(cn.n+1) as value from final_equations eq, column_numbers cn where find_in_set(cn.n,eq.pivot_columns)=0 ) as free order by find_in_set(ln.n,eq.pivot_lines), ln.n; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1213" value="create procedure syntaxerror(t int)" db-types="MySQL"/>
@@ -880,13 +803,6 @@
     <sql-case id="create_by_mysql_source_test_case1333" value="create table test_reserved (resignal int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1334" value="create table test_reserved (signal int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1345" value="create temporary table tg (i int not null) engine=merge union=()" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1346" value="create trigger ad after delete on t1 for each row set @a:= old.at" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1347" value="create trigger ai after insert on t1 for each row set @a:= new.at" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1348" value="create trigger au after update on t1 for each row set @a:= new.at" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1349" value="create trigger bd before delete on t1 for each row set @a:= old.bt" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1350" value="create trigger bi before insert on t1 for each row set @a:= new.bt" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1351" value="create trigger bu before update on t1 for each row set @a:= new.bt" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1352" value="create trigger t1_ad after delete on t1 for each row set @log:= concat(@log, &quot;(AFTER_DELETE: old=(id=&quot;, old.id, &quot;, data=&quot;, old.data,&quot;))&quot;)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1357" value="create trigger t1_ai after insert on t1 for each row flush hosts" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1358" value="create trigger t1_ai after insert on t1 for each row flush logs" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1359" value="create trigger t1_ai after insert on t1 for each row flush privileges" db-types="MySQL"/>
@@ -896,94 +812,14 @@
     <sql-case id="create_by_mysql_source_test_case1363" value="create trigger t1_ai after insert on t1 for each row flush user_resources" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1364" value="create trigger t1_ai after insert on t1 for each row reset master" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1365" value="create trigger t1_ai after insert on t1 for each row reset slave" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1366" value="create trigger t1_ai after insert on t1 for each row set @a := 7" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1367" value="create trigger t1_ai after insert on t1 for each row set @a:= (select max(a) from t1)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1368" value="create trigger t1_ai after insert on t1 for each row set @a:=bug11555_1()" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1369" value="create trigger t1_ai after insert on t1 for each row set @log:= concat(@log, &quot;(AFTER_INSERT: new=(id=&quot;, new.id, &quot;, data=&quot;, new.data,&quot;))&quot;)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1370" value="create trigger t1_ai after insert on t1 for each row show create event e1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1371" value="create trigger t1_ai after insert on test.t1 for each row set @b:=new.id" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1372" value="create trigger t1_au after update on t1 for each row set @log:= concat(@log, &quot;(AFTER_UPDATE: old=(id=&quot;, old.id, &quot;, data=&quot;, old.data, &quot;) new=(id=&quot;, new.id, &quot;, data=&quot;, new.data,&quot;))&quot;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1373" value="create trigger t1_bd before delete on t1 for each row set @log:= concat(@log, &quot;(BEFORE_DELETE: old=(id=&quot;, old.id, &quot;, data=&quot;, old.data,&quot;))&quot;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1374" value="create trigger t1_bi before insert on t1 for each row begin if new.id &gt; f1() then set new.id:= f1(); end if; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1375" value="create trigger t1_bi before insert on t1 for each row begin insert into t2 values (new.id, new.v); update t2 set v=v+1 where id= new.id; replace t3 values (new.id, 0); update t2, t3 set t2.v=new.v, t3.v=new.v where t2.id=t3.id; create temporary table t5 select * from t1; delete from t5; insert into t5 select * from t1; insert into t4 values (0); set @check= (select count(*) from t5); update t4 set c= @check; drop temporary table t5; set @a:=1/0; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1376" value="create trigger t1_bi before insert on t1 for each row begin set new.a := upper(new.a); set new.b := new.b + 3; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1377" value="create trigger t1_bi before insert on t1 for each row set @a:= f1() + 10" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1378" value="create trigger t1_bi before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1379" value="create trigger t1_bi before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1380" value="create trigger t1_bi before insert on t1 for each row set @a:=1/0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1381" value="create trigger t1_bi before insert on t1 for each row set @a:=new.id" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1382" value="create trigger t1_bi before insert on t1 for each row set @a:=new.id" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1383" value="create trigger t1_bi before insert on t1 for each row set @log:= concat(@log, &quot;(BEFORE_INSERT: new=(id=&quot;, new.id, &quot;, data=&quot;, new.data,&quot;))&quot;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1384" value="create trigger t1_bi before insert on t1 for each row set NEW.b := &quot;In trigger t1_bi&quot;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1385" value="create trigger t1_bi before insert on t1 for each row set new.udt:= convert_tz(new.ldt, &apos;Europe/Moscow&apos;, &apos;UTC&apos;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1386" value="create trigger t1_bi before insert on test.t1 for each row set @a:=0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1387" value="create trigger t1_bu before update on t1 for each row set @log:= concat(@log, &quot;(BEFORE_UPDATE: old=(id=&quot;, old.id, &quot;, data=&quot;, old.data, &quot;) new=(id=&quot;, new.id, &quot;, data=&quot;, new.data,&quot;))&quot;)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1388" value="create trigger t1_trg before insert on t1 for each row set NEW.id:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1390" value="create trigger t2_ai after insert on t2 for each row set @a:= (select max(a) from t2)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1391" value="create trigger t2_bd before delete on t2 for each row begin insert into t1 values (2); savepoint x; insert into t1 values (3); rollback to savepoint x; insert into t1 values (4); end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1392" value="create trigger t2_bi before insert on t2 for each row rollback to savepoint x" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1393" value="create trigger t2_bi before insert on t2 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1394" value="create trigger t2_bi before insert on t2 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1395" value="create trigger t2_bi before insert on t2 for each row set @a:=1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1396" value="create trigger t2_bu before update on t2 for each row release savepoint x" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1399" value="create trigger t4_bi before insert on t4 for each row set @t4_bi_called:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1400" value="create trigger t4_bu before update on t4 for each row set @t4_bu_called:=1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1403" value="create trigger t_16_bi before insert on t_16 for each row create event  e_16 on schedule every 1 second do set @a=5" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1404" value="create trigger test.t1_bi before insert on t1 for each row set @a:=0" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1405" value="create trigger test.trg1 before insert on t1 for each row set @a:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1406" value="create trigger trg after delete on t1 for each row set @del:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1407" value="create trigger trg after insert on t1 for each row set @a:= if(@a,concat(@a, &quot;:&quot;, new.i), new.i)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1408" value="create trigger trg after insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1409" value="create trigger trg after update on t1 for each row set @total_change:=@total_change + new.i - old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1410" value="create trigger trg after update on t1 for each row set new.i:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1411" value="create trigger trg before delete on t1 for each row set @a:= new.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1412" value="create trigger trg before delete on t1 for each row set @del_sum:= @del_sum + old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1413" value="create trigger trg before delete on t1 for each row set new.i:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1415" value="create trigger trg before insert on t1 for each row begin if isnull(new.j) then set new.j:= new.i * 10; end if; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1416" value="create trigger trg before insert on t1 for each row begin select event_name from information_schema.events; end|                                                                                                                                                    --error ER_EVENT_RECURSION_FORBIDDEN create function f1() returns int begin create event e2 on schedule every 10 hour do select 1; return 1; end" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1417" value="create trigger trg before insert on t1 for each row begin show create event e1; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1418" value="create trigger trg before insert on t1 for each row set @a:= old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1419" value="create trigger trg before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1420" value="create trigger trg before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1421" value="create trigger trg before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1422" value="create trigger trg before insert on t1 for each row set @a:=new.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1423" value="create trigger trg before insert on t2 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1424" value="create trigger trg before insert on t3 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1425" value="create trigger trg before insert on v1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1426" value="create trigger trg before update on t1 for each row begin declare loc_err varchar(255); if abs(new.balance - old.balance) &gt; 1000 then set new.balance:= old.balance; set loc_err := concat(&quot;Too big change for aid = &quot;, new.aid); set @update_failed:= if(@update_failed, concat(@a, &quot;:&quot;, loc_err), loc_err); end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1427" value="create trigger trg before update on t1 for each row set @a:=old.j" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1428" value="create trigger trg before update on t1 for each row set new.j:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1429" value="create trigger trg before update on t1 for each row set old.i:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1430" value="create trigger trg1 before delete on t1 for each row set @del_before:= @del_before + old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1431" value="create trigger trg1 before insert on mysqltest.t1 for each row set @a:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1432" value="create trigger trg1 before insert on t1 for each row begin if new.a &gt; 10 then set new.a := 10; set new.a := 11; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1433" value="create trigger trg1 before insert on t1 for each row begin if new.i = 1 then set new.j := 1; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1434" value="create trigger trg1 before insert on t1 for each row begin if new.j &gt; 10 then set new.j := 10; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1435" value="create trigger trg1 before insert on t1 for each row begin if new.j &gt; 10 then set new.j := 10; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1436" value="create trigger trg1 before insert on t1 for each row set @a:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1437" value="create trigger trg1 before insert on t1 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1438" value="create trigger trg1 before update on t1 for each row set @a:= @a + new.j - old.j" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1439" value="create trigger trg2 after delete on t1 for each row set @del_after:= @del_after + old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1440" value="create trigger trg2 after insert on t1 for each row set @a:= 1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1441" value="create trigger trg2 after insert on t1 for each row set @b:= &quot;Fired&quot;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1442" value="create trigger trg2 after update on t1 for each row set @b:= &quot;Fired&quot;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1443" value="create trigger trg2 before insert on t3 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1444" value="create trigger trg2 before update on t1 for each row begin if old.a % 2 = 0 then set new.b := 12; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1445" value="create trigger trg2 before update on t1 for each row begin if old.i % 2 = 0 then set new.j := -1; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1446" value="create trigger trg2 before update on t1 for each row begin if old.i % 2 = 0 then set new.j := -1; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1447" value="create trigger trg3 after update on t1 for each row begin if new.a = -1 then set @fired:= &quot;Yes&quot;; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1448" value="create trigger trg3 after update on t1 for each row begin if new.j = -1 then set @fired:= &quot;Yes&quot;; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1449" value="create trigger trg3 after update on t1 for each row begin if new.j = -1 then set @fired:= &quot;Yes&quot;; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1450" value="create trigger trg3 before delete on t1 for each row set @c:= @c + old.j" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1451" value="create trigger trg4 before delete on t2 for each row set @d:= @d + old.i" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1452" value="create trigger trg4 before insert on t2 for each row begin if new.a &gt; 10 then set @fired:= &quot;No&quot;; end if; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1453" value="create trigger trg5 after delete on t1 for each row set @e:= &quot;After delete t1 fired&quot;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1454" value="create trigger trg6 after delete on t2 for each row set @f:= &quot;After delete t2 fired&quot;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1455" value="create trigger trigger_overflow before insert on table_overflow for each row BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN BEGIN SET NEW.b := NEW.a; SET NEW.b := NEW.b + 1; SET NEW.b := NEW.b + 2; SET NEW.b := NEW.b + 3; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END;  END; END" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1456" value="create trigger wont_work after update on event for each row begin set @a:= 1; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1457" value="create trigger wont_work after update on mysql.user for each row begin set @a:= 1; end" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1458" value="create trigger имя_триггера_в_кодировке_утф8_длиной_больше_чем_49 before insert on имя_таблицы_в_кодировке_утф8_длиной_больше_чем_48 for each row set @a:=1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1459" value="create trigger очень_очень_очень_очень_очень_очень_очень_очень_длинная_строка_66 before insert on имя_таблицы_в_кодировке_утф8_длиной_больше_чем_48 for each row set @a:=1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1460" value="create user test@127.0.0.1 identified by &quot;gambling&quot;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1461" value="create view bug12602983_v1 as select mysqltest_db.f1()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1462" value="create view bug12602983_v1 as select mysqltest_db.f_does_not_exist()" db-types="MySQL"/>
@@ -3409,9 +3245,6 @@
     <sql-case id="resignal_by_mysql_source_test_case3" value="RESIGNAL SQLSTATE VALUE &apos;12345&apos;" db-types="MySQL"/>
     <sql-case id="resignal_by_mysql_source_test_case4" value="RESIGNAL foo" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case1" value="SET @@global.dragnet.log_error_filter_rules= REPEAT(&quot;IF prio&gt;9 THEN drop. &quot;, 1025)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case2" value="SET @@global.max_allowed_packet:= @tmp_max" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case3" value="SET @@global.max_allowed_packet:= @tmp_max" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case4" value="SET @@global.max_allowed_packet:= DEFAULT" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case5" value="SET @@myisam_mmap_size= 500M" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case6" value="SET @ENCSTR=REPEAT(&apos;J&apos;,255)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case7" value="SET @ENCSTR=REPEAT(&apos;K&apos;,100)" db-types="MySQL"/>
@@ -3422,43 +3255,14 @@
     <sql-case id="set_by_mysql_source_test_case12" value="SET @KEYS=RANDOM_BYTES(1024)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case13" value="SET @KEYS=REPEAT(&apos;c&apos;, 16)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case14" value="SET @`tcontent`:=_binary 0x50434B000900000000000000E9000000 COLLATE `binary`/*!*/" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case15" value="SET @a := (SELECT COUNT(*) FROM t1)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case16" value="SET @a := (SELECT afield FROM bigfailure)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case17" value="SET @a := (select * from bigfailure where afield = (SELECT afield FROM bigfailure))" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case18" value="SET @a := (select afield from (SELECT afield FROM bigfailure) as b)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case19" value="SET @a = REPEAT(&apos;a&apos;,1048576)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case20" value="SET @a = REPEAT(&apos;a&apos;,1048576)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case21" value="SET @a = REPEAT(&apos;a&apos;,2147483647)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case22" value="SET @a = REPEAT(&apos;a&apos;,2147483647)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case23" value="SET @a:= b&apos;1010010001000010000010000001000000010000000010000000001000000000010000000000010000000000001&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case24" value="SET @a:= b&apos;1010010001000010000010000001000000010000000010000000001000000000010000000000010000000000001&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case25" value="SET @a:=&apos;-77777&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case26" value="SET @a:=&apos;11&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case27" value="SET @a:=&apos;77777&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case28" value="SET @a:=&apos;abcd&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case29" value="SET @a:=(SELECT ROW(1, 2)= ROW((SELECT 1 FROM t1 LEFT JOIN t1 t2 ON 1), 1))" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case30" value="SET @a:=0" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case31" value="SET @a:=34" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case32" value="SET @a:=5" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case33" value="SET @a:=999999999999999999999999999999999999999999999999999999999999999999999999999999999" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case34" value="SET @a:=_binary &apos;abcd&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case35" value="SET @after:= (SELECT MAX_DATA_LENGTH FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME=&apos;t1&apos; AND TABLE_SCHEMA=&apos;test&apos;)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case36" value="SET @b := _latin1 &apos;a&apos;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case37" value="SET @before:= (SELECT MAX_DATA_LENGTH FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME=&apos;t1&apos; AND TABLE_SCHEMA=&apos;test&apos;)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case38" value="SET @c := FROM_UNIXTIME(1537002029)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case40" value="SET @d:=&apos; &apos;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case41" value="SET @decimal= 1.1" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case42" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, &apos;SET @dummy = 0&apos;)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case43" value="SET @old_50915_lc_time_names := @@lc_time_names" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case44" value="SET @old_default_week_format := @@default_week_format" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case45" value="SET @old_innodb_thread_concurrency := @@innodb_thread_concurrency" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case46" value="SET @old_innodb_thread_sleep_delay := @@innodb_thread_sleep_delay" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case47" value="SET @old_sql_mode := @@sql_mode" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case48" value="SET @old_transaction_isolation := @@session.transaction_isolation" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case49" value="SET @rules= CONCAT(&quot;IF &quot;, REPEAT(&quot;x&quot;, 20000), &quot;&gt;9 THEN drop.&quot;)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case50" value="SET @s := &quot;SELECT regexp_like( &apos;&apos;, &apos;&apos;, ? / &apos;&apos; )&quot;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case51" value="SET @s1:=&apos;do length(concat(1,bit_xor(aes_encrypt(1,1,1))));&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case52" value="SET @s:=&quot;do field(&apos;1&apos;,monthname(now()),bit_and(export_set(1,&apos;&apos;,1,0x29,186)))&quot;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case53" value="SET @sav_big= (SELECT COALESCE(@session.big_tables, 0))" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case54" value="SET @save_filters= @@global.dragnet.log_error_filter_rules" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case55" value="SET @save_filters= @@global.dragnet.log_error_filter_rules" db-types="MySQL"/>
@@ -3468,7 +3272,6 @@
     <sql-case id="set_by_mysql_source_test_case59" value="SET @start_value= @@global.syseventlog.include_pid" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case60" value="SET @start_value= @@global.syseventlog.tag" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case61" value="SET @str_ascii=_ASCII&apos;abcxyz&apos;" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case62" value="SET @x:= (SELECT h FROM t1 WHERE (a,b,c,d,e,f,g)=(1,2,3,4,5,6,7))" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case12" value="SHOW CREATE TABLE ```a`" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case13" value="SHOW CREATE TABLE ```ab````cd```" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case14" value="SHOW CREATE TABLE ```ab``cd```" db-types="MySQL"/>
@@ -4064,27 +3867,6 @@
     <sql-case id="low_release_by_mysql_source_test_case2" value="release savepoint sv1" db-types="MySQL"/>
     <sql-case id="low_release_by_mysql_source_test_case3" value="release savepoint x" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case1" value="set @``= &quot;illegal&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case2" value="set @a := connection_id() + 3" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case3" value="set @a := foo" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case4" value="set @a:= &apos;.&apos;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case5" value="set @a:= 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case6" value="set @a:= 0, @b:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case7" value="set @a:= 0, @b:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case8" value="set @a:= bug13825_0()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case9" value="set @a:= bug13825_1()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case10" value="set @a:= bug13825_2()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case11" value="set @a:= bug13825_2()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case12" value="set @a:= bug13825_4()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case13" value="set @a:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case14" value="set @a:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case15" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case16" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case17" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case18" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case19" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case20" value="set @a:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case21" value="set @a:=1" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case22" value="set @a:=1/0" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case23" value="set @a= _binary 0xFDFE0000000000005A55CAFFFEFA9089" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case24" value="set @a= date &quot;2001-01-02&quot;" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case25" value="set @a= time &quot;01:02:00&quot;" db-types="MySQL"/>
@@ -4096,48 +3878,17 @@
     <sql-case id="low_set_by_mysql_source_test_case31" value="set @a=date &quot;2001-01-02&quot;" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case32" value="set @a=repeat(&quot;x&quot;,1000000)" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case33" value="set @a=repeat(&apos; &apos;,20)" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case34" value="set @b := 1" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case35" value="set @b:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case36" value="set @b:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case37" value="set @b:=&apos;test&apos;" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case38" value="set @b=repeat(&quot;y&quot;,1000000)" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case39" value="set @b=repeat(&apos;A&apos;,24000)" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case40" value="set @c:= 0, @d:= 0, @e:= &quot;&quot;, @f:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case41" value="set @c:=123" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case42" value="set @check=0, @t4_bi_called=0, @t4_bu_called=0" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case43" value="set @dec=5" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case44" value="set @del:= 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case45" value="set @del_before:=0, @del_after:= 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case46" value="set @del_sum:= 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case47" value="set @e:=_latin1&apos;77&apos;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case48" value="set @error_in_func:= 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case49" value="set @fired:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case50" value="set @id := 1" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case51" value="set @id:= connection_id()" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case52" value="set @in_func := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case53" value="set @in_func := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case54" value="set @in_func := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case55" value="set @in_func := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case56" value="set @invoked := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case57" value="set @invoked := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case58" value="set @log:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case59" value="set @log:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case60" value="set @log:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case61" value="set @log:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case62" value="set @log:= &quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case63" value="set @prev_score := NULL" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case64" value="set @q = repeat(&apos;q&apos;, 256)" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case65" value="set @rank := 0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case66" value="set @rownum := 0" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case67" value="set @select=2,@t5=1.23456" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case68" value="set @test_int=10,@test_double=1e-10,@test_string=&quot;abcdeghi&quot;,@test_string2=&quot;abcdefghij&quot;,@select=NULL" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case69" value="set @total_change:=0" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case70" value="set @update_failed:=&quot;&quot;" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case71" value="set @var := 0" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case72" value="set charset default,@dummy=&apos;A&apos;" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case73" value="set global init_connect=&quot;create procedure p1(x int)\ begin\ select count(*) from t1;\ select * from t1;\ set @x = x" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case74" value="set global sql_mode=repeat(&apos;a&apos;,80)" db-types="MySQL"/>
-    <sql-case id="low_set_by_mysql_source_test_case75" value="set res:= (select count(*) from t1)" db-types="MySQL"/>
     <sql-case id="low_set_by_mysql_source_test_case76" value="set session @honk=99" db-types="MySQL"/>
     <sql-case id="low_show_by_mysql_source_test_case54" value="show local variables like &apos;SQL_MODE&apos;" db-types="MySQL"/>
     <sql-case id="low_show_by_mysql_source_test_case55" value="show local variables like &apos;SQL_MODE&apos;" db-types="MySQL"/>
