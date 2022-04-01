@@ -45,6 +45,6 @@ public final class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("information_schema"));
         assertTrue(actual.containsKey("pg_catalog"));
         assertThat(actual.get("information_schema").getTables().size(), is(3));
-        assertThat(actual.get("pg_catalog").getTables().size(), is(2));
+        assertThat(actual.get("pg_catalog").getTables().size(), is(5));
     }
 }
