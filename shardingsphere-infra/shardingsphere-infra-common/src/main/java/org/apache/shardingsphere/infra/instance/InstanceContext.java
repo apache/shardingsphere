@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +36,7 @@ import java.util.Optional;
  * Instance context.
  */
 @Getter
+@RequiredArgsConstructor
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
@@ -42,13 +45,9 @@ public final class InstanceContext {
     
     private final ModeConfiguration modeConfiguration;
     
-    private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
+    private final LockContext lockContext;
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
-        this.instance = instance;
-        this.workerIdGenerator = workerIdGenerator;
-        this.modeConfiguration = modeConfiguration;
-    }
+    private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
     /**
      * Update instance status.
