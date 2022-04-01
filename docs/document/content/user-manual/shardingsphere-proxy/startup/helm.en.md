@@ -50,21 +50,21 @@ helm uninstall will delete all release records by default. If you need to keep t
 | `global.resources.limits`   | The resources limits for the shardingsphere-proxy, MySQL, ZooKeeper. containers    | `{}`  |
 | `global.resources.requests` | The requested resources for the shardingsphere-proxy, MySQL, ZooKeeper containers. | `{}`  |
 
-##### mysql parameters
+#### mysql parameters
 | Name                   | Description                                      | Value |
 | ---------------------- | ------------------------------------------------ | ----- |
 | `mysql.enabled`        | Enable MySQL sub-charts dependency.               | `TRUE`  |
 | `mysql.storageclass`   | Storage class needed by MySQL persistent storage. | `nil`   |
 | `mysql.storagerequest` | Space for MySQL persistent storage.               | `nil`   |
 
-##### zookeeper parameters
+#### zookeeper parameters
 | Name                       | Description                                           | Value  |
 | -------------------------- |-------------------------------------------------------| ------ |
 | `zookeeper.enabled`        | Enable ZooKeeper sub-charts dependency.               | `TRUE` |
 | `zookeeper.storageclass`   | Storage class needed by ZooKeeper persistent storage. | `nil`  |
 | `zookeeper.storagerequest` | Space for ZooKeeper persistent storage.               | `nil`  |
 
-##### shardingsphere-proxy parameters
+#### shardingsphere-proxy parameters
 | Name                       | Description                                                                                                      | Value  |
 | -------------------------- |------------------------------------------------------------------------------------------------------------------| ------ |
 |`image.repository`       | shardingsphere-proxy's image name. The default setting is to pull it from the Apache official-images repository. | `apache/shardingsphere-proxy` |
