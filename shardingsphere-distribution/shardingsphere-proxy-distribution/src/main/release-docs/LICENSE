@@ -226,6 +226,7 @@ The text of each license is the standard Apache 2.0 license.
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
+    commons-io 2.4: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.8: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
