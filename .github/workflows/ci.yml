@@ -81,6 +81,7 @@ jobs:
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   unix:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -152,6 +153,7 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   shardingsphere-example-generator:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: shardingsphere example generator
     runs-on: ubuntu-latest
     steps:
