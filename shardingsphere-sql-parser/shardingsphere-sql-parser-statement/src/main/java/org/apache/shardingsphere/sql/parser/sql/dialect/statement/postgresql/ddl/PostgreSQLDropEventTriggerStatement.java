@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropEventTr
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * PostgreSQL drop Event Trigger statement.
+ * PostgreSQL drop event trigger statement.
  */
 @ToString
 public final class PostgreSQLDropEventTriggerStatement extends DropEventTriggerStatement implements PostgreSQLStatement {
