@@ -51,7 +51,7 @@ public final class ShowInstanceModeHandlerTest {
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("Cluster"));
         assertThat(data.get(2), is("ZooKeeper"));
-        assertThat(data.get(3), is("key=value"));
+        assertThat(data.get(3), is("{\"key\":\"value1,value2\"}"));
         assertThat(data.get(4), is("false"));
     }
     
@@ -59,7 +59,7 @@ public final class ShowInstanceModeHandlerTest {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3309");
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", 
-                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value")), false));
+                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2")), false));
         return result;
     }
     

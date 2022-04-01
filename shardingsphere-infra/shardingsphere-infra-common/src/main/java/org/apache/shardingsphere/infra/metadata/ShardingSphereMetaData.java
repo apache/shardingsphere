@@ -104,11 +104,21 @@ public final class ShardingSphereMetaData {
     }
     
     /**
-     * Get schema.
+     * Get default schema.
      * 
-     * @return sharding sphere schema
+     * @return ShardingSphereSchema default schema
      */
-    public ShardingSphereSchema getSchema() {
+    public ShardingSphereSchema getDefaultSchema() {
         return schemas.get(name);
+    }
+    
+    /**
+     * Get schema by name.
+     * 
+     * @param schemaName schema name
+     * @return ShardingSphereSchema schema
+     */
+    public ShardingSphereSchema getSchemaByName(final String schemaName) {
+        return schemas.get(schemaName);
     }
 }

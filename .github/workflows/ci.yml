@@ -49,7 +49,7 @@ env:
 
 jobs:
   windows:
-    if: (github.event_name == 'schedule')
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -120,7 +120,7 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   macos:
-    if: (github.event_name == 'schedule')
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60

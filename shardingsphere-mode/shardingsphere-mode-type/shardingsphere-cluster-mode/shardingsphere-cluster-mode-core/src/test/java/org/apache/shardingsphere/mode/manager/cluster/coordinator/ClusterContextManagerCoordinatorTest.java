@@ -180,7 +180,7 @@ public final class ClusterContextManagerCoordinatorTest {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getDefaultSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -194,7 +194,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDisableStateChanged() {
-        final StatusContainedRule statusContainedRule = mock(StatusContainedRule.class);
+        StatusContainedRule statusContainedRule = mock(StatusContainedRule.class);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(statusContainedRule));
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
@@ -248,7 +248,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(metaData.getSchema()).thenReturn(schema);
+        when(metaData.getDefaultSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         return new HashMap<>(Collections.singletonMap("schema", metaData));

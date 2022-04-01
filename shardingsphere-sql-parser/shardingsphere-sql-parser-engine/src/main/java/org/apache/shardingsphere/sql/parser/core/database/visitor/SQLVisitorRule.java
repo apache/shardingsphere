@@ -87,8 +87,12 @@ public enum SQLVisitorRule {
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
+
+    DROP_CAST("DropCast", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
+    
+    DROP_GROUP("DropGroup", SQLStatementType.DDL),
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
     
@@ -135,6 +139,8 @@ public enum SQLVisitorRule {
     ALTER_TRIGGER("AlterTrigger", SQLStatementType.DDL),
     
     DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
+
+    DROP_EVENT_TRIGGER("DropEventTrigger", SQLStatementType.DDL),
     
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
@@ -440,7 +446,9 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
     
-    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL);
+    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
+
+    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL);
     
     private final String name;
     

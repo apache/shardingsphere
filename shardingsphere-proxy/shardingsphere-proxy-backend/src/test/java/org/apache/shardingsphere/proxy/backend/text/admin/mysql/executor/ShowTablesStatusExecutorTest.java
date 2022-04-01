@@ -73,7 +73,7 @@ public final class ShowTablesStatusExecutorTest {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.hasDataSource()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(metaData.getSchema().getAllTableNames()).thenReturn(Collections.singleton(String.format(TABLE_PATTERN, i)));
+            when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singleton(String.format(TABLE_PATTERN, i)));
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;

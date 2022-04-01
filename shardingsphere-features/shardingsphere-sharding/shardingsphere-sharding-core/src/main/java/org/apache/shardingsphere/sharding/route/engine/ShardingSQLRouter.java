@@ -49,12 +49,12 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         ShardingConditions shardingConditions = createShardingConditions(logicSQL, metaData, rule);
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);
-        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema()));
+        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getDefaultSchema()));
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
         RouteContext result = ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(rule);
-        validator.ifPresent(v -> v.postValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema(), props, result));
+        validator.ifPresent(v -> v.postValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getDefaultSchema(), props, result));
         return result;
     }
     

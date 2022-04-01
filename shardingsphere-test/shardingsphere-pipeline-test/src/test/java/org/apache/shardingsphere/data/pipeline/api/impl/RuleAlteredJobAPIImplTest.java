@@ -97,6 +97,7 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
+        ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.remove(jobId.get());
         assertFalse(getJobInfo(jobId.get()).isPresent());
     }
@@ -136,7 +137,10 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
+        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -146,7 +150,10 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
+        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
+        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
         assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
@@ -181,8 +188,9 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
+        ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
         assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
     }
     

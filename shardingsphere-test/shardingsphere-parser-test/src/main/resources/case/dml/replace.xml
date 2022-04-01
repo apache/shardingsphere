@@ -729,7 +729,8 @@
         <values>
             <value>
                 <assignment-value>
-                    <literal-expression value="_BINARY'This is a binary value.'" />
+    <!--            TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+                    <literal-expression value="BINARY'This is a binary value." start-index="44" stop-index="75"/>
                 </assignment-value>
             </value>
         </values>

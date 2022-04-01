@@ -318,6 +318,7 @@ h2:first-of-type{
 table{
     table-layout: fixed;
 }
+
 table td,p,code{
     word-break:break-all;
     white-space: inherit;

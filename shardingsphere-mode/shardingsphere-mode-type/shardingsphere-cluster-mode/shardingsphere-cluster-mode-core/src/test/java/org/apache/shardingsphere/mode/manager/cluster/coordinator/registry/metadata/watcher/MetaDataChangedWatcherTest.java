@@ -48,7 +48,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateAddedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema";
+        String key = "/metadata/sharding_db";
         String value = "encrypt_db";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.UPDATED);
         assertTrue(actual.isPresent());
@@ -67,7 +67,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateDeletedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema";
+        String key = "/metadata/sharding_db";
         String value = "encrypt_db";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.DELETED);
         assertTrue(actual.isPresent());
