@@ -238,14 +238,14 @@ The text of each license is the standard Apache 2.0 license.
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
     groovy 4.0.1: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-core 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-grpclb 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-netty 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-protobuf 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-stub 1.27.1: https://github.com/grpc/grpc, Apache 2.0
+    grpc-api 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.8.6: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
