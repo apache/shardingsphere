@@ -25,9 +25,9 @@ git config --global core.longpaths true
 
 Use JDK8+.
 
-You could download JDK from [JDK Downloads]( https://jdk.java.net/ ).
+You could download JDK from [OpenJDK Downloads]( https://adoptium.net/temurin/releases ).
 
-Please refer to these installation guides for more details: [JDK8 Installation]( https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html ), [JDK11 Installation]( https://docs.oracle.com/en/java/javase/11/install/overview-jdk-installation.html ) or [JDK17 Installation]( https://docs.oracle.com/en/java/javase/17/install/overview-jdk-installation.html ). Or you could search JDK installation guide for your platform on Google.
+You could search JDK installation guide for your platform on Google.
 
 ## Maven
 
@@ -52,7 +52,7 @@ You could use any of them:
 You could use any of them:
 - PowerShell : Preinstalled on Windows
 - Git Bash : Could be installed in official Git client
-- [Windows Subsystem for Linux (WSL)]( https://docs.microsoft.com/en-us/windows/wsl/install ) : Could be installed by yourself
+- Windows Subsystem for Linux (WSL) : Could be installed by yourself
 
 ### Linux
 
@@ -66,7 +66,10 @@ You could find how to do it on Google.
 
 ## IDE
 
-[IntelliJ IDEA]( https://www.jetbrains.com/idea/download/ ) is recommended.
+You could use any of them:
+- IntelliJ IDEA
+- Eclipse
+- NetBeans
 
 ## IDE Plugins
 
@@ -79,5 +82,3 @@ These plugins might be useful for you:
 
 1. Add `Configuration File` : use `src/resources/checkstyle.xml`
 2. Select `Checkstyle version` : use `8.8`
-
-Please refer to [CheckStyle-IDEA README]( https://github.com/jshiell/checkstyle-idea/blob/main/README.md ) for more details.
