@@ -1,0 +1,140 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_trigger
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+  tgrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgrelid
+    primaryKey: false
+  tgparentid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgparentid
+    primaryKey: false
+  tgname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tgname
+    primaryKey: false
+  tgfoid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgfoid
+    primaryKey: false
+  tgtype:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: tgtype
+    primaryKey: false
+  tgenabled:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: tgenabled
+    primaryKey: false
+  tgisinternal:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: tgisinternal
+    primaryKey: false
+  tgconstrrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgconstrrelid
+    primaryKey: false
+  tgconstrindid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgconstrindid
+    primaryKey: false
+  tgconstraint:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: tgconstraint
+    primaryKey: false
+  tgdeferrable:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: tgdeferrable
+    primaryKey: false
+  tginitdeferred:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: tginitdeferred
+    primaryKey: false
+  tgnargs:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: tgnargs
+    primaryKey: false
+  tgattr:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: tgattr
+    primaryKey: false
+  tgargs:
+    caseSensitive: true
+    dataType: -2
+    generated: false
+    name: tgargs
+    primaryKey: false
+  tgqual:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: tgqual
+    primaryKey: false
+  tgoldtable:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tgoldtable
+    primaryKey: false
+  tgnewtable:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: tgnewtable
+    primaryKey: false
+indexes:
+  pg_trigger_oid_index:
+    name: pg_trigger_oid_index
+  pg_trigger_tgconstraint_index:
+    name: pg_trigger_tgconstraint_index
+  pg_trigger_tgrelid_tgname_index:
+    name: pg_trigger_tgrelid_tgname_index
