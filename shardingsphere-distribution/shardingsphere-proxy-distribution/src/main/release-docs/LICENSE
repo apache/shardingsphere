@@ -286,7 +286,7 @@ The text of each license is the standard Apache 2.0 license.
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.30: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
-    uzaygezen-core 0.2: code.google.com/p/uzaygezen, Apache 2.0
+    uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     vertx-mysql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     vertx-sql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     zookeeper 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
