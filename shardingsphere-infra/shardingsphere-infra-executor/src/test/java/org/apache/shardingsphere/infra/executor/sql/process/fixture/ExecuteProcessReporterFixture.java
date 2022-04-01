@@ -43,4 +43,8 @@ public class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
     public void report(final String executionID, final ExecuteProcessConstants constants) {
         ACTIONS.add("Report this task on completion.");
     }
+    
+    @Override
+    public void reportClean(final String executionID) {
+    }
 }
