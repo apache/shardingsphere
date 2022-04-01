@@ -226,6 +226,7 @@ The text of each license is the standard Apache 2.0 license.
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
+    commons-io 2.4: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.8: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
@@ -238,14 +239,14 @@ The text of each license is the standard Apache 2.0 license.
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
     groovy 4.0.1: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-core 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-grpclb 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-netty 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-protobuf 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc, Apache 2.0
-    grpc-stub 1.27.1: https://github.com/grpc/grpc, Apache 2.0
+    grpc-api 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.8.6: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -286,7 +287,7 @@ The text of each license is the standard Apache 2.0 license.
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.30: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
-    uzaygezen-core 0.2: code.google.com/p/uzaygezen, Apache 2.0
+    uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     vertx-mysql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     vertx-sql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     zookeeper 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
@@ -349,6 +350,7 @@ The following components are provided under the MIT License. See project link fo
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     animal-sniffer-annotations 1.18: https://github.com/mojohaus/animal-sniffer, MIT
+    bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
     slf4j 1.7.7: https://www.slf4j.org , MIT
