@@ -100,7 +100,7 @@ public final class PipelineContextUtil {
         ContextManager contextManager = shardingSphereDataSource.getContextManager();
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
-        contextManager.init(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext(), contextManager.getLockContext());
+        contextManager.init(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext());
         PipelineContext.initContextManager(contextManager);
     }
     

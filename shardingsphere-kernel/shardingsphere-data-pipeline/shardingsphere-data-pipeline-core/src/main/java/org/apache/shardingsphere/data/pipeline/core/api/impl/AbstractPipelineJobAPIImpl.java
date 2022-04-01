@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void startDisabledJob(final String jobId) {
         log.info("Start disabled pipeline job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        if (!jobConfigPOJO.isDisabled()) {
+            throw new PipelineVerifyFailedException("Job is already started.");
+        }
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
@@ -44,6 +48,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void stop(final String jobId) {
         log.info("Stop pipeline job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        if (jobConfigPOJO.isDisabled()) {
+            return;
+        }
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
@@ -52,6 +59,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void remove(final String jobId) {
         log.info("Remove pipeline job {}", jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        verifyJobStopped(jobConfigPOJO);
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
@@ -62,5 +71,17 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }
         return result;
+    }
+    
+    protected void verifyJobNotStopped(final JobConfigurationPOJO jobConfigPOJO) {
+        if (jobConfigPOJO.isDisabled()) {
+            throw new PipelineVerifyFailedException("Job is stopped, it's not necessary to do it.");
+        }
+    }
+    
+    protected void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {
+        if (!jobConfigPOJO.isDisabled()) {
+            throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP SCALING {jobId}` to stop it.");
+        }
     }
 }

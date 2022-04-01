@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Optional;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Lock context.
+ * Drop aggregate statement test case.
  */
-public interface LockContext {
-    
-    /**
-     * Get schema lock.
-     *
-     * @param schemaName schema name
-     * @return schema lock
-     */
-    Optional<ShardingSphereLock> getSchemaLock(String schemaName);
-    
-    /**
-     *  Is locked schema.
-     *
-     * @param schemaName schema name
-     * @return is locked schema or not
-     */
-    boolean isLockedSchema(String schemaName);
+public final class DropAggregateStatementTestCase extends SQLParserTestCase {
 }

@@ -91,6 +91,11 @@ public class SchemaMetaDataNodeTest {
     }
 
     @Test
+    public void assertGetTableMetaDataPath() {
+        assertThat(SchemaMetaDataNode.getTableMetaDataPath("db", "schema", "table"), is("/metadata/db/schema/tables/table"));
+    }
+
+    @Test
     public void assertGetDatabaseNamePath() {
         assertThat(SchemaMetaDataNode.getDatabaseNamePath("db"), is("/metadata/db"));
     }

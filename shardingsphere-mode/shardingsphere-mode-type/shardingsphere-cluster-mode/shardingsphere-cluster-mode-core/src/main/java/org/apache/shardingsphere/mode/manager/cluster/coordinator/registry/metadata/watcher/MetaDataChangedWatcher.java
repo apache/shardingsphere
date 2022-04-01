@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -81,7 +82,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
-        return SchemaMetaDataNode.getSchemaName(event.getKey()).isPresent() && SchemaMetaDataNode.getTableName(event.getKey()).isPresent() && !Strings.isNullOrEmpty(event.getValue());
+        Optional<String> schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
+        Optional<String> tableName = SchemaMetaDataNode.getTableName(event.getKey());
+        return schemaName.isPresent() && tableName.isPresent() 
+                && !SystemSchemaBuilderRule.isSystemTable(schemaName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
     }
     
     private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {

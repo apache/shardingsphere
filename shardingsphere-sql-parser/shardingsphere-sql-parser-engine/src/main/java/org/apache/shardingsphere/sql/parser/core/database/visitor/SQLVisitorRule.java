@@ -87,6 +87,8 @@ public enum SQLVisitorRule {
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
+
+    DROP_CAST("DropCast", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
@@ -444,7 +446,11 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
     
-    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL);
+    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
+
+    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL),
+    
+    DROP_COLLATION("DropCollation", SQLStatementType.DDL);
     
     private final String name;
     

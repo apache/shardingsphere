@@ -35,12 +35,13 @@ features:
   - shadow
   - db-discovery
 
-# supported：jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jpa,spring-namespace-mybatis
+# supported：jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jdbc,spring-namespace-jpa,spring-namespace-mybatis
 frameworks:
   - jdbc
   - spring-boot-starter-jdbc
   - spring-boot-starter-jpa
   - spring-boot-starter-mybatis
+  - spring-namespace-jdbc
   - spring-namespace-jpa
   - spring-namespace-mybatis
 

@@ -449,7 +449,6 @@
     <sql-case id="create_by_mysql_source_test_case568" value="CREATE TABLE t2 (f1 INT PRIMARY KEY INVISIBLE, f2 INT, CONSTRAINT FOREIGN KEY (f1) REFERENCES t1(f2))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case569" value="CREATE TABLE t2 (i INT, j DOUBLE DEFAULT (SQRT(i)), k DOUBLE DEFAULT (DEFAULT(j)))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case570" value="CREATE TABLE t2 (pk INTEGER PRIMARY KEY) TABLESPACE ``" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case571" value="CREATE TABLE t2 AS SELECT COALESCE(5, -5) AS c1, COALESCE(5, 5.5) AS c2, COALESCE(5, 5.5e5) AS c3, COALESCE(5, &apos;5&apos;) AS c4, COALESCE(20010101, date &apos;2005-05-05&apos;) AS c5, COALESCE(010101, time &apos;05:05:05.555555&apos;) AS c6, COALESCE(010101, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c7, COALESCE(20010101, NOW(0)) AS c8, COALESCE(5.55, 88.8) AS c11, COALESCE(5.5, 5.5e5) AS c12, COALESCE(5.5, &apos;5&apos;) AS c13, COALESCE(010101.5, date &apos;2005-05-05&apos;) AS c14, COALESCE(5.5, time &apos;05:05:05.555555&apos;) AS c15, COALESCE(010101.5, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c16, COALESCE(5.5e5, &apos;5&apos;) AS c21, COALESCE(2004041e1, date &apos;2005-05-05&apos;) AS c22, COALESCE(150505.0e5, time &apos;05:05:05.555555&apos;) AS c23, COALESCE(2004041e1, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c24, COALESCE(&apos;010101&apos;, date &apos;2005-05-05&apos;) AS c31, COALESCE(&apos;5&apos;, time &apos;05:05:05.555555&apos;) AS c32, COALESCE(&apos;010101&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c33, COALESCE(date &apos;2005-05-05&apos;, time &apos;05:05:05.555555&apos;) AS c41, COALESCE(date &apos;2005-05-05&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c42, COALESCE(time &apos;05:05:05.555555&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c51, COALESCE(x&apos;c3a5&apos;, &apos;1&apos;) AS c61, COALESCE(x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c62, COALESCE(_utf8mb4 x&apos;c3a5&apos;, &apos;1&apos;) AS c63, COALESCE(_utf8mb4 x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c64, COALESCE(JSON_OBJECT(&apos;a&apos;, 1), NULL) AS c71" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case572" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case573" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case574" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL"/>
@@ -460,7 +459,6 @@
     <sql-case id="create_by_mysql_source_test_case579" value="CREATE TABLE t2(f1 INT, f2 INT INVISIBLE)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case580" value="CREATE TABLE t3 (a INT PRIMARY KEY, d INT DEFAULT (-a + 1), c INT DEFAULT (DEFAULT(d)) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case581" value="CREATE TABLE t3 (a int DEFAULT 10, b varchar(64) DEFAULT &quot;Default&quot;, c varchar(64) DEFAULT &quot;Default&quot;, d int unsigned DEFAULT 9, e varchar(255) DEFAULT &quot;Default-filler.filler.filler.&quot;, PRIMARY KEY (a,b,c,d)) charset latin1 PARTITION BY RANGE COLUMNS (a, b) SUBPARTITION BY LINEAR KEY (d, c) SUBPARTITIONS 4 (PARTITION pNeg VALUES LESS THAN (0, &quot;&quot;), PARTITION `p0-9` VALUES LESS THAN (9, MAXVALUE), PARTITION p10 VALUES LESS THAN (10, MAXVALUE), PARTITION `p11-100` VALUES LESS THAN (99, MAXVALUE))" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case582" value="CREATE TABLE t3 AS SELECT GREATEST(5, -5) AS c1, GREATEST(5, 5.5) AS c2, GREATEST(5, 5.5e5) AS c3, GREATEST(5, &apos;5&apos;) AS c4, GREATEST(20010101, date &apos;2005-05-05&apos;) AS c5, GREATEST(010101, time &apos;05:05:05.555555&apos;) AS c6, GREATEST(010101, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c7, GREATEST(20010101, NOW(0)) AS c8, GREATEST(5.55, 88.8) AS c11, GREATEST(5.5, 5.5e5) AS c12, GREATEST(5.5, &apos;5&apos;) AS c13, GREATEST(010101.5, date &apos;2005-05-05&apos;) AS c14, GREATEST(5.5, time &apos;05:05:05.555555&apos;) AS c15, GREATEST(010101.5, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c16, GREATEST(5.5e5, &apos;5&apos;) AS c21, GREATEST(2004041e1, date &apos;2005-05-05&apos;) AS c22, GREATEST(150505.0e5, time &apos;05:05:05.555555&apos;) AS c23, GREATEST(2004041e1, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c24, GREATEST(&apos;010101&apos;, date &apos;2005-05-05&apos;) AS c31, GREATEST(&apos;5&apos;, time &apos;05:05:05.555555&apos;) AS c32, GREATEST(&apos;010101&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c33, GREATEST(date &apos;2005-05-05&apos;, time &apos;05:05:05.555555&apos;) AS c41, GREATEST(date &apos;2005-05-05&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c42, GREATEST(time &apos;05:05:05.555555&apos;, timestamp &apos;2005-05-05 05:05:05.555555&apos;) AS c51, GREATEST(x&apos;c3a5&apos;, &apos;1&apos;) AS c61, GREATEST(x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c62, GREATEST(_utf8mb4 x&apos;c3a5&apos;, &apos;1&apos;) AS c63, GREATEST(_utf8mb4 x&apos;c3a5&apos;, _binary &apos;1&apos;) AS c64" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case585" value="CREATE TABLE t4 (s1 CHAR(50) CHARACTER SET latin1, s2 CHAR(50) CHARACTER SET cp932, d DECIMAL(10,2))| CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case586" value="CREATE TABLE t5 ( f1 INT, f2 INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(f1,f2) ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case587" value="CREATE TABLE t6 ( a INT, b INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(a,b) SUBPARTITION BY KEY(a,b) SUBPARTITIONS 2 ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL"/>
@@ -1075,7 +1073,6 @@
     <sql-case id="select_by_mysql_source_test_case79" value="SELECT * FROM t1 LEFT JOIN ( t3, LATERAL ( SELECT * FROM t2 WHERE table_id = t3.id ) l1 ) ON TRUE" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case80" value="SELECT * FROM t1 LEFT JOIN t2 IGNORE INDEX(PRIMARY) ON t2.a = &apos;test1&apos; AND t2.b = &apos;20161213&apos; WHERE t1.a = &apos;test1&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case81" value="SELECT * FROM t1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case82" value="SELECT * FROM t1 WHERE a = NAME_CONST(&apos;reportDate&apos;, _binary&apos;2009-01-09&apos; COLLATE &apos;binary&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case83" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case84" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case85" value="SELECT * FROM t1, LATERAL ( SELECT MAX(1) FROM t2 GROUP BY t1.f1 ) AS l1" db-types="MySQL"/>
@@ -1236,8 +1233,6 @@
     <sql-case id="select_by_mysql_source_test_case240" value="SELECT CRC32(INSERT(&apos;foodyear&apos;, 1, 4, &apos;good&apos;))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case241" value="SELECT CURRENT_TIME(6) RLIKE &apos;^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case242" value="SELECT CURRENT_TIMESTAMP(6) RLIKE &apos;^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case243" value="SELECT DATEDIFF((_binary &apos;12012-05-19 09:06:07&apos; | _binary &apos;12012-05-19 09:06:07&apos;), &apos;2012-05-21 09:06:07&apos;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case244" value="SELECT DATEDIFF((_binary &apos;2012-05-19 09:06:07&apos; | _binary &apos;2012-05-19 09:06:07&apos;), &apos;2012-05-21 09:06:07&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case245" value="SELECT DEFAULT(c) from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case246" value="SELECT DEFAULT(d) from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case247" value="SELECT DISTINCT GROUPING(i), GROUPING(j) FROM t1 GROUP BY i,j WITH ROLLUP" db-types="MySQL"/>
@@ -1354,8 +1349,6 @@
     <sql-case id="select_by_mysql_source_test_case361" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t) AS result" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case362" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case363" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case364" value="SELECT SUBTIME((_binary &apos;12007-12-31 23:59:59.999999&apos; | _binary &apos;12007-12-31 23:59:59.999999&apos;),&apos;1 1:1:1.000002&apos;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case365" value="SELECT SUBTIME((_binary &apos;2012-05-19 09:06:07&apos; | _binary &apos;2012-05-19 09:06:07&apos;),&apos;1 1:1:1.000002&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case366" value="SELECT SUBTIME(UTC_DATE, &apos;04:44:03.014042&apos;) FROM dual" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case367" value="SELECT SUBTIME(col_timestamp_3_not_null_key , SYSDATE()) AS c1 FROM t1 WHERE col_timestamp_1_not_null_key NOT IN (col_datetime_4_key , GREATEST(DATE(&apos;2006-04-26&apos;), UTC_DATE())) ORDER BY col_datetime_6 , col_time_2_not_null_key , col_time_5_not_null_key" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case368" value="SELECT SUM(1) OVER w FROM (SELECT * FROM t1,t2 WHERE t1.id=t2.user_id) t SELECT  SUM(id) OVER (PARTITION BY sex ORDER BY id ROWS UNBOUNDED PRECEDING) summ, sex FROM t1" db-types="MySQL"/>
@@ -1403,12 +1396,6 @@
     <sql-case id="select_by_mysql_source_test_case410" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case411" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count, LAST_VALUE(b) OVER w lastval FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case412" value="SELECT VARIANCE(b) over w `var`, FIRST_VALUE(b) over w fv, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 FOLLOWING AND 2 FOLLOWING)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case419" value="SELECT _binary &apos;1&apos; + 0" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case420" value="SELECT _binary &apos;12&apos; &lt;&lt; 1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case421" value="SELECT _binary &apos;12&apos; | &apos;12&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case422" value="SELECT _binary &apos;12&apos; | 0x0001" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case423" value="SELECT _binary &apos;12&apos; | 1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case424" value="SELECT _binary &apos;12&apos; | _binary &apos;12&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case624" value="SELECT `B30896461`.`testFn`()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case625" value="SELECT `B30896461`.`testFn`()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case626" value="SELECT `B30896461`.`testfn`()" db-types="MySQL"/>
@@ -2116,8 +2103,6 @@
     <sql-case id="delete_by_mysql_source_test_case8" value="DELETE t1 PARTITION (pNeg), t3 FROM t1, t3 FLUSH STATUS" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case9" value="delete from (select * from t1)" db-types="MySQL"/>
     <sql-case id="delete_by_mysql_source_test_case10" value="delete from (select * from t1) as t1, t1 as t2" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case11" value="delete from mysql.user where user=_binary&apos;mysqltest_1&apos;" db-types="MySQL"/>
-    <sql-case id="delete_by_mysql_source_test_case12" value="delete from mysql.user where user=_binary&apos;mysqltest_1&apos;" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case1" value="(VALUES ROW(1)) ORDER BY &apos;1&apos;" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case2" value="(VALUES ROW(1)) ORDER BY &apos;1&apos; DESC" db-types="MySQL"/>
     <sql-case id="left_values_by_mysql_source_test_case3" value="(VALUES ROW(1)) ORDER BY (SELECT 1)" db-types="MySQL"/>
@@ -5549,30 +5534,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case7" value="DROP AGGREGATE IF EXISTS foo(no_such_schema.no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case8" value="DROP AGGREGATE IF EXISTS foo(no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case9" value="DROP AGGREGATE IF EXISTS no_such_schema.foo(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case10" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case11" value="DROP AGGREGATE IF EXISTS test_aggregate_exists(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case12" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case13" value="DROP AGGREGATE myavg (numeric);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case14" value="DROP AGGREGATE test_aggregate_exists(*);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case15" value="DROP AGGREGATE test_aggregate_exists(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case16" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case17" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case18" value="DROP CAST (text AS text);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case19" value="DROP CAST IF EXISTS (INTEGER AS no_such_schema.bar);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case20" value="DROP CAST IF EXISTS (INTEGER AS no_such_type2);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case21" value="DROP CAST IF EXISTS (no_such_schema.foo AS INTEGER);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case22" value="DROP CAST IF EXISTS (no_such_type1 AS INTEGER);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case23" value="DROP CAST IF EXISTS (text AS text);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case24" value="DROP COLLATION IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case25" value="DROP COLLATION IF EXISTS test0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case26" value="DROP COLLATION IF EXISTS test_collation_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case27" value="DROP COLLATION test0 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case28" value="DROP COLLATION test0 RESTRICT;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case29" value="DROP COLLATION test0, test_schema.test11, test5;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case30" value="DROP COLLATION test0;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
@@ -8800,12 +8761,6 @@
     <sql-case id="low_do_by_postgresql_source_test_case29" value="do $$ declare x text[]; begin x := &apos;{1.23, 4.56}&apos;::numeric[]; end $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case30" value="do $$ declare y int := x + 1;          x int := 42; begin   raise notice &apos;x = %, y = %&apos;, x, y; end; $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case31" value="do $outer$ begin   for i in 1..10 loop    begin     execute $ex$       do $$       declare x int = 0;       begin         x := 1 / x;       end;       $$;     $ex$;   exception when division_by_zero then     raise notice &apos;caught division by zero&apos;;   end;   end loop; end; $outer$;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case1" value="drop aggregate 314159 (int);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case2" value="drop aggregate newcnt (float4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case3" value="drop aggregate newcnt (nonesuch);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case4" value="drop aggregate newcnt1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case5" value="drop aggregate nonesuch (int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case6" value="drop aggregate;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case13" value="drop function ();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case14" value="drop function 314159();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>

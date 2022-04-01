@@ -70,7 +70,6 @@ public final class ExampleScenarioFactory {
      */
     public Map<String, String> getJavaClassTemplateMap() {
         Map<String, String> result = new HashMap<>();
-        result.put("java/ExampleMain.ftl", "ExampleMain.java");
         result.put("java/service/ExampleService.ftl", "service/ExampleService.java");
         result.put("java/entity/Order.ftl", "entity/Order.java");
         result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
