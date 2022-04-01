@@ -56,6 +56,15 @@ public final class SchemaRulePersistServiceTest {
         assertThat(actual.size(), is(1));
     }
     
+    @Test
+    public void assertIsExisted() {
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/versions/0/rules")).thenReturn(readYAML());
+        SchemaRulePersistService schemaRulePersistService = new SchemaRulePersistService(repository);
+        assertThat(schemaRulePersistService.isExisted("foo_db"), is(true));
+        assertThat(schemaRulePersistService.isExisted("foo_db_1"), is(false));
+    }
+    
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-schema-rule.yaml").toURI()))
