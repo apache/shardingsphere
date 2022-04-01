@@ -256,6 +256,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-core 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jcl-over-slf4j 1.7.7: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-common 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-resolver 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -352,5 +353,4 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     animal-sniffer-annotations 1.18: https://github.com/mojohaus/animal-sniffer, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
-    jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
     slf4j 1.7.7: https://www.slf4j.org , MIT
