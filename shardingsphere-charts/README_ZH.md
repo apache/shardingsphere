@@ -7,12 +7,12 @@ weight = 3
 
 ```
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install ShardingSphere-Proxy shardingsphere/ShardingSphere-Proxy
 ```
 
 ## ShardingSphere-Proxy 介绍
 
-这个charts 使用 helm 工具在一个 kubernetes 集群中引导 一个 ShardingSphere-Proxy 实例进行安装
+这个 charts 使用 helm 工具在一个 kubernetes 集群中引导 一个 ShardingSphere-Proxy 实例进行安装
 
 
 
@@ -28,7 +28,7 @@ helm 3.2.0+
 
 可以动态申请 pv(Persistent Volumes) 的 storageclass 支持
 
-## 安装 ShardingSphere-Proxy chart
+## 安装ShardingSphere-Proxy chart
 
 将 ShardingSphere-Proxy 添加到 helm 本地仓库
 
@@ -48,7 +48,7 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 ## 卸载
 
-如果要卸载上述安装的release ，请执行
+如果要卸载上述安装的 release ，请执行
 
 ```shell
 helm uninstall shardingsphere-proxy
@@ -69,27 +69,27 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 
 #### MySQL parameters
 
-| Name                   | Description                | Value  |
-| ---------------------- |----------------------------| ------ |
-| `mysql.enabled`        | 开启 MySQL 子 charts 依赖       | `true` |
-| `mysql.storageclass`   | MySQL持久化存储需要的 storageclass | `nil`  |
-| `mysql.storagerequest` | MySQL持久化存储需要的空间            | `nil`  |
+| Name                   | Description                 | Value  |
+|------------------------|-----------------------------| ------ |
+| `mysql.enabled`        | 开启 MySQL 子charts依赖          | `true` |
+| `mysql.storageclass`   | MySQL 持久化存储需要的 storageclass | `nil`  |
+| `mysql.storagerequest` | MySQL 持久化存储需要的空间            | `nil`  |
 
 
 #### ZooKeeper parameters
 
-| Name                       | Description                    | Value  |
-| -------------------------- |--------------------------------| ------ |
-| `zookeeper.enabled`        | 开启ZooKeeper子 charts 依赖         | `true` |
-| `zookeeper.storageclass`   | ZooKeeper持久化存储需要的 storageclass | `nil`  |
-| `zookeeper.storagerequest` | ZooKeeper持久化存储需要的空间            | `nil`  |
+| Name                       | Description                     | Value  |
+|----------------------------|---------------------------------| ------ |
+| `zookeeper.enabled`        | 开启 ZooKeeper 子charts依赖          | `true` |
+| `zookeeper.storageclass`   | ZooKeeper 持久化存储需要的 storageclass | `nil`  |
+| `zookeeper.storagerequest` | ZooKeeper 持久化存储需要的空间            | `nil`  |
 
 
 #### ShardingSphere-Proxy parameters
 
 | Name                     | Description                                   | Value                         |
-| ------------------------ |-----------------------------------------------| ----------------------------- |
-| `image.repository`       | ShardingSphere-Proxy 镜像名，默认是从 apache 官方镜像仓库拉取 | `apache/shardingsphere-proxy` |
+|--------------------------|-----------------------------------------------| ----------------------------- |
+| `image.repository`       | ShardingSphere-Proxy 镜像名，默认是从 apache 官方镜像仓库拉取 | `apache/ShardingSphere-Proxy` |
 | `image.pullPolicy`       | 镜像拉取策略                                        | `IfNotPresent`                |
 | `image.tag`              | 镜像 tag                                        | `5.1.0`                       |
 | `replicas`               | ShardingSphere-Proxy 集群模式副本数                  | `3`                           |
@@ -99,7 +99,7 @@ helm uninstall 会默认删除所有发布记录，如果需要留下发布记�
 | `proxyport`              | 启动端口                                          | `3307`                        |
 
 
-### ShardingSphere-Proxy config.yaml && server.yaml 相关配置详见 ShardingSphere 文档
+### ShardingSphere-Proxy config.yaml && server.yaml 相关配置详见 shardingsphere 文档
 
 [YAML 配置 :: ShardingSphere (apache.org)](https://shardingsphere.apache.org/document/5.1.0/cn/user-manual/shardingsphere-jdbc/yaml-config/)
 
