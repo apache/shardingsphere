@@ -39,9 +39,9 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -85,7 +85,6 @@ public final class MetaDataContextsBuilder {
         schemaConfigMap.put(schemaName, schemaConfig);
         schemaRulesMap.put(schemaName, schemaRules);
         databaseMap.put(schemaName, database);
-        //TODO load system schemas and persist
     }
     
     /**
@@ -94,12 +93,11 @@ public final class MetaDataContextsBuilder {
      * @param databaseType database type
      */
     public void addSystemSchemas(final DatabaseType databaseType) {
-        for (String each : databaseType.getSystemDatabases()) {
+        for (String each : databaseType.getSystemDatabaseSchemaMap().keySet()) {
             if (databaseMap.containsKey(each)) {
                 continue;
             }
-            ShardingSphereDatabase database = DatabaseLoader.load(each, databaseType);
-            databaseMap.put(each, database);
+            databaseMap.put(each, DatabaseLoader.load(each, databaseType));
         }
     }
     
@@ -126,8 +124,8 @@ public final class MetaDataContextsBuilder {
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
             // TODO support database and schema configuration separately
-            SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()));
-            Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, Collections.emptyList());
+            SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
+            Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, new LinkedList<>());
             result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), schemaConfig, rules, defaultDatabaseType));
         }
         return result;

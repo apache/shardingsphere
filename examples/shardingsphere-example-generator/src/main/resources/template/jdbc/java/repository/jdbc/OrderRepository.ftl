@@ -130,7 +130,10 @@ public final class OrderRepository {
     }
     
     public List<Order> selectAll() throws SQLException {
-        String sql = "SELECT * FROM t_order";
+        return getOrders("SELECT * FROM t_order");
+    }
+    
+   private List<Order> getOrders(final String sql) throws SQLException {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);

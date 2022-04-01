@@ -68,7 +68,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
             throw new SchemaNotExistedException(schemaName);
         }
-        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(schemaName).getSchema();
+        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema();
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(schemaName, schema, each)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }

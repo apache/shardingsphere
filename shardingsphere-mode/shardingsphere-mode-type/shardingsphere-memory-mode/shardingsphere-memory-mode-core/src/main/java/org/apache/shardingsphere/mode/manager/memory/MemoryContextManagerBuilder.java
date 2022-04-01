@@ -60,7 +60,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter), new MemoryLockContext());
+        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
         setInstanceContext(result);
         return result;
     }
@@ -68,7 +68,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()), new MemoryLockContext());
     }
     
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {

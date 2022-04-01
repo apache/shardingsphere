@@ -315,6 +315,15 @@ h2:first-of-type{
     margin-top:0;
 }
 
+table{
+    table-layout: fixed;
+}
+
+table td,p,code{
+    word-break:break-all;
+    white-space: inherit;
+}
+
 .icon-1{
     position:fixed;
     top:659px;

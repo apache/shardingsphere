@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
@@ -30,6 +32,7 @@ import java.util.Optional;
 /**
  * Database type factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeFactory {
     
     /**

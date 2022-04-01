@@ -132,9 +132,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
-            throw new SchemaNotExistedException(databaseName);
+            if (tablesContext.getTables().isEmpty()) {
+                return new ShardingSphereSchema();
+            } else {
+                throw new SchemaNotExistedException(databaseName);
+            }
         }
-        return metaData.getSchema();
+        String schemaName = tablesContext.getSchemaNames().stream().findFirst().orElse(databaseName);
+        return metaData.getSchemaByName(schemaName);
     }
     
     /**

@@ -52,7 +52,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
-        TableMetaData tableMetaData = schemaMetaData.getSchema().get(tableName);
+        TableMetaData tableMetaData = schemaMetaData.getDefaultSchema().get(tableName);
         if (!Strings.isNullOrEmpty(tableName)) {
             for (String each : indexNames) {
                 tableMetaData.getIndexes().remove(each);
@@ -61,12 +61,12 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             return;
         }
         for (String each : indexNames) {
-            Optional<String> logicTableNameOptional = findLogicTableName(schemaMetaData.getSchema(), each);
+            Optional<String> logicTableNameOptional = findLogicTableName(schemaMetaData.getDefaultSchema(), each);
             if (logicTableNameOptional.isPresent()) {
                 String logicTableName = logicTableNameOptional.orElse("");
                 Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTableName), "Cannot get the table name!");
                 if (null == tableMetaData) {
-                    tableMetaData = schemaMetaData.getSchema().get(logicTableName);
+                    tableMetaData = schemaMetaData.getDefaultSchema().get(logicTableName);
                 }
                 Preconditions.checkNotNull(tableMetaData, "Cannot get the table metadata!");
                 tableMetaData.getIndexes().remove(each);

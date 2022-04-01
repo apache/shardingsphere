@@ -793,6 +793,7 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
+                        <trimStackTrace>false</trimStackTrace>
                         <excludes>
                             <exclude />
                         </excludes>
@@ -1188,6 +1189,7 @@
                         <plugin>
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
+                                <trimStackTrace>false</trimStackTrace>
                                 <excludes>
                                     <exclude />
                                 </excludes>
