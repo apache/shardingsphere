@@ -26,7 +26,7 @@ helm 3.2.0+
 
 如需要持久化数据：
 
-可以动态申请 pv(Persistent Volumes) 的 storageclass 支持
+可以动态申请 PV(Persistent Volumes) 的 storageclass 支持
 
 ## 安装 ShardingSphere-Proxy chart
 
