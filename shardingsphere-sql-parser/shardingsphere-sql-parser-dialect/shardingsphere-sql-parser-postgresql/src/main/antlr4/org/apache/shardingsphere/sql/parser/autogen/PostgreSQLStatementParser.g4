@@ -123,6 +123,7 @@ execute
     | dropOperator
     | dropMaterializedView
     | dropGroup
+    | dropCast
     | dropEventTrigger
     | dropAggregate
     ) SEMI_?
