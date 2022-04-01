@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -61,8 +62,8 @@ public final class SchemaRulePersistServiceTest {
         when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
         when(repository.get("/metadata/foo_db/foo_db/versions/0/rules")).thenReturn(readYAML());
         SchemaRulePersistService schemaRulePersistService = new SchemaRulePersistService(repository);
-        assertThat(schemaRulePersistService.isExisted("foo_db"), is(true));
-        assertThat(schemaRulePersistService.isExisted("foo_db_1"), is(false));
+        assertTrue(schemaRulePersistService.isExisted("foo_db"));
+        assertFalse(schemaRulePersistService.isExisted("foo_db_1"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
