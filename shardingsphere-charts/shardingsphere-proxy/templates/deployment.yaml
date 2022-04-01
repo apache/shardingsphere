@@ -18,13 +18,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: sharding-proxy
-  name: sharding-proxy
+    app: shardingsphere-proxy
+  name: shardingsphere-proxy
 spec:
   replicas: {{ .Values.replicas | default 1 }}
   selector:
     matchLabels:
-      app: sharding-proxy
+      app: shardingsphere-proxy
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -33,7 +33,7 @@ spec:
   template:
     metadata:
       labels:
-        app: sharding-proxy
+        app: shardingsphere-proxy
     spec:
       {{- if .Values.mysqlconnector.enabled }}
       initContainers:
@@ -51,7 +51,7 @@ spec:
       containers:
         - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{.Values.image.pullPolicy}}
-          name: sharding-proxy
+          name: shardingsphere-proxy
           env:
             - name: PORT
               value: "{{.Values.proxyport}}"
@@ -76,7 +76,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: sharding-proxy
+            name: shardingsphere-proxy
         - name: mysql-connect-jar
           emptyDir: { }
 
