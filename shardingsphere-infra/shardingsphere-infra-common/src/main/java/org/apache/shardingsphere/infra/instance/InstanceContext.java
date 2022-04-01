@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,12 +43,15 @@ public final class InstanceContext {
     
     private final ModeConfiguration modeConfiguration;
     
+    private final LockContext lockContext;
+    
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
         this.instance = instance;
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
+        this.lockContext = lockContext;
     }
     
     /**

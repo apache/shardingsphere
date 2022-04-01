@@ -222,13 +222,16 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema()) {
+        if (isLockedSchema(backendConnection.getConnectionSession().getSchemaName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
     
-    private boolean isLockedSchema() {
-        return ProxyContext.getInstance().getContextManager().getLockContext().isLockedSchema(backendConnection.getConnectionSession().getSchemaName());
+    private boolean isLockedSchema(final String schemaName) {
+        if (null == schemaName) {
+            return false;
+        }
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {

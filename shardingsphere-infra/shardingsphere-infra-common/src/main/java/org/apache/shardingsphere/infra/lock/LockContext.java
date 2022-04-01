@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
-
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+package org.apache.shardingsphere.infra.lock;
 
 import java.util.Optional;
 

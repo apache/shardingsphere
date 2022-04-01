@@ -44,7 +44,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -82,21 +81,17 @@ public final class ContextManager implements AutoCloseable {
     
     private volatile InstanceContext instanceContext;
     
-    private volatile LockContext lockContext;
-    
     /**
      * Initialize context manager.
      *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
      * @param instanceContext instance context
-     * @param lockContext lock context
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext, final LockContext lockContext) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
         this.instanceContext = instanceContext;
-        this.lockContext = lockContext;
     }
     
     /**
