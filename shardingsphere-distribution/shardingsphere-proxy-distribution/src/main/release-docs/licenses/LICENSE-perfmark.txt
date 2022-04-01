@@ -32,3 +32,12 @@ Components, which can be obtained at:
     * traceviewer/src/main/resources/io/perfmark/traceviewer/third_party/polymer/LICENSE (New BSD License)
   * HOMEPAGE:
     * https://github.com/Polymer/polymer
+
+
+This product contains a modified portion of 'ASM', an open source
+Java Bytecode library, which can be obtained at:
+
+  * LICENSE:
+    * agent/src/main/resources/io/perfmark/agent/third_party/asm/LICENSE (BSD style License)
+  * HOMEPAGE:
+    * https://asm.ow2.io/

@@ -42,7 +42,7 @@ public enum SystemSchemaBuilderRule {
     
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_database", "pg_tablespace"));
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger"));
     
     private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>(values().length, 1);
     

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockContext;
 
 import java.util.Map;
 import java.util.Optional;
@@ -53,14 +53,15 @@ public final class StandaloneLockContext implements LockContext {
     
     @Override
     public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        if (null == schemaName) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(locks.get(schemaName));
     }
     
     @Override
     public boolean isLockedSchema(final String schemaName) {
-        if (null == schemaName) {
-            return false;
-        }
+        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
         ShardingSphereLock shardingSphereLock = locks.get(schemaName);
         return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
     }

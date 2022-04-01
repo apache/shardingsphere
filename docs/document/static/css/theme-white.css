@@ -318,8 +318,10 @@ h2:first-of-type{
 table{
     table-layout: fixed;
 }
-table td,table td code{
+
+table td,p,code{
     word-break:break-all;
+    white-space: inherit;
 }
 
 .icon-1{
