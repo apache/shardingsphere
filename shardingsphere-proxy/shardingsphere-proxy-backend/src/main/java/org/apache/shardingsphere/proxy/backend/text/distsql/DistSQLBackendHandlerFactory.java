@@ -74,7 +74,10 @@ public final class DistSQLBackendHandlerFactory {
     
     private static void checkLockedSchema(final ConnectionSession connectionSession) {
         String schemaName = connectionSession.getSchemaName();
-        if (ProxyContext.getInstance().getContextManager().getLockContext().isLockedSchema(schemaName)) {
+        if (null == schemaName) {
+            return;
+        }
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName)) {
             throw new SchemaLockedException(schemaName);
         }
     }

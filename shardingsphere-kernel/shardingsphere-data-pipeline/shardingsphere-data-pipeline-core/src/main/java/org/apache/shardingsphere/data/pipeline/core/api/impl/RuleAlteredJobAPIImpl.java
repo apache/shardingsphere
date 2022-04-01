@@ -49,9 +49,9 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
@@ -171,7 +171,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
-        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null == lock || !lock.isLocked(schemaName)) {
@@ -194,7 +194,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public void stopClusterWriteDB(final String schemaName, final String jobId) {
-        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(schemaName);
         if (lock.isLocked(schemaName)) {
             throw new RuntimeException("Already stopped.");
@@ -219,7 +219,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public void restoreClusterWriteDB(final String schemaName, final String jobId) {
-        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
