@@ -16,7 +16,7 @@
 #
 apiVersion: v2
 appVersion: 5.1.1
-name: sharding-proxy
+name: shardingsphere-proxy
 version: 1.0.0
 maintainers:
   - name: windghoul
