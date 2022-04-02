@@ -109,7 +109,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
