@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.scaling.distsql.statement;
 
+import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
  * Show scaling list statement.
  */
-public final class ShowScalingListStatement extends QueryableScalingRALStatement {
+public final class ShowScalingListStatement extends QueryableScalingRALStatement implements ScalingSubjectSupplier {
 }
