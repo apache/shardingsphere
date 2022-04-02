@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.distsql.parser.subject;
 
 import java.util.Collection;
@@ -26,13 +27,14 @@ public interface DistSQLSubjectSupplier {
     
     /**
      * Get subject type.
-     * 
+     *
      * @return subject type
      */
     DistSQLSubjectTypeEnum getSubjectType();
     
     /**
      * Get subject names.
+     *
      * @return subject names
      */
     default Collection<String> getSubjectNames() {
