@@ -30,6 +30,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingRuleConfigurationConverterTest {
     
@@ -40,6 +42,6 @@ public final class ShardingRuleConfigurationConverterTest {
     public void assertFindAndConvertShardingRuleConfiguration() {
         Collection<YamlRuleConfiguration> yamlShardingRuleConfigurations = Collections.singletonList(yamlShardingRuleConfiguration);
         ShardingRuleConfiguration resultShardingRuleConfiguration = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlShardingRuleConfigurations);
-        Assert.assertNotNull(resultShardingRuleConfiguration);
+        assertNotNull(resultShardingRuleConfiguration);
     }
 }
