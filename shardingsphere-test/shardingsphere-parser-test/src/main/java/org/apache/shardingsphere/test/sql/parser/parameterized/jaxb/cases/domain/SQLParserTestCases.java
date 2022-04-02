@@ -161,6 +161,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
@@ -173,6 +174,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCastStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropAggregateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -597,6 +601,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-event-trigger")
+    private final List<DropEventTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-domain")
     private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
@@ -1203,6 +1210,15 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-materialized-view")
     private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-cast")
+    private final List<DropCastStatementTestCase> dropCastStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-aggregate")
+    private final List<DropAggregateStatementTestCase> dropAggregateStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-collation")
+    private final List<DropCollationStatementTestCase> dropCollationStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1284,6 +1300,7 @@ public final class SQLParserTestCases {
         putAll(dropDimensionTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
+        putAll(dropEventTriggerTestCase, result);
         putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
         putAll(dropPolicyTestCase, result);
@@ -1504,6 +1521,9 @@ public final class SQLParserTestCases {
         putAll(dropOwnedStatementTestCases, result);
         putAll(dropOperatorStatementTestCases, result);
         putAll(dropMaterializedViewStatementTestCases, result);
+        putAll(dropCastStatementTestCases, result);
+        putAll(dropAggregateStatementTestCases, result);
+        putAll(dropCollationStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

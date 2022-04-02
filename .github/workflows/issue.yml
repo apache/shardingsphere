@@ -28,7 +28,7 @@ on:
 jobs:
   comment-action:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'issue_comment' }}
+    if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'issue_comment' }}
     steps:
       - name: Print Issue Comment
         run: |
@@ -43,7 +43,7 @@ jobs:
           event_type: rerun-ci
   remove-inactive:
     runs-on: ubuntu-latest
-    if: ${{  github.event_name == 'issues' && github.event.action == 'reopened'  }}
+    if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'issues' && github.event.action == 'reopened' }}
     steps:
     - name: Remove "status:inactive" label
       if: ${{ contains( github.event.issue.labels.*.name , format('status{0} inactive', ':') ) }}
@@ -56,7 +56,7 @@ jobs:
   check-inactive-issue:
     runs-on: ubuntu-latest
     concurrency: check-inactive  # singleton-run-stage
-    if: ${{ github.event_name == 'schedule' }}
+    if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'schedule' }}
     steps:
       - name: check-inactive   # add `status: inactive` label
         uses: actions-cool/issues-helper@v2.2.1 
@@ -74,7 +74,7 @@ jobs:
     concurrency:    # singleton-run-stage
       group: close-issue
       cancel-in-progress: true
-    if: ${{ github.event_name == 'schedule' || ( github.event_name == 'issues' && github.event.action == 'labeled' ) }}
+    if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'schedule' || ( github.repository == 'apache/shardingsphere' && github.event_name == 'issues' && github.event.action == 'labeled' ) }}
     steps:
       - name: Close Issue   # close issues with `labels`
         uses: actions-cool/issues-helper@v2.2.1
