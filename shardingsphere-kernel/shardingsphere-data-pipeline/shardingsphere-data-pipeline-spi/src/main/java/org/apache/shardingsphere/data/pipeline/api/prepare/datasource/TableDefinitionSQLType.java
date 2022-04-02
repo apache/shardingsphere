@@ -25,4 +25,6 @@ public enum TableDefinitionSQLType {
     UNKNOWN,
     CREATE_TABLE,
     ALTER_TABLE,
+    CREATE_INDEX,
+    COMMENT_ON
 }
