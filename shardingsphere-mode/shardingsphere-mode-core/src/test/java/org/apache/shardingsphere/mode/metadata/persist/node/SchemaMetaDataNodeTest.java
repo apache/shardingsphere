@@ -101,6 +101,11 @@ public class SchemaMetaDataNodeTest {
     }
 
     @Test
+    public void assertGetMetaDataNodePath() {
+        assertThat(SchemaMetaDataNode.getMetaDataNodePath(), is("/metadata"));
+    }
+
+    @Test
     public void assertGetMetaDataDataSourcePath() {
         assertThat(SchemaMetaDataNode.getMetaDataDataSourcePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/logic_db/versions/0/dataSources"));
     }
