@@ -66,8 +66,11 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    if (PipelineSimpleLock.getInstance().tryLock(jobConfig.getWorkflowConfig().getSchemaName(), 1000)) {
+                    String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+                    if (PipelineSimpleLock.getInstance().tryLock(schemaName, 1000)) {
                         execute(jobConfigPOJO);
+                    } else {
+                        log.info("tryLock failed, schemaName={}", schemaName);
                     }
                     break;
                 default:
