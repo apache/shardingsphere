@@ -22,7 +22,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PropertiesUtilTest {
+public final class PropertiesUtilTest {
     
     @Test
     public void assertGetRequiredValue() {
