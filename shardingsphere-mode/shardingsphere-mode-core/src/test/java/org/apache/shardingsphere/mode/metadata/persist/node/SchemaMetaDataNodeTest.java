@@ -102,7 +102,7 @@ public class SchemaMetaDataNodeTest {
 
     @Test
     public void assertGetMetaDataNodePath() {
-        assertThat(SchemaMetaDataNode.getMetaDataNodePath(), is("/metdata"));
+        assertThat(SchemaMetaDataNode.getMetaDataNodePath(), is("/metadata"));
     }
 
     @Test
