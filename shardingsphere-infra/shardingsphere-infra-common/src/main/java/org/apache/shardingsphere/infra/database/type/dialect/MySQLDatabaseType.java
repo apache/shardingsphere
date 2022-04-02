@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +32,15 @@ import java.util.Optional;
  * Database type of MySQL.
  */
 public final class MySQLDatabaseType implements DatabaseType {
+    
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    
+    static {
+        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
+    }
     
     @Override
     public String getName() {
@@ -59,12 +68,12 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("information_schema", Sets.newHashSet("information_schema"));
-        result.put("performance_schema", Sets.newHashSet("performance_schema"));
-        result.put("mysql", Sets.newHashSet("mysql"));
-        result.put("sys", Sets.newHashSet("sys"));
-        return result;
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return SYSTEM_DATABASE_SCHEMA_MAP;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
     }
 }

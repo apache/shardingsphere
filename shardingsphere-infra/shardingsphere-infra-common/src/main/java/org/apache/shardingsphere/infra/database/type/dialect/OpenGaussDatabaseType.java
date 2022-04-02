@@ -64,12 +64,17 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
         if (rollbackOnly && !(statement instanceof CommitStatement) && !(statement instanceof RollbackStatement)) {
-            throw new SQLFeatureNotSupportedException("ERROR:  current transaction is aborted, commands ignored until end of transaction block.");
+            throw new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block.");
         }
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

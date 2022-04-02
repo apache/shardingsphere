@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +37,14 @@ import java.util.Optional;
  * Database type of PostgreSQL.
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
+    
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    
+    private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog");
+    
+    static {
+        SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
+    }
     
     @Override
     public String getName() {
@@ -66,14 +74,17 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
         if (rollbackOnly && !(statement instanceof CommitStatement) && !(statement instanceof RollbackStatement)) {
-            throw new SQLFeatureNotSupportedException("ERROR:  current transaction is aborted, commands ignored until end of transaction block.");
+            throw new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block.");
         }
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("postgres", Sets.newHashSet("information_schema", "pg_catalog"));
-        return result;
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return SYSTEM_DATABASE_SCHEMA_MAP;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_SCHEMAS;
     }
 }

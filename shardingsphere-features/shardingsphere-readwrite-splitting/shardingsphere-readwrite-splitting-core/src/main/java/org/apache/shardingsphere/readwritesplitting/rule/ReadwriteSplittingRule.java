@@ -37,12 +37,13 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -127,18 +128,19 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        Map<String, Supplier<Object>> result = new HashMap<>(3, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(DYNAMIC));
+        Map<String, Supplier<Object>> result = new HashMap<>(4, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(false, DYNAMIC));
         result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
-        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(STATIC));
+        result.put(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, () -> exportDataSource(true, STATIC));
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(false, DYNAMIC, STATIC));
         return result;
     }
     
-    private Map<String, Map<String, String>> exportDataSource(final String readwriteSplittingType) {
-        Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
+    private Map<String, Map<String, String>> exportDataSource(final boolean removeDisabled, final String... readwriteSplittingTypes) {
+        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         dataSourceRules.forEach((name, dataSourceRule) -> {
-            if (readwriteSplittingType.equalsIgnoreCase(dataSourceRule.getReadwriteSplittingType().getType())) {
-                Map<String, String> dataSources = dataSourceRule.getDataSources();
+            if (Arrays.asList(readwriteSplittingTypes).contains(dataSourceRule.getReadwriteSplittingType().getType())) {
+                Map<String, String> dataSources = dataSourceRule.getDataSources(removeDisabled);
                 if (!dataSources.isEmpty()) {
                     result.put(dataSourceRule.getName(), dataSources);
                 }

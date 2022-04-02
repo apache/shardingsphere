@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -31,9 +32,11 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +97,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
-        return Collections.singletonMap("sharding_db", result);
+        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
@@ -103,5 +106,9 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));
         return result;
+    }
+    
+    @Override
+    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
 }

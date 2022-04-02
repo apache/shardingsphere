@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -59,9 +59,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         SingleTableRule singleTableRule = createAllSingleTableRule(Collections.singletonList(shardingRule));
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
-        SQLParserRule sqlParserRule = createDefaultSQLParserRule();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL", sqlParserRule);
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL", 
+                new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Arrays.asList(shardingRule, singleTableRule));
         ShardingSphereResource resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());

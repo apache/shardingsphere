@@ -53,17 +53,17 @@ public final class SQLVisitorFactory {
     private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type, final Properties props) {
         switch (type) {
             case DML:
-                return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getDMLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DDL:
-                return (ParseTreeVisitor) visitorFacade.getDDLVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getDDLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case TCL:
-                return (ParseTreeVisitor) visitorFacade.getTCLVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getTCLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DCL:
-                return (ParseTreeVisitor) visitorFacade.getDCLVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getDCLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DAL:
-                return (ParseTreeVisitor) visitorFacade.getDALVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getDALVisitorClass().getConstructor(Properties.class).newInstance(props);
             case RL:
-                return (ParseTreeVisitor) visitorFacade.getRLVisitorClass().getConstructor(Properties.class).newInstance(props);
+                return (ParseTreeVisitor<T>) visitorFacade.getRLVisitorClass().getConstructor(Properties.class).newInstance(props);
             default:
                 throw new SQLParsingException("Can not support SQL statement type: `%s`", type);
         }

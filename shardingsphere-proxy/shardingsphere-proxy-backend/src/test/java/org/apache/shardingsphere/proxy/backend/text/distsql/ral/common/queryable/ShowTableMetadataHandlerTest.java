@@ -51,7 +51,7 @@ public final class ShowTableMetadataHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList("schema_name"));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(contextManager.getMetaDataContexts().getMetaData("schema_name")).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
         ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));

@@ -33,16 +33,16 @@ public final class StorageNodeDataSource {
     
     private String status;
     
-    private Long replicationDelayTime;
+    private Long replicationDelayMilliseconds;
     
     public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status) {
         this.role = role.name().toLowerCase();
         this.status = status.name().toLowerCase();
     }
     
-    public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status, final Long replicationDelayTime) {
+    public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status, final Long replicationDelayMilliseconds) {
         this.role = role.name().toLowerCase();
         this.status = status.name().toLowerCase();
-        this.replicationDelayTime = replicationDelayTime;
+        this.replicationDelayMilliseconds = replicationDelayMilliseconds;
     }
 }

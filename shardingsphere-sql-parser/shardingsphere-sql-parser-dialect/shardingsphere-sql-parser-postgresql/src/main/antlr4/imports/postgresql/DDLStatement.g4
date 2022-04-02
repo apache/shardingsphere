@@ -130,6 +130,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropGroup
+    : DROP GROUP existClause? name (COMMA_ name)*
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
@@ -49,7 +49,7 @@ public final class MetaDataRefreshEngine {
     
     private final ShardingSphereMetaData schemaMetaData;
     
-    private final FederationSchemaMetaData federationMetaData;
+    private final FederationDatabaseMetaData federationMetaData;
     
     private final Map<String, OptimizerPlannerContext> optimizerPlanners;
     

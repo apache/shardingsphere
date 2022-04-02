@@ -153,7 +153,9 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. 修改所有表的分片规则。
+2. 修改待迁移表的分片规则。
+
+待迁移表可以是所有表，也可以是部分表。绑定表只能一块迁移。
 
 目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
 
@@ -287,5 +289,3 @@ mysql> preview select count(1) from t_order;
 ### DistSQL 手动模式接口
 
 数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
-
-注意：目前还在开发中，功能还不完善。

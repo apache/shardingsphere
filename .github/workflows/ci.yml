@@ -22,18 +22,26 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ master, dev ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   pull_request:
     branches: [ master ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   repository_dispatch:
     types: [rerun-ci]
+  schedule:
+    - cron: '0 0 */1 * *'  # once a day. UTC time
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -41,6 +49,7 @@ env:
 
 jobs:
   windows:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -72,11 +81,11 @@ jobs:
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   unix:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
         java:
@@ -112,11 +121,11 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   macos:
-    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ macos-latest ]
         java:
@@ -142,3 +151,26 @@ jobs:
         run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
+  
+  shardingsphere-example-generator:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
+    name: shardingsphere example generator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Project
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests
+      - name: Run Example generator
+        run: echo y | ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator

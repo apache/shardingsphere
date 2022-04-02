@@ -77,12 +77,10 @@ public final class ShadowInsertStatementRoutingEngineTest {
         valueExpressions.add(new LiteralExpressionSegment(21, 30, "orderName"));
         insertValueContexts.add(new InsertValueContext(valueExpressions, new ArrayList<>(), 0));
         when(result.getInsertValueContexts()).thenReturn(insertValueContexts);
-        MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
-        Collection<CommentSegment> commentSegments = new LinkedList<>();
-        commentSegments.add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
-        commentSegments.add(new CommentSegment("/*aaa:bbb*/", 21, 30));
-        mySQLInsertStatement.setCommentSegments(commentSegments);
-        when(result.getSqlStatement()).thenReturn(mySQLInsertStatement);
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        insertStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
+        when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;
     }
     

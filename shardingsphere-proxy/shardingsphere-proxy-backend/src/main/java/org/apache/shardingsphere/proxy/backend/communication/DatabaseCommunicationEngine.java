@@ -92,7 +92,7 @@ public abstract class DatabaseCommunicationEngine<T> {
         this.backendConnection = backendConnection;
         String schemaName = backendConnection.getConnectionSession().getSchemaName();
         metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
     }
@@ -157,7 +157,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME,
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                metaData.getSchema(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
+                metaData.getDefaultSchema(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -222,13 +222,16 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema()) {
+        if (isLockedSchema(backendConnection.getConnectionSession().getSchemaName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
     
-    private boolean isLockedSchema() {
-        return ProxyContext.getInstance().getContextManager().getLockContext().isLockedSchema(backendConnection.getConnectionSession().getSchemaName());
+    private boolean isLockedSchema(final String schemaName) {
+        if (null == schemaName) {
+            return false;
+        }
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {

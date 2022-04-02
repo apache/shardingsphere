@@ -44,7 +44,7 @@ public final class StorageNodeStatusSubscriberTest {
         String schemaName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE);
+        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, groupName, dataSourceName, storageNodeDataSource);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
         verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedSchema(schemaName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
@@ -55,7 +55,7 @@ public final class StorageNodeStatusSubscriberTest {
         String schemaName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLE);
+        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, groupName, dataSourceName, storageNodeDataSource);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
         verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedSchema(schemaName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
@@ -69,6 +69,6 @@ public final class StorageNodeStatusSubscriberTest {
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(new QualifiedSchema(schemaName, groupName, dataSourceName));
         new StorageNodeStatusSubscriber(repository).update(event);
         verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedSchema(schemaName, groupName, dataSourceName)),
-                YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLE)));
+                YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLED)));
     }
 }

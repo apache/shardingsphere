@@ -60,7 +60,7 @@ public final class GlobalLockRegistryService {
         try {
             repository.persistEphemeral(lockName, LockState.LOCKED.name());
             return true;
-        } catch (final ClusterPersistRepositoryException isIgnored) {
+        } catch (final ClusterPersistRepositoryException ignored) {
             return false;
         }
     }

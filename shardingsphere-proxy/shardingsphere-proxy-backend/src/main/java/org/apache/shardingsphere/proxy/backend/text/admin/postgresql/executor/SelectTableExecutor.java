@@ -52,7 +52,7 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     @Override
     protected void initSchemaData(final String schemaName) {
-        tableNames = new ArrayList<>(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
+        tableNames = new ArrayList<>(ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().getAllTableNames());
     }
     
     @Override

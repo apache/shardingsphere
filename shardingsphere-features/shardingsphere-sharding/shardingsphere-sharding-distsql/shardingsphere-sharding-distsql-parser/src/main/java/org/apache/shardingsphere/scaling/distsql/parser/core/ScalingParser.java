@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -34,6 +35,6 @@ public final class ScalingParser extends ScalingStatementParser implements SQLPa
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute());
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

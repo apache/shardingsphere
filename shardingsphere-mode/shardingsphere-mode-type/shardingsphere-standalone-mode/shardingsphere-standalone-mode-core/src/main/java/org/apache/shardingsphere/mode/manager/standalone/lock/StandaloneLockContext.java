@@ -17,23 +17,52 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockContext;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Standalone lock context.
  */
 public final class StandaloneLockContext implements LockContext {
     
+    private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
+    
+    @Override
+    public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
+        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
+        ShardingSphereLock result = locks.get(schemaName);
+        if (null != result) {
+            return result;
+        }
+        synchronized (locks) {
+            result = locks.get(schemaName);
+            if (null != result) {
+                return result;
+            }
+            result = new ShardingSphereNonReentrantLock(new ReentrantLock());
+            locks.put(schemaName, result);
+            return result;
+        }
+    }
+    
     @Override
     public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        return Optional.empty();
+        if (null == schemaName) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(locks.get(schemaName));
     }
     
     @Override
     public boolean isLockedSchema(final String schemaName) {
-        return false;
+        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
+        ShardingSphereLock shardingSphereLock = locks.get(schemaName);
+        return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
     }
 }

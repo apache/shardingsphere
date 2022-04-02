@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
@@ -45,16 +45,16 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     private static final String TYPE = AlterIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
         }
         String indexName = sqlStatement.getIndex().get().getIdentifier().getValue();
-        Optional<String> logicTableName = findLogicTableName(schemaMetaData.getSchema(), indexName);
+        Optional<String> logicTableName = findLogicTableName(schemaMetaData.getDefaultSchema(), indexName);
         if (logicTableName.isPresent()) {
-            TableMetaData tableMetaData = schemaMetaData.getSchema().get(logicTableName.get());
+            TableMetaData tableMetaData = schemaMetaData.getDefaultSchema().get(logicTableName.get());
             Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIdentifier().getValue();

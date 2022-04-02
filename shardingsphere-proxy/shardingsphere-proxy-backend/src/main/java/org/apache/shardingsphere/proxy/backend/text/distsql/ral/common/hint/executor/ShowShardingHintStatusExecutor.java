@@ -64,7 +64,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
-        Collection<String> tableNames = metaData.getSchema().getAllTableNames();
+        Collection<String> tableNames = metaData.getDefaultSchema().getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
