@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class LockNameUtilTest {
-
+public final class LockNodeUtilTest {
+    
     @Test
-    public void assertGetTableLockName() {
-        assertThat(LockNameUtil.getTableLockName("schema", "table"), is("schema.table"));
+    public void assertGenerateLockName() {
+        assertThat(LockNodeUtil.generateLockName("schema", "127.0.0.1@3307"), is("schema-127.0.0.1@3307"));
     }
-
+    
     @Test
-    public void assertGetMetaDataRefreshLockName() {
-        assertThat(LockNameUtil.getMetaDataRefreshLockName(), is("meta_data_refresh"));
+    public void assertParseLockName() {
+        String[] lockName = LockNodeUtil.parseLockName("schema-127.0.0.1@3307");
+        assertThat(lockName.length, is(2));
+        assertThat(lockName[0], is("schema"));
+        assertThat(lockName[1], is("127.0.0.1@3307"));
     }
 }
