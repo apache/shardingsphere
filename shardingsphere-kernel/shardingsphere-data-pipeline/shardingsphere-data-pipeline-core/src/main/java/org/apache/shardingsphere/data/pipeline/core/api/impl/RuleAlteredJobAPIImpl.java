@@ -175,7 +175,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
         ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
         if (null == lock || !lock.isLocked(schemaName)) {
-            throw new PipelineVerifyFailedException("Source writing is not stopped.");
+            throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
     
@@ -197,7 +197,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(schemaName);
         if (lock.isLocked(schemaName)) {
-            throw new RuntimeException("Already stopped.");
+            log.info("stopClusterWriteDB, already stopped");
+            return;
         }
         boolean tryLockSuccess = lock.tryLock(schemaName);
         log.info("stopClusterWriteDB, tryLockSuccess={}", tryLockSuccess);
@@ -338,6 +339,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         log.info("Switch cluster configuration for job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
         switchClusterConfiguration(jobConfig);

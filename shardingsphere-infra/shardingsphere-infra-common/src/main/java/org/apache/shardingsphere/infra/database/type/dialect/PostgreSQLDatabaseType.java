@@ -74,7 +74,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
         if (rollbackOnly && !(statement instanceof CommitStatement) && !(statement instanceof RollbackStatement)) {
-            throw new SQLFeatureNotSupportedException("ERROR:  current transaction is aborted, commands ignored until end of transaction block.");
+            throw new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block.");
         }
     }
     
