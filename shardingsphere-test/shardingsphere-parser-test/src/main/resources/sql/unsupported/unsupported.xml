@@ -42,7 +42,6 @@
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
-    <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
     <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
     <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
@@ -5285,28 +5284,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case44" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case45" value="DROP FOREIGN DATA WRAPPER alt_fdw3 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case46" value="DROP FOREIGN DATA WRAPPER dummy CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case47" value="DROP FOREIGN DATA WRAPPER dummy;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case48" value="DROP FOREIGN DATA WRAPPER extstats_dummy_fdw CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case49" value="DROP FOREIGN DATA WRAPPER foo CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case50" value="DROP FOREIGN DATA WRAPPER foo CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case51" value="DROP FOREIGN DATA WRAPPER foo CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case52" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case53" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case54" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case55" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case56" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case57" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case58" value="DROP FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case59" value="DROP FOREIGN DATA WRAPPER nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case60" value="DROP FOREIGN DATA WRAPPER postgresql CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case61" value="DROP FOREIGN DATA WRAPPER test_fdw;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case62" value="DROP FOREIGN DATA WRAPPER test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case102" value="DROP OPERATOR CLASS IF EXISTS no_such_schema.widget_ops USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case103" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case104" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
