@@ -15,65 +15,41 @@
 # limitations under the License.
 #
 
-name: VIEWS
+name: ENGINES
 columns:
-  table_catalog:
+  engine:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_CATALOG
+    name: ENGINE
     primaryKey: false
-  table_schema:
+  support:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_SCHEMA
+    name: SUPPORT
     primaryKey: false
-  table_name:
+  comment:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_NAME
+    name: COMMENT
     primaryKey: false
-  view_definition:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: VIEW_DEFINITION
-    primaryKey: false
-  check_option:
+  transactions:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CHECK_OPTION
+    name: TRANSACTIONS
     primaryKey: false
-  is_updatable:
+  xa:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: IS_UPDATABLE
+    name: XA
     primaryKey: false
-  definer:
+  savepoints:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: DEFINER
-    primaryKey: false
-  security_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SECURITY_TYPE
-    primaryKey: false
-  character_set_client:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_CLIENT
-    primaryKey: false
-  collation_connection:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_CONNECTION
+    name: SAVEPOINTS
     primaryKey: false

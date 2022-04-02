@@ -15,49 +15,37 @@
 # limitations under the License.
 #
 
-name: COLUMNS
+name: ROUTINES
 columns:
-  table_catalog:
+  specific_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_CATALOG
+    name: SPECIFIC_NAME
     primaryKey: false
-  table_schema:
+  routine_catalog:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_SCHEMA
+    name: ROUTINE_CATALOG
     primaryKey: false
-  table_name:
+  routine_schema:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_NAME
+    name: ROUTINE_SCHEMA
     primaryKey: false
-  column_name:
+  routine_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: COLUMN_NAME
+    name: ROUTINE_NAME
     primaryKey: false
-  ordinal_position:
-    caseSensitive: false
-    dataType: -5
-    generated: false
-    name: ORDINAL_POSITION
-    primaryKey: false
-  column_default:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: COLUMN_DEFAULT
-    primaryKey: false
-  is_nullable:
+  routine_type:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: IS_NULLABLE
+    name: ROUTINE_TYPE
     primaryKey: false
   data_type:
     caseSensitive: false
@@ -67,13 +55,13 @@ columns:
     primaryKey: false
   character_maximum_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
   character_octet_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
@@ -85,7 +73,7 @@ columns:
     primaryKey: false
   numeric_scale:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
@@ -107,39 +95,111 @@ columns:
     generated: false
     name: COLLATION_NAME
     primaryKey: false
-  column_type:
+  dtd_identifier:
     caseSensitive: false
     dataType: -1
     generated: false
-    name: COLUMN_TYPE
+    name: DTD_IDENTIFIER
     primaryKey: false
-  column_key:
+  routine_body:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: COLUMN_KEY
+    name: ROUTINE_BODY
     primaryKey: false
-  extra:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: EXTRA
-    primaryKey: false
-  privileges:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: PRIVILEGES
-    primaryKey: false
-  column_comment:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLUMN_COMMENT
-    primaryKey: false
-  generation_expression:
+  routine_definition:
     caseSensitive: false
     dataType: -1
     generated: false
-    name: GENERATION_EXPRESSION
+    name: ROUTINE_DEFINITION
+    primaryKey: false
+  external_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EXTERNAL_NAME
+    primaryKey: false
+  external_language:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EXTERNAL_LANGUAGE
+    primaryKey: false
+  parameter_style:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARAMETER_STYLE
+    primaryKey: false
+  is_deterministic:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_DETERMINISTIC
+    primaryKey: false
+  sql_data_access:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_DATA_ACCESS
+    primaryKey: false
+  sql_path:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_PATH
+    primaryKey: false
+  security_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SECURITY_TYPE
+    primaryKey: false
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATED
+    primaryKey: false
+  last_altered:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ALTERED
+    primaryKey: false
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_MODE
+    primaryKey: false
+  routine_comment:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: ROUTINE_COMMENT
+    primaryKey: false
+  definer:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEFINER
+    primaryKey: false
+  character_set_client:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_CLIENT
+    primaryKey: false
+  collation_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_CONNECTION
+    primaryKey: false
+  database_collation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATABASE_COLLATION
     primaryKey: false

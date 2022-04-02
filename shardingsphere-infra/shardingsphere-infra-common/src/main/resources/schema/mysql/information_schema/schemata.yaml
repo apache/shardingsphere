@@ -15,65 +15,35 @@
 # limitations under the License.
 #
 
-name: VIEWS
+name: SCHEMATA
 columns:
-  table_catalog:
+  catalog_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_CATALOG
+    name: CATALOG_NAME
     primaryKey: false
-  table_schema:
+  schema_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_SCHEMA
+    name: SCHEMA_NAME
     primaryKey: false
-  table_name:
+  default_character_set_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_NAME
+    name: DEFAULT_CHARACTER_SET_NAME
     primaryKey: false
-  view_definition:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: VIEW_DEFINITION
-    primaryKey: false
-  check_option:
+  default_collation_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CHECK_OPTION
+    name: DEFAULT_COLLATION_NAME
     primaryKey: false
-  is_updatable:
+  sql_path:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: IS_UPDATABLE
-    primaryKey: false
-  definer:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFINER
-    primaryKey: false
-  security_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SECURITY_TYPE
-    primaryKey: false
-  character_set_client:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_CLIENT
-    primaryKey: false
-  collation_connection:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_CONNECTION
+    name: SQL_PATH
     primaryKey: false

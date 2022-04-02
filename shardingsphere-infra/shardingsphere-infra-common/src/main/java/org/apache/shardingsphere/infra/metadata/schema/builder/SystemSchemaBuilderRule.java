@@ -32,7 +32,8 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines", 
+            "parameters", "routines", "schemata", "tables", "views")),
     
     MYSQL_MYSQL("MySQL", "mysql", Sets.newHashSet("db")),
     
