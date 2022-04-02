@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.LockState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.GlobalLockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockState;
 
 import java.util.Collection;
 import java.util.Set;

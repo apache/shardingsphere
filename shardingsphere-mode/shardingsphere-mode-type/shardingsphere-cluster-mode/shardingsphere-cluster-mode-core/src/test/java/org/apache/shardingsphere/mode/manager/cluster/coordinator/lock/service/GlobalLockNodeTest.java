@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import org.junit.Test;
 

@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Lock ack.
+ * Ack locked event.
  */
-public enum LockAck {
+@RequiredArgsConstructor
+@Getter
+public final class GlobalAckLockedEvent implements GovernanceEvent {
     
-    LOCKED, UNLOCKED
+    private final String schema;
+    
+    private final String lockedInstanceId;
 }

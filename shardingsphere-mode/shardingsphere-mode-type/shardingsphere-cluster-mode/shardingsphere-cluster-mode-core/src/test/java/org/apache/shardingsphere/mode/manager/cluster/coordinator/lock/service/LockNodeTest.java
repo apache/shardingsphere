@@ -33,14 +33,4 @@ public final class LockNodeTest {
     public void assertGetLockName() {
         assertThat(LockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").orElse(null), is("sharding_db.test"));
     }
-    
-    @Test
-    public void assertGetLockAckNodePath() {
-        assertThat(LockNode.getLockedAckNodePath("test"), is("/lock/ack/test"));
-    }
-    
-    @Test
-    public void assertGetLockedAckRootNodePah() {
-        assertThat(LockNode.getLockedAckRootNodePah(), is("/lock/ack"));
-    }
 }

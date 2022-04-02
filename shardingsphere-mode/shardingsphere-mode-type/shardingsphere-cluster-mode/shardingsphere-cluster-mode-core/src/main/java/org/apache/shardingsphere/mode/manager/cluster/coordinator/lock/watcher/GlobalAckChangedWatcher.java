@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.GlobalLockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -31,13 +31,13 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Global locks changed watcher.
+ * Global ack changed watcher.
  */
-public final class GlobalLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class GlobalAckChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath());
+        return Collections.singleton(GlobalLockNode.getGlobalAckNodePath());
     }
     
     @Override
@@ -47,19 +47,20 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = GlobalLockNode.getLockedKey(event.getKey());
-        if (lockedName.isPresent()) {
-            String[] schemaInstance = LockNodeUtil.parseLockName(lockedName.get());
-            return handleGlobalLocksEvent(event.getType(), schemaInstance[0], schemaInstance[1]);
+        String key = event.getKey();
+        Optional<String> ackLockedName = GlobalLockNode.getAckLockedKey(key);
+        if (ackLockedName.isPresent()) {
+            String[] schemaInstance = LockNodeUtil.parseLockName(ackLockedName.get());
+            return handleGlobalAckEvent(event.getType(), schemaInstance[0], schemaInstance[1]);
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalLocksEvent(final DataChangedEvent.Type eventType, final String schema, final String instanceId) {
+    private Optional<GovernanceEvent> handleGlobalAckEvent(final DataChangedEvent.Type eventType, final String schema, final String lockedInstanceId) {
         if (DataChangedEvent.Type.ADDED == eventType) {
-            return Optional.of(new LockedEvent(schema, instanceId));
+            return Optional.of(new GlobalAckLockedEvent(schema, lockedInstanceId));
         } else if (DataChangedEvent.Type.DELETED == eventType) {
-            return Optional.of(new LockReleasedEvent(schema, instanceId));
+            return Optional.of(new GlobalAckLockReleasedEvent(schema, lockedInstanceId));
         } else {
             return Optional.empty();
         }
