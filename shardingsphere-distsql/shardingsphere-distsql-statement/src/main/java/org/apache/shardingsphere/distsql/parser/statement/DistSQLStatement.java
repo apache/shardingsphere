@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.distsql.parser.statement;
 
+import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSupplier;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.authority.enumeration.DistSQLStatementType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Dist SQL Statement.
  */
-public abstract class DistSQLStatement extends AbstractSQLStatement {
+public abstract class DistSQLStatement extends AbstractSQLStatement implements DistSQLOperationSupplier, DistSQLSubjectSupplier {
+    
+    /**
+     * Get statement type.
+     *
+     * @return statement type
+     */
+    public abstract DistSQLStatementType getStatementType();
 }
