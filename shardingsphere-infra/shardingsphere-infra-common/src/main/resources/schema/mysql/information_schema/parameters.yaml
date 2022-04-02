@@ -15,49 +15,43 @@
 # limitations under the License.
 #
 
-name: COLUMNS
+name: PARAMETERS
 columns:
-  table_catalog:
+  specific_catalog:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_CATALOG
+    name: SPECIFIC_CATALOG
     primaryKey: false
-  table_schema:
+  specific_schema:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_SCHEMA
+    name: SPECIFIC_SCHEMA
     primaryKey: false
-  table_name:
+  specific_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: TABLE_NAME
-    primaryKey: false
-  column_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLUMN_NAME
+    name: SPECIFIC_NAME
     primaryKey: false
   ordinal_position:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: ORDINAL_POSITION
     primaryKey: false
-  column_default:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: COLUMN_DEFAULT
-    primaryKey: false
-  is_nullable:
+  parameter_mode:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: IS_NULLABLE
+    name: PARAMETER_MODE
+    primaryKey: false
+  parameter_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARAMETER_NAME
     primaryKey: false
   data_type:
     caseSensitive: false
@@ -67,13 +61,13 @@ columns:
     primaryKey: false
   character_maximum_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
   character_octet_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
@@ -85,7 +79,7 @@ columns:
     primaryKey: false
   numeric_scale:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
@@ -107,39 +101,15 @@ columns:
     generated: false
     name: COLLATION_NAME
     primaryKey: false
-  column_type:
+  dtd_identifier:
     caseSensitive: false
     dataType: -1
     generated: false
-    name: COLUMN_TYPE
+    name: DTD_IDENTIFIER
     primaryKey: false
-  column_key:
+  routine_type:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: COLUMN_KEY
-    primaryKey: false
-  extra:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: EXTRA
-    primaryKey: false
-  privileges:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: PRIVILEGES
-    primaryKey: false
-  column_comment:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLUMN_COMMENT
-    primaryKey: false
-  generation_expression:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: GENERATION_EXPRESSION
+    name: ROUTINE_TYPE
     primaryKey: false
