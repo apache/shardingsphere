@@ -127,5 +127,6 @@ execute
     | dropEventTrigger
     | dropAggregate
     | dropCollation
+    | dropForeignDataWrapper
     ) SEMI_?
     ;

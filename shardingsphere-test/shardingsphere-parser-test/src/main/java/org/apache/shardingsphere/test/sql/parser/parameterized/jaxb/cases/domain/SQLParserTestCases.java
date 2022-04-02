@@ -177,6 +177,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCastStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropAggregateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCollationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignDataWrapperStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -1219,6 +1220,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-collation")
     private final List<DropCollationStatementTestCase> dropCollationStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-foreign-data-wrapper")
+    private final List<DropForeignDataWrapperStatementTestCase> dropForeignDataWrapperStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1524,6 +1528,7 @@ public final class SQLParserTestCases {
         putAll(dropCastStatementTestCases, result);
         putAll(dropAggregateStatementTestCases, result);
         putAll(dropCollationStatementTestCases, result);
+        putAll(dropForeignDataWrapperStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
