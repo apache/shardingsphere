@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;

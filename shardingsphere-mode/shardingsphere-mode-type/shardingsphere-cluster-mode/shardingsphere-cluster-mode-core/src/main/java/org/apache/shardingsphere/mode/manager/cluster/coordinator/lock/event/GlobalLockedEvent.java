@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Inner lock released event.
+ * Locked event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InnerLockReleasedEvent {
+public final class GlobalLockedEvent implements GovernanceEvent {
     
-    private final String lockName;
+    private final String schema;
+    
+    private final String ownerInstanceId;
 }

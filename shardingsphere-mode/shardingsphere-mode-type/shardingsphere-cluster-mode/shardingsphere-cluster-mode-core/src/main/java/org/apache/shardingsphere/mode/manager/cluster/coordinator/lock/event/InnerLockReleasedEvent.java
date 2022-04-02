@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Ack locked event.
+ * Inner lock released event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AckLockedEvent implements GovernanceEvent {
+public final class InnerLockReleasedEvent {
     
-    private final String schema;
-    
-    private final String lockedInstanceId;
+    private final String lockName;
 }

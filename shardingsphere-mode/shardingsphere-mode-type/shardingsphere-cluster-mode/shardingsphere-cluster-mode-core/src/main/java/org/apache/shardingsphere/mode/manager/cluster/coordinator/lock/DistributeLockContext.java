@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.AckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Collection;
 import java.util.Map;
@@ -124,7 +124,7 @@ public final class DistributeLockContext implements LockContext {
      * @param event locked event
      */
     @Subscribe
-    public synchronized void renew(final LockedEvent event) {
+    public synchronized void renew(final GlobalLockedEvent event) {
         String schema = event.getSchema();
         String ownerInstanceId = event.getOwnerInstanceId();
         if (isSameInstanceId(ownerInstanceId)) {
@@ -147,7 +147,7 @@ public final class DistributeLockContext implements LockContext {
      * @param event lock released event
      */
     @Subscribe
-    public synchronized void renew(final LockReleasedEvent event) {
+    public synchronized void renew(final GlobalLockReleasedEvent event) {
         String schema = event.getSchema();
         String ownerInstanceId = event.getOwnerInstanceId();
         if (isSameInstanceId(ownerInstanceId)) {
@@ -171,7 +171,7 @@ public final class DistributeLockContext implements LockContext {
      * @param event ack locked event
      */
     @Subscribe
-    public synchronized void renew(final AckLockedEvent event) {
+    public synchronized void renew(final GlobalAckLockedEvent event) {
         String schema = event.getSchema();
         String lockedInstanceId = event.getLockedInstanceId();
         getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(lockedInstanceId));
@@ -183,7 +183,7 @@ public final class DistributeLockContext implements LockContext {
      * @param event ack lock released event.
      */
     @Subscribe
-    public synchronized void renew(final AckLockReleasedEvent event) {
+    public synchronized void renew(final GlobalAckLockReleasedEvent event) {
         String schema = event.getSchema();
         String lockedInstanceId = event.getLockedInstanceId();
         if (isSameInstanceId(lockedInstanceId)) {

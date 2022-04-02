@@ -15,34 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
 
-import com.google.common.base.Joiner;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Lock name util.
+ * Lock node util.
  */
-public final class LockNameUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockNodeUtil {
     
-    private static final String META_DATA_REFRESH_LOCK_NAME = "meta_data_refresh";
+    private static final String LOCK_DELIMITER = "-";
     
     /**
-     * Get table lock name.
-     * 
-     * @param schemaName schema name
-     * @param tableName  table name
-     * @return table lock name
+     * Generate lock name.
+     *
+     * @param schema schema name
+     * @param instanceId instance id
+     * @return lock name
      */
-    public static String getTableLockName(final String schemaName, final String tableName) {
-        return Joiner.on(".").join(schemaName, tableName);
+    public static String generateLockName(final String schema, final String instanceId) {
+        return schema + LOCK_DELIMITER + instanceId;
     }
     
     /**
-     * Get meta data refresh lock name.
-     * 
-     * @return meta data refresh lock name
+     * Parse lock name.
+     *
+     * @param lockedName locked name
+     * @return string array of schema name and instance id
      */
-    public static String getMetaDataRefreshLockName() {
-        return META_DATA_REFRESH_LOCK_NAME;
+    public static String[] parseLockName(final String lockedName) {
+        return lockedName.trim().split(LOCK_DELIMITER);
     }
 }
