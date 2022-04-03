@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId><shardingsphere-jdbc-core-spring-jpa></shardingsphere-jdbc-core-spring-jpa></artifactId>
+            <artifactId>shardingsphere-jdbc-core-spring-jpa</artifactId>
         </dependency>
     </dependencies>
 </project>
