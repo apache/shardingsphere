@@ -62,8 +62,7 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
             return Optional.of(new GlobalAckLockedEvent(schema, lockedInstanceId));
         } else if (Type.DELETED == eventType) {
             return Optional.of(new GlobalAckLockReleasedEvent(schema, lockedInstanceId));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 }
