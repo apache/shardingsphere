@@ -22,6 +22,7 @@ import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
 import org.apache.shardingsphere.example.generator.core.GenerateUtil;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -39,6 +40,9 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
             for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
                 // TODO refactor proxy process
                 Map<String, String> dataModel = new LinkedHashMap<>();
+                dataModel.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
+                dataModel.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
+                dataModel.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
                 generate(templateConfig, dataModel, eachFramework, eachFeature);
             }
         }
@@ -47,6 +51,7 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
     private void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
         dataModel.put("feature", feature);
         dataModel.put("framework", framework);
+        dataModel.put("product", getType());
         GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
         String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
         processFile(feature, templateConfig, dataModel, outputPath);
@@ -55,10 +60,7 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
     private void processFile(final String feature, final Configuration templateConfig, final Map<String, String> dataModel,
                              final String baseOutputPath) throws TemplateException, IOException {
         String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
-        for (String each : feature.split(",")) {
-            String fileSuffix = "config-" + each;
-            GenerateUtil.processFile(templateConfig, dataModel, getType() + "/" + fileSuffix + ".ftl", outputPath + fileSuffix + ".yaml");
-        }
+        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
     }
