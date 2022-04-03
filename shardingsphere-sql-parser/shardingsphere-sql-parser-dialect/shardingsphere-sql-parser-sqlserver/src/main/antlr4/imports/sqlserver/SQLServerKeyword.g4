@@ -1838,3 +1838,7 @@ CHECK_POLICY
 WINDOWS
     : W I N D O W S
     ;
+
+UNLOCK
+    : U N L O C K
+    ;

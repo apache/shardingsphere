@@ -21,7 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Alter login statement assert.
@@ -37,5 +43,12 @@ public final class AlterLoginStatementAssert {
      * @param expected expected alter login statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerAlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
+        if (null != expected.getLogin()) {
+            assertNotNull(assertContext.getText("Actual login should exist."), actual.getLoginSegment());
+            assertThat(assertContext.getText("Login name assertion error: "), actual.getLoginSegment().getLoginName().getValueWithQuoteCharacters(), is(expected.getLogin().getName()));
+            SQLSegmentAssert.assertIs(assertContext, actual.getLoginSegment(), expected.getLogin());
+        } else {
+            assertNull(assertContext.getText("Actual login should not exist."), actual.getLoginSegment());
+        }
     }
 }
