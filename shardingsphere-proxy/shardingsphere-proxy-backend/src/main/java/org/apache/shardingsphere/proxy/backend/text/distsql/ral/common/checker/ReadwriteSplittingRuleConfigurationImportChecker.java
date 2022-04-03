@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule configuration import checker.
  */
-public final class ImportCheckerForReadwriteSplittingRuleConfiguration {
+public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     /**
      * Check readwrite-splitting rule configuration.

@@ -32,8 +32,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ImportCheckerForReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ImportCheckerForShardingRuleConfiguration;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,17 +71,17 @@ public final class ImportSchemaConfigurationHandlerTest {
     private DataSourcePropertiesValidator validator;
     
     @Mock
-    private ImportCheckerForShardingRuleConfiguration importCheckerForShardingRuleConfiguration;
+    private ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker;
     
     @Mock
-    private ImportCheckerForReadwriteSplittingRuleConfiguration importCheckerForReadwriteSplittingRuleConfiguration;
+    private ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker;
     
     private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
     
     private final Map<String, String> featureMap = new HashMap<>();
     
     @Before
-    public void before() {
+    public void setup() {
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readwriteSplitting, readwriteSplittingFilePath);
     }
@@ -103,9 +103,9 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Test
     public void assertImportSchemaExecutorForSharding() throws Exception {
         init(sharding);
-        Field importCheckerForShardingRuleConfigurationField = importSchemaConfigurationHandler.getClass().getDeclaredField("importCheckerForShardingRuleConfiguration");
+        Field importCheckerForShardingRuleConfigurationField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
         importCheckerForShardingRuleConfigurationField.setAccessible(true);
-        importCheckerForShardingRuleConfigurationField.set(importSchemaConfigurationHandler, importCheckerForShardingRuleConfiguration);
+        importCheckerForShardingRuleConfigurationField.set(importSchemaConfigurationHandler, shardingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations();
@@ -117,9 +117,9 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Test
     public void assertImportSchemaExecutorForReadwriteSplitting() throws Exception {
         init(readwriteSplitting);
-        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("importCheckerForReadwriteSplittingRuleConfiguration");
+        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
         shardingRuleConfigurationCheckerField.setAccessible(true);
-        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, importCheckerForReadwriteSplittingRuleConfiguration);
+        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations();
