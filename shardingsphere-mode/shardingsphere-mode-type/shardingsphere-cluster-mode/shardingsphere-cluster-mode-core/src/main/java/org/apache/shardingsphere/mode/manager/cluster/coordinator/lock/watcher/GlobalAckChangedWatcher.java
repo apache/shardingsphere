@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Lock
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,8 +42,8 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
     }
     
     @Override
-    public Collection<DataChangedEvent.Type> getWatchingTypes() {
-        return Arrays.asList(DataChangedEvent.Type.ADDED, DataChangedEvent.Type.DELETED);
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.DELETED);
     }
     
     @Override
@@ -56,13 +57,12 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalAckEvent(final DataChangedEvent.Type eventType, final String schema, final String lockedInstanceId) {
-        if (DataChangedEvent.Type.ADDED == eventType) {
+    private Optional<GovernanceEvent> handleGlobalAckEvent(final Type eventType, final String schema, final String lockedInstanceId) {
+        if (Type.ADDED == eventType) {
             return Optional.of(new GlobalAckLockedEvent(schema, lockedInstanceId));
-        } else if (DataChangedEvent.Type.DELETED == eventType) {
+        } else if (Type.DELETED == eventType) {
             return Optional.of(new GlobalAckLockReleasedEvent(schema, lockedInstanceId));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 }
