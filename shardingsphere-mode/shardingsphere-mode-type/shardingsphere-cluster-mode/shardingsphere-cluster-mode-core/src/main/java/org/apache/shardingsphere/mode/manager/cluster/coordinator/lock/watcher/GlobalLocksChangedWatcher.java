@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Lock
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,14 +37,10 @@ import java.util.Optional;
 public final class GlobalLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
-        return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath());
-    }
+    public Collection<String> getWatchingKeys() { return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath()); }
     
     @Override
-    public Collection<DataChangedEvent.Type> getWatchingTypes() {
-        return Arrays.asList(DataChangedEvent.Type.ADDED, DataChangedEvent.Type.DELETED);
-    }
+    public Collection<Type> getWatchingTypes() { return Arrays.asList(Type.ADDED, Type.DELETED); }
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
@@ -55,10 +52,10 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalLocksEvent(final DataChangedEvent.Type eventType, final String schema, final String instanceId) {
-        if (DataChangedEvent.Type.ADDED == eventType) {
+    private Optional<GovernanceEvent> handleGlobalLocksEvent(final Type eventType, final String schema, final String instanceId) {
+        if (Type.ADDED == eventType) {
             return Optional.of(new GlobalLockedEvent(schema, instanceId));
-        } else if (DataChangedEvent.Type.DELETED == eventType) {
+        } else if (Type.DELETED == eventType) {
             return Optional.of(new GlobalLockReleasedEvent(schema, instanceId));
         } else {
             return Optional.empty();
