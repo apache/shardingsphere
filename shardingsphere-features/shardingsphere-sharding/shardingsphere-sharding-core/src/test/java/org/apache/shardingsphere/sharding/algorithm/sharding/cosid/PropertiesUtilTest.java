@@ -28,8 +28,8 @@ public final class PropertiesUtilTest {
     public void assertGetRequiredValue() {
         Properties properties = new Properties();
         properties.setProperty("sql-show", "true");
-        String targetValue = PropertiesUtil.getRequiredValue(properties, "sql-show");
-        assertThat(targetValue, is("true"));
+        String sqlShow = PropertiesUtil.getRequiredValue(properties, "sql-show");
+        assertThat(sqlShow, is("true"));
     }
     
     @Test(expected = IllegalArgumentException.class)
