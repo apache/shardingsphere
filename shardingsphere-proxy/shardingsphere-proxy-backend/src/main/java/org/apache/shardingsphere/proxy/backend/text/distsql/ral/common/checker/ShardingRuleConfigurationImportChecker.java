@@ -46,9 +46,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Sharding rule configuration checker.
+ * Sharding rule configuration import checker.
  */
-public final class ShardingRuleConfigurationChecker {
+public final class ShardingRuleConfigurationImportChecker {
     
     private static final String SHARDING = "sharding";
     

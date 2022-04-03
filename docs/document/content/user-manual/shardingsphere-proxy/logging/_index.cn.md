@@ -3,9 +3,10 @@ title = "Logging"
 weight = 4
 +++
 
-This chapter will introduce the detailed syntax of Logging which is used when users need to distinguish schemas or users in the log. To achieve a specific goal, following configurations can be added to logback.xml:
+本章将介绍日志记录的详细语法，当使用者需要在日志中区分 schema 或用户时，可以在 logback.xml 中添加以下配置。
 
-## To distinguish schemas in the same log
+## 区分同一日志中的 schema
+
 ```
 <appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -18,7 +19,8 @@ This chapter will introduce the detailed syntax of Logging which is used when us
 </logger>
 ```
 
-## To distinguish schemas and users in the same log
+## 区分同一日志中的 schema 和用户
+
 ```
 <appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -31,7 +33,8 @@ This chapter will introduce the detailed syntax of Logging which is used when us
 </logger>
 ```
 
-## To split into different log files
+## 拆分为不同的日志文件
+
 ```
 <appender name="SiftingFile" class="ch.qos.logback.classic.sift.SiftingAppender">
     <discriminator>
