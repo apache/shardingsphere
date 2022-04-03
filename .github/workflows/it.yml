@@ -20,18 +20,32 @@ name: Integration Test
 on:
   push:
     branches: [ master, dev ]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.txt'
-      - '.*.yaml'
+    paths:
+      - '.github/workflows/**'
+      - '**/src/main/**'
+      - '!examples/**'
+      - '!shardingsphere-distribution/**'
+      - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
+      - '!shardingsphere-test/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/**'
+      - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
+      - '!*.md'
+      - '!*.txt'
+      - '!.*.yaml'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.txt'
-      - '.*.yaml'
+    paths:
+      - '.github/workflows/**'
+      - '**/src/main/**'
+      - '!examples/**'
+      - '!shardingsphere-distribution/**'
+      - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
+      - '!shardingsphere-test/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/**'
+      - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
+      - '!*.md'
+      - '!*.txt'
+      - '!.*.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
