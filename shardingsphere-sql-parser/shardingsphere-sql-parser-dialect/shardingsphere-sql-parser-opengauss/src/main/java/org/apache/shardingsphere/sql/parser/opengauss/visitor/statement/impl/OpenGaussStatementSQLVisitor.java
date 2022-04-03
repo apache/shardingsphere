@@ -638,8 +638,12 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
-        Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(valuesClause);
-        result.getValues().addAll(insertValuesSegments);
+        if (null != valuesClause) {
+            result.getValues().addAll(createInsertValuesSegments(valuesClause));
+        } else {
+            OpenGaussSelectStatement selectStatement = (OpenGaussSelectStatement) visit(ctx.select());
+            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement));
+        }
         return result;
     }
     
