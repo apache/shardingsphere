@@ -37,10 +37,14 @@ import java.util.Optional;
 public final class GlobalLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() { return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath()); }
+    public Collection<String> getWatchingKeys() {
+        return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath());
+    }
     
     @Override
-    public Collection<Type> getWatchingTypes() { return Arrays.asList(Type.ADDED, Type.DELETED); }
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.DELETED);
+    }
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {

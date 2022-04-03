@@ -42,7 +42,9 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() { return Arrays.asList(Type.ADDED, Type.DELETED); }
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.DELETED);
+    }
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
