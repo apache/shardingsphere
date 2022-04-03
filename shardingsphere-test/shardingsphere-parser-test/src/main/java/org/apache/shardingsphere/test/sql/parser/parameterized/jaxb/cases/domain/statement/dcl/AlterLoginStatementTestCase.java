@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.login.ExpectedLogin;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Alter login statement test case.
  */
+@Getter
 public final class AlterLoginStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "login")
+    private ExpectedLogin login;
 }
