@@ -17,12 +17,12 @@ weight = 1
 
 ### 使用 MySQL
 
-1. 将 MySQL 的 JDBC 驱动程序复制至目录 `ext-lib/`。
+1. 将 MySQL 的 JDBC 驱动程序复制至目录 `lib/`。
 2. 使用任何 MySQL 的客户端连接。如: `mysql -u root -h 127.0.0.1 -P 3307`。
 
 ### 使用 openGauss
 
-1. 将以 `org.opengauss` 包名为前缀的 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
+1. 将以 `org.opengauss` 包名为前缀的 openGauss 的 JDBC 驱动程序复制至目录 `lib/`。
 2. 使用任何 openGauss 的客户端连接。如: `gsql -U root -h 127.0.0.1 -p 3307`。
 
 ## 选择元数据持久化仓库
@@ -33,7 +33,7 @@ weight = 1
 
 ### 使用 Etcd
 
-1. 将 Etcd 的客户端驱动程序复制至目录 `ext-lib/`。
+1. 将 Etcd 的客户端驱动程序复制至目录 `lib/`。
 
 ## 使用分布式事务
 
@@ -49,7 +49,7 @@ weight = 1
 3. 在 `META-INF/services` 目录下新建文件 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 4. 将实现类的绝对路径写入至文件 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 5. 将上述 Java 文件打包成 jar 包。
-6. 将上述 jar 包拷贝至 ShardingSphere-Proxy 解压后的 `ext-lib/` 目录。
+6. 将上述 jar 包拷贝至 ShardingSphere-Proxy 解压后的 `lib/` 目录。
 7. 将上述自定义算法实现类的 Java 文件引用配置在 YAML 文件中，具体可参考[配置规则](/cn/user-manual/shardingsphere-proxy/yaml-config/)。
 
 ## 注意事项

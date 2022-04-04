@@ -17,12 +17,12 @@ weight = 1
 
 ### Using MySQL
 
-1. Copy MySQL's JDBC driver to folder `ext-lib/`.
+1. Copy MySQL's JDBC driver to folder `lib/`.
 2. Use any MySQL terminal to connect, such as `mysql -u root -h 127.0.0.1 -P 3307`.
 
 ### Using openGauss
 
-1. Copy openGauss's JDBC driver whose package prefixed with `org.opengauss` to folder `ext-lib/`.
+1. Copy openGauss's JDBC driver whose package prefixed with `org.opengauss` to folder `lib/`.
 2. Use any openGauss terminal to connect, such as `gsql -U root -h 127.0.0.1 -p 3307`.
 
 ## Using metadata persist repository
@@ -33,7 +33,7 @@ Integrated ZooKeeper Curator client by default.
 
 ### Using Etcd
 
-1. Copy Etcd's client driver to folder `ext-lib/`.
+1. Copy Etcd's client driver to folder `lib/`.
 
 ## Using Distributed Transaction
 
@@ -49,7 +49,7 @@ When developer need to use user-defined algorithm, should use the way below to c
 3. Create a new file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` in the `META-INF/services` directory.
 4. Absolute path of the implementation class are write to the file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 5. Package Java file to jar.
-6. Copy jar to ShardingSphere-Proxy's `ext-lib/` folder.
+6. Copy jar to ShardingSphere-Proxy's `lib/` folder.
 7. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.
 
 ## Notices
