@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spi.exception;
 /**
  * Service provider not found exception.
  */
-public final class ServiceProviderNotFoundException extends RuntimeException {
+public final class ServiceProviderNotFoundException extends ShardingSphereSPIException {
     
     private static final long serialVersionUID = -3730257541332863236L;
     
