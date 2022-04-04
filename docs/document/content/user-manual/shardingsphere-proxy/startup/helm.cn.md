@@ -66,7 +66,7 @@ helm uninstall shardingsphere-proxy
 | image.repository       | ShardingSphere-Proxy 镜像名，默认是从 Apache 官方镜像仓库拉取 | apache/ShardingSphere-Proxy |
 | image.pullPolicy       | 镜像拉取策略                                              | IfNotPresent                |
 | image.tag              | 镜像 tag                                                 | 5.1.0                       |
-| service.type           |  网络模式                                                 | NodePort                    |
+| service.type           | 网络模式                                                  | NodePort                    |
 | replicas               | 集群副本数                                                | 3                           |
 | proxyport              | 启动端口                                                  | 3307                        |
 | mysqlconnector.enabled | MySQL 驱动开启开关                                         | true                        |
