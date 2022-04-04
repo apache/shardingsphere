@@ -25,6 +25,7 @@ on:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/**'
+      - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
@@ -35,6 +36,7 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/**'
+      - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
