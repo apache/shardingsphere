@@ -58,16 +58,16 @@ Delete all release records by default, add `--keep-history` to keep them.
 
 ### ShardingSphere-Proxy Configuration
 
-| Name                   | Description                                                                             | Default Value               |
-| ---------------------- |---------------------------------------------------------------------------------------- | --------------------------- |
-| image.repository       | Image name of ShardingSphere-Proxy. Pull from the Apache official repository by default | apache/shardingsphere-proxy |
-| image.pullPolicy       | The policy for pulling an image                                                         | IfNotPresent                |
-| image.tag              | Image tag                                                                               | 5.1.0                       |
-| service.type           | Network mode                                                                            | NodePort                    |
-| replicas               | Number of cluster replicas                                                              | 3                           |
-| proxyport              | start port                                                                              | 3307                        |
-| mysqlconnector.enabled | MySQL connector enabled                                                                 | TRUE                        |
-| mysqlconnector.version | MySQL connector Version                                                                 | 5.1.49                      |
+| Name                   | Description                                                                         | Default Value               |
+| ---------------------- |------------------------------------------------------------------------------------ | --------------------------- |
+| image.repository       | Image name of ShardingSphere-Proxy. Pull from apache official repository by default | apache/shardingsphere-proxy |
+| image.pullPolicy       | The policy for pulling an image                                                     | IfNotPresent                |
+| image.tag              | Image tag                                                                           | 5.1.0                       |
+| service.type           | Network mode                                                                        | NodePort                    |
+| replicas               | Number of cluster replicas                                                          | 3                           |
+| proxyport              | start port                                                                          | 3307                        |
+| mysqlconnector.enabled | MySQL connector enabled                                                             | TRUE                        |
+| mysqlconnector.version | MySQL connector version                                                             | 5.1.49                      |
 
 ### MySQL Configuration
 
