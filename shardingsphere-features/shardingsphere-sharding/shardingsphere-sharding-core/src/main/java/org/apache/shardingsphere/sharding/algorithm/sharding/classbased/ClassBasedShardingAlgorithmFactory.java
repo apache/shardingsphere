@@ -41,14 +41,14 @@ public final class ClassBasedShardingAlgorithmFactory {
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
         Class<?> result = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
-        T instance = (T) result.newInstance();
+        T instance = (T) result.getDeclaredConstructor().newInstance();
         setProperties(instance, props);
         instance.init();
         return instance;
