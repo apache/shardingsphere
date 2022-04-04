@@ -15,19 +15,18 @@
 #  limitations under the License.
 #
 
-## @section Global parameters
-## Global Parameters
+## @section Global Configuration
+## Global Configuration
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-## @param global.resources.limits The resources limits for the shardingsphere-proxy,mysql,zookeeper containers
-## @param global.resources.requests The requested resources for the shardingsphere-proxy,mysql,zookeeper containers
-##
+## @param global.resources.limits The resources limits for all containers
+## @param global.resources.requests The requested resources for all containers
 global:
   resources:
     limits: {}
     requests: {}
 
-## @section mysql parameters
-## MySQL Parameters
+## @section MySQL Configuration
+## MySQL Configuration
 ## ref:https://kubernetes.io/docs/concepts/storage/storage-classes/
 ## @param mysql.enabled Enable MySQL sub-charts dependency
 ## @param mysql.storageclass Storage class needed by MySQL persistent storage
@@ -36,8 +35,9 @@ mysql:
   enabled: true
   storageclass:
   storagerequest:
-## @section zookeeper parameters
-## ZooKeeper Parameters
+
+## @section ZooKeeper Configuration
+## ZooKeeper Configuration
 ## ref:https://kubernetes.io/docs/concepts/storage/storage-classes/
 ## @param zookeeper.enabled Enable ZooKeeper sub-charts dependency
 ## @param zookeeper.storageclass Storage class needed by ZooKeeper persistent storage
@@ -47,34 +47,34 @@ zookeeper:
   storageclass:
   storagerequest:
 
-
-## @section shardingsphere-proxy parameters
+## @section ShardingSphere-Proxy Configuration
 ## Image Parameters
 ## ref: https://kubernetes.io/docs/concepts/containers/images/
-## @param image.repository shardingsphere-proxy's image name. The default setting is to pull it from the Apache official-images repository
+## @param image.repository Image name of ShardingSphere-Proxy. Pull from apache official repository by default
 ## @param image.pullPolicy The policy for pulling an image
-## @param image.tag Image Tag
+## @param image.tag Image tag
 image:
   repository: apache/shardingsphere-proxy
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "5.1.1"
-## Deployment Parameters
+
+## Deployment Configuration
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
-## @param replicas Number of cluster-mode replicas in shardingsphere-proxy
-## @param service.type shardingsphere-proxy network mode
+## @param replicas Number of cluster replicas
+## @param service.type Network mode
 replicas: 3
 service:
   type: NodePort
-## MySQL connector Parameters
+## MySQL connector Configuration
 ## ref: https://shardingsphere.apache.org/document/5.1.0/en/quick-start/shardingsphere-proxy-quick-start/
 ## @param mysqlconnector.enabled MySQL connector enabled
-## @param mysqlconnector.version MySQL connector Version
+## @param mysqlconnector.version MySQL connector version
 mysqlconnector:
   enabled: true
   version: 5.1.49
-## shardingsphere-proxy start port
+## ShardingSphere-Proxy start port
 ## ref: https://shardingsphere.apache.org/document/5.1.0/cn/user-manual/shardingsphere-proxy/startup/docker/
 ## @param proxyport start port
 proxyport: 3307
