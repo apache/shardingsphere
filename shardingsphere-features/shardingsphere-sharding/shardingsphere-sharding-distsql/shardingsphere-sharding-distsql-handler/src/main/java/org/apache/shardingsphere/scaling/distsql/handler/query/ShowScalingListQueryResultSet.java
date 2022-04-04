@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling job status query result set.
+ * Show scaling list query result set.
  */
-public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
+public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
@@ -42,32 +41,22 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        long currentTimeMillis = System.currentTimeMillis();
-        data = RULE_ALTERED_JOB_API.getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
-                .map(entry -> {
+        data = RULE_ALTERED_JOB_API.list().stream()
+                .map(each -> {
                     Collection<Object> list = new LinkedList<>();
-                    list.add(entry.getKey());
-                    if (null != entry.getValue()) {
-                        list.add(entry.getValue().getDataSource());
-                        list.add(entry.getValue().getStatus());
-                        list.add(entry.getValue().isActive() ? "true" : "false");
-                        list.add(entry.getValue().getInventoryFinishedPercentage());
-                        long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
-                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
-                    } else {
-                        list.add("");
-                        list.add("");
-                        list.add("");
-                        list.add("");
-                        list.add("");
-                    }
+                    list.add(each.getJobId());
+                    list.add(each.getTables());
+                    list.add(each.getShardingTotalCount());
+                    list.add(each.isActive() ? "true" : "false");
+                    list.add(each.getCreateTime());
+                    list.add(each.getStopTime());
                     return list;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_seconds");
+        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
     }
     
     @Override
@@ -82,6 +71,6 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowScalingStatusStatement.class.getName();
+        return ShowScalingListStatement.class.getName();
     }
 }
