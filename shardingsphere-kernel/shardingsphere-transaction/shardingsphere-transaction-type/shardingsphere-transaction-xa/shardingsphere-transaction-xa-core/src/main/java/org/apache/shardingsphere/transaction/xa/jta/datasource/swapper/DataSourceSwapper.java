@@ -90,8 +90,8 @@ public final class DataSourceSwapper {
             }
         }
         try {
-            return (XADataSource) xaDataSourceClass.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return (XADataSource) xaDataSourceClass.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new ShardingSphereException("Failed to instance [%s]", xaDataSourceClassName);
         }
     }
