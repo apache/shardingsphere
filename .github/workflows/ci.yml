@@ -23,18 +23,22 @@ name: Continuous Integration
 on:
   push:
     branches: [ master, dev ]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.txt'
-      - '.*.yaml'
+    paths:
+      - '.github/workflows/**'
+      - '**/src/main/**'
+      - '**/src/test/**'
+      - '!shardingsphere-distribution/**'
+      - '!shardingsphere-test/shardingsphere-integration-*/**'
+      - '!*.md'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '*.txt'
-      - '.*.yaml'
+    paths:
+      - '.github/workflows/**'
+      - '**/src/main/**'
+      - '**/src/test/**'
+      - '!shardingsphere-distribution/**'
+      - '!shardingsphere-test/shardingsphere-integration-*/**'
+      - '!*.md'
   repository_dispatch:
     types: [rerun-ci]
   schedule:

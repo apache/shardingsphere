@@ -30,8 +30,6 @@ on:
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
-      - '!*.txt'
-      - '!.*.yaml'
   pull_request:
     branches: [ master ]
     paths:
@@ -44,8 +42,6 @@ on:
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
-      - '!*.txt'
-      - '!.*.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
