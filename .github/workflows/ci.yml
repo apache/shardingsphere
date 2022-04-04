@@ -29,6 +29,7 @@ on:
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
       - '!shardingsphere-test/shardingsphere-integration-*/**'
+      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -38,6 +39,7 @@ on:
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
       - '!shardingsphere-test/shardingsphere-integration-*/**'
+      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
       - '!*.md'
   repository_dispatch:
     types: [rerun-ci]
