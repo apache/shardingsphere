@@ -20,8 +20,11 @@ package org.apache.shardingsphere.example.generator.core;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Example generator.
@@ -32,15 +35,37 @@ public interface ExampleGenerator {
     
     String RESOURCES_PATH = "src/main/resources";
     
+    default void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
+        for (String eachFramework : configuration.getFrameworks()) {
+            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
+                generate(templateConfig, buildDataModel(configuration, eachFramework, eachFeature), eachFramework, eachFeature);
+            }
+        }
+    }
+    
+    default Map<String, String> buildDataModel(final YamlExampleConfiguration configuration, final String framework, final String feature) {
+        Map<String, String> result = new LinkedHashMap<>();
+        configuration.getProps().forEach((key, value) -> result.put(key.toString(), value.toString()));
+        result.put("product", getType());
+        // TODO support mode & transaction combination
+        result.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
+        result.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
+        result.put("feature", feature);
+        result.put("framework", framework);
+        result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
+        return result;
+    }
+    
     /**
-     * Generate file.
-     * 
+     * Generate.
      * @param templateConfig template configuration
-     * @param configuration example configuration
+     * @param dataModel data model
+     * @param framework framework
+     * @param feature feature
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    void generate(Configuration templateConfig, YamlExampleConfiguration configuration) throws IOException, TemplateException;
+    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException;
     
     /**
      * Get generator type.

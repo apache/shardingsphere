@@ -21,12 +21,9 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
 import org.apache.shardingsphere.example.generator.core.GenerateUtil;
-import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -34,39 +31,21 @@ import java.util.Map;
  */
 public final class ProxyExampleGenerator implements ExampleGenerator {
     
-    @Override
-    public void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
-        for (String eachFramework : configuration.getFrameworks()) {
-            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
-                // TODO refactor proxy process
-                Map<String, String> dataModel = new LinkedHashMap<>();
-                dataModel.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
-                dataModel.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
-                dataModel.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
-                generate(templateConfig, dataModel, eachFramework, eachFeature);
-            }
-        }
-    }
-    
-    private void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
-        dataModel.put("feature", feature);
-        dataModel.put("framework", framework);
-        dataModel.put("product", getType());
+    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
         GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
         String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
-        processFile(feature, templateConfig, dataModel, outputPath);
+        processFile(templateConfig, dataModel, outputPath);
     }
     
-    private void processFile(final String feature, final Configuration templateConfig, final Map<String, String> dataModel,
+    public String getType() {
+        return "proxy";
+    }
+    
+    private void processFile(final Configuration templateConfig, final Map<String, String> dataModel,
                              final String baseOutputPath) throws TemplateException, IOException {
         String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
-    }
-    
-    @Override
-    public String getType() {
-        return "proxy";
     }
 }
