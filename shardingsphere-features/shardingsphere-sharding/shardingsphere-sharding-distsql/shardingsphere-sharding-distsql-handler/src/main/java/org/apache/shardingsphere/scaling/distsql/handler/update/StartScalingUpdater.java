@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StartScalingStatement;
 
 /**
- * Stop scaling updater.
+ * Start scaling updater.
  */
-public final class StopScalingUpdater implements RALUpdater<StopScalingStatement> {
+public final class StartScalingUpdater implements RALUpdater<StartScalingStatement> {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
     @Override
-    public void executeUpdate(final StopScalingStatement sqlStatement) {
-        RULE_ALTERED_JOB_API.stop(sqlStatement.getJobId());
+    public void executeUpdate(final StartScalingStatement sqlStatement) {
+        RULE_ALTERED_JOB_API.startDisabledJob(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return StopScalingStatement.class.getName();
+        return StartScalingStatement.class.getName();
     }
 }

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDisabledException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.distsql.statement.DisableShardingScalingRuleStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,15 +29,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DisabledShardingScalingRuleStatementUpdaterTest {
+public final class DropShardingScalingRuleStatementUpdaterTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    private final DisableShardingScalingRuleStatementUpdater updater = new DisableShardingScalingRuleStatementUpdater();
+    private final DropShardingScalingRuleStatementUpdater updater = new DropShardingScalingRuleStatementUpdater();
     
     @Before
     public void before() {
@@ -51,36 +51,34 @@ public final class DisabledShardingScalingRuleStatementUpdaterTest {
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckNotExist() throws DistSQLException {
+    public void assertCheckWithNotExist() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getScaling().put("default_scaling", null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("new_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
     }
     
-    @Test(expected = RuleDisabledException.class)
-    public void assertCheckDisabled() throws DistSQLException {
-        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        String scalingName = "default_scaling";
-        currentRuleConfig.getScaling().put(scalingName, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(scalingName), currentRuleConfig);
-    }
-
     @Test
-    public void assertBuildToBeAlteredRuleConfiguration() {
-        ShardingRuleConfiguration result = updater.buildToBeAlteredRuleConfiguration(createSQLStatement("default_scaling"));
-        assertNull(result);
+    public void assertCheckWithIfExists() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), null);
+    }
+    
+    @Test
+    public void assertCheckSuccess() throws DistSQLException {
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getScaling().put("default_scaling", null);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
     }
     
     @Test
     public void assertUpdateSuccess() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        String scalingName = "default_scaling";
-        currentRuleConfig.getScaling().put(scalingName, null);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, null);
+        currentRuleConfig.getScaling().put("default_scaling", null);
+        updater.updateCurrentRuleConfiguration(createSQLStatement("default_scaling"), currentRuleConfig);
+        assertTrue(currentRuleConfig.getScaling().isEmpty());
         assertNull(currentRuleConfig.getScalingName());
     }
     
-    private DisableShardingScalingRuleStatement createSQLStatement(final String scalingName) {
-        return new DisableShardingScalingRuleStatement(scalingName);
+    private DropShardingScalingRuleStatement createSQLStatement(final String scalingName) {
+        return new DropShardingScalingRuleStatement(scalingName);
     }
 }

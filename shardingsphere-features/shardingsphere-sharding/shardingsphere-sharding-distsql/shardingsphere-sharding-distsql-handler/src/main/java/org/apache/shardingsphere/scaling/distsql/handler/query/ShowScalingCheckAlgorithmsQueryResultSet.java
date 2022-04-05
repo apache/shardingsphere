@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.handler;
+package org.apache.shardingsphere.scaling.distsql.handler.query;
 
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -31,9 +32,9 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling list query result set.
+ * Show scaling check algorithms query result set.
  */
-public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
+public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
@@ -41,22 +42,20 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = RULE_ALTERED_JOB_API.list().stream()
+        data = RULE_ALTERED_JOB_API.listDataConsistencyCheckAlgorithms().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
-                    list.add(each.getJobId());
-                    list.add(each.getTables());
-                    list.add(each.getShardingTotalCount());
-                    list.add(each.isActive() ? "true" : "false");
-                    list.add(each.getCreateTime());
-                    list.add(each.getStopTime());
+                    list.add(each.getType());
+                    list.add(each.getDescription());
+                    list.add(Joiner.on(",").join(each.getSupportedDatabaseTypes()));
+                    list.add(each.getProvider());
                     return list;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
+        return Arrays.asList("type", "description", "supported_database_types", "provider");
     }
     
     @Override
@@ -71,6 +70,6 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowScalingListStatement.class.getName();
+        return ShowScalingCheckAlgorithmsStatement.class.getName();
     }
 }
