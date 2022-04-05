@@ -24,11 +24,15 @@ public abstract class ShardingSphereSPIException extends RuntimeException {
     
     private static final long serialVersionUID = -3044979409127407014L;
     
-    public ShardingSphereSPIException(final String message) {
-        super(message);
+    public ShardingSphereSPIException(final int errorCode, final String message) {
+        super(createErrorMessage(errorCode, message));
     }
     
-    public ShardingSphereSPIException(final String message, final Exception cause) {
-        super(message, cause);
+    public ShardingSphereSPIException(final int errorCode, final String message, final Exception cause) {
+        super(createErrorMessage(errorCode, message), cause);
+    }
+    
+    private static String createErrorMessage(final int errorCode, final String message) {
+        return String.format("SPI-%05d: %s", errorCode, message);
     }
 }
