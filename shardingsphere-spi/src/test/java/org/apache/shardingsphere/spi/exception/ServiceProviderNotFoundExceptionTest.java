@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.spi.exception;
 
-/**
- * Service provider not found exception.
- */
-public final class ServiceProviderNotFoundException extends ShardingSphereSPIException {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ServiceProviderNotFoundExceptionTest {
     
-    private static final long serialVersionUID = -3730257541332863236L;
-    
-    private static final int ERROR_CODE = 1;
-    
-    public ServiceProviderNotFoundException(final Class<?> clazz) {
-        super(ERROR_CODE, String.format("No implementation class load from SPI `%s`.", clazz.getName()));
+    @Test
+    public void assertGetMessageWithClassOnly() {
+        assertThat(new ServiceProviderNotFoundException(Object.class).getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object`."));
     }
     
-    public ServiceProviderNotFoundException(final Class<?> clazz, final String type) {
-        super(ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
+    @Test
+    public void assertGetMessageWithClassAndType() {
+        assertThat(new ServiceProviderNotFoundException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object` with type `Foo`."));
     }
 }
