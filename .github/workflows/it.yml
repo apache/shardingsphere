@@ -63,6 +63,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
@@ -194,6 +196,9 @@ jobs:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
@@ -201,7 +206,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
