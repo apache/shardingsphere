@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Datetime loading SQL provider factory.
  */
@@ -43,6 +41,6 @@ public final class DatetimeLoadingSQLProviderFactory {
      * @return new instance of datetime loading SQL provider
      */
     public static DatetimeLoadingSQLProvider newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType), new Properties());
+        return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType));
     }
 }

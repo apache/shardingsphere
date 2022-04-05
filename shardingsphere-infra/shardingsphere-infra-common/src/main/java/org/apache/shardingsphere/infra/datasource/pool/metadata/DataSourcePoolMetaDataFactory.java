@@ -23,7 +23,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Data source pool meta data factory.
@@ -42,6 +41,6 @@ public final class DataSourcePoolMetaDataFactory {
      * @return new instance of data source pool meta data
      */
     public static Optional<DataSourcePoolMetaData> newInstance(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceClassName, new Properties());
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceClassName);
     }
 }

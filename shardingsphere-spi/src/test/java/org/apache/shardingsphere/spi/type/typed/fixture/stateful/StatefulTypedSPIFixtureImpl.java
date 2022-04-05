@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.update;
+package org.apache.shardingsphere.spi.type.typed.fixture.stateful;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * RAL updater.
- * 
- * @param <T> type of updatable RAL statement
- */
-public interface RALUpdater<T extends SQLStatement> extends StatelessTypedSPI {
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class StatefulTypedSPIFixtureImpl implements StatefulTypedSPIFixture {
     
-    /**
-     * Execute update.
-     * 
-     * @param sqlStatement updatable RAL statement
-     */
-    void executeUpdate(T sqlStatement);
+    private Properties props = new Properties();
+    
+    @Override
+    public String getType() {
+        return "Stateful_Fixture";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singletonList("Stateful_Alias");
+    }
 }

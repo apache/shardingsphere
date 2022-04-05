@@ -74,10 +74,10 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
                 shardingAlgorithmMap.put(each, config);
             });
             ShardingSphereServiceLoader.register(algorithmClass);
-            shardingAlgorithmMap.forEach((key, algorithmConfiguration) -> {
-                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfiguration.getType(), algorithmConfiguration.getProps());
+            shardingAlgorithmMap.forEach((key, algorithmConfig) -> {
+                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfig.getType(), algorithmConfig.getProps());
                 BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
-                builder.addPropertyValue(PROPS, algorithmConfiguration.getProps());
+                builder.addPropertyValue(PROPS, algorithmConfig.getProps());
                 registry.registerBeanDefinition(key, builder.getBeanDefinition());
             });
         }

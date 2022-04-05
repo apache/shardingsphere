@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.update;
-
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+package org.apache.shardingsphere.spi.type.typed;
 
 /**
- * RAL updater.
- * 
- * @param <T> type of updatable RAL statement
+ * Stateless typed SPI.
  */
-public interface RALUpdater<T extends SQLStatement> extends StatelessTypedSPI {
-    
-    /**
-     * Execute update.
-     * 
-     * @param sqlStatement updatable RAL statement
-     */
-    void executeUpdate(T sqlStatement);
+public interface StatelessTypedSPI extends TypedSPI {
 }

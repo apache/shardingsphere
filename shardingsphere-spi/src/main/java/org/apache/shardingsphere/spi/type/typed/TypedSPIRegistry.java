@@ -34,15 +34,32 @@ public final class TypedSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param typedSPIClass typed SPI class
+     * @param spiClass stateless typed SPI class
      * @param type type
-     * @param props properties
-     * @param <T> type
+     * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
-        for (T each : ShardingSphereServiceLoader.newServiceInstances(typedSPIClass)) {
-            if (each.getType().equalsIgnoreCase(type) || each.getTypeAliases().contains(type)) {
+    public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+        for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
+            if (matchesType(type, each)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Find registered service.
+     *
+     * @param spiClass stateful typed SPI class
+     * @param type type
+     * @param props properties
+     * @param <T> SPI class type
+     * @return registered service
+     */
+    public static <T extends StatefulTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+        for (T each : ShardingSphereServiceLoader.newServiceInstances(spiClass)) {
+            if (matchesType(type, each)) {
                 setProperties(each, props);
                 return Optional.of(each);
             }
@@ -50,29 +67,49 @@ public final class TypedSPIRegistry {
         return Optional.empty();
     }
     
-    private static <T extends TypedSPI> void setProperties(final T service, final Properties props) {
+    private static boolean matchesType(final String type, final TypedSPI typedSPI) {
+        return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
+    }
+    
+    private static <T extends StatefulTypedSPI> void setProperties(final T statefulTypedSPI, final Properties props) {
         if (null == props) {
             return;
         }
         Properties newProps = new Properties();
         props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        service.setProps(newProps);
+        statefulTypedSPI.setProps(newProps);
+    }
+    
+    /**
+     * Get registered service.
+     *
+     * @param spiClass stateless typed SPI class
+     * @param type type
+     * @param <T> SPI class type
+     * @return registered service
+     */
+    public static <T extends StatelessTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
+        Optional<T> result = findRegisteredService(spiClass, type);
+        if (result.isPresent()) {
+            return result.get();
+        }
+        throw new ServiceProviderNotFoundException(spiClass, type);
     }
     
     /**
      * Get registered service.
      * 
-     * @param typedSPIClass typed SPI class
+     * @param spiClass stateful typed SPI class
      * @param type type
      * @param props properties
-     * @param <T> type
+     * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
-        Optional<T> result = findRegisteredService(typedSPIClass, type, props);
+    public static <T extends StatefulTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+        Optional<T> result = findRegisteredService(spiClass, type, props);
         if (result.isPresent()) {
             return result.get();
         }
-        throw new ServiceProviderNotFoundException(typedSPIClass, type);
+        throw new ServiceProviderNotFoundException(spiClass, type);
     }
 }
