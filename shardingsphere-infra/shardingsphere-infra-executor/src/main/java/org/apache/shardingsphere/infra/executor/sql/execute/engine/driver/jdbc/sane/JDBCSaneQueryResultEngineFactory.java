@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * JDBC sane query result engine factory.
  */
@@ -42,6 +40,6 @@ public final class JDBCSaneQueryResultEngineFactory {
      * @return new instance of JDBC sane query result engine
      */
     public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElseGet(DefaultSaneQueryResultEngine::new);
+        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName()).orElseGet(DefaultSaneQueryResultEngine::new);
     }
 }

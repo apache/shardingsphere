@@ -24,8 +24,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Context manager builder factory.
  */
@@ -44,6 +42,6 @@ public final class ContextManagerBuilderFactory {
      */
     public static ContextManagerBuilder newInstance(final ModeConfiguration modeConfig) {
         return null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType(), new Properties());
+                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
     }
 }

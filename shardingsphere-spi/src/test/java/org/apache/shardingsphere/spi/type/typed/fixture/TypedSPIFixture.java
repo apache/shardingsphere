@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.type.typed.fixture;
 
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
-public interface TypedSPIFixture extends TypedSPI {
+public interface TypedSPIFixture extends StatefulTypedSPI {
 }

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
 
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import javax.sql.DataSource;
 
 /**
  * Data source pool active detector.
  */
-public interface DataSourcePoolActiveDetector extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolActiveDetector extends StatelessTypedSPI, RequiredSPI {
     
     /**
      * Whether contains active connection.

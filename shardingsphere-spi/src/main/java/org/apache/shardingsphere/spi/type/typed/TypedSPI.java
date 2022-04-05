@@ -19,7 +19,6 @@ package org.apache.shardingsphere.spi.type.typed;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 /**
  * Typed SPI.
@@ -32,23 +31,6 @@ public interface TypedSPI {
      * @return type
      */
     String getType();
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    default Properties getProps() {
-        return new Properties();
-    }
-    
-    /**
-     * Set properties.
-     * 
-     * @param props properties
-     */
-    default void setProps(final Properties props) {
-    }
     
     /**
      * Get type aliases.
