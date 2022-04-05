@@ -34,10 +34,6 @@ public final class H2RepositoryTest {
     @Test
     public void assertMethod() {
         assertThat(h2Repository.getType(), is("H2"));
-        assertSetProperty();
-        assertPersistAndGet();
-        assertPersistAndGetChildrenKeys();
-        assertDelete();
         h2Repository.close();
     }
     
@@ -49,23 +45,29 @@ public final class H2RepositoryTest {
         props.setProperty("driver_class", "org.h2.Driver");
         h2Repository.setProps(props);
     }
-    
-    private void assertPersistAndGet() {
+
+    @Test
+    public void assertPersistAndGet() {
+        assertSetProperty();
         h2Repository.persist("/testPath/test1", "test1_content");
         assertThat(h2Repository.get("/testPath/test1"), is("test1_content"));
         h2Repository.persist("/testPath/test1", "modify_content");
         assertThat(h2Repository.get("/testPath/test1"), is("modify_content"));
     }
-    
-    private void assertPersistAndGetChildrenKeys() {
+
+    @Test
+    public void assertPersistAndGetChildrenKeys() {
+        assertSetProperty();
         h2Repository.persist("/testPath/test1", "test1_content");
         h2Repository.persist("/testPath/test2", "test2_content");
         List<String> childrenKeys = h2Repository.getChildrenKeys("/testPath");
         assertThat(childrenKeys.get(0), is("test1"));
         assertThat(childrenKeys.get(1), is("test2"));
     }
-    
-    private void assertDelete() {
+
+    @Test
+    public void assertDelete() {
+        assertSetProperty();
         h2Repository.delete("/testPath");
         assertTrue(StringUtils.isBlank(h2Repository.get("/testPath")));
     }
