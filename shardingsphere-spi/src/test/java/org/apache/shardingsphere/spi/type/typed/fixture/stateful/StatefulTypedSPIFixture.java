@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture;
+package org.apache.shardingsphere.spi.type.typed.fixture.stateful;
 
 import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
-public interface TypedSPIFixture extends StatefulTypedSPI {
+public interface StatefulTypedSPIFixture extends StatefulTypedSPI {
 }

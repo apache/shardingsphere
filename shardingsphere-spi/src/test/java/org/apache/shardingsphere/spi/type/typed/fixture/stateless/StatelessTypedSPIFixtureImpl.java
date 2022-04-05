@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture;
+package org.apache.shardingsphere.spi.type.typed.fixture.stateless;
 
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
-
-public interface NoImplTypedSPIFixture extends TypedSPI {
+public final class StatelessTypedSPIFixtureImpl implements StatelessTypedSPIFixture {
+    
+    @Override
+    public String getType() {
+        return "Stateless_Fixture";
+    }
 }
-
