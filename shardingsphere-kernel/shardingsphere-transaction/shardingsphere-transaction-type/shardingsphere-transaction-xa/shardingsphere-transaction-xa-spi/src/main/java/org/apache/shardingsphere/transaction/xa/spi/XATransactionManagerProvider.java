@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.spi;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;

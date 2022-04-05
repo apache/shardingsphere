@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 /**
  * Job rate limit algorithm, SPI.
