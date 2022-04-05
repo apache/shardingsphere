@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyStat
 import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Map;
 import java.util.Properties;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 

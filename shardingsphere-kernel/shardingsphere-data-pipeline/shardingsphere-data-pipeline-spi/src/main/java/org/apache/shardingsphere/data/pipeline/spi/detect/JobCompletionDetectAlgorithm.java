@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.detect;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 /**
  * Job completion detect algorithm, SPI.
