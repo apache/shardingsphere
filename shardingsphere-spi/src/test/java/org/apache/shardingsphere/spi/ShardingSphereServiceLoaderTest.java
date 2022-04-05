@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spi;
 
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
-import org.apache.shardingsphere.spi.fixture.typed.TypedSPIFixture;
+import org.apache.shardingsphere.spi.type.typed.fixture.TypedSPIFixture;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;

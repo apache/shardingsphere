@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * OK proxy state.

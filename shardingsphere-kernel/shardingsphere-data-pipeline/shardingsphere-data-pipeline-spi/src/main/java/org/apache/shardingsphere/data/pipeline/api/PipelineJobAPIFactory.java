@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
  * Pipeline job API factory.

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
+import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
 
 /**
  * Pipeline SQL builder factory.

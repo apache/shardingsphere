@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Properties;
 
