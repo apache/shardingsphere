@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for Oracle.
  */
+@Slf4j
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
@@ -93,6 +95,10 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                     result.get(tableName).add(columnMetaData);
                 }
             }
+            String tablesNotLoaded = tables.stream().filter(each -> !result.containsKey(each)).collect(Collectors.joining(","));
+            if (!tablesNotLoaded.isEmpty()) {
+                log.warn("Tables {} were not properly loaded, please check it from metaData table `ALL_TAB_COLUMNS`, perhaps it should be in UPPERCASE.", tablesNotLoaded);
+            }
         }
         return result;
     }
@@ -130,7 +136,16 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         }
         String collation = stringBuilder.toString();
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tablesToString(tables));
+    }
+    
+    private String tablesToString(final Collection<String> tables) {
+        StringBuilder stringBuilder = new StringBuilder(28);
+        for (String table : tables) {
+            stringBuilder.append(String.format("'%s'", table));
+            stringBuilder.append(table.equals(table.toUpperCase()) ? "," : String.format(",'%s',", table.toUpperCase()));
+        }
+        return stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(",")).toString();
     }
     
     private boolean versionContainsCollation(final DatabaseMetaData metaData) throws SQLException {
