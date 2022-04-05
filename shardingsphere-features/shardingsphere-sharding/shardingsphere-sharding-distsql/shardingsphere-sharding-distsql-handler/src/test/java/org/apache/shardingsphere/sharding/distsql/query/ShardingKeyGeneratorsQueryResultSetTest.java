@@ -48,7 +48,7 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("snowflake"));
         assertThat(actual.get(1), is("SNOWFLAKE"));
-        assertThat(actual.get(2).toString(), is("{work-id=123}"));
+        assertThat(actual.get(2).toString(), is("{}"));
     }
     
     private Collection<ShardingRuleConfiguration> createRuleConfigurations() {
