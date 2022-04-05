@@ -42,7 +42,7 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
     private static volatile Object dataSourceFactory;
     
-    private volatile boolean initialized;
+    private static volatile boolean initialized;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
