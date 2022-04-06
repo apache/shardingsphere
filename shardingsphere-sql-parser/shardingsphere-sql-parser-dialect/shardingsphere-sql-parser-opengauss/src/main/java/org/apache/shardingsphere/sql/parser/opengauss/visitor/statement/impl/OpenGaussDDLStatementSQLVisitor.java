@@ -574,21 +574,21 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
         OpenGaussCreateSequenceStatement result = new OpenGaussCreateSequenceStatement();
-        result.setSequenceName(((IdentifierValue) visit(ctx.qualifiedName())).getValue());
+        result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
 
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
         OpenGaussAlterSequenceStatement result = new OpenGaussAlterSequenceStatement();
-        result.setSequenceName(((IdentifierValue) visit(ctx.qualifiedName())).getValue());
+        result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
 
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
         OpenGaussDropSequenceStatement result = new OpenGaussDropSequenceStatement();
-        result.setSequenceName(((IdentifierValue) visit(ctx.qualifiedNameList())).getValue());
+        result.setSequenceNames(((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
         return result;
     }
     
