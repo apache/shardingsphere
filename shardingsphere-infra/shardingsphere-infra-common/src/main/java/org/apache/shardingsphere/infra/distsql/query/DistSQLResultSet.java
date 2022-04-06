@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.query;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Dist SQL result set.
  */
-public interface DistSQLResultSet extends TypedSPI {
+public interface DistSQLResultSet extends StatefulTypedSPI {
     
     /**
      * Initialize data.

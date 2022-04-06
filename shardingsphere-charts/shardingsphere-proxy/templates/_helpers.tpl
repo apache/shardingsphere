@@ -14,6 +14,7 @@
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */}}
+
 {{- define "zkAddr" }}
 {{- if .Values.zkAddr -}}
 {{ .Values.zkAddr -}}
@@ -29,4 +30,3 @@ username: {{ .username | default "root" }}
 passwd: {{ .passwd | default "root" }}
 {{- end -}}
 {{ end }}
-

@@ -417,7 +417,7 @@ window.onload = function(){
       function deal(str){
         bocs.forEach(function(item){
           if(item.getAttribute('href').split('#')[1] == str){
-            console.log(item, str)
+            // console.log(item, str)
             item.classList='active'
           }else{
             item.classList=''

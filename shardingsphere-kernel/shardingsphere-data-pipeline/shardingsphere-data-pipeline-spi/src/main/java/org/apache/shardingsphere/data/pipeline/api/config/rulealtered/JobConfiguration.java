@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Collections;
 

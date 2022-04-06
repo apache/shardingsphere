@@ -43,13 +43,12 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -75,13 +74,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws DistSQLException {
-        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
-        Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
-                new Properties());
+        Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName());
         if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
             if (RULE_ALTERED_ACTION_LIST.contains(sqlStatement.getClass().getCanonicalName())) {
                 // TODO throw new RuntimeException("scaling is not enabled");

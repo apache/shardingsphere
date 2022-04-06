@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowFun
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowProcedureStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTransactionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UnicastResourceShowExecutor;
@@ -53,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Iterator;
@@ -79,9 +77,6 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
         }
         if (sqlStatement instanceof MySQLShowTablesStatement) {
             return Optional.of(new ShowTablesExecutor((MySQLShowTablesStatement) sqlStatement, sqlStatementContext.getDatabaseType()));
-        }
-        if (sqlStatement instanceof MySQLShowTableStatusStatement) {
-            return Optional.of(new ShowTablesStatusExecutor((MySQLShowTableStatusStatement) sqlStatement));
         }
         return Optional.empty();
     }
@@ -130,7 +125,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
                 return Optional.of(new ShowCurrentDatabaseExecutor());
             }
             if (isQueryInformationSchema((SelectStatement) sqlStatement)) {
-                return Optional.of(MySQLInformationSchemaExecutorFactory.newInstance((SelectStatement) sqlStatement, sql));
+                return MySQLInformationSchemaExecutorFactory.newInstance((SelectStatement) sqlStatement, sql);
             }
             if (isQueryPerformanceSchema((SelectStatement) sqlStatement)) {
                 // TODO

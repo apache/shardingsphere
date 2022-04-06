@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;

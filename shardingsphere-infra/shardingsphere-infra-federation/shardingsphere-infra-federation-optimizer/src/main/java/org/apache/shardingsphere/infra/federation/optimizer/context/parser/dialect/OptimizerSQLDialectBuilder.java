@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 import java.util.Properties;
 
 /**
  * Optimizer SQL dialect properties builder.
  */
-public interface OptimizerSQLDialectBuilder extends TypedSPI, RequiredSPI {
+public interface OptimizerSQLDialectBuilder extends StatefulTypedSPI, RequiredSPI {
     
     /**
      * Build optimizer SQL dialect properties.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.distsql.update;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * 
  * @param <T> type of updatable RAL statement
  */
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public interface RALUpdater<T extends SQLStatement> extends StatelessTypedSPI {
     
     /**
      * Execute update.

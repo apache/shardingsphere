@@ -55,7 +55,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;

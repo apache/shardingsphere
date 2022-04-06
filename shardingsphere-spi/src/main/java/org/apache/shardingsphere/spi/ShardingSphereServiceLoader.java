@@ -93,8 +93,8 @@ public final class ShardingSphereServiceLoader {
     
     private static Object newServiceInstance(final Class<?> clazz) {
         try {
-            return clazz.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new ServiceLoaderInstantiationException(clazz, ex);
         }
     }

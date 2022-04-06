@@ -35,8 +35,6 @@ public final class LockNode {
     
     private static final String LOCKS_NODE = "locks";
     
-    private static final String LOCKED_ACK_NODE = "ack";
-    
     /**
      * Get lock root node path.
      * 
@@ -57,27 +55,8 @@ public final class LockNode {
     }
     
     /**
-     * Get locked ack root node path.
-     * 
-     * @return locked ack root node path
-     */
-    public static String getLockedAckRootNodePah() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE);
-    }
-    
-    /**
-     * Get locked ack node path.
-     * 
-     * @param ackLockName ack lock name
-     * @return locked ack node path
-     */
-    public static String getLockedAckNodePath(final String ackLockName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE, ackLockName);
-    }
-    
-    /**
      * Get lock name by lock node path.
-     * 
+     *
      * @param lockNodePath lock node path
      * @return lock name
      */

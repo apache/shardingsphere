@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMe
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
