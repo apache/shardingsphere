@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Lock notification event.
+ * Ack locked event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LockNotificationEvent implements GovernanceEvent {
+public final class AckLockedEvent implements GovernanceEvent {
     
     private final String lockName;
 }
