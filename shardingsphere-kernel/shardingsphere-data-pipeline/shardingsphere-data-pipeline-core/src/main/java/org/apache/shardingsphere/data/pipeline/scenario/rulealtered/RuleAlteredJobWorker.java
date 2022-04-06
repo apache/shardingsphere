@@ -55,8 +55,8 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.util.Collection;
 import java.util.HashMap;

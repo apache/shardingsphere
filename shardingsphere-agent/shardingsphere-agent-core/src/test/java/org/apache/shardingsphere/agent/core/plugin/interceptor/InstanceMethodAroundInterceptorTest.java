@@ -101,7 +101,7 @@ public final class InstanceMethodAroundInterceptorTest {
                 .make()
                 .load(new MockClassLoader())
                 .getLoaded()
-                .newInstance();
+                .getDeclaredConstructor().newInstance();
         List<String> queues = new LinkedList<>();
         if ("mockWithException".equals(methodName)) {
             try {

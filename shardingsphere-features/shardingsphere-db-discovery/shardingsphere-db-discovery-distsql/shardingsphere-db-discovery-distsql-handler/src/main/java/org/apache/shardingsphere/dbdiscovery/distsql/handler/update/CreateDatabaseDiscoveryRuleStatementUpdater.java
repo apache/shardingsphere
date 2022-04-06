@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;

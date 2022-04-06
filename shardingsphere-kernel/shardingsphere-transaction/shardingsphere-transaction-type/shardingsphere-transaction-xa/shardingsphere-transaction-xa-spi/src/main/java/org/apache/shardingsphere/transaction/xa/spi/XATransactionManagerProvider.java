@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.spi;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
@@ -26,7 +26,7 @@ import javax.transaction.TransactionManager;
 /**
  * XA transaction manager provider.
  */
-public interface XATransactionManagerProvider extends AutoCloseable, TypedSPI, RequiredSPI {
+public interface XATransactionManagerProvider extends AutoCloseable, StatefulTypedSPI, RequiredSPI {
     
     /**
      * Initialize XA transaction manager provider.

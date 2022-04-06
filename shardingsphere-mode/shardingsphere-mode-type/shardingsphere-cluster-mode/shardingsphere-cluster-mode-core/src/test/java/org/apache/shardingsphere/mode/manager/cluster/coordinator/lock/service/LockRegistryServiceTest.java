@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,11 +55,5 @@ public final class LockRegistryServiceTest {
     public void assertReleaseLock() {
         lockRegistryService.releaseLock("test");
         verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
-    }
-    
-    @Test
-    public void assertDeleteLockAck() {
-        lockRegistryService.deleteLockAck("test");
-        verify(clusterPersistRepository).delete(anyString());
     }
 }

@@ -74,11 +74,11 @@ public final class PipelineSimpleLock {
      * @return true if lock got, else false
      */
     public boolean tryLock(final String lockName, final long timeoutMills) {
-        log.info("tryLock, lockName={}, timeoutMills={}", lockName, timeoutMills);
         boolean result = lockRegistryService.tryLock(decorateLockName(lockName), timeoutMills);
         if (result) {
             lockNameLockedMap.put(lockName, true);
         }
+        log.info("tryLock, lockName={}, timeoutMills={}, result={}", lockName, timeoutMills, result);
         return result;
     }
     

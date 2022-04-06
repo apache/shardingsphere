@@ -29,6 +29,6 @@ import org.apache.shardingsphere.authority.model.AccessSubject;
 public final class TableAccessSubject implements AccessSubject {
     
     private final String schema;
-
+    
     private final String table;
 }
