@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -99,6 +100,7 @@ public final class ProcessRegistrySubscriber {
      * @param event execute process summary report event.
      */
     @Subscribe
+    @AllowConcurrentEvents
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
         ShowProcessListHolder.getInstance().put(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
@@ -110,6 +112,7 @@ public final class ProcessRegistrySubscriber {
      * @param event execute process unit report event.
      */
     @Subscribe
+    @AllowConcurrentEvents
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         String executionID = event.getExecutionID();
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(executionID);
@@ -127,6 +130,7 @@ public final class ProcessRegistrySubscriber {
      * @param event execute process report event.
      */
     @Subscribe
+    @AllowConcurrentEvents
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(event.getExecutionID());
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
