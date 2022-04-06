@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -28,6 +29,7 @@ import java.util.Collection;
 /**
  * Copy statement context.
  */
+@Getter
 public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
