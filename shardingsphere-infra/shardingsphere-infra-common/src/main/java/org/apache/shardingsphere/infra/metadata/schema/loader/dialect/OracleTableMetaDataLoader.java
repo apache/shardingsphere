@@ -95,10 +95,6 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                     result.get(tableName).add(columnMetaData);
                 }
             }
-            String tablesNotLoaded = tables.stream().filter(each -> !result.containsKey(each)).collect(Collectors.joining(","));
-            if (!tablesNotLoaded.isEmpty()) {
-                log.warn("Tables {} were not properly loaded, please check it from metaData table `ALL_TAB_COLUMNS`, perhaps it should be in UPPERCASE.", tablesNotLoaded);
-            }
         }
         return result;
     }
