@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSuppli
 import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 
 /**
- * RAL operate supplier.
+ * RAL operation supplier.
  */
 public interface RALOperateSupplier extends DistSQLOperationSupplier {
     

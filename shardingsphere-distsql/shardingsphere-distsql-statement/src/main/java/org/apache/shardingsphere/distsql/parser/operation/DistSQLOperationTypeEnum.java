@@ -27,16 +27,16 @@ public enum DistSQLOperationTypeEnum {
     SHOW;
     
     /**
-     * Returns the privilege type of the specified operate type name.
+     * Returns the operation type of the specified operate type name.
      *
-     * @param privilegeTypeName privilege type name
+     * @param operationTypeName operation type name
      * @return statement type constant
      */
-    public static DistSQLOperationTypeEnum getValueOf(final String privilegeTypeName) {
+    public static DistSQLOperationTypeEnum getValueOf(final String operationTypeName) {
         try {
-            return valueOf(privilegeTypeName.toUpperCase());
+            return valueOf(operationTypeName.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            throw new UnsupportedOperationException(String.format("Unsupported privilege type `%s`", privilegeTypeName));
+            throw new UnsupportedOperationException(String.format("Unsupported operation type `%s`", operationTypeName));
         }
     }
 }
