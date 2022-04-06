@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.GlobalLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.GlobalLockNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -38,7 +37,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(GlobalLockNode.getGlobalLocksNodePath());
+        return Collections.singleton(LockNode.getGlobalLocksNodePath());
     }
     
     @Override
@@ -48,19 +47,18 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = GlobalLockNode.getLockedKey(event.getKey());
+        Optional<String> lockedName = LockNode.getLockedName(event.getKey());
         if (lockedName.isPresent()) {
-            String[] schemaInstance = LockNodeUtil.parseLockName(lockedName.get());
-            return handleGlobalLocksEvent(event.getType(), schemaInstance[0], schemaInstance[1]);
+            return handleGlobalLocksEvent(event.getType(), lockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalLocksEvent(final Type eventType, final String schema, final String instanceId) {
+    private Optional<GovernanceEvent> handleGlobalLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
-            return Optional.of(new GlobalLockedEvent(schema, instanceId));
+            return Optional.of(new LockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
-            return Optional.of(new GlobalLockReleasedEvent(schema, instanceId));
+            return Optional.of(new LockReleasedEvent(lockedName));
         } else {
             return Optional.empty();
         }
