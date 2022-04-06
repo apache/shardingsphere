@@ -136,16 +136,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         }
         String collation = stringBuilder.toString();
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tablesToString(tables));
-    }
-    
-    private String tablesToString(final Collection<String> tables) {
-        StringBuilder stringBuilder = new StringBuilder(28);
-        for (String table : tables) {
-            stringBuilder.append(String.format("'%s'", table));
-            stringBuilder.append(table.equals(table.toUpperCase()) ? "," : String.format(",'%s',", table.toUpperCase()));
-        }
-        return stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(",")).toString();
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private boolean versionContainsCollation(final DatabaseMetaData metaData) throws SQLException {
