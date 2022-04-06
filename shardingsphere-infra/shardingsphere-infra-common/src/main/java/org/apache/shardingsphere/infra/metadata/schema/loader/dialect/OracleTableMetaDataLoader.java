@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -43,7 +42,6 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for Oracle.
  */
-@Slf4j
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
