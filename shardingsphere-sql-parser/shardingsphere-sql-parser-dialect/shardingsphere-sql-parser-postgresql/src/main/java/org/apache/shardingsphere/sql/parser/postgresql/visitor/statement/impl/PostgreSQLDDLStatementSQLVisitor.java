@@ -90,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropOwnedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropPolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
@@ -191,6 +192,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropOwnedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropPolicyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTableStatement;
@@ -488,6 +490,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropPolicy(final DropPolicyContext ctx) {
         return new PostgreSQLDropPolicyStatement();
+    }
+
+    @Override
+    public ASTNode visitDropRule(final DropRuleContext ctx) {
+        return new PostgreSQLDropRuleStatement();
     }
     
     @SuppressWarnings("unchecked")
