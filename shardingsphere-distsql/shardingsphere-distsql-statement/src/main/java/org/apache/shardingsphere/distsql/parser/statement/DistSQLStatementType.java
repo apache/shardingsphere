@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.authority.enumeration;
+package org.apache.shardingsphere.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 
@@ -29,17 +29,29 @@ import java.util.Collections;
 public enum DistSQLStatementType {
     
     RQL {
+        /**
+         * Get operate types.
+         * @return operate types
+         */
         public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Collections.singletonList(DistSQLOperationTypeEnum.SHOW);
         }
     },
     RDL {
+        /**
+         * Get operate types.
+         * @return operate types
+         */
         @Override
         public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Arrays.asList(DistSQLOperationTypeEnum.ADD, DistSQLOperationTypeEnum.ALTER, DistSQLOperationTypeEnum.CREATE, DistSQLOperationTypeEnum.DROP);
         }
     },
     RAL {
+        /**
+         * Get operate types.
+         * @return operate types
+         */
         @Override
         public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Collections.singletonList(DistSQLOperationTypeEnum.RAL);

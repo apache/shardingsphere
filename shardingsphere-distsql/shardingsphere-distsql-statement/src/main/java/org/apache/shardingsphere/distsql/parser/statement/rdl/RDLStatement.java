@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.authority.enumeration.DistSQLStatementType;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatementType;
 
 /**
  * RDL statement.

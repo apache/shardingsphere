@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.authority.enumeration.DistSQLStatementType;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatementType;
 
 /**
  * RAL statement.
