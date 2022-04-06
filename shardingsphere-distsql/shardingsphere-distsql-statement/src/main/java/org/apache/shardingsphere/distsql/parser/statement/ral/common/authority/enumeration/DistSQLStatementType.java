@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Dist SQL statement type.
+ */
 public enum DistSQLStatementType {
     
     RQL {
