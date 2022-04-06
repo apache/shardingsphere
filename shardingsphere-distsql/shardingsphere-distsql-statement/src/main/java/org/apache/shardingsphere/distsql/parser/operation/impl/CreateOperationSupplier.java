@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSuppli
 import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 
 /**
- * Create privilege supplier.
+ * Create operate supplier.
  */
 public interface CreateOperationSupplier extends DistSQLOperationSupplier {
     

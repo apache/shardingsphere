@@ -27,7 +27,7 @@ public enum DistSQLOperationTypeEnum {
     SHOW;
     
     /**
-     * Returns the privilege type of the specified variable name.
+     * Returns the privilege type of the specified operate type name.
      *
      * @param privilegeTypeName privilege type name
      * @return statement type constant

@@ -30,7 +30,7 @@ public enum DistSQLSubjectTypeEnum {
     SCALING;
     
     /**
-     * Returns the dist subject of the specified variable name.
+     * Returns the dist subject of the specified subject name.
      *
      * @param subjectName subject name
      * @return subject constant

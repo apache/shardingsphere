@@ -26,29 +26,28 @@ import java.util.Collections;
 public enum DistSQLStatementType {
     
     RQL {
-        @Override
-        public Collection<DistSQLOperationTypeEnum> getPrivilegeTypes() {
+        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Collections.singletonList(DistSQLOperationTypeEnum.SHOW);
         }
     },
     RDL {
         @Override
-        public Collection<DistSQLOperationTypeEnum> getPrivilegeTypes() {
+        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Arrays.asList(DistSQLOperationTypeEnum.ADD, DistSQLOperationTypeEnum.ALTER, DistSQLOperationTypeEnum.CREATE, DistSQLOperationTypeEnum.DROP);
         }
     },
     RAL {
         @Override
-        public Collection<DistSQLOperationTypeEnum> getPrivilegeTypes() {
+        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
             return Collections.singletonList(DistSQLOperationTypeEnum.RAL);
         }
     };
     
     /**
-     * Get the corresponding privilege type.
-     * @return privilege type
+     * Get operate types.
+     * @return operate types
      */
-    public abstract Collection<DistSQLOperationTypeEnum> getPrivilegeTypes();
+    public abstract Collection<DistSQLOperationTypeEnum> getOperateTypes();
     
     /**
      * Returns the statement type of the specified variable name.

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 
 /**
- * Table available.
+ * Sharding subject supplier.
  */
 public interface ShardingSubjectSupplier extends DistSQLSubjectSupplier {
     

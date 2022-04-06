@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Dist SQL subject available.
+ * Dist SQL subject supplier.
  */
 public interface DistSQLSubjectSupplier {
     
