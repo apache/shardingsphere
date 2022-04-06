@@ -18,5 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-rule sql-case-id="drop_rule_if_exists" />
-    <drop-rule sql-case-id="drop_rule"/>
+    <drop-rule sql-case-id="drop_rule" />
 </sql-parser-test-cases>
