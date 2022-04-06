@@ -77,8 +77,6 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
 
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
 
-    private final ShardingRuleConfigurationChecker shardingRuleConfigurationChecker = new ShardingRuleConfigurationChecker();
-
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
     private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
