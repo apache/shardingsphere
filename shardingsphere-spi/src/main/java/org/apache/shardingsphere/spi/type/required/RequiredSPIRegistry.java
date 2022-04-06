@@ -34,24 +34,26 @@ public final class RequiredSPIRegistry {
     /**
      * Get registered service.
      *
-     * @param requiredSPIClass required SPI class
+     * @param spiClass required SPI class
      * @param <T> type
      * @return registered service
      */
-    public static <T extends RequiredSPI> T getRegisteredService(final Class<T> requiredSPIClass) {
-        Collection<T> services;
-        if (SingletonSPI.class.isAssignableFrom(requiredSPIClass)) {
-            ShardingSphereServiceLoader.register(requiredSPIClass);
-            services = ShardingSphereServiceLoader.getSingletonServiceInstances(requiredSPIClass);
-        } else {
-            services = ShardingSphereServiceLoader.newServiceInstances(requiredSPIClass);
-        }
+    public static <T extends RequiredSPI> T getRegisteredService(final Class<T> spiClass) {
+        Collection<T> services = getRegisteredServices(spiClass);
         if (services.isEmpty()) {
-            throw new ServiceProviderNotFoundException(requiredSPIClass);
+            throw new ServiceProviderNotFoundException(spiClass);
         }
         if (1 == services.size()) {
             return services.iterator().next();
         }
         return services.stream().filter(RequiredSPI::isDefault).findFirst().orElseGet(() -> services.iterator().next());
+    }
+    
+    private static <T extends RequiredSPI> Collection<T> getRegisteredServices(final Class<T> spiClass) {
+        if (SingletonSPI.class.isAssignableFrom(spiClass)) {
+            ShardingSphereServiceLoader.register(spiClass);
+            return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass);
+        }
+        return ShardingSphereServiceLoader.newServiceInstances(spiClass);
     }
 }
