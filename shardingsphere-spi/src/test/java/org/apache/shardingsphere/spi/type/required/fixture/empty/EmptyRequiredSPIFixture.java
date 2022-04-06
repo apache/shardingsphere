@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.spi.type.required.fixture.empty;
 
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
-public interface RequiredSingletonSPIFixture extends RequiredSPI, SingletonSPI {
+public interface EmptyRequiredSPIFixture extends RequiredSPI {
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIImpl
+org.apache.shardingsphere.spi.type.required.fixture.single.SingleRequiredSPIFixtureImpl
