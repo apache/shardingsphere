@@ -56,4 +56,31 @@ public final class LockRegistryServiceTest {
         lockRegistryService.releaseLock("test");
         verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
     }
+    
+    @Test
+    public void assertGetAllGlobalLock() {
+        lockRegistryService.getAllGlobalLock();
+        verify(clusterPersistRepository).getChildrenKeys(LockNode.getGlobalLocksNodePath());
+    }
+    
+    @Test
+    public void assertReleaseGlobalLock() {
+        String schemaLockName = LockNode.generateSchemaLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseGlobalLock(schemaLockName);
+        verify(clusterPersistRepository).delete(schemaLockName);
+    }
+    
+    @Test
+    public void assertAckLock() {
+        String schemaAckLock = LockNode.generateSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.ackLock(schemaAckLock, "127.0.0.1@3307");
+        verify(clusterPersistRepository).persistEphemeral(schemaAckLock, "127.0.0.1@3307");
+    }
+    
+    @Test
+    public void assertReleaseAckLock() {
+        String schemaAckLock = LockNode.generateSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseAckLock(schemaAckLock);
+        verify(clusterPersistRepository).delete(schemaAckLock);
+    }
 }

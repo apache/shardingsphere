@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Lock registry service.
+ * Global lock registry service.
  */
 public final class LockRegistryService {
     
@@ -30,11 +32,67 @@ public final class LockRegistryService {
     
     public LockRegistryService(final ClusterPersistRepository repository) {
         this.repository = repository;
-        initLockNode();
     }
     
-    private void initLockNode() {
+    /**
+     * Init global lock root patch.
+     */
+    public void initGlobalLockRoot() {
         repository.persist(LockNode.getLockRootNodePath(), "");
+        repository.persist(LockNode.getGlobalLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalAckNodePath(), "");
+    }
+    
+    /**
+     * Get all global locks.
+     *
+     * @return all global locks
+     */
+    public Collection<String> getAllGlobalLock() {
+        return repository.getChildrenKeys(LockNode.getGlobalLocksNodePath());
+    }
+    
+    /**
+     * Try to get lock.
+     *
+     * @param lockName lock name
+     * @return true if get the lock, false if not
+     */
+    public boolean tryGlobalLock(final String lockName) {
+        try {
+            repository.persistEphemeral(lockName, LockState.LOCKED.name());
+            return true;
+        } catch (final ClusterPersistRepositoryException ignored) {
+            return false;
+        }
+    }
+    
+    /**
+     * Release lock.
+     *
+     * @param lockName lock name
+     */
+    public void releaseGlobalLock(final String lockName) {
+        repository.delete(lockName);
+    }
+    
+    /**
+     * Ack lock.
+     *
+     * @param lockName lock name
+     * @param lockValue lock value
+     */
+    public void ackLock(final String lockName, final String lockValue) {
+        repository.persistEphemeral(lockName, lockValue);
+    }
+    
+    /**
+     * Release ack lock.
+     *
+     * @param lockName lock name
+     */
+    public void releaseAckLock(final String lockName) {
+        repository.delete(lockName);
     }
     
     /**
@@ -50,7 +108,7 @@ public final class LockRegistryService {
     
     /**
      * Release lock.
-     * 
+     *
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {

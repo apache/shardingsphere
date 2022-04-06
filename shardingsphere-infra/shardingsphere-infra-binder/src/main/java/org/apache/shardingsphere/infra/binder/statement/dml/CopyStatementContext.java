@@ -17,15 +17,30 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
+
+import java.util.Collection;
 
 /**
  * Copy statement context.
  */
-public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> {
+@Getter
+public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> implements TableAvailable {
+    
+    private final TablesContext tablesContext;
     
     public CopyStatementContext(final CopyStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return tablesContext.getTables();
     }
 }
