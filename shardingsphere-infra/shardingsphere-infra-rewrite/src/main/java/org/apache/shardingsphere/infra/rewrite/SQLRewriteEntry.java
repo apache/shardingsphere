@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.List;

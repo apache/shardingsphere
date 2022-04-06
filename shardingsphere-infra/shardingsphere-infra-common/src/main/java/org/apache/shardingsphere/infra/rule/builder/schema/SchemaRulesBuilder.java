@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.InvalidDataSourcePropertiesException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -123,7 +123,10 @@ execute
     | dropOperator
     | dropMaterializedView
     | dropGroup
+    | dropCast
     | dropEventTrigger
     | dropAggregate
+    | dropCollation
+    | dropForeignDataWrapper
     ) SEMI_?
     ;

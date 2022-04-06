@@ -57,7 +57,7 @@ public final class RuleAlteredJobSchedulerCenter {
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
         int shardingItem = jobContext.getShardingItem();
         if (schedulerMap.containsKey(shardingItem)) {
-            log.warn("schedulerMap does not contain shardingItem {}, ignore", shardingItem);
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);

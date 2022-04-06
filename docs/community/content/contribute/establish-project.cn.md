@@ -25,9 +25,9 @@ git config --global core.longpaths true
 
 使用 JDK 8 或以上版本。
 
-可以从 [JDK 下载页面]( https://jdk.java.net/ ) 下载。
+可以从 [OpenJDK 下载页面]( https://adoptium.net/temurin/releases ) 下载。
 
-请参考以下文档完成安装，根据 JDK 版本任选其一：[JDK8 安装指南]( https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html )，[JDK11 安装指南]( https://docs.oracle.com/en/java/javase/11/install/overview-jdk-installation.html )，[JDK17 安装指南]( https://docs.oracle.com/en/java/javase/17/install/overview-jdk-installation.html )。也可以根据自己的系统自行搜索 JDK 安装指南。
+可以根据自己的系统自行搜索 JDK 安装指南。
 
 ## 安装 Maven
 
@@ -52,7 +52,7 @@ git config --global core.longpaths true
 以下终端任选其一：
 - PowerShell：Windows 自带。
 - Git Bash：可以通过 Git 官方客户端安装。
-- [适用于 Linux 的 Windows 子系统 (WSL)]( https://docs.microsoft.com/zh-cn/windows/wsl/install ) ：可自行安装。
+- 适用于 Linux 的 Windows 子系统 (WSL) ：可自行安装。
 
 ### Linux
 
@@ -66,7 +66,10 @@ git config --global core.longpaths true
 
 ## 选择 IDE
 
-推荐使用 [IntelliJ IDEA]( https://www.jetbrains.com/idea/download/ )。
+以下 IDE 任选其一：
+- IntelliJ IDEA
+- Eclipse
+- NetBeans
 
 ## 安装 IDE 插件
 
@@ -79,5 +82,3 @@ git config --global core.longpaths true
 
 1. 添加配置文件 ：使用 `src/resources/checkstyle.xml`；
 2. 选择 Checkstyle 版本 ：使用 `8.8`。
-
-详情请参考 [CheckStyle-IDEA 文档]( https://github.com/jshiell/checkstyle-idea/blob/main/README.md )。

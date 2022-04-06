@@ -68,12 +68,16 @@ optionValueList
     ;
 
 optionValueNoOptionType
-    : internalVariableName EQ_ setExprOrDefault
-    | userVariable EQ_ expr
-    | setSystemVariable EQ_ setExprOrDefault
-    | NAMES (EQ_ expr | charsetName collateClause? | DEFAULT)
+    : internalVariableName equal setExprOrDefault
+    | userVariable equal expr
+    | setSystemVariable equal setExprOrDefault
+    | NAMES (equal expr | charsetName collateClause? | DEFAULT)
     ;
 
+equal
+    : EQ_ | ASSIGNMENT_
+    ;
+    
 optionValue
     : optionType internalVariableName EQ_ setExprOrDefault | optionValueNoOptionType
     ;

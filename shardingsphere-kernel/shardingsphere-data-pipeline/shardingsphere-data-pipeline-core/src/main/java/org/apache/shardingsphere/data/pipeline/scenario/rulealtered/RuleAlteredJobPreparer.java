@@ -39,7 +39,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCh
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

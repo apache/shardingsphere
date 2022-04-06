@@ -56,7 +56,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 
 ### ShardingSphere-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。

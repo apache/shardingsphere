@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 import java.io.Serializable;
 

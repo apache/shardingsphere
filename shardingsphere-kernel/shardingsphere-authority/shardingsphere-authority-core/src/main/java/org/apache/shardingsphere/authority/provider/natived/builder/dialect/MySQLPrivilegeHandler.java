@@ -274,7 +274,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     }
     
     private void addToPrivilegeTypesIfPresent(final Object hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
-        if (hasPrivilege instanceof String && "Y".equals(hasPrivilege)) {
+        if ("Y".equals(hasPrivilege)) {
             target.add(privilegeType);
         }
         if (hasPrivilege instanceof Boolean && (boolean) hasPrivilege) {

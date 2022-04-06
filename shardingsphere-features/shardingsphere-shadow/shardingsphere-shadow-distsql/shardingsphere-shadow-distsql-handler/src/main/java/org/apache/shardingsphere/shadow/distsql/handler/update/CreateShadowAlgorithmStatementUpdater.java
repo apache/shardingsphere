@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatem
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Map;

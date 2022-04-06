@@ -32,7 +32,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationChecker;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,41 +59,70 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ImportSchemaConfigurationHandlerTest {
     
-    private final String filePath = "/conf/import/config-sharding.yaml";
+    private final String shardingFilePath = "/conf/import/config-sharding.yaml";
     
-    private final String schemaName = "sharding_db";
+    private final String readwriteSplittingFilePath = "/conf/import/config-readwrite-splitting.yaml";
+    
+    private final String sharding = "sharding_db";
+    
+    private final String readwriteSplitting = "readwrite_splitting_db";
     
     @Mock
     private DataSourcePropertiesValidator validator;
     
     @Mock
-    private ShardingRuleConfigurationChecker shardingRuleConfigurationChecker;
+    private ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker;
+    
+    @Mock
+    private ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker;
     
     private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
     
+    private final Map<String, String> featureMap = new HashMap<>();
+    
     @Before
-    public void init() throws Exception {
-        importSchemaConfigurationHandler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+    public void setup() {
+        featureMap.put(sharding, shardingFilePath);
+        featureMap.put(readwriteSplitting, readwriteSplittingFilePath);
+    }
+    
+    private void init(final String feature) throws Exception {
+        importSchemaConfigurationHandler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(featureMap.get(feature)), mockConnectionSession()));
         Field validatorField = importSchemaConfigurationHandler.getClass().getDeclaredField("validator");
         validatorField.setAccessible(true);
         validatorField.set(importSchemaConfigurationHandler, validator);
-        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationChecker");
-        shardingRuleConfigurationCheckerField.setAccessible(true);
-        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, shardingRuleConfigurationChecker);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(schemaName));
+        when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(feature));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(contextManager.getMetaDataContexts().getMetaData(schemaName)).thenReturn(shardingSphereMetaData);
+        when(contextManager.getMetaDataContexts().getMetaData(feature)).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
     }
     
     @Test
-    public void assertImportSchemaExecutor() throws SQLException {
-        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(schemaName);
+    public void assertImportSchemaExecutorForSharding() throws Exception {
+        init(sharding);
+        Field importCheckerForShardingRuleConfigurationField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
+        importCheckerForShardingRuleConfigurationField.setAccessible(true);
+        importCheckerForShardingRuleConfigurationField.set(importSchemaConfigurationHandler, shardingRuleConfigurationImportChecker);
+        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding);
         assertNotNull(dataSourceMap);
-        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getConfigurations();
+        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations();
+        assertNotNull(ruleConfigurations);
+        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
+    @Test
+    public void assertImportSchemaExecutorForReadwriteSplitting() throws Exception {
+        init(readwriteSplitting);
+        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
+        shardingRuleConfigurationCheckerField.setAccessible(true);
+        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
+        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting);
+        assertNotNull(dataSourceMap);
+        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations();
         assertNotNull(ruleConfigurations);
         ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -122,9 +151,9 @@ public final class ImportSchemaConfigurationHandlerTest {
         return result;
     }
     
-    private ImportSchemaConfigurationStatement createSqlStatement() {
+    private ImportSchemaConfigurationStatement createSqlStatement(final String importFilePath) {
         ImportSchemaConfigurationStatement result = new ImportSchemaConfigurationStatement();
-        result.setFilePath(Optional.of(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(filePath)).getPath()));
+        result.setFilePath(Optional.of(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath()));
         return result;
     }
     

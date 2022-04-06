@@ -47,7 +47,8 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfig
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationChecker;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
@@ -78,6 +79,10 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
 
     private final ShardingRuleConfigurationChecker shardingRuleConfigurationChecker = new ShardingRuleConfigurationChecker();
 
+    private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
+    
+    private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
+    
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
 
     private void alterResourcesConfig(final String schemaName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
@@ -110,12 +115,12 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         for (YamlRuleConfiguration each : yamlRuleConfigurations) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigurationChecker.check(shardingSphereMetaData, shardingRuleConfiguration);
+                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfiguration);
                 toBeUpdatedRuleConfigs.add(shardingRuleConfiguration);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = new ReadwriteSplittingRuleConfigurationYamlSwapper()
                         .swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                // TODO check
+                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfiguration);
                 toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfiguration);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);

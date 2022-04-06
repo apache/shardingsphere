@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: tables
+name: TABLES
 columns:
   table_catalog:
     caseSensitive: false

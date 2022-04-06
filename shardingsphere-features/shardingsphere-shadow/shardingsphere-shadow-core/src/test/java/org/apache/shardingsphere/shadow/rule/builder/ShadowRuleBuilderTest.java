@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;

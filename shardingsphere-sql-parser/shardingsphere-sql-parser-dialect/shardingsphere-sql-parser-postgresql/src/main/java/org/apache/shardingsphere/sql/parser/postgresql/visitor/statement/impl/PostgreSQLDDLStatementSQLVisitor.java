@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeallocateContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropConversionContext;
@@ -107,6 +108,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropAggregateContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropCollationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropForeignDataWrapperContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -169,6 +172,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDeallocateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDiscardStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropCastStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDomainStatement;
@@ -192,6 +196,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropEventTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropAggregateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropCollationStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropForeignDataWrapperStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -661,6 +667,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
         return new PostgreSQLDeallocateStatement();
     }
+
+    @Override
+    public ASTNode visitDropCast(final DropCastContext ctx) {
+        return new PostgreSQLDropCastStatement();
+    }
         
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
@@ -805,5 +816,15 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropAggregate(final DropAggregateContext ctx) {
         return new PostgreSQLDropAggregateStatement();
+    }
+
+    @Override
+    public ASTNode visitDropCollation(final DropCollationContext ctx) {
+        return new PostgreSQLDropCollationStatement();
+    }
+
+    @Override
+    public ASTNode visitDropForeignDataWrapper(final DropForeignDataWrapperContext ctx) {
+        return new PostgreSQLDropForeignDataWrapperStatement();
     }
 }

@@ -29,10 +29,9 @@ import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyStat
 import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,7 +51,7 @@ public final class ProxyStateContext {
     private static OKProxyState determineOKProxyState() {
         ShardingSphereServiceLoader.register(OKProxyState.class);
         String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        return TypedSPIRegistry.getRegisteredService(OKProxyState.class, proxyBackendDriverType, new Properties());
+        return TypedSPIRegistry.getRegisteredService(OKProxyState.class, proxyBackendDriverType);
     }
     
     /**

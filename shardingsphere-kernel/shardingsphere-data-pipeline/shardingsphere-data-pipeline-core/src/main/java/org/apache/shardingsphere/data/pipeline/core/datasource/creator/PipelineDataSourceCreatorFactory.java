@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.util.Map;
 

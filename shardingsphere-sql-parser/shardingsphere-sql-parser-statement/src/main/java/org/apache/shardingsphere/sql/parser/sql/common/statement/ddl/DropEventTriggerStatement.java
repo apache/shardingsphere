@@ -21,7 +21,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop Event Trigger statement.
+ * Drop event trigger statement.
  */
 @ToString
 public abstract class DropEventTriggerStatement extends AbstractSQLStatement implements DDLStatement {

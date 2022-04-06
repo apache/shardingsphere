@@ -102,6 +102,7 @@
     <apply-distsql sql-case-id="apply-distsql"/>
     <discard-distsql sql-case-id="discard-distsql"/>
     <alter-instance sql-case-id="alter-instance-xa-recovery-nodes" instance-id="1.2.3.4@3307"  key="XA_RECOVERY_NODES" value="1.2.3.4@3308"/>
+    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes-with-multiple-values" instance-id="1.2.3.4@3307"  key="XA_RECOVERY_NODES" value="1.2.3.4@3308,1.2.3.4@3307"/>
     <import-schema-config sql-case-id="import-schema-config">
         <filePath>/yaml/config-sharding.yaml</filePath>
     </import-schema-config>

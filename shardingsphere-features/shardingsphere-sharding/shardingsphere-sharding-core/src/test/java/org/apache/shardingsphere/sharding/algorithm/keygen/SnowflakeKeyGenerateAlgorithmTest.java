@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.junit.Test;
@@ -178,8 +179,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), 
-                new WorkerIdGeneratorFixture(-1L), new ModeConfiguration("Memory", null, false)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1L),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();
@@ -196,8 +197,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), 
-                new WorkerIdGeneratorFixture(Long.MIN_VALUE), new ModeConfiguration("Memory", null, false)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();

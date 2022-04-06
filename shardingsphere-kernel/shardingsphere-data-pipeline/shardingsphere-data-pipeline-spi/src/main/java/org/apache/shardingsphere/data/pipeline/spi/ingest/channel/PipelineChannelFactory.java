@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 /**
  * Pipeline channel factory, SPI.
