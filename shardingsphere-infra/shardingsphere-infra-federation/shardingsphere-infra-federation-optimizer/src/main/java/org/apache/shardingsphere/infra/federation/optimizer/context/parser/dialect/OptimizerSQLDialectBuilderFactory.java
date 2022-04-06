@@ -37,13 +37,12 @@ public final class OptimizerSQLDialectBuilderFactory {
      * Build optimizer SQL dialect properties.
      * 
      * @param databaseType database type
-     * @param props properties to be built
      * @return built properties
      */
-    public static Properties build(final DatabaseType databaseType, final Properties props) {
+    public static Properties build(final DatabaseType databaseType) {
         OptimizerSQLDialectBuilder builder = null == databaseType
                 ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getName(), props);
+                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getName());
         return builder.build();
     }
 }
