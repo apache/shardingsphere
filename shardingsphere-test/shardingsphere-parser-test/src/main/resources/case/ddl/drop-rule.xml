@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-rule sql-case-id="drop_group_if_exists" />
-    <drop-rule sql-case-id="drop_group"/>
+    <drop-rule sql-case-id="drop_rule_if_exists" />
+    <drop-rule sql-case-id="drop_rule"/>
 </sql-parser-test-cases>
