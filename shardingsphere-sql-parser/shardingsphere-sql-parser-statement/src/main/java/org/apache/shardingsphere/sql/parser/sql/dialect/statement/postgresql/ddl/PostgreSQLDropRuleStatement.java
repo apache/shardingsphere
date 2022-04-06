@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropRuleSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * PostgreSQL drop group statement.
+ * PostgreSQL drop rule statement.
  */
 @ToString
 public final class PostgreSQLDropRuleStatement extends DropRuleStatement implements PostgreSQLStatement {
