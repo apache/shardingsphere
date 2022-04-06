@@ -33,7 +33,6 @@ import java.util.List;
  */
 public final class ShardingCopyStatementValidator extends ShardingDMLStatementValidator<CopyStatement> {
     
-    
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
         String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
@@ -43,6 +42,7 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, 
+                             final List<Object> parameters, final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }
