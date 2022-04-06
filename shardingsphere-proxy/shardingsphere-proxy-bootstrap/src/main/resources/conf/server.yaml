@@ -21,28 +21,26 @@
 # 
 ######################################################################################################
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: dev_governance_ds
-      server-lists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-  overwrite: false
-
-rules:
-  - !AUTHORITY
-    users:
-      - user: root@%
-        password: root
-      - user: sharding
-        password: sharding
-    privilege:
-      type: SPHERE_EX_PRIVILEGES_PERMITTED
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#  overwrite: false
+#
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: ALL_PRIVILEGES_PERMITTED
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
