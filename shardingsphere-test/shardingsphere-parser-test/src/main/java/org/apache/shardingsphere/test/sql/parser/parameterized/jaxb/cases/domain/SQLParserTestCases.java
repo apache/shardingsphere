@@ -146,6 +146,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignTableStatementTestCase;
@@ -586,6 +587,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-dimension")
     private final List<DropDimensionStatementTestCase> dropDimensionTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-directory")
+    private final List<DropDirectoryStatementTestCase> dropDirectoryTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
@@ -1310,6 +1314,7 @@ public final class SQLParserTestCases {
         putAll(dropDatabaseLinkTestCase, result);
         putAll(createDimensionTestCase, result);
         putAll(dropDimensionTestCase, result);
+        putAll(dropDirectoryTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
         putAll(dropEventTriggerTestCase, result);

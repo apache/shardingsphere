@@ -164,6 +164,10 @@ dimensionName
     : (owner DOT_)? name
     ;
 
+directoryName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
