@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -79,7 +79,7 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
-    public void watchSessionConnection(final InstanceDefinition instanceDefinition) {
+    public void watchSessionConnection(final InstanceContext instanceContext) {
     }
     
     @Override

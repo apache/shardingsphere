@@ -46,11 +46,35 @@ public final class DistributeLockContext implements LockContext {
     
     private final Map<String, ShardingSphereGlobalLock> globalLocks = new ConcurrentHashMap<>();
     
-    private final LockRegistryService globalLockService;
+    private final LockRegistryService lockRegistryService;
     
     private volatile ComputeNodeInstance currentInstance;
     
     private volatile Collection<ComputeNodeInstance> computeNodeInstances;
+    
+    @Override
+    public void initLockState(final InstanceContext instanceContext) {
+        register(instanceContext);
+        synchronizeGlobalLock();
+    }
+    
+    private void register(final InstanceContext instanceContext) {
+        currentInstance = instanceContext.getInstance();
+        computeNodeInstances = instanceContext.getComputeNodeInstances();
+        ShardingSphereEventBus.getInstance().register(this);
+    }
+    
+    private void synchronizeGlobalLock() {
+        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalLock();
+        if (allGlobalLock.isEmpty()) {
+            lockRegistryService.initGlobalLockRoot();
+            return;
+        }
+        for (String each : allGlobalLock) {
+            String[] schemaInstanceId = LockNodeUtil.parseSchemaLockName(each);
+            globalLocks.put(schemaInstanceId[0], crateGlobalLock(schemaInstanceId[1]));
+        }
+    }
     
     @Override
     public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
@@ -65,7 +89,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private ShardingSphereGlobalLock crateGlobalLock(final String ownerInstanceId) {
-        return new ShardingSphereDistributeGlobalLock(currentInstance, ownerInstanceId, globalLockService, computeNodeInstances);
+        return new ShardingSphereDistributeGlobalLock(currentInstance, ownerInstanceId, lockRegistryService, computeNodeInstances);
     }
     
     private String getCurrentInstanceId() {
@@ -81,37 +105,13 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized boolean isLockedSchema(final String schemaName) {
+    public boolean isLockedSchema(final String schemaName) {
         Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
         return getGlobalLock(schemaName).map(shardingSphereGlobalLock -> shardingSphereGlobalLock.isLocked(schemaName)).orElse(false);
     }
     
     private Optional<ShardingSphereGlobalLock> getGlobalLock(final String schemaName) {
         return Optional.ofNullable(globalLocks.get(schemaName));
-    }
-    
-    /**
-     * Synchronize global lock.
-     *
-     * @param instanceContext instance context
-     */
-    public void synchronizeGlobalLock(final InstanceContext instanceContext) {
-        init(instanceContext);
-        Collection<String> allGlobalLock = globalLockService.getAllGlobalLock();
-        if (allGlobalLock.isEmpty()) {
-            globalLockService.initGlobalLockRoot();
-            return;
-        }
-        for (String each : allGlobalLock) {
-            String[] schemaInstanceId = LockNodeUtil.parseSchemaLockName(each);
-            globalLocks.put(schemaInstanceId[0], crateGlobalLock(schemaInstanceId[1]));
-        }
-    }
-    
-    private void init(final InstanceContext instanceContext) {
-        currentInstance = instanceContext.getInstance();
-        computeNodeInstances = instanceContext.getComputeNodeInstances();
-        ShardingSphereEventBus.getInstance().register(this);
     }
     
     private boolean isSameInstanceId(final String instanceId) {
