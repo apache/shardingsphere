@@ -33,6 +33,7 @@ import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScali
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
@@ -46,6 +47,13 @@ import java.util.Optional;
  * Create sharding scaling rule statement updater.
  */
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
+    
+    static {
+        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
+        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
+        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+    }
     
     private static final TypedSingletonSPIHolder<JobRateLimitAlgorithm> RATE_LIMIT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobRateLimitAlgorithm.class, false);
     

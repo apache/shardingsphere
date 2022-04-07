@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
@@ -44,6 +45,10 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 @Slf4j
 public final class BootstrapInitializer {
+    
+    static {
+        ShardingSphereServiceLoader.register(ContextManagerLifecycleListener.class);
+    }
     
     /**
      * Initialize.

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.state;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.sql.Connection;
@@ -34,6 +35,7 @@ public final class DriverStateContext {
     private static final Map<String, DriverState> STATES;
     
     static {
+        ShardingSphereServiceLoader.register(DriverState.class);
         STATES = SingletonSPIRegistry.getTypedSingletonInstancesMap(DriverState.class);
     }
     

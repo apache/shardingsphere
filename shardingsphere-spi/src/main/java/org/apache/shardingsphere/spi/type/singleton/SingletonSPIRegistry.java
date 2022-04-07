@@ -43,7 +43,6 @@ public final class SingletonSPIRegistry {
      * @return singleton instances map
      */
     public static <K, T extends SingletonSPI> Map<K, T> getSingletonInstancesMap(final Class<T> singletonSPIClass, final Function<? super T, ? extends K> keyMapper) {
-        ShardingSphereServiceLoader.register(singletonSPIClass);
         Collection<T> instances = ShardingSphereServiceLoader.getSingletonServiceInstances(singletonSPIClass);
         return instances.stream().collect(Collectors.toMap(keyMapper, Function.identity()));
     }

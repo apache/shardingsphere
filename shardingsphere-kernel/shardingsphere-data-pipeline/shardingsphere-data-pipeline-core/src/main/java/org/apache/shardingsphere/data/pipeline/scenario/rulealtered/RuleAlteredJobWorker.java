@@ -55,6 +55,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
@@ -75,6 +76,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class RuleAlteredJobWorker {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
+        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
+    }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     

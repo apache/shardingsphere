@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMe
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
@@ -39,6 +40,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MySQLTableMetaDataLoaderTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    }
     
     private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
             DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
