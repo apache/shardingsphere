@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
  * Pipeline job API factory.
  */
 public final class PipelineJobAPIFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
+    }
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
     
