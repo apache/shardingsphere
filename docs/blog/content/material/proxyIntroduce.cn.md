@@ -371,3 +371,7 @@ mysql> select * from t_user where create_date > '2022-00-00 00:00:00';
 [Apache ShardingSphere 官网](https://shardingsphere.apache.org/)
 
 [打造基于 PostgreSQL/openGauss 的分布式数据库解决方案](https://community.sphere-ex.com/t/topic/497)
+
+## 七、作者简介
+
+龙台，Apache ShardingSphere Contributor，Github 2.1k star hippo4j 作者，Github ID：longtai-cn。
