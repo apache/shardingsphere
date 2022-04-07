@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-
-@Getter
-@Setter
-@XmlType(name = "distsql")
-public abstract class DropRuleStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "contains-exists-clause")
-    private boolean containsExistClause;
+/**
+ * Drop rule statement test case.
+ */
+public final class DropRuleStatementTestCase extends SQLParserTestCase {
 }

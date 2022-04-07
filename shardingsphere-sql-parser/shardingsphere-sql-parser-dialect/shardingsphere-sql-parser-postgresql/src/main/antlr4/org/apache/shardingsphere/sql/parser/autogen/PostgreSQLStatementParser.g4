@@ -128,6 +128,7 @@ execute
     | dropAggregate
     | dropCollation
     | dropForeignDataWrapper
+    | dropRule
     | dropType
     ) SEMI_?
     ;

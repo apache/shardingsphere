@@ -83,6 +83,8 @@ public enum SQLVisitorRule {
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
+
+    DROP_RULE("DropRule", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
