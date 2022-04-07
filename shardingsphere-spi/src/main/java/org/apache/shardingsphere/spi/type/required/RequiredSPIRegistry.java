@@ -35,7 +35,7 @@ public final class RequiredSPIRegistry {
      * Get registered service.
      *
      * @param spiClass required SPI class
-     * @param <T> type
+     * @param <T> SPI class type
      * @return registered service
      */
     public static <T extends RequiredSPI> T getRegisteredService(final Class<T> spiClass) {
@@ -50,10 +50,6 @@ public final class RequiredSPIRegistry {
     }
     
     private static <T extends RequiredSPI> Collection<T> getRegisteredServices(final Class<T> spiClass) {
-        if (SingletonSPI.class.isAssignableFrom(spiClass)) {
-            ShardingSphereServiceLoader.register(spiClass);
-            return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass);
-        }
-        return ShardingSphereServiceLoader.newServiceInstances(spiClass);
+        return SingletonSPI.class.isAssignableFrom(spiClass) ? ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass) : ShardingSphereServiceLoader.newServiceInstances(spiClass);
     }
 }

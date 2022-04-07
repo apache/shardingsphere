@@ -48,14 +48,12 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("snowflake"));
         assertThat(actual.get(1), is("SNOWFLAKE"));
-        assertThat(actual.get(2).toString(), is("{work-id=123}"));
+        assertThat(actual.get(2).toString(), is("{}"));
     }
     
     private Collection<ShardingRuleConfiguration> createRuleConfigurations() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Properties props = new Properties();
-        props.put("work-id", 123);
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return Collections.singleton(result);
     }
 }

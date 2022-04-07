@@ -454,7 +454,9 @@ public enum SQLVisitorRule {
     
     DROP_COLLATION("DropCollation", SQLStatementType.DDL),
     
-    DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL);
+    DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
+    
+    DROP_TYPE("DropType", SQLStatementType.DDL);
     
     private final String name;
     

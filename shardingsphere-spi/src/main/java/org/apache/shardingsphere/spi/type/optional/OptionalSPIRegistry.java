@@ -32,11 +32,11 @@ public final class OptionalSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param optionalSPIClass optional SPI class
-     * @param <T> type
+     * @param spiClass optional SPI class
+     * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> optionalSPIClass) {
-        return ShardingSphereServiceLoader.newServiceInstances(optionalSPIClass).stream().findFirst();
+    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
+        return ShardingSphereServiceLoader.newServiceInstances(spiClass).stream().findFirst();
     }
 }

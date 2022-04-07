@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.type.singleton;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.fixture.SingletonSPIFixture;
 import org.junit.Test;
 
@@ -27,6 +28,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class SingletonSPIRegistryTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
+    }
     
     @Test
     public void assertGetSingletonInstancesMap() {

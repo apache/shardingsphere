@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.type.singleton;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.fixture.SingletonSPIFixture;
 import org.junit.Test;
 
@@ -24,6 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class TypedSingletonSPIHolderTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
+    }
     
     @Test
     public void assertGetOnTypeCaseSensitiveTrue() {
