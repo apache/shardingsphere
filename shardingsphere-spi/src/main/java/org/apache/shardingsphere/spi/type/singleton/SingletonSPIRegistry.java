@@ -49,9 +49,6 @@ public final class SingletonSPIRegistry {
     
     /**
      * Get typed singleton instances map.
-     * <p>
-     *     Notice: Map key is {@linkplain TypedSPI#getType()}, it won't be converted to upper case or lower case. If type is case-insensitive, then try {@linkplain TypedSingletonSPIHolder}.
-     * </p>
      *
      * @param spiClass singleton SPI class
      * @param <T> the type of the input elements
