@@ -34,7 +34,7 @@ public final class PipelineSQLBuilderFactory {
         ShardingSphereServiceLoader.register(PipelineSQLBuilder.class);
     }
     
-    private static final TypedSingletonSPIHolder<PipelineSQLBuilder> SQL_BUILDER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PipelineSQLBuilder.class, false);
+    private static final TypedSingletonSPIHolder<PipelineSQLBuilder> SQL_BUILDER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PipelineSQLBuilder.class);
     
     /**
      * Get SQL builder instance.
