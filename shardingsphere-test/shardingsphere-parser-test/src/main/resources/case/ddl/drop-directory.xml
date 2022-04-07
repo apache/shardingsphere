@@ -16,5 +16,5 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-database-link sql-case-id="drop_directory" />
+    <drop-directory sql-case-id="drop_directory" />
 </sql-parser-test-cases>
