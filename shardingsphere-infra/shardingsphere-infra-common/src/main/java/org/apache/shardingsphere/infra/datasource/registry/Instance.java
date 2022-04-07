@@ -15,7 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.infra.datasource.registry;
 
-public final class RequiredSPIFixtureDefaultFalseImpl implements RequiredSPIFixture {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+
+/**
+ * instance.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+public final class Instance {
+
+    private final String ip;
+
+    private final Integer port;
+
 }
+

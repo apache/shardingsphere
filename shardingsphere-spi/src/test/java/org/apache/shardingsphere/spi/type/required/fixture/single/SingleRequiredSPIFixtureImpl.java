@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.spi.type.required.fixture.single;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-
-public interface NoImplRequiredSPIFixture extends RequiredSPI {
+public final class SingleRequiredSPIFixtureImpl implements SingleRequiredSPIFixture {
 }
-

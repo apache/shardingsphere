@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIFixtureDefaultFalseImpl
-org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIFixtureDefaultTrueImpl
+org.apache.shardingsphere.spi.type.required.fixture.multiple.DefaultMultipleRequiredSPIFixtureImpl
+org.apache.shardingsphere.spi.type.required.fixture.multiple.NotDefaultMultipleRequiredSPIFixtureImpl

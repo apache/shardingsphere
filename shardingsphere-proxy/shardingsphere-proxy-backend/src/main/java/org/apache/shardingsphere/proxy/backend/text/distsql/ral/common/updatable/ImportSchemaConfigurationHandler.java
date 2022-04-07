@@ -74,19 +74,20 @@ import java.util.stream.Collectors;
  * Import schema configuration handler.
  */
 public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendHandler<ImportSchemaConfigurationStatement, ImportSchemaConfigurationHandler> {
-    
+
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-    
+
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
     private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-    
+
     private void alterResourcesConfig(final String schemaName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
         Map<String, DataSourceProperties> toBeUpdatedResourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> each : yamlDataSourceMap.entrySet()) {
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(each.getValue()));
+            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(each.getValue(), schemaName, each.getKey(),
+                    false));
             toBeUpdatedResourcePropsMap.put(each.getKey(), dataSourceProps);
         }
         try {
@@ -101,7 +102,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
             throw new InvalidResourcesException(toBeUpdatedResourcePropsMap.keySet());
         }
     }
-    
+
     private void alterRulesConfig(final String schemaName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
         if (null == yamlRuleConfigurations || yamlRuleConfigurations.isEmpty()) {
             return;
@@ -139,13 +140,13 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getSchemaRuleService().persist(schemaName, toBeUpdatedRuleConfigs));
     }
-    
+
     private void checkSchemaName(final String schemaName) {
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
             throw new SchemaNotExistedException(schemaName);
         }
     }
-    
+
     @Override
     protected void update(final ContextManager contextManager, final ImportSchemaConfigurationStatement sqlStatement) throws DistSQLException {
         if (!sqlStatement.getFilePath().isPresent()) {
