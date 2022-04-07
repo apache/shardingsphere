@@ -41,7 +41,7 @@ public final class DistributeLockContextTest {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
-        distributeLockContext.synchronizeGlobalLock(instanceContext);
+        instanceContext.initLockContext();
         ShardingSphereLock schemaLock = distributeLockContext.getOrCreateSchemaLock("schema");
         assertNotNull(schemaLock);
     }
@@ -51,7 +51,7 @@ public final class DistributeLockContextTest {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
-        distributeLockContext.synchronizeGlobalLock(instanceContext);
+        instanceContext.initLockContext();
         distributeLockContext.getOrCreateSchemaLock("schema");
         Optional<ShardingSphereLock> schemaLock = distributeLockContext.getSchemaLock("schema");
         assertTrue(schemaLock.isPresent());
@@ -63,7 +63,7 @@ public final class DistributeLockContextTest {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
-        distributeLockContext.synchronizeGlobalLock(instanceContext);
+        instanceContext.initLockContext();
         distributeLockContext.getOrCreateSchemaLock("schema");
         assertFalse(distributeLockContext.isLockedSchema("schema"));
     }

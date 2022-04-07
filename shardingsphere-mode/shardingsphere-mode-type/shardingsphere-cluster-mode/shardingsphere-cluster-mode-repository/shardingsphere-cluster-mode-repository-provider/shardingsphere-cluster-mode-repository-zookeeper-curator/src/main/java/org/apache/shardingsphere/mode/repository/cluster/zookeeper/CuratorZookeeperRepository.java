@@ -31,7 +31,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -335,8 +335,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void watchSessionConnection(final InstanceDefinition instanceDefinition) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceDefinition, this));
+    public void watchSessionConnection(final InstanceContext instanceContext) {
+        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
     }
     
     @Override

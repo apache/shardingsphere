@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
@@ -32,6 +33,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class MemoryLockContext implements LockContext {
     
     private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
+    
+    @Override
+    public void initLockState(final InstanceContext instanceContext) {
+        throw new UnsupportedOperationException("Lock context init lock state not supported in memory mode");
+    }
     
     @Override
     public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
