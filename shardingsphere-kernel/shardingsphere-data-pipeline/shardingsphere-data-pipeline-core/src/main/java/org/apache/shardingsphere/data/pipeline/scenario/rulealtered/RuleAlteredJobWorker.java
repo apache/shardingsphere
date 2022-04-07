@@ -79,6 +79,7 @@ public final class RuleAlteredJobWorker {
     
     static {
         ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
+        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
     }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();

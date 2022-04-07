@@ -47,6 +47,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
@@ -61,7 +62,11 @@ import java.util.Random;
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
     
-    private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
+    static {
+        ShardingSphereServiceLoader.register(ValueHandler.class);
+    }
+    
+    private static final Map<String, ValueHandler> VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
     
     private final BinlogPosition binlogPosition;
     
@@ -72,10 +77,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     private final Random random = new SecureRandom();
     
     private final PipelineChannel channel;
-    
-    static {
-        VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
-    }
     
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
