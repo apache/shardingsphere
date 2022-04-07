@@ -19,17 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Show processlist trigger event.
+ * Show processlist unit complete event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowProcessListTriggerEvent implements GovernanceEvent {
-    
-    private final InstanceDefinition instanceDefinition;
+public final class ShowProcessListUnitCompleteEvent implements GovernanceEvent {
     
     private final String showProcessListId;
 }

@@ -15,21 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Show processlist trigger event.
+ * Show process list lock holder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowProcessListTriggerEvent implements GovernanceEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShowProcessListLockHolder {
     
-    private final InstanceDefinition instanceDefinition;
+    private static final ShowProcessListLockHolder INSTANCE = new ShowProcessListLockHolder();
     
-    private final String showProcessListId;
+    @Getter
+    private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
+    
+    /**
+     * Get show process list lock holder.
+     *
+     * @return show process list holder
+     */
+    public static ShowProcessListLockHolder getInstance() {
+        return INSTANCE;
+    }
 }

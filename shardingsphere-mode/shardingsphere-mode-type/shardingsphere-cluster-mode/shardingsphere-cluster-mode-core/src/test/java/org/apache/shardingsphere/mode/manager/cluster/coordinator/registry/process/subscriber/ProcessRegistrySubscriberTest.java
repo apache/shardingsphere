@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
@@ -44,7 +43,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -66,13 +64,10 @@ public final class ProcessRegistrySubscriberTest {
     @Test
     public void assertLoadShowProcessListData() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.singletonList("abc"));
-        when(repository.getChildrenKeys(startsWith(ComputeNode.getProcessTriggerNodePatch()))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ProcessNode.getExecutionNodesPath())).thenReturn(Collections.singletonList("abc"));
-        when(repository.get(any())).thenReturn("abc");
+        when(repository.get(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(repository, times(2)).delete(any());
-        verify(repository, times(1)).get(any());
+        verify(repository, times(1)).persist(any(), any());
     }
     
     @Test

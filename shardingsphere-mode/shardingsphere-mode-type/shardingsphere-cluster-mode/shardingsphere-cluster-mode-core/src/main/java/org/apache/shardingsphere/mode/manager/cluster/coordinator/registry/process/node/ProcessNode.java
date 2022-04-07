@@ -47,4 +47,25 @@ public final class ProcessNode {
     public static String getExecutionPath(final String executionId) {
         return Joiner.on("/").join("", EXECUTION_NODES, executionId);
     }
+    
+    /**
+     * Get show process list id execution path.
+     *
+     * @param showProcessListId show process list id
+     * @param executionId execution id
+     * @return execution path
+     */
+    public static String getShowProcessListIdExecutionPath(final String showProcessListId, final String executionId) {
+        return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId, executionId);
+    }
+    
+    /**
+     * Get show process list id path.
+     *
+     * @param showProcessListId show process list id
+     * @return execution path
+     */
+    public static String getShowProcessListIdPath(final String showProcessListId) {
+        return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId);
+    }
 }

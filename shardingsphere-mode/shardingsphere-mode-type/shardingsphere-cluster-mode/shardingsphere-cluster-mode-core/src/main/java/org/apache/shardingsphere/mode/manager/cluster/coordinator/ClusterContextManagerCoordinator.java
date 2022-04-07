@@ -42,11 +42,14 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
@@ -280,9 +283,23 @@ public final class ClusterContextManagerCoordinator {
         }
         Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ShowProcessListHolder.getInstance().getAll();
         for (YamlExecuteProcessContext each : yamlExecuteProcessContexts) {
-            registryCenter.getRepository().persist(ProcessNode.getExecutionPath(each.getExecutionID()), YamlEngine.marshal(each));
+            registryCenter.getRepository().persist(ProcessNode.getShowProcessListIdExecutionPath(event.getShowProcessListId(), each.getExecutionID()), YamlEngine.marshal(each));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()));
+        registryCenter.getRepository().delete(ComputeNode
+                .getProcessTriggerInstanceIdNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType(), event.getShowProcessListId()));
+    }
+    
+    /**
+     * Complete unit show process list.
+     *
+     * @param event show process list unit complete event
+     */
+    @Subscribe
+    public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
+        ShowProcessListSimpleLock simpleLock = ShowProcessListLockHolder.getInstance().getLocks().get(event.getShowProcessListId());
+        if (null != simpleLock) {
+            simpleLock.doNotify();
+        }
     }
     
     private void persistSchema(final String schemaName) {

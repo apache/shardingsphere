@@ -87,24 +87,15 @@ public final class ComputeNode {
     }
     
     /**
-     * Get process trigger instance type node path.
-     *
-     * @param instanceType instance type
-     * @return path of process trigger instance type node path
-     */
-    public static String getProcessTriggerInstanceTypeNodePatch(final InstanceType instanceType) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase());
-    }
-    
-    /**
-     * Get process trigger instance node path.
+     * Get process trigger instance show process list id node path.
      *
      * @param instanceId instance id
      * @param instanceType instance type
+     * @param showProcessListId show process list id
      * @return path of process trigger instance node path
      */
-    public static String getProcessTriggerInstanceNodePath(final String instanceId, final InstanceType instanceType) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId);
+    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final InstanceType instanceType, final String showProcessListId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId, showProcessListId);
     }
     
     /**
@@ -191,17 +182,5 @@ public final class ComputeNode {
     
     private static InstanceType getInstanceType(final String instanceType) {
         return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
-    }
-    
-    /**
-     * Get instance definition by process trigger path.
-     *
-     * @param processTriggerPath process trigger path
-     * @return InstanceDefinition
-     */
-    public static Optional<InstanceDefinition> getInstanceDefinitionByProcessTriggerPath(final String processTriggerPath) {
-        Pattern pattern = Pattern.compile(getProcessTriggerNodePatch() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(processTriggerPath);
-        return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
     }
 }

@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Show process list holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShowProcessListHolder {
+public final class ShowProcessListHolder {
     
     private static final ShowProcessListHolder INSTANCE = new ShowProcessListHolder();
     
