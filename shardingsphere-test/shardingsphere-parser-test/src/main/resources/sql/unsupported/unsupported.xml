@@ -8228,26 +8228,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case33" value="drop operator class part_test_int4_ops2 using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case39" value="drop rule &quot;_RETURN&quot; on rules_fooview;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case40" value="drop rule 314159;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case41" value="drop rule def_view_test_ins on def_view_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case42" value="drop rule nonesuch on noplace;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case43" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case44" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case45" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case46" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case47" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case48" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case49" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case50" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case51" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case52" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case53" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case54" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case55" value="drop rule rrule on vview;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case56" value="drop rule rules_foorule on rules_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case57" value="drop rule rules_foorule on rules_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case58" value="drop rule;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case59" value="drop table;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case60" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case61" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
