@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
 
@@ -28,6 +29,10 @@ import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PositionInitializerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(PositionInitializer.class);
+    }
     
     private static final TypedSingletonSPIHolder<PositionInitializer> INITIALIZER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PositionInitializer.class, false);
     
