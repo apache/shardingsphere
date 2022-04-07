@@ -21,8 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Position initializer factory.
@@ -34,8 +33,6 @@ public final class PositionInitializerFactory {
         ShardingSphereServiceLoader.register(PositionInitializer.class);
     }
     
-    private static final TypedSingletonSPIHolder<PositionInitializer> INITIALIZER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PositionInitializer.class);
-    
     /**
      * Get position initializer instance.
      *
@@ -43,6 +40,6 @@ public final class PositionInitializerFactory {
      * @return position initializer
      */
     public static PositionInitializer getPositionInitializer(final String databaseType) {
-        return INITIALIZER_SPI_HOLDER.get(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(PositionInitializer.class, databaseType));
+        return TypedSPIRegistry.getRegisteredService(PositionInitializer.class, databaseType);
     }
 }
