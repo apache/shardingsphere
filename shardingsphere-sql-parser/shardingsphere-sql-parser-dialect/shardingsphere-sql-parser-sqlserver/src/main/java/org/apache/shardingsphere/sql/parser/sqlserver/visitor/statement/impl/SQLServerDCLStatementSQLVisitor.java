@@ -321,7 +321,13 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        return new SQLServerAlterLoginStatement();
+        SQLServerAlterLoginStatement result = new SQLServerAlterLoginStatement();
+        if (null != ctx.ignoredNameIdentifier()) {
+            LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
+                    (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+            result.setLoginSegment(loginSegment);
+        }
+        return result;
     }
     
     @Override

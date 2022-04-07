@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * XA connection wrapper factory.
@@ -42,6 +40,6 @@ public final class XAConnectionWrapperFactory {
      * @return new instance of XA connection wrapper
      */
     public static XAConnectionWrapper newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName(), new Properties());
+        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName());
     }
 }

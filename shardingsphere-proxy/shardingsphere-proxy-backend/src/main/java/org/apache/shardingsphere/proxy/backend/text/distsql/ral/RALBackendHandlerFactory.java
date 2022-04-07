@@ -175,8 +175,8 @@ public final class RALBackendHandlerFactory {
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
         try {
-            return clazz.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new UnsupportedOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
     }

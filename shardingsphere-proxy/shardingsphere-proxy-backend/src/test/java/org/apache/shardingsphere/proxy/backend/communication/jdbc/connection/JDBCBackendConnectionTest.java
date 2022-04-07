@@ -145,7 +145,7 @@ public final class JDBCBackendConnectionTest {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
         Class<?> clazz = field.getType();
-        Object datasource = clazz.getDeclaredConstructors()[0].newInstance();
+        Object datasource = clazz.getDeclaredConstructor().newInstance();
         field.set(ProxyContext.getInstance(), datasource);
     }
     

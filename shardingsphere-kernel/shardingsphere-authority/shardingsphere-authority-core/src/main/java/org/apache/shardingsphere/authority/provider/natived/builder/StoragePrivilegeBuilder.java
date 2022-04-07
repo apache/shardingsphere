@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -38,7 +38,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -87,7 +86,7 @@ public final class StoragePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
         DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeHandler> handler = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName(), new Properties());
+        Optional<StoragePrivilegeHandler> handler = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName());
         if (!handler.isPresent()) {
             return buildPrivilegesInCache(users);
         }
@@ -100,7 +99,7 @@ public final class StoragePrivilegeBuilder {
     private static void save(final Collection<DataSource> dataSources,
                              final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler handler) {
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
-        Collection<Future> tasks = new HashSet<>();
+        Collection<Future<?>> tasks = new HashSet<>();
         for (DataSource each : dataSources) {
             tasks.add(executorService.submit(() -> save(each, users, handler)));
         }

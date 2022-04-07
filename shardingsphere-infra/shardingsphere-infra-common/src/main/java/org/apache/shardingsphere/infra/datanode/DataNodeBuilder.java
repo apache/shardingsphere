@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 import java.util.Collection;
 

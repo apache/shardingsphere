@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.provider.natived.model.privilege.Nati
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -36,7 +36,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,7 @@ public final class OraclePrivilegeHandlerTest {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("user", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        Collection<ShardingSphereUser> result = TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).diff(newUsers, dataSource);
+        Collection<ShardingSphereUser> result = TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle").diff(newUsers, dataSource);
         assertDiffUsers(result);
     }
     
@@ -68,7 +67,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).create(users, dataSource);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle").create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
     }
     
@@ -76,7 +75,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).grantAll(users, dataSource);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle").grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
@@ -84,7 +83,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle").load(users, dataSource));
     }
     
     private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 import java.sql.Statement;

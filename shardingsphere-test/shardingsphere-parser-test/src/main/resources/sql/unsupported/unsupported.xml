@@ -45,13 +45,11 @@
     <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
     <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
-    <sql-case id="drop_rule" value="drop rule def_view_test_ins on def_view_test" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
     <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
     <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
-    <sql-case id="drop_type" value="drop type lockmodes" db-types="PostgreSQL" />
     <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
     <sql-case id="alter_view_set" value="alter view my_locks set (autovacuum_enabled = false)" db-types="PostgreSQL" />
     <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
@@ -5337,19 +5335,6 @@
     <sql-case id="drop_by_postgresql_source_test_case196" value="DROP PUBLICATION testpubpart_forschema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case197" value="DROP ROUTINE IF EXISTS test_ambiguous_procname;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case198" value="DROP ROUTINE cp_testfunc1(int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case199" value="DROP RULE IF EXISTS foo ON no_such_schema.bar;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case200" value="DROP RULE IF EXISTS test_rule_exists ON no_such_schema.no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case201" value="DROP RULE IF EXISTS test_rule_exists ON no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case202" value="DROP RULE IF EXISTS test_rule_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case203" value="DROP RULE hat_nosert ON hats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case204" value="DROP RULE hat_nosert_all ON hats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case205" value="DROP RULE hat_upsert ON hats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case206" value="DROP RULE test_rule_exists ON no_such_schema.no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case207" value="DROP RULE test_rule_exists ON no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case208" value="DROP RULE test_rule_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case209" value="DROP RULE test_rule_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case210" value="DROP RULE y_rule ON y;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case211" value="DROP RULE y_rule ON y;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case212" value="DROP SERVER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case213" value="DROP SERVER IF EXISTS test_server_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case214" value="DROP SERVER nonexistent;" db-types="PostgreSQL"/>
@@ -5470,33 +5455,6 @@
     <sql-case id="drop_by_postgresql_source_test_case329" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case330" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case331" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case332" value="DROP TYPE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case333" value="DROP TYPE IF EXISTS test_type_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case334" value="DROP TYPE IF EXISTS test_type_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case335" value="DROP TYPE base_type CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case336" value="DROP TYPE base_type;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case337" value="DROP TYPE bogus;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case338" value="DROP TYPE bogus;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case339" value="DROP TYPE bogus_type;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case340" value="DROP TYPE collate_dep_test2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case341" value="DROP TYPE double_int;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case342" value="DROP TYPE gtest_type CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case343" value="DROP TYPE hash_test_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case344" value="DROP TYPE hash_test_t2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case345" value="DROP TYPE itest_type CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case346" value="DROP TYPE mood;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case347" value="DROP TYPE myvarchar CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case348" value="DROP TYPE myvarchar;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case349" value="DROP TYPE person_type CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case350" value="DROP TYPE person_type RESTRICT;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case351" value="DROP TYPE rainbow;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case352" value="DROP TYPE shell;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case353" value="DROP TYPE shell;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case354" value="DROP TYPE test_type;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case355" value="DROP TYPE test_type_empty;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case356" value="DROP TYPE test_type_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case357" value="DROP TYPE test_type_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case358" value="DROP TYPE test_typex;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case1" value="EXECUTE cprep;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case2" value="EXECUTE foo;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case3" value="EXECUTE foo;" db-types="PostgreSQL"/>
@@ -8242,26 +8200,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case33" value="drop operator class part_test_int4_ops2 using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case39" value="drop rule &quot;_RETURN&quot; on rules_fooview;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case40" value="drop rule 314159;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case41" value="drop rule def_view_test_ins on def_view_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case42" value="drop rule nonesuch on noplace;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case43" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case44" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case45" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case46" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case47" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case48" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case49" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case50" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case51" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case52" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case53" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case54" value="drop rule qqq on copydml_test;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case55" value="drop rule rrule on vview;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case56" value="drop rule rules_foorule on rules_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case57" value="drop rule rules_foorule on rules_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case58" value="drop rule;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case59" value="drop table;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case60" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case61" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
@@ -8290,44 +8228,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case84" value="drop trigger trg1 on trigpart;		-- ok, all gone select tgrelid::regclass, tgname, tgfoid::regproc from pg_trigger   where tgrelid::regclass::text like &apos;trigpart%&apos; order by tgrelid::regclass::text;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case85" value="drop trigger trigger_alpha on trigtest;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case86" value="drop tuple rule nonesuch;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case87" value="drop type 314159;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case88" value="drop type _comptype;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case89" value="drop type compostype;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case90" value="drop type comptype cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case91" value="drop type comptype cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case92" value="drop type comptype cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case93" value="drop type comptype;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case94" value="drop type ct1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case95" value="drop type ddtest1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case96" value="drop type eitype cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case97" value="drop type insert_test_type;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case98" value="drop type intmultirange;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case99" value="drop type intr;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case100" value="drop type intr_multirange;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case101" value="drop type lockmodes;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case102" value="drop type lockmodes;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case103" value="drop type nonesuch;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case104" value="drop type pp_colors;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case105" value="drop type pp_rectype;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case106" value="drop type rngfunc2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case107" value="drop type rngfunc_type cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case108" value="drop type rposint;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case109" value="drop type testtype1, testtype2, testtype3, testtype4, testtype5, testtype6;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case110" value="drop type testtype1, testtype3, testtype5, testtype6;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case111" value="drop type textandtext;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case112" value="drop type textrange1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case113" value="drop type textrange1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case114" value="drop type textrange2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case115" value="drop type textrange2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case116" value="drop type textrange_c;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case117" value="drop type textrange_en_us;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case118" value="drop type two_ints cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case119" value="drop type two_ints cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case120" value="drop type vc4;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case121" value="drop type xfloat4 cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case122" value="drop type xfloat8 cascade;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case123" value="drop type xy_tuple;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case124" value="drop type;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case1" value="execute p1;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case2" value="execute p1;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case3" value="execute p1;" db-types="PostgreSQL"/>

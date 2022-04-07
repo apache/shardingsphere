@@ -83,6 +83,8 @@ public enum SQLVisitorRule {
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
+
+    DROP_RULE("DropRule", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
@@ -452,7 +454,9 @@ public enum SQLVisitorRule {
     
     DROP_COLLATION("DropCollation", SQLStatementType.DDL),
     
-    DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL);
+    DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
+    
+    DROP_TYPE("DropType", SQLStatementType.DDL);
     
     private final String name;
     
