@@ -36,14 +36,14 @@ public final class SingletonSPIRegistry {
     /**
      * Get singleton instances map.
      *
-     * @param singletonSPIClass singleton SPI class
+     * @param spiClass singleton SPI class
      * @param keyMapper key mapper
      * @param <K> the output type of the key mapping function
      * @param <T> the type of the input elements
      * @return singleton instances map
      */
-    public static <K, T extends SingletonSPI> Map<K, T> getSingletonInstancesMap(final Class<T> singletonSPIClass, final Function<? super T, ? extends K> keyMapper) {
-        Collection<T> instances = ShardingSphereServiceLoader.getSingletonServiceInstances(singletonSPIClass);
+    public static <K, T extends SingletonSPI> Map<K, T> getSingletonInstancesMap(final Class<T> spiClass, final Function<? super T, ? extends K> keyMapper) {
+        Collection<T> instances = ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass);
         return instances.stream().collect(Collectors.toMap(keyMapper, Function.identity()));
     }
     
@@ -53,11 +53,11 @@ public final class SingletonSPIRegistry {
      *     Notice: Map key is {@linkplain TypedSPI#getType()}, it won't be converted to upper case or lower case. If type is case-insensitive, then try {@linkplain TypedSingletonSPIHolder}.
      * </p>
      *
-     * @param singletonSPIClass singleton SPI class
+     * @param spiClass singleton SPI class
      * @param <T> the type of the input elements
      * @return singleton instances map
      */
-    public static <T extends TypedSPI & SingletonSPI> Map<String, T> getTypedSingletonInstancesMap(final Class<T> singletonSPIClass) {
-        return getSingletonInstancesMap(singletonSPIClass, TypedSPI::getType);
+    public static <T extends TypedSPI & SingletonSPI> Map<String, T> getTypedSingletonInstancesMap(final Class<T> spiClass) {
+        return getSingletonInstancesMap(spiClass, TypedSPI::getType);
     }
 }
