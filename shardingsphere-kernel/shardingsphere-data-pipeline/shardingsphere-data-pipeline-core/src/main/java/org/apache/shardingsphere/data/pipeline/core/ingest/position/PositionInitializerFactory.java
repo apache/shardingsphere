@@ -34,7 +34,7 @@ public final class PositionInitializerFactory {
         ShardingSphereServiceLoader.register(PositionInitializer.class);
     }
     
-    private static final TypedSingletonSPIHolder<PositionInitializer> INITIALIZER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PositionInitializer.class, false);
+    private static final TypedSingletonSPIHolder<PositionInitializer> INITIALIZER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PositionInitializer.class);
     
     /**
      * Get position initializer instance.
