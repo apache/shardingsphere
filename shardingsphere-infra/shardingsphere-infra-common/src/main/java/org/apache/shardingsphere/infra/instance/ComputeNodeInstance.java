@@ -66,4 +66,13 @@ public final class ComputeNodeInstance {
     public void switchState(final Collection<String> status) {
         state.switchState(StateType.CIRCUIT_BREAK, null != status && status.contains(StateType.CIRCUIT_BREAK.name()));
     }
+    
+    /**
+     * Get current instance id.
+     *
+     * @return current instance id
+     */
+    public String getCurrentInstanceId() {
+        return instanceDefinition.getInstanceId().getId();
+    }
 }

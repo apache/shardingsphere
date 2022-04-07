@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
@@ -39,7 +39,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     private static final int RECONNECT_INTERVAL_SECONDS = 5;
     
-    private final InstanceDefinition instanceDefinition;
+    private final InstanceContext instanceContext;
     
     private final ClusterPersistRepository repository;
     
@@ -50,14 +50,16 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             do {
                 reRegistered = reRegister(client);
             } while (!reRegistered);
-            log.debug("instance re-register success instance id: {}", instanceDefinition.getInstanceId().getId());
+            log.debug("instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
         }
     }
     
     private boolean reRegister(final CuratorFramework client) {
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
-                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), "");
+                instanceContext.initLockContext();
+                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
+                        instanceContext.getInstance().getInstanceDefinition().getInstanceType()), "");
                 return true;
             }
             sleepInterval();
