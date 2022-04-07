@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.fixture.SingletonSPIFixture;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropRuleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class TypedSingletonSPIHolderTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
-    }
-    
-    @Test
-    public void assertGetOnType() {
-        TypedSingletonSPIHolder<SingletonSPIFixture> spiHolder = new TypedSingletonSPIHolder<>(SingletonSPIFixture.class);
-        assertTrue(spiHolder.get("SINGLETON_FIXTURE").isPresent());
-        assertFalse(spiHolder.get("singleton_fixture").isPresent());
-    }
+/**
+ * PostgreSQL drop rule statement.
+ */
+@ToString
+public final class PostgreSQLDropRuleStatement extends DropRuleStatement implements PostgreSQLStatement {
 }

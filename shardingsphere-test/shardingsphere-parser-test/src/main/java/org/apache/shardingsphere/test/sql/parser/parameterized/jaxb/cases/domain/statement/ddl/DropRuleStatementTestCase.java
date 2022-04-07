@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.fixture.SingletonSPIFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class TypedSingletonSPIHolderTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
-    }
-    
-    @Test
-    public void assertGetOnType() {
-        TypedSingletonSPIHolder<SingletonSPIFixture> spiHolder = new TypedSingletonSPIHolder<>(SingletonSPIFixture.class);
-        assertTrue(spiHolder.get("SINGLETON_FIXTURE").isPresent());
-        assertFalse(spiHolder.get("singleton_fixture").isPresent());
-    }
+/**
+ * Drop rule statement test case.
+ */
+public final class DropRuleStatementTestCase extends SQLParserTestCase {
 }
