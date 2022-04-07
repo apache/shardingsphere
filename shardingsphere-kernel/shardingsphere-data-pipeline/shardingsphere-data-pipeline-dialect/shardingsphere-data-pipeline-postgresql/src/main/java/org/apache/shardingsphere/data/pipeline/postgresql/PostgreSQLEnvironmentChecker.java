@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
 /**
@@ -27,7 +28,6 @@ public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     
     @Override
     public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        //TODO
-        return null;
+        return PostgreSQLDataSourcePreparer.class;
     }
 }
