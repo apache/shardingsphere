@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * JDBC backend statement.
@@ -48,8 +48,6 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
     }
-    
-    private static final Map<String, StatementMemoryStrictlyFetchSizeSetter> FETCH_SIZE_SETTERS = SingletonSPIRegistry.getTypedSingletonInstancesMap(StatementMemoryStrictlyFetchSizeSetter.class);
     
     private String schemaName;
     
@@ -85,8 +83,9 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     private void setFetchSize(final Statement statement) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getMetaData(null == schemaName ? SQLStatementSchemaHolder.get() : schemaName).getResource().getDatabaseType();
-        if (FETCH_SIZE_SETTERS.containsKey(databaseType.getName())) {
-            FETCH_SIZE_SETTERS.get(databaseType.getName()).setFetchSize(statement);
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName());
+        if (fetchSizeSetter.isPresent()) {
+            fetchSizeSetter.get().setFetchSize(statement);
         }
     }
 }
