@@ -15,9 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.distsql.parser.subject;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import java.util.Collection;
+import java.util.Collections;
 
-public final class RequiredSPIImpl implements RequiredSPI {
+/**
+ * Dist SQL subject supplier.
+ */
+public interface DistSQLSubjectSupplier {
+    
+    /**
+     * Get subject type.
+     *
+     * @return subject type
+     */
+    DistSQLSubjectTypeEnum getSubjectType();
+    
+    /**
+     * Get subject names.
+     *
+     * @return subject names
+     */
+    default Collection<String> getSubjectNames() {
+        return Collections.emptyList();
+    }
 }

@@ -19,13 +19,14 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.impl.SingleTableSubjectSupplier;
 
 /**
  * Drop default single table rule statement.
  */
 @Getter
 @NoArgsConstructor
-public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
+public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement implements SingleTableSubjectSupplier {
     
     public DropDefaultSingleTableRuleStatement(final boolean containsExistClause) {
         setContainsExistClause(containsExistClause);

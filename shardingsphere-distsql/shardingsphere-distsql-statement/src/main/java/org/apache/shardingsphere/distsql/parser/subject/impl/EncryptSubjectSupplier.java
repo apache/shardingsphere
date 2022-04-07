@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+package org.apache.shardingsphere.distsql.parser.subject.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 
 /**
- * Ack locked event.
+ * Encrypt subject supplier.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GlobalAckLockedEvent implements GovernanceEvent {
+public interface EncryptSubjectSupplier extends DistSQLSubjectSupplier {
     
-    private final String schema;
-    
-    private final String lockedInstanceId;
+    @Override
+    default DistSQLSubjectTypeEnum getSubjectType() {
+        return DistSQLSubjectTypeEnum.ENCRYPT;
+    }
 }

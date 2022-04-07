@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+package org.apache.shardingsphere.distsql.parser.subject.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 
 /**
- * Inner lock released event.
+ * Readwrite splitting subject supplier.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InnerLockReleasedEvent {
+public interface ReadwriteSplittingSubjectSupplier extends DistSQLSubjectSupplier {
     
-    private final String lockName;
+    @Override
+    default DistSQLSubjectTypeEnum getSubjectType() {
+        return DistSQLSubjectTypeEnum.READWRITE_SPLITTING;
+    }
 }

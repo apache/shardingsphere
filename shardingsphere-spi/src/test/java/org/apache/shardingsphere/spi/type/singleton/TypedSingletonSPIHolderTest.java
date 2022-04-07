@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.spi.type.singleton;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.singleton.fixture.SingletonSPIFixture;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class TypedSingletonSPIHolderTest {
     
-    @Test
-    public void assertGetOnTypeCaseSensitiveTrue() {
-        TypedSingletonSPIHolder<SingletonSPIFixture> spiHolder = new TypedSingletonSPIHolder<>(SingletonSPIFixture.class, true);
-        assertThat(spiHolder.get("SINGLETON_FIXTURE").isPresent(), is(true));
-        assertThat(spiHolder.get("singleton_fixture").isPresent(), is(false));
+    static {
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
     }
     
     @Test
-    public void assertGetOnTypeCaseSensitiveFalse() {
-        TypedSingletonSPIHolder<SingletonSPIFixture> spiHolder = new TypedSingletonSPIHolder<>(SingletonSPIFixture.class, false);
-        assertThat(spiHolder.get("SINGLETON_FIXTURE").isPresent(), is(true));
-        assertThat(spiHolder.get("singleton_fixture").isPresent(), is(true));
+    public void assertGetOnType() {
+        TypedSingletonSPIHolder<SingletonSPIFixture> spiHolder = new TypedSingletonSPIHolder<>(SingletonSPIFixture.class);
+        assertTrue(spiHolder.get("SINGLETON_FIXTURE").isPresent());
+        assertFalse(spiHolder.get("singleton_fixture").isPresent());
     }
 }

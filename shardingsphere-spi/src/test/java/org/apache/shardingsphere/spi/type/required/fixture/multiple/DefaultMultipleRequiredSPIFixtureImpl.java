@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.spi.type.required.fixture.multiple;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-
-public interface NoImplRequiredSPIFixture extends RequiredSPI {
+public final class DefaultMultipleRequiredSPIFixtureImpl implements MultipleRequiredSPIFixture {
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
 

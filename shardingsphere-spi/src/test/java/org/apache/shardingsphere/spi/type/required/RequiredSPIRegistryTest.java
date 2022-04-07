@@ -19,12 +19,13 @@ package org.apache.shardingsphere.spi.type.required;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.type.required.fixture.NoImplRequiredSPIFixture;
-import org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIFixture;
-import org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIFixtureDefaultTrueImpl;
-import org.apache.shardingsphere.spi.type.required.fixture.RequiredSPIImpl;
 import org.apache.shardingsphere.spi.type.required.fixture.RequiredSingletonSPIFixture;
 import org.apache.shardingsphere.spi.type.required.fixture.RequiredSingletonSPIFixtureImpl;
+import org.apache.shardingsphere.spi.type.required.fixture.empty.EmptyRequiredSPIFixture;
+import org.apache.shardingsphere.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
+import org.apache.shardingsphere.spi.type.required.fixture.multiple.DefaultMultipleRequiredSPIFixtureImpl;
+import org.apache.shardingsphere.spi.type.required.fixture.single.SingleRequiredSPIFixtureImpl;
+import org.apache.shardingsphere.spi.type.required.fixture.single.SingleRequiredSPIFixture;
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
@@ -33,34 +34,30 @@ import static org.junit.Assert.assertTrue;
 public final class RequiredSPIRegistryTest {
     
     static {
-        ShardingSphereServiceLoader.register(RequiredSPIFixture.class);
-        ShardingSphereServiceLoader.register(RequiredSPI.class);
+        ShardingSphereServiceLoader.register(EmptyRequiredSPIFixture.class);
+        ShardingSphereServiceLoader.register(SingleRequiredSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultipleRequiredSPIFixture.class);
         ShardingSphereServiceLoader.register(RequiredSingletonSPIFixture.class);
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
-    public void assertRegisteredServiceNotExisted() {
-        RequiredSPIRegistry.getRegisteredService(NoImplRequiredSPIFixture.class);
+    public void assertRegisteredServiceWithEmptyImplementation() {
+        RequiredSPIRegistry.getRegisteredService(EmptyRequiredSPIFixture.class);
     }
     
     @Test
-    public void assertRegisteredServiceOnlyOne() {
-        RequiredSPI actualRegisteredService = RequiredSPIRegistry.getRegisteredService(RequiredSPI.class);
-        assertTrue(actualRegisteredService instanceof RequiredSPIImpl);
+    public void assertRegisteredServiceWithOneImplementation() {
+        assertTrue(RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class) instanceof SingleRequiredSPIFixtureImpl);
     }
     
     @Test
-    public void assertRegisteredServiceMoreThanOne() {
-        RequiredSPIFixture actualRegisteredService = RequiredSPIRegistry.getRegisteredService(RequiredSPIFixture.class);
-        assertTrue(actualRegisteredService instanceof RequiredSPIFixtureDefaultTrueImpl);
+    public void assertRegisteredServiceWithMoreImplementations() {
+        assertTrue(RequiredSPIRegistry.getRegisteredService(MultipleRequiredSPIFixture.class) instanceof DefaultMultipleRequiredSPIFixtureImpl);
     }
     
     @Test
     public void assertRegisteredServiceSingleton() {
-        RequiredSPIFixture actualOne = RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class);
-        assertTrue(actualOne instanceof RequiredSingletonSPIFixtureImpl);
-        RequiredSPIFixture actualTwo = RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class);
-        assertTrue(actualTwo instanceof RequiredSingletonSPIFixtureImpl);
-        assertSame(actualOne, actualTwo);
+        assertTrue(RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class) instanceof RequiredSingletonSPIFixtureImpl);
+        assertSame(RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class), RequiredSPIRegistry.getRegisteredService(RequiredSingletonSPIFixture.class));
     }
 }

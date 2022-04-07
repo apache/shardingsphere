@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Lock released event.
+ * Drop type statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GlobalLockReleasedEvent implements GovernanceEvent {
-    
-    private final String schema;
-    
-    private final String ownerInstanceId;
+public final class DropTypeStatementTestCase extends SQLParserTestCase {
 }

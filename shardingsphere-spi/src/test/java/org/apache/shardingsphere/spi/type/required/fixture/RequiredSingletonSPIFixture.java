@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.spi.type.required.fixture;
 
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
-public interface RequiredSingletonSPIFixture extends RequiredSPIFixture, SingletonSPI {
+public interface RequiredSingletonSPIFixture extends RequiredSPI, SingletonSPI {
 }

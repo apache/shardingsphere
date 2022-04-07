@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
+package org.apache.shardingsphere.distsql.parser.operation.impl;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.junit.Test;
+import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSupplier;
+import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertFalse;
-
-public final class LockChangedWatcherTest {
+/**
+ * Create operation supplier.
+ */
+public interface CreateOperationSupplier extends DistSQLOperationSupplier {
     
-    @Test
-    public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = new LockChangedWatcher().createGovernanceEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
-        assertFalse(actual.isPresent());
+    @Override
+    default DistSQLOperationTypeEnum getOperationType() {
+        return DistSQLOperationTypeEnum.CREATE;
     }
 }

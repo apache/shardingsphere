@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 
 import java.util.Collection;
 
@@ -28,7 +29,12 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingBroadcastTableRulesStatement extends AlterRuleStatement {
+public final class AlterShardingBroadcastTableRulesStatement extends AlterRuleStatement implements ShardingSubjectSupplier {
     
     private final Collection<String> tables;
+    
+    @Override
+    public Collection<String> getSubjectNames() {
+        return tables;
+    }
 }

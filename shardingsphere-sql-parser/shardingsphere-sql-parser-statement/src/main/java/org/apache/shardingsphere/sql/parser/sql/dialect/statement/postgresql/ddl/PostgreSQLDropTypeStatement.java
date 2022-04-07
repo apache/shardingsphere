@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-public final class RequiredSPIFixtureDefaultTrueImpl implements RequiredSPIFixture {
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+/**
+ * PostgreSQL drop type statement.
+ */
+@ToString
+public final class PostgreSQLDropTypeStatement extends DropTypeStatement implements PostgreSQLStatement {
 }
-

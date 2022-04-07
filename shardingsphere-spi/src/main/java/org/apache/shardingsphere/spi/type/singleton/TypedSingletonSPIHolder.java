@@ -29,15 +29,8 @@ public final class TypedSingletonSPIHolder<T extends TypedSPI & SingletonSPI> {
     
     private final Map<String, T> singletonSPIMap;
     
-    private final boolean typeCaseSensitive;
-    
-    public TypedSingletonSPIHolder(final Class<T> singletonSPIClass, final boolean typeCaseSensitive) {
-        this.singletonSPIMap = SingletonSPIRegistry.getSingletonInstancesMap(singletonSPIClass, t -> getTypeKey(t.getType(), typeCaseSensitive));
-        this.typeCaseSensitive = typeCaseSensitive;
-    }
-    
-    private String getTypeKey(final String type, final boolean typeCaseSensitive) {
-        return typeCaseSensitive ? type : type.toUpperCase();
+    public TypedSingletonSPIHolder(final Class<T> singletonSPIClass) {
+        singletonSPIMap = SingletonSPIRegistry.getSingletonInstancesMap(singletonSPIClass, TypedSPI::getType);
     }
     
     /**
@@ -47,6 +40,6 @@ public final class TypedSingletonSPIHolder<T extends TypedSPI & SingletonSPI> {
      * @return typed singleton SPI instance
      */
     public Optional<T> get(final String type) {
-        return Optional.ofNullable(singletonSPIMap.get(getTypeKey(type, typeCaseSensitive)));
+        return Optional.ofNullable(singletonSPIMap.get(type));
     }
 }

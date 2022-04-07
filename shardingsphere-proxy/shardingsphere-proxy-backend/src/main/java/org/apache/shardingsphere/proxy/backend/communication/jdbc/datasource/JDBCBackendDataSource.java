@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
@@ -100,7 +102,14 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         ShardingSphereTransactionManager transactionManager
                 = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
-        return isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        boolean isDataSourceAggregation = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().containsKey("data-source-aggregation-enabled")
+                ? ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED) : false;
+        Connection connection = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        if (isDataSourceAggregation) {
+            String databaseName = GlobalDataSourceRegistry.getInstance().getDataSourceSchema().get(schemaName + "." + dataSourceName);
+            connection.setCatalog(databaseName);
+        }
+        return connection;
     }
     
     private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {
