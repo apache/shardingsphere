@@ -55,13 +55,13 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
     }
     
-    private static final TypedSingletonSPIHolder<JobRateLimitAlgorithm> RATE_LIMIT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobRateLimitAlgorithm.class, false);
+    private static final TypedSingletonSPIHolder<JobRateLimitAlgorithm> RATE_LIMIT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobRateLimitAlgorithm.class);
     
-    private static final TypedSingletonSPIHolder<PipelineChannelFactory> PIPELINE_CHANNEL_FACTORY_HOLDER = new TypedSingletonSPIHolder<>(PipelineChannelFactory.class, false);
+    private static final TypedSingletonSPIHolder<PipelineChannelFactory> PIPELINE_CHANNEL_FACTORY_HOLDER = new TypedSingletonSPIHolder<>(PipelineChannelFactory.class);
     
-    private static final TypedSingletonSPIHolder<JobCompletionDetectAlgorithm> COMPLETION_DETECT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobCompletionDetectAlgorithm.class, false);
+    private static final TypedSingletonSPIHolder<JobCompletionDetectAlgorithm> COMPLETION_DETECT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobCompletionDetectAlgorithm.class);
     
-    private static final TypedSingletonSPIHolder<DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(DataConsistencyCheckAlgorithm.class, false);
+    private static final TypedSingletonSPIHolder<DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(DataConsistencyCheckAlgorithm.class);
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
