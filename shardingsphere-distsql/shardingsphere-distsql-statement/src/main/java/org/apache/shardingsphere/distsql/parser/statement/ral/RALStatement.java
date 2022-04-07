@@ -35,7 +35,7 @@ public abstract class RALStatement extends DistSQLStatement implements DistSQLSu
     
     @Override
     public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.RAL;
+        return DistSQLOperationTypeEnum.RAL_OPERATION;
     }
     
     @Override

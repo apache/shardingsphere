@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.operation;
 
 public enum DistSQLOperationTypeEnum {
     
-    RAL,
+    RAL_OPERATION,
     ADD,
     CREATE,
     ALTER,
@@ -27,7 +27,7 @@ public enum DistSQLOperationTypeEnum {
     SHOW;
     
     /**
-     * Returns the operation type of the specified operate type name.
+     * Returns the operation type of the specified operation type name.
      *
      * @param operationTypeName operation type name
      * @return statement type constant

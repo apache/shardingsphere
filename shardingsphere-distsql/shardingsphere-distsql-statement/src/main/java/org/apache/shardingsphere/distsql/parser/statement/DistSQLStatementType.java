@@ -30,39 +30,39 @@ public enum DistSQLStatementType {
     
     RQL {
         /**
-         * Get operate types.
-         * @return operate types
+         * Get operation types.
+         * @return operation types
          */
-        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
+        public Collection<DistSQLOperationTypeEnum> getOperationTypes() {
             return Collections.singletonList(DistSQLOperationTypeEnum.SHOW);
         }
     },
     RDL {
         /**
-         * Get operate types.
-         * @return operate types
+         * Get operation types.
+         * @return operation types
          */
         @Override
-        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
+        public Collection<DistSQLOperationTypeEnum> getOperationTypes() {
             return Arrays.asList(DistSQLOperationTypeEnum.ADD, DistSQLOperationTypeEnum.ALTER, DistSQLOperationTypeEnum.CREATE, DistSQLOperationTypeEnum.DROP);
         }
     },
     RAL {
         /**
-         * Get operate types.
-         * @return operate types
+         * Get operation types.
+         * @return operation types
          */
         @Override
-        public Collection<DistSQLOperationTypeEnum> getOperateTypes() {
-            return Collections.singletonList(DistSQLOperationTypeEnum.RAL);
+        public Collection<DistSQLOperationTypeEnum> getOperationTypes() {
+            return Collections.singletonList(DistSQLOperationTypeEnum.RAL_OPERATION);
         }
     };
     
     /**
-     * Get operate types.
-     * @return operate types
+     * Get operation types.
+     * @return operation types
      */
-    public abstract Collection<DistSQLOperationTypeEnum> getOperateTypes();
+    public abstract Collection<DistSQLOperationTypeEnum> getOperationTypes();
     
     /**
      * Returns the statement type of the specified variable name.

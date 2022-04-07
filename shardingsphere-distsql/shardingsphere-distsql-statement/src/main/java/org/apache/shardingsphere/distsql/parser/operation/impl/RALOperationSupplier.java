@@ -23,10 +23,10 @@ import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEn
 /**
  * RAL operation supplier.
  */
-public interface RALOperateSupplier extends DistSQLOperationSupplier {
+public interface RALOperationSupplier extends DistSQLOperationSupplier {
     
     @Override
     default DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.RAL;
+        return DistSQLOperationTypeEnum.RAL_OPERATION;
     }
 }

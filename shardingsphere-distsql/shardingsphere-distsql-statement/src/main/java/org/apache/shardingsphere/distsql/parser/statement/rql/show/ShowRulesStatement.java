@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.operation.impl.ShowOperationSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
@@ -29,7 +28,7 @@ import java.util.Optional;
  * Show rules statement.
  */
 @RequiredArgsConstructor
-public abstract class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable, ShowOperationSupplier {
+public abstract class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable {
     
     private final SchemaSegment schema;
     
