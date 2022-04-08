@@ -58,8 +58,8 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            if (GlobalDataSourceRegistry.getInstance().getDataSourceCache().containsKey(dataSourceProps.getInstance())) {
-                return GlobalDataSourceRegistry.getInstance().getDataSourceCache().get(dataSourceProps.getInstance());
+            if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceProps.getInstance())) {
+                return GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceProps.getInstance());
             }
         }
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
@@ -74,7 +74,7 @@ public final class DataSourcePoolCreator {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            GlobalDataSourceRegistry.getInstance().getDataSourceCache().put(dataSourceProps.getInstance(), result);
+            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceProps.getInstance(), result);
         }
         return result;
     }

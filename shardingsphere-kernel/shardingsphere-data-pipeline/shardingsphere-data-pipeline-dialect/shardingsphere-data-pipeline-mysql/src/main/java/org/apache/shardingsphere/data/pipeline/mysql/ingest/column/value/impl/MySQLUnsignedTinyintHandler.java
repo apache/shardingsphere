@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
 
-import org.junit.Test;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class UnsignedTinyintHandlerTest {
+/**
+ * MySQL unsigned tinyint handler.
+ */
+public final class MySQLUnsignedTinyintHandler implements MySQLDataTypeHandler {
     
-    private final UnsignedTinyintHandler handler = new UnsignedTinyintHandler();
+    private static final int TINYINT_MODULO = 256;
     
-    @Test
-    public void assertHandle() {
-        Serializable actual = handler.handle((byte) 1);
-        assertThat(actual, is(1));
-        actual = handler.handle((byte) -1);
-        assertThat(actual, is(255));
+    @Override
+    public Serializable handle(final Serializable value) {
+        byte byteValue = (byte) value;
+        return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "TINYINT UNSIGNED";
     }
 }

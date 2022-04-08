@@ -124,27 +124,27 @@ public final class DataSourceProperties {
     }
 
     /**
-     * can data source be aggregate.
+     * Can data source be aggregate.
      *
      * @param dataSourceProperties data source properties
      * @throws InvalidDataSourcePropertiesException invalid data source properties exception
      */
-    public void dataSourceCanBeAggregate(final DataSourceProperties dataSourceProperties) throws InvalidDataSourcePropertiesException {
+    public void checkToBeAggregatedDataSources(final DataSourceProperties dataSourceProperties) throws InvalidDataSourcePropertiesException {
         if (!parseJdbcUrl().contains("jdbc:mysql")) {
             return;
         }
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
             if (!dataSourceProperties.getAllLocalProperties().containsKey(entry.getKey())) {
-                String msg = "target data source item:" + entry.getKey() + ", not in source data source:" + dataSourceProperties.getAllLocalProperties();
+                String msg = "target data source item: " + entry.getKey() + ", not in source data source: " + dataSourceProperties.getAllLocalProperties();
                 throw new InvalidDataSourcePropertiesException(dataSourceProperties.getDataSourceClassName(), msg);
             }
             if (entry.getKey().equals("jdbcUrl") && !isInSameDatabaseInstance(String.valueOf(entry.getValue()),
                     String.valueOf(dataSourceProperties.getAllLocalProperties().get(entry.getKey())))) {
-                String msg = "target data source item:" + entry.getValue() + ", not equal source in data source:" + dataSourceProperties.getAllLocalProperties().get(entry.getKey());
+                String msg = "target data source item: " + entry.getValue() + ", not equal source in data source: " + dataSourceProperties.getAllLocalProperties().get(entry.getKey());
                 throw new InvalidDataSourcePropertiesException(dataSourceProperties.getDataSourceClassName(), msg);
             }
             if (!entry.getKey().equals("jdbcUrl") && !String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.getAllLocalProperties().get(entry.getKey())))) {
-                String msg = "target data source item: " + entry.getKey() + ", value:" + entry.getValue() + ", not equal source item: " + entry.getKey() + ",data source:"
+                String msg = "target data source item: " + entry.getKey() + ", value: " + entry.getValue() + ", not equal source item: " + entry.getKey() + ",data source:"
                         + dataSourceProperties.getAllLocalProperties().get(entry.getKey());
                 throw new InvalidDataSourcePropertiesException(dataSourceProperties.getDataSourceClassName(), msg);
             }
@@ -183,7 +183,7 @@ public final class DataSourceProperties {
     }
 
     /**
-     * get instance from data source.
+     * Get instance from data source.
      *
      * @return Instance
      */
@@ -193,7 +193,7 @@ public final class DataSourceProperties {
     }
 
     /**
-     * get database from data source.
+     * Get database from data source.
      *
      * @return database
      */
@@ -201,5 +201,4 @@ public final class DataSourceProperties {
         JdbcUrl jdbcUrl = parseStandardJdbcUrlParserByJdbcUrl(parseJdbcUrl());
         return jdbcUrl.getDatabase();
     }
-
 }

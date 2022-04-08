@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
- * {@linkplain ContextManagerLifecycleListener} implementation for rule altered job.
+ * Rule altered context manager lifecycle listener.
  */
 @Slf4j
-public final class ContextManagerLifecycleListenerImpl implements ContextManagerLifecycleListener {
+public final class RuleAlteredContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
@@ -44,10 +44,5 @@ public final class ContextManagerLifecycleListenerImpl implements ContextManager
         PipelineContext.initContextManager(contextManager);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
         RuleAlteredJobWorker.initWorkerIfNecessary();
-    }
-    
-    @Override
-    public String getType() {
-        return "RULE_ALTERED_JOB_WORKER";
     }
 }

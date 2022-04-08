@@ -17,22 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.io.Serializable;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class UnsignedSmallintHandlerTest {
+/**
+ * MySQL data type handler factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MySQLDataTypeHandlerFactory {
     
-    private final UnsignedSmallintHandler handler = new UnsignedSmallintHandler();
+    static {
+        ShardingSphereServiceLoader.register(MySQLDataTypeHandler.class);
+    }
     
-    @Test
-    public void assertHandle() {
-        Serializable actual = handler.handle((short) 1);
-        assertThat(actual, is(1));
-        actual = handler.handle((short) -1);
-        assertThat(actual, is(65535));
+    /**
+     * Create new instance of MySQL data type handler.
+     * 
+     * @param dataTypeName data type name
+     * @return new instance of MySQL data type handler
+     */
+    public static Optional<MySQLDataTypeHandler> newInstance(final String dataTypeName) {
+        return TypedSPIRegistry.findRegisteredService(MySQLDataTypeHandler.class, dataTypeName);
     }
 }

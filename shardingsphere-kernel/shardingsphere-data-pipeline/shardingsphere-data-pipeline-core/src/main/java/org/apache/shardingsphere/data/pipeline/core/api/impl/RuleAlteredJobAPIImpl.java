@@ -56,7 +56,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -82,7 +82,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private static final Map<String, DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_MAP = new TreeMap<>(
-            SingletonSPIRegistry.getTypedSingletonInstancesMap(DataConsistencyCheckAlgorithm.class));
+            TypedSPIRegistry.getRegisteredServiceMetaDataMap(DataConsistencyCheckAlgorithm.class));
     
     @Override
     public List<JobInfo> list() {
@@ -245,12 +245,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()
                 .stream().map(each -> {
-                    DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
-                    algorithmInfo.setType(each.getType());
-                    algorithmInfo.setDescription(each.getDescription());
-                    algorithmInfo.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-                    algorithmInfo.setProvider(each.getProvider());
-                    return algorithmInfo;
+                    DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
+                    result.setType(each.getType());
+                    result.setDescription(each.getDescription());
+                    result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+                    return result;
                 }).collect(Collectors.toList());
     }
     

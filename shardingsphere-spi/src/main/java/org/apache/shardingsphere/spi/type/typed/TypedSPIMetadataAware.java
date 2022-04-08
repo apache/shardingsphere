@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.spi.type.typed;
 
-import java.io.Serializable;
+import java.util.Collection;
 
-public final class UnsignedTinyintHandler implements ValueHandler {
+/**
+ * Typed sPI metadata aware.
+ */
+public interface TypedSPIMetadataAware {
     
-    private static final int TINYINT_MODULO = 256;
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
     
-    @Override
-    public String getTypeName() {
-        return "TINYINT UNSIGNED";
-    }
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        byte byteValue = (byte) value;
-        return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
-    }
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    String getDescription();
 }

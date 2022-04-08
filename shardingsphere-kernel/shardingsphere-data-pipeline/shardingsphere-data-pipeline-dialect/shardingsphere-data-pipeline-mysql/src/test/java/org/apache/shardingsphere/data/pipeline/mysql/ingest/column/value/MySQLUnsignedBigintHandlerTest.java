@@ -17,27 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedBigintHandler;
+import org.junit.Test;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
-/**
- * Value handler.
- */
-public interface ValueHandler extends SingletonSPI {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedBigintHandlerTest {
     
-    /**
-     * Get support type name.
-     *
-     * @return type name
-     */
-    String getTypeName();
+    private final MySQLUnsignedBigintHandler handler = new MySQLUnsignedBigintHandler();
     
-    /**
-     * Handle column value.
-     *
-     * @param value column value
-     * @return handled column value
-     */
-    Serializable handle(Serializable value);
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle(1L);
+        assertThat(actual, is(1L));
+        actual = handler.handle(-1L);
+        assertThat(actual, is(new BigInteger("18446744073709551615")));
+    }
 }
