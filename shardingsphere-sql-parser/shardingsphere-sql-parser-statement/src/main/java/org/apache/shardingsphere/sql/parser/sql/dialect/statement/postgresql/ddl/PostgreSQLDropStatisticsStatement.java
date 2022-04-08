@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Environment checker for PostgreSQL.
+ * PostgreSQL drop statistics statement.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return PostgreSQLDataSourcePreparer.class;
-    }
+@ToString
+public final class PostgreSQLDropStatisticsStatement extends DropStatisticsStatement implements PostgreSQLStatement {
 }

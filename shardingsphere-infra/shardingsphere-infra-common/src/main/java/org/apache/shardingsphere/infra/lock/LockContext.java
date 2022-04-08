@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.infra.lock;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+
 import java.util.Optional;
 
 /**
  * Lock context.
  */
 public interface LockContext {
+    
+    /**
+     * Init lock state.
+     *
+     * @param instanceContext instance context
+     */
+    void initLockState(InstanceContext instanceContext);
     
     /**
      * Get or create schema lock.

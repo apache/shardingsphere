@@ -15,31 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
-
-import java.util.Map;
-import java.util.Optional;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Typed singleton SPI holder.
+ * Drop directory statement test case.
  */
-public final class TypedSingletonSPIHolder<T extends TypedSPI & SingletonSPI> {
-    
-    private final Map<String, T> singletonSPIMap;
-    
-    public TypedSingletonSPIHolder(final Class<T> singletonSPIClass) {
-        singletonSPIMap = SingletonSPIRegistry.getSingletonInstancesMap(singletonSPIClass, TypedSPI::getType);
-    }
-    
-    /**
-     * Get typed singleton SPI instance.
-     *
-     * @param type SPI type
-     * @return typed singleton SPI instance
-     */
-    public Optional<T> get(final String type) {
-        return Optional.ofNullable(singletonSPIMap.get(type));
-    }
+public final class DropDirectoryStatementTestCase extends SQLParserTestCase {
 }

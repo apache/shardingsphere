@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Environment checker for PostgreSQL.
+ * Oracle drop directory statement.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return PostgreSQLDataSourcePreparer.class;
-    }
+@ToString
+public final class OracleDropDirectoryStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

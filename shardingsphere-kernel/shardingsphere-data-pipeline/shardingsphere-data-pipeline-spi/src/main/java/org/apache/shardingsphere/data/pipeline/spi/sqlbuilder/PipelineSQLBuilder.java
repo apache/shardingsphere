@@ -19,8 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
  * Pipeline SQL builder.
  * It's singleton when it's used as SPI, else not.
  */
-public interface PipelineSQLBuilder extends TypedSPI, SingletonSPI {
+public interface PipelineSQLBuilder extends StatelessTypedSPI {
     
     /**
      * Build insert SQL.

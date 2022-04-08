@@ -21,8 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Pipeline SQL builder factory.
@@ -34,8 +33,6 @@ public final class PipelineSQLBuilderFactory {
         ShardingSphereServiceLoader.register(PipelineSQLBuilder.class);
     }
     
-    private static final TypedSingletonSPIHolder<PipelineSQLBuilder> SQL_BUILDER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PipelineSQLBuilder.class);
-    
     /**
      * Get SQL builder instance.
      *
@@ -43,6 +40,6 @@ public final class PipelineSQLBuilderFactory {
      * @return SQL builder
      */
     public static PipelineSQLBuilder getSQLBuilder(final String databaseType) {
-        return SQL_BUILDER_SPI_HOLDER.get(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(PipelineSQLBuilder.class, databaseType));
+        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType);
     }
 }

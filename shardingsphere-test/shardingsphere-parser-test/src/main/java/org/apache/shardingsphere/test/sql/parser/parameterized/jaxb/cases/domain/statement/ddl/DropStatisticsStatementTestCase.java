@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Environment checker for PostgreSQL.
+ * Drop statistics statement test case.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return PostgreSQLDataSourcePreparer.class;
-    }
+public final class DropStatisticsStatementTestCase extends SQLParserTestCase {
 }

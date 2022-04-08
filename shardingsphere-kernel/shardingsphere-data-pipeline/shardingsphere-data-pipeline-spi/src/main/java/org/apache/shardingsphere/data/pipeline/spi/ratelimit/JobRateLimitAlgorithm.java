@@ -20,12 +20,11 @@ package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 /**
  * Job rate limit algorithm, SPI.
  */
-public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor, SingletonSPI {
+public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Intercept.
