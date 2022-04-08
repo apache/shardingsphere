@@ -85,7 +85,7 @@ ADD RESOURCE ds_2 (
 ```
 
 ### Reserved word
-- Datasource reserved words
+- Resource name reserved words
 
     SYS、MYSQL、INFORMATION_SCHEMA、PERFORMANCE_SCHEMA
 

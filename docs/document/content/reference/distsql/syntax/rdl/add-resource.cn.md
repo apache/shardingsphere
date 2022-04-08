@@ -85,7 +85,7 @@ ADD RESOURCE ds_2 (
 ```
 
 ### 保留字
-- 数据库保留字
+- 资源名保留字
 
     SYS、MYSQL、INFORMATION_SCHEMA、PERFORMANCE_SCHEMA
 
