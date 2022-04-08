@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere-Proxy：从实际场景出发，快速上手"
-weight = 26
+weight = 37
 chapter = true
 +++
 
