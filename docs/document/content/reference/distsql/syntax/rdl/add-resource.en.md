@@ -6,7 +6,6 @@ weight = 2
 
 ## ADD RESOURCE
 
-
 The `ADD RESOURCE` syntax is used to add resources for the currently selected schema.
 
 
@@ -23,7 +22,7 @@ dataSourceName ::=
   identifier
 
 hostname ::=
-  identifier
+  identifier | ip
 
 dbName ::=
   identifier
@@ -35,7 +34,7 @@ password ::=
   identifier | int | string 
 
 user ::=
-  identifier | number
+  identifier
 
 url ::=
   identifier | string

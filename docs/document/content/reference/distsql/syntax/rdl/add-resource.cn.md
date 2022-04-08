@@ -6,7 +6,6 @@ weight = 2
 
 ## ADD RESOURCE
 
-
 `ADD RESOURCE` 语法用于为当前所选逻辑库（SCHEMA）添加资源。
 
 
@@ -23,7 +22,7 @@ dataSourceName ::=
   identifier
 
 hostname ::=
-  identifier
+  identifier | ip
 
 dbName ::=
   identifier
@@ -35,7 +34,7 @@ password ::=
   identifier | int | string 
 
 user ::=
-  identifier | number
+  identifier
 
 url ::=
   identifier | string
