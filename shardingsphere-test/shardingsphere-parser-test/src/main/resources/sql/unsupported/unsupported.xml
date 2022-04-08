@@ -42,7 +42,6 @@
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
-    <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
     <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
@@ -4297,64 +4296,6 @@
     <sql-case id="cluster_by_postgresql_source_test_case16" value="CLUSTER hs2 using hs1_pkey;" db-types="PostgreSQL"/>
     <sql-case id="cluster_by_postgresql_source_test_case17" value="CLUSTER vaccluster;" db-types="PostgreSQL"/>
     <sql-case id="cluster;_by_postgresql_source_test_case1" value="CLUSTER;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case1" value="COMMENT ON AGGREGATE newavg (int4) IS &apos;an agg comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case2" value="COMMENT ON AGGREGATE newavg (int4) IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case3" value="COMMENT ON AGGREGATE newavg_wrong (int4) IS &apos;an agg comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case4" value="COMMENT ON AGGREGATE newcnt (&quot;any&quot;) IS &apos;an agg(any) comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case5" value="COMMENT ON AGGREGATE newcnt (*) IS &apos;an agg(*) comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case6" value="COMMENT ON AGGREGATE nosuchagg (*) IS &apos;should fail&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case7" value="COMMENT ON COLLATION test0 IS &apos;US English&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case8" value="COMMENT ON COLUMN default_test_row.f1 IS &apos;good comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case9" value="COMMENT ON COLUMN default_test_row.f1 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case10" value="COMMENT ON COLUMN default_test_row.nope IS &apos;bad comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case11" value="COMMENT ON COLUMN ft1.c1 IS &apos;foreign column&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case12" value="COMMENT ON COLUMN ft1.c1 IS &apos;ft1.c1&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case13" value="COMMENT ON COLUMN ft1.c1 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case14" value="COMMENT ON COLUMN parted_col_comment.a IS &apos;Partition key&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case15" value="COMMENT ON CONSTRAINT constrname ON FKTABLE IS &apos;fk constraint comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case16" value="COMMENT ON CONSTRAINT constrname ON FKTABLE IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case17" value="COMMENT ON CONSTRAINT constrname_wrong ON FKTABLE IS &apos;fk constraint comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case18" value="COMMENT ON CONVERSION myconv IS &apos;bar&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case19" value="COMMENT ON CONVERSION myconv IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case20" value="COMMENT ON CONVERSION myconv_bad IS &apos;foo&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case21" value="COMMENT ON FOREIGN DATA WRAPPER dummy IS &apos;useless&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case22" value="COMMENT ON FOREIGN TABLE ft1 IS &apos;foreign table&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case23" value="COMMENT ON FOREIGN TABLE ft1 IS &apos;ft1&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case24" value="COMMENT ON FOREIGN TABLE ft1 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case25" value="COMMENT ON FUNCTION tg_hub_adjustslots(bpchar, integer, integer) IS &apos;function with args&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case26" value="COMMENT ON FUNCTION tg_hub_adjustslots(bpchar, integer, integer) IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case27" value="COMMENT ON FUNCTION tg_hub_adjustslots_wrong(bpchar, integer, integer) IS &apos;function with args&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case28" value="COMMENT ON INDEX six IS &apos;good index&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case29" value="COMMENT ON INDEX six IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case30" value="COMMENT ON INDEX six_wrong IS &apos;bad index&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case31" value="COMMENT ON INDEX testcomment_idx1 IS &apos;test comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case32" value="COMMENT ON OPERATOR ###### (NONE, int4) IS &apos;bad prefix&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case33" value="COMMENT ON OPERATOR ###### (int4, NONE) IS &apos;bad postfix&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case34" value="COMMENT ON OPERATOR ###### (int4, int8) IS &apos;bad infix&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case35" value="COMMENT ON PUBLICATION testpub_default IS &apos;test publication&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case36" value="COMMENT ON RULE rtest_v1_bad ON rtest_v1 IS &apos;bad rule&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case37" value="COMMENT ON RULE rtest_v1_del ON rtest_v1 IS &apos;delete rule&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case38" value="COMMENT ON RULE rtest_v1_del ON rtest_v1 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case39" value="COMMENT ON SEQUENCE asdf IS &apos;won&apos;&apos;t work&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case40" value="COMMENT ON SEQUENCE sequence_test2 IS &apos;will work&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case41" value="COMMENT ON SEQUENCE sequence_test2 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case42" value="COMMENT ON SERVER s1 IS &apos;foreign server&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case43" value="COMMENT ON STATISTICS ab1_a_b_stats IS &apos;changed comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case44" value="COMMENT ON STATISTICS ab1_a_b_stats IS &apos;new comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case45" value="COMMENT ON SUBSCRIPTION regress_testsub IS &apos;test subscription&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case46" value="COMMENT ON TABLE attmp IS &apos;table comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case47" value="COMMENT ON TABLE attmp IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case48" value="COMMENT ON TABLE attmp_wrong IS &apos;table comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case49" value="COMMENT ON TABLE parted_col_comment IS &apos;Am partitioned table&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case50" value="COMMENT ON TRIGGER check_fkeys2_pkey_bad ON fkeys2 IS &apos;wrong&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case51" value="COMMENT ON TRIGGER check_fkeys2_pkey_exist ON fkeys2 IS &apos;right&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case52" value="COMMENT ON TRIGGER check_fkeys2_pkey_exist ON fkeys2 IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case53" value="COMMENT ON TYPE bad IS &apos;bad comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case54" value="COMMENT ON TYPE default_test_row IS &apos;good comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case55" value="COMMENT ON TYPE default_test_row IS NULL;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case56" value="COMMENT ON VIEW noview IS &apos;no view&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case57" value="COMMENT ON VIEW toyemp IS &apos;is a view&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="comment_by_postgresql_source_test_case58" value="COMMENT ON VIEW toyemp IS NULL;" db-types="PostgreSQL"/>
     <sql-case id="copy_by_postgresql_source_test_case1" value="COPY testnull FROM stdin WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL"/>
     <sql-case id="copy_by_postgresql_source_test_case2" value="COPY testnull TO stdout WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL"/>
     <sql-case id="copy_by_postgresql_source_test_case3" value="COPY x from stdin WITH DELIMITER AS &apos;:&apos; NULL AS E&apos;\\X&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL"/>
@@ -7558,18 +7499,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case113" value="alter view v1 rename column a to x;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case1" value="cluster clstr_4 using cluster_sort;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case2" value="cluster clstr_temp using clstr_temp_pkey;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case1" value="comment on column atacc1.&quot;........pg.dropped.1........&quot; is &apos;testing&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case2" value="comment on column atacc1.a is &apos;testing&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case3" value="comment on constraint at_partitioned_0_id_name_key on at_partitioned_0 is &apos;child 0 constraint&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case4" value="comment on constraint at_partitioned_1_id_name_key on at_partitioned_1 is &apos;child 1 constraint&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case5" value="comment on constraint at_partitioned_id_name_key on at_partitioned is &apos;parent constraint&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case6" value="comment on constraint c1 on domain dcomptype is &apos;random commentary&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case7" value="comment on domain domaindroptest is &apos;About to drop this..&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case8" value="comment on event trigger regress_event_trigger is &apos;test comment&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case9" value="comment on index at_partitioned_0_id_name_key is &apos;child 0 index&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case10" value="comment on index at_partitioned_1_id_name_key is &apos;child 1 index&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case11" value="comment on index at_partitioned_id_name_key is &apos;parent index&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_comment_by_postgresql_source_test_case12" value="comment on table event_trigger_fire1 is &apos;here is a comment&apos;;" db-types="PostgreSQL"/>
     <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL"/>
     <sql-case id="low_copy_by_postgresql_source_test_case2" value="copy (select * from test1) from stdin;" db-types="PostgreSQL"/>
     <sql-case id="low_copy_by_postgresql_source_test_case3" value="copy (select 1) to stdout\; copy (select 2) to stdout\; select 0\; select 3;" db-types="PostgreSQL"/>
