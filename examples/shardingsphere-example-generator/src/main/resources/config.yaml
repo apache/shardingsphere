@@ -21,7 +21,7 @@ products:
 
 # supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
 modes: 
-  - memory2
+  - memory
 
 # supported: local
 transactions: 
@@ -32,6 +32,7 @@ features:
   - sharding
   - readwrite-splitting
   - encrypt
+  - shadow
   - db-discovery
 
 # supported：jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jdbc,spring-namespace-jpa,spring-namespace-mybatis
