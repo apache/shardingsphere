@@ -97,9 +97,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                     case ALTER_TABLE:
                         return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                     case CREATE_INDEX:
-                        return rewriteActualCreateIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
+                        return rewriteActualIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
                     case DROP_INDEX:
-                        return rewriteActualCreateIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
+                        return rewriteActualIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
                     case COMMENT_ON:
                         // TODO need support by kernel
                     default:
@@ -111,7 +111,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         return result;
     }
     
-    private String rewriteActualCreateIndexSql(final String sql, final String actualTableName, final String logicTableName) {
+    private String rewriteActualIndexSql(final String sql, final String actualTableName, final String logicTableName) {
         return sql.replace(actualTableName, logicTableName);
     }
     
@@ -175,7 +175,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         try (Statement statement = sourceConnection.createStatement();
              ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
             while (resultSet.next()) {
-                // add drop index first, make sure the index is not exist
+                // TODO add drop index first, make sure the index is not exist
                 result.add(String.format(DROP_INDEX_TEMPLATE, resultSet.getString(1), resultSet.getString(2)));
                 result.add(resultSet.getString(3));
             }
