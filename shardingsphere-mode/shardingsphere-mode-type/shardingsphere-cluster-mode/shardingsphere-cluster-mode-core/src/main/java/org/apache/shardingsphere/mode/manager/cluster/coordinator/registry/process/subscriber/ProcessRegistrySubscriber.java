@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
@@ -85,7 +84,6 @@ public final class ProcessRegistrySubscriber {
                 .collect(Collectors.toList());
     }
     
-    @SneakyThrows
     private boolean waitUntilShowProcessIsReady(final String showProcessListId, final Collection<String> triggerPaths) {
         ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
         ShowProcessListManager.getInstance().getLocks().put(showProcessListId, simpleLock);
