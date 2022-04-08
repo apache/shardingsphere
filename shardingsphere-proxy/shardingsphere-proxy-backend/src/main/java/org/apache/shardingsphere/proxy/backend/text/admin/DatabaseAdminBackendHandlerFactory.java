@@ -29,10 +29,9 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.encoding.DatabaseSetCharsetBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Database admin backend handler factory.
@@ -54,7 +53,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return new instance of database admin backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
@@ -73,7 +72,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }

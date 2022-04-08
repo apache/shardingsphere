@@ -146,6 +146,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignTableStatementTestCase;
@@ -155,10 +156,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServiceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEventTriggerStatementTestCase;
@@ -177,6 +180,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCastStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropAggregateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCollationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignDataWrapperStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -583,6 +588,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-dimension")
     private final List<DropDimensionStatementTestCase> dropDimensionTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-directory")
+    private final List<DropDirectoryStatementTestCase> dropDirectoryTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
@@ -595,6 +603,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-procedure")
     private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-rule")
+    private final List<DropRuleStatementTestCase> dropRuleTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-statistics")
+    private final List<DropStatisticsStatementTestCase> dropStatisticsTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-server")
     private final List<DropServerStatementTestCase> dropServerTestCase = new LinkedList<>();
@@ -1219,6 +1233,12 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-collation")
     private final List<DropCollationStatementTestCase> dropCollationStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-foreign-data-wrapper")
+    private final List<DropForeignDataWrapperStatementTestCase> dropForeignDataWrapperStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-type")
+    private final List<DropTypeStatementTestCase> dropTypeStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1298,6 +1318,7 @@ public final class SQLParserTestCases {
         putAll(dropDatabaseLinkTestCase, result);
         putAll(createDimensionTestCase, result);
         putAll(dropDimensionTestCase, result);
+        putAll(dropDirectoryTestCase, result);
         putAll(dropViewTestCase, result);
         putAll(dropTriggerTestCase, result);
         putAll(dropEventTriggerTestCase, result);
@@ -1305,6 +1326,8 @@ public final class SQLParserTestCases {
         putAll(dropServerTestCase, result);
         putAll(dropPolicyTestCase, result);
         putAll(dropProcedureTestCase, result);
+        putAll(dropRuleTestCases, result);
+        putAll(dropStatisticsTestCases, result);
         putAll(dropFunctionTestCase, result);
         putAll(dropGroupTestCases, result);
         putAll(dropDatabaseTestCase, result);
@@ -1524,6 +1547,8 @@ public final class SQLParserTestCases {
         putAll(dropCastStatementTestCases, result);
         putAll(dropAggregateStatementTestCases, result);
         putAll(dropCollationStatementTestCases, result);
+        putAll(dropForeignDataWrapperStatementTestCases, result);
+        putAll(dropTypeStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

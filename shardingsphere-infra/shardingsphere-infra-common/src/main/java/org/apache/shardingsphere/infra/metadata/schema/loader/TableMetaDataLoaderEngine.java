@@ -26,7 +26,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,6 +44,10 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class TableMetaDataLoaderEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    }
     
     private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
             DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);

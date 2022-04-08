@@ -14,17 +14,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: sharding-proxy
-  name: sharding-proxy
+    app: shardingsphere-proxy
+  name: shardingsphere-proxy
 spec:
   ports:
     - name: tcp
       port: {{.Values.proxyport}}
       protocol: TCP
   selector:
-    app: sharding-proxy
+    app: shardingsphere-proxy
   type: {{.Values.service.type}}

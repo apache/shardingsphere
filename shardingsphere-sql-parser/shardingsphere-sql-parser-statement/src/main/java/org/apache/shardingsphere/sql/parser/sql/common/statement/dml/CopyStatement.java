@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Copy statement.
  */
+@Getter
+@Setter
 public abstract class CopyStatement extends AbstractSQLStatement implements DMLStatement {
+    
+    private SimpleTableSegment tableSegment;
 }

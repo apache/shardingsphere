@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAl
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Properties;
 

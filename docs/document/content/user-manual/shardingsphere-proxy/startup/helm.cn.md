@@ -2,21 +2,19 @@
 title = "使用 Helm"
 weight = 3
 +++
-# ShardingSphere-Proxy Helm Chart
-## **TL;DR**
 
-```
+使用 Helm 工具在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
+
+## 快速入门
+
+```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install ShardingSphere-Proxy shardingsphere/ShardingSphere-Proxy
 ```
 
-## ShardingSphere-Proxy 介绍
+## 操作步骤
 
-这个charts 使用 helm 工具在一个 kubernetes 集群中引导 一个 ShardingSphere-Proxy 实例进行安装
-
-
-
-## 必要条件
+### 必要条件
 
 kubernetes 1.18+
 
@@ -24,84 +22,68 @@ kubectl
 
 helm 3.2.0+
 
-如需要持久化数据：
+可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
 
-可以动态申请 PV(Persistent Volumes) 的 storageclass 支持
+### 安装
 
-## 安装 ShardingSphere-Proxy chart
-
-将 ShardingSphere-Proxy 添加到 helm 本地仓库
+将 ShardingSphere-Proxy 添加到 Helm 本地仓库：
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
-以 ShardingSphere-Proxy 命名安装 charts
+以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 ```
 
-执行上述命令后会以默认的配置进行安装。其他的配置详见下方的配置列表。
+执行上述命令以执行默认配置进行安装。
+其他的配置详见下方的配置列表。
+执行 `helm list` 获取所有安装的 release。
 
-如果需要获取所有安装的 release ，可以执行```helm list```
-
-## 卸载
-
-如果要卸载上述安装的release ，请执行
+### 卸载
 
 ```shell
 helm uninstall shardingsphere-proxy
 ```
 
-helm uninstall 会默认删除所有发布记录，如果需要留下发布记录，请加上 ```--keep-history```
+默认删除所有发布记录，增加 `--keep-history` 参数保留发布记录。
 
 ## 配置项说明
-### Parameters
 
-#### Global parameters
+### 全局配置
 
-| Name                        | Description                                                                     | Value |
-| --------------------------- | ------------------------------------------------------------------------------- | ----- |
-| `global.resources.limits`   | The resources limits for the ShardingSphere-Proxy,MySQL,ZooKeeper containers    | `{}`  |
-| `global.resources.requests` | The requested resources for the ShardingSphere-Proxy,MySQL,ZooKeeper containers | `{}`  |
+| 名称                       | 描述           | 默认值  |
+| ------------------------- | -------------- | ----- |
+| global.resources.limits   | 容器的全局资源限制 | {}    |
+| global.resources.requests | 容器的全局资源申请 | {}    |
 
+### ShardingSphere-Proxy 配置
 
-#### MySQL parameters
+| 名称                    | 描述                                                    | 默认值                        |
+| ---------------------- | ------------------------------------------------------- | --------------------------- |
+| image.repository       | ShardingSphere-Proxy 镜像名，默认是从 Apache 官方镜像仓库拉取 | apache/ShardingSphere-Proxy |
+| image.pullPolicy       | 镜像拉取策略                                              | IfNotPresent                |
+| image.tag              | 镜像 tag                                                 | 5.1.0                       |
+| service.type           | 网络模式                                                  | NodePort                    |
+| replicas               | 集群副本数                                                | 3                           |
+| proxyport              | 启动端口                                                  | 3307                        |
+| mysqlconnector.enabled | MySQL 驱动开启开关                                         | true                        |
+| mysqlconnector.version | MySQL 驱动版本                                            | 5.1.49                      |
 
-| Name                   | Description                | Value  |
-| ---------------------- |----------------------------| ------ |
-| `mysql.enabled`        | 开启 MySQL 子 charts 依赖       | `true` |
-| `mysql.storageclass`   | MySQL持久化存储需要的 storageclass | `nil`  |
-| `mysql.storagerequest` | MySQL持久化存储需要的空间            | `nil`  |
+### MySQL 配置
 
+| 名称                  | 描述                              | 默认值  |
+|--------------------- | -------------------------------- | ------ |
+| mysql.enabled        | 开启 MySQL 子 charts 依赖          | true   |
+| mysql.storageclass   | MySQL 持久化存储需要的 StorageClass | nil    |
+| mysql.storagerequest | MySQL 持久化存储需要的空间           | nil    |
 
-#### ZooKeeper parameters
+### ZooKeeper 配置
 
-| Name                       | Description                    | Value  |
-| -------------------------- |--------------------------------| ------ |
-| `zookeeper.enabled`        | 开启ZooKeeper子 charts 依赖         | `true` |
-| `zookeeper.storageclass`   | ZooKeeper持久化存储需要的 storageclass | `nil`  |
-| `zookeeper.storagerequest` | ZooKeeper持久化存储需要的空间            | `nil`  |
-
-
-#### ShardingSphere-Proxy parameters
-
-| Name                     | Description                                   | Value                         |
-| ------------------------ |-----------------------------------------------| ----------------------------- |
-| `image.repository`       | ShardingSphere-Proxy 镜像名，默认是从 apache 官方镜像仓库拉取 | `apache/shardingsphere-proxy` |
-| `image.pullPolicy`       | 镜像拉取策略                                        | `IfNotPresent`                |
-| `image.tag`              | 镜像 tag                                        | `5.1.0`                       |
-| `replicas`               | ShardingSphere-Proxy 集群模式副本数                  | `3`                           |
-| `service.type`           | ShardingSphere-Proxy 网络模式                     | `NodePort`                    |
-| `mysqlconnector.enabled` | MySQL 驱动开启开关                                  | `true`                        |
-| `mysqlconnector.version` | MySQL 驱动版本                                    | `5.1.49`                      |
-| `proxyport`              | 启动端口                                          | `3307`                        |
-
-
-### ShardingSphere-Proxy config.yaml && server.yaml 相关配置详见 ShardingSphere 文档
-
-[YAML 配置 :: ShardingSphere (apache.org)](https://shardingsphere.apache.org/document/5.1.0/cn/user-manual/shardingsphere-jdbc/yaml-config/)
-
-
-
+| 名称                      | 描述                                  | 默认值  |
+|------------------------- | ------------------------------------ | ------ |
+| zookeeper.enabled        | 开启 ZooKeeper 子 charts 依赖          | true   |
+| zookeeper.storageclass   | ZooKeeper 持久化存储需要的 StorageClass | nil    |
+| zookeeper.storagerequest | ZooKeeper 持久化存储需要的空间           | nil    |

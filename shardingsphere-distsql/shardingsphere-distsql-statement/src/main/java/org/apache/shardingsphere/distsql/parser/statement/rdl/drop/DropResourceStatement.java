@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
 
 import java.util.Collection;
@@ -40,5 +41,10 @@ public final class DropResourceStatement extends ResourceDefinitionStatement {
         this.containsExistClause = false;
         this.names = names;
         this.ignoreSingleTables = ignoreSingleTables;
+    }
+    
+    @Override
+    public DistSQLOperationTypeEnum getOperationType() {
+        return DistSQLOperationTypeEnum.DROP;
     }
 }

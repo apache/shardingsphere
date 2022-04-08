@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.sql.SQLException;
 
@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M extends ExecutorStatementManager<C, ?, O>, C, O extends StorageResourceOption> extends TypedSPI {
+public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M extends ExecutorStatementManager<C, ?, O>, C, O extends StorageResourceOption> extends StatelessTypedSPI {
     
     /**
      * Build SQL execution unit.

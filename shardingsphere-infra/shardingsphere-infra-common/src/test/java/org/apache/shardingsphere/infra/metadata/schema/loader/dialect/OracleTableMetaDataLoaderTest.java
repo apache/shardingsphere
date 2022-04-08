@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMe
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -72,6 +73,10 @@ public final class OracleTableMetaDataLoaderTest {
     
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    
+    static {
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    }
     
     private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
             DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);

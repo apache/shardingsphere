@@ -17,15 +17,9 @@
 
 # You can get more configuration items about proxy conf from the following URL:
 # https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/configuration/
-
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: demo_yaml
-      server-lists: localhost:2181
-  overwrite: false
+<#if mode!="memory">
+    <#include "mode/${mode}.ftl" />
+</#if>
 
 rules:
   - !AUTHORITY

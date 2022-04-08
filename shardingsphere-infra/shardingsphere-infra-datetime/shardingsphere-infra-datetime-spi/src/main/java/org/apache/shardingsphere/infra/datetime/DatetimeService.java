@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datetime;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 import java.util.Date;
 

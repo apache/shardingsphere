@@ -61,7 +61,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
-        YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules());
+        YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getSchemaName(), rootConfig.getDataSources(), rootConfig.getRules());
         this.parameter = YamlEngine.marshal(parameterConfig);
         this.rootConfig = rootConfig;
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
@@ -113,6 +113,8 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     @Getter
     @Setter
     private static class YamlParameterConfiguration implements YamlConfiguration {
+        
+        private String schemaName;
         
         private Map<String, Map<String, Object>> dataSources = new HashMap<>();
         

@@ -127,5 +127,9 @@ execute
     | dropEventTrigger
     | dropAggregate
     | dropCollation
+    | dropForeignDataWrapper
+    | dropRule
+    | dropType
+    | dropStatistics
     ) SEMI_?
     ;

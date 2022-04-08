@@ -53,5 +53,6 @@
     <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
     <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
     <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE 1.2.3.4@3307 SET XA_RECOVERY_NODES=1.2.3.4@3308" />
+    <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE 1.2.3.4@3307 SET XA_RECOVERY_NODES=1.2.3.4@3308,1.2.3.4@3307 " />
     <distsql-case id="import-schema-config" value="IMPORT SCHEMA CONFIG FILE='/yaml/config-sharding.yaml'" />
 </sql-cases>

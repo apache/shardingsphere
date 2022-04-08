@@ -68,5 +68,6 @@ execute
     | dropDimension
     | createFunction
     | dropDatabaseLink
+    | dropDirectory
     ) SEMI_?
     ;

@@ -19,17 +19,24 @@ package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.EncryptSubjectSupplier;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Create encrypt rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateEncryptRuleStatement extends CreateRuleStatement {
+public final class CreateEncryptRuleStatement extends CreateRuleStatement implements EncryptSubjectSupplier {
     
     private final Collection<EncryptRuleSegment> rules;
+    
+    @Override
+    public Collection<String> getSubjectNames() {
+        return rules.stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toSet());
+    }
 }

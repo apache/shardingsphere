@@ -20,11 +20,14 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-      - 'shardingsphere-test/**'
-      - '*.md'
+    paths:
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - '!examples/**'
+      - '!shardingsphere-distribution/**'
+      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
+      - '!shardingsphere-test/**'
+      - '!*.md'
 
 env:
   HUB: ghcr.io/apache/shardingsphere

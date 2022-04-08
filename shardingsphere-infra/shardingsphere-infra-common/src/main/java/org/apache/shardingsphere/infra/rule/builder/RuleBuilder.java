@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
  * Rule builder.

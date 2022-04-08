@@ -32,7 +32,7 @@ public final class SystemSchemaBuilderRuleTest {
     public void assertValueOfSchemaPathSuccess() {
         SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getName(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actual.getTables(), is(Sets.newHashSet("columns", "tables", "views")));
+        assertThat(actual.getTables(), is(Sets.newHashSet("columns", "engines", "parameters", "routines", "schemata", "tables", "views")));
     }
     
     @Test(expected = IllegalArgumentException.class)
