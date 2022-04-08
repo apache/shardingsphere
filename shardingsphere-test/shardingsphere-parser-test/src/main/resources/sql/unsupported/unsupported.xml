@@ -5313,64 +5313,6 @@
     <sql-case id="drop_by_postgresql_source_test_case271" value="DROP TEXT SEARCH TEMPLATE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case272" value="DROP TEXT SEARCH TEMPLATE IF EXISTS test_tstemplate_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case273" value="DROP TEXT SEARCH TEMPLATE test_tstemplate_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case274" value="DROP TRIGGER IF EXISTS foo ON no_such_schema.bar;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case275" value="DROP TRIGGER IF EXISTS test_trigger_exists ON no_such_schema.no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case276" value="DROP TRIGGER IF EXISTS test_trigger_exists ON no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case277" value="DROP TRIGGER IF EXISTS test_trigger_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case278" value="DROP TRIGGER after_upd_a_b_row_trig ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case279" value="DROP TRIGGER after_upd_b_row_trig ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case280" value="DROP TRIGGER after_upd_b_stmt_trig ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case281" value="DROP TRIGGER after_upd_row_trig ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case282" value="DROP TRIGGER before_upd_a_row_trig ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case283" value="DROP TRIGGER c1_delete_trig ON part_c_1_100;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case284" value="DROP TRIGGER c1_insert_trig ON part_c_1_100;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case285" value="DROP TRIGGER c1_update_trig ON part_c_1_100;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case286" value="DROP TRIGGER d15_delete_trig ON part_d_15_20;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case287" value="DROP TRIGGER d15_insert_trig ON part_d_15_20;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case288" value="DROP TRIGGER d15_update_trig ON part_d_15_20;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case289" value="DROP TRIGGER d1_delete_trig ON part_d_1_15;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case290" value="DROP TRIGGER d1_insert_trig ON part_d_1_15;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case291" value="DROP TRIGGER d1_update_trig ON part_d_1_15;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case292" value="DROP TRIGGER delete_a ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case293" value="DROP TRIGGER delete_when ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case294" value="DROP TRIGGER gtest1 ON gtest26;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case295" value="DROP TRIGGER gtest11 ON gtest26;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case296" value="DROP TRIGGER gtest2 ON gtest26;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case297" value="DROP TRIGGER gtest3 ON gtest26;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case298" value="DROP TRIGGER insert_a ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case299" value="DROP TRIGGER insert_when ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case300" value="DROP TRIGGER instead_of_delete_trig ON main_view;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case301" value="DROP TRIGGER instead_of_insert_trig ON main_view;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case302" value="DROP TRIGGER modified_any ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case303" value="DROP TRIGGER modified_modified_a ON main_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case304" value="DROP TRIGGER parent_delete_trig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case305" value="DROP TRIGGER parent_insert_trig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case306" value="DROP TRIGGER parent_update_trig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case307" value="DROP TRIGGER parted_mod_b ON sub_part1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case308" value="DROP TRIGGER rw_view1_ins_trig on base_tbl;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case309" value="DROP TRIGGER rw_view1_trig ON rw_view1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case310" value="DROP TRIGGER show_trigger_data_trig on trigger_test;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case311" value="DROP TRIGGER t ON trunc_trigger_test;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case312" value="DROP TRIGGER test_trigger_exists ON no_such_schema.no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case313" value="DROP TRIGGER test_trigger_exists ON no_such_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case314" value="DROP TRIGGER test_trigger_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case315" value="DROP TRIGGER test_trigger_exists ON test_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case316" value="DROP TRIGGER trans_deletetrig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case317" value="DROP TRIGGER trans_inserttrig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case318" value="DROP TRIGGER trans_updatetrig ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case319" value="DROP TRIGGER transition_table_level2_bad_usage_trigger   ON transition_table_level2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case320" value="DROP TRIGGER trig_c1_100 ON part_c_1_100;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case321" value="DROP TRIGGER trig_d15_20 ON part_d_15_20;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case322" value="DROP TRIGGER trig_d1_15 ON part_d_1_15;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case323" value="DROP TRIGGER trig_d_1_15 ON part_d_1_15;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case324" value="DROP TRIGGER trig_skip_delete ON sub_part2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case325" value="DROP TRIGGER trigtest_after_row ON foreign_schema.foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case326" value="DROP TRIGGER trigtest_after_stmt ON foreign_schema.foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case327" value="DROP TRIGGER trigtest_before_row ON foreign_schema.foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case328" value="DROP TRIGGER trigtest_before_stmt ON foreign_schema.foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case329" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case330" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case331" value="DROP TRIGGER y_trig ON y;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case1" value="EXECUTE cprep;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case2" value="EXECUTE foo;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case3" value="EXECUTE foo;" db-types="PostgreSQL"/>
@@ -8105,32 +8047,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case59" value="drop table;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case60" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case61" value="drop trigger child1_delete_trig on child1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case62" value="drop trigger child1_update_trig on child1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case63" value="drop trigger child1_update_trig on child1;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case64" value="drop trigger child2_delete_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case65" value="drop trigger child2_delete_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case66" value="drop trigger child2_insert_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case67" value="drop trigger child2_insert_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case68" value="drop trigger child2_update_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case69" value="drop trigger child2_update_trig on child2;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case70" value="drop trigger child3_delete_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case71" value="drop trigger child3_delete_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case72" value="drop trigger child3_insert_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case73" value="drop trigger child3_insert_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case74" value="drop trigger child3_update_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case75" value="drop trigger child3_update_trig on child3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case76" value="drop trigger child_row_trig on child;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case77" value="drop trigger child_row_trig on child;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case78" value="drop trigger mlparted11_trig on mlparted11;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case79" value="drop trigger my_trig on parted_trig;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case80" value="drop trigger self_ref_r_trig on self_ref;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case81" value="drop trigger trg1 on trigpart1;	-- fail drop trigger trg1 on trigpart2;	-- fail drop trigger trg1 on trigpart3;	-- fail drop table trigpart2;			-- ok, trigger should be gone in that partition select tgrelid::regclass, tgname, tgfoid::regproc from pg_trigger   where tgrelid::regclass::text like &apos;trigpart%&apos; order by tgrelid::regclass::text;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case82" value="drop trigger trg1 on trigpart3;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case83" value="drop trigger trg1 on trigpart41;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case84" value="drop trigger trg1 on trigpart;		-- ok, all gone select tgrelid::regclass, tgname, tgfoid::regproc from pg_trigger   where tgrelid::regclass::text like &apos;trigpart%&apos; order by tgrelid::regclass::text;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case85" value="drop trigger trigger_alpha on trigtest;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case86" value="drop tuple rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case1" value="execute p1;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case2" value="execute p1;" db-types="PostgreSQL"/>
