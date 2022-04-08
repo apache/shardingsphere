@@ -86,10 +86,10 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         if (!matcher.find()) {
             return Optional.empty();
         }
-        if (event.getType() == Type.ADDED) {
+        if (Type.ADDED == event.getType()) {
             return Optional.of(new ShowProcessListTriggerEvent(
                     new InstanceDefinition(InstanceType.PROXY.name().equalsIgnoreCase(matcher.group(1)) ? InstanceType.PROXY : InstanceType.JDBC, matcher.group(2)), matcher.group(3)));
-        } else if (event.getType() == Type.DELETED) {
+        } else if (Type.DELETED == event.getType()) {
             return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(3)));
         }
         return Optional.empty();  
@@ -101,9 +101,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type) {
-        if (type == Type.ADDED) {
+        if (Type.ADDED == type) {
             return Optional.of(new InstanceOnlineEvent(instanceDefinition));
-        } else if (type == Type.DELETED) {
+        } else if (Type.DELETED == type) {
             return Optional.of(new InstanceOfflineEvent(instanceDefinition));
         }
         return Optional.empty();

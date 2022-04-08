@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ShowProcessListSimpleLock {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 500L;
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 5000L;
     
     private final Lock lock = new ReentrantLock();
     
