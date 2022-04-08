@@ -1,5 +1,5 @@
 +++
-title = "RDL Syntax"
+title = "ADD RESOURCE"
 weight = 2
 +++
 
