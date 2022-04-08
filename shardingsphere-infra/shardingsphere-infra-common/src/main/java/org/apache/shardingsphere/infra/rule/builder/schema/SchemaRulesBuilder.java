@@ -135,7 +135,7 @@ public final class SchemaRulesBuilder {
             return;
         }
         try {
-            sourceProperties.dataSourceCanBeAggregate(targetProperties);
+            sourceProperties.checkToBeAggregatedDataSources(targetProperties);
         } catch (final InvalidDataSourcePropertiesException ex) {
             throw new ShardingSphereConfigurationException(ex);
         }
