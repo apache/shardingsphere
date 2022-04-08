@@ -70,6 +70,7 @@ execute
     | alterProcedure
     | alterServer
     | alterSequence
+    | comment
     | createDatabase
     | createFunction
     | createProcedure

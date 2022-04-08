@@ -15,28 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Oracle comment statement.
+ * OpenGauss comment statement.
  */
-@Getter
-@Setter
 @ToString
-public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
-
-    private SimpleTableSegment table;
-
-    private ColumnSegment column;
-
-    private IndextypeSegment indextype;
+public final class OpenGaussCommentStatement extends CommentStatement implements OpenGaussStatement {
 }
