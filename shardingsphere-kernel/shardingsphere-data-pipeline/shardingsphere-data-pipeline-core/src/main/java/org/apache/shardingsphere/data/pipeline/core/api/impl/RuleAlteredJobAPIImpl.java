@@ -249,7 +249,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
                     result.setType(each.getType());
                     result.setDescription(each.getDescription());
                     result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-                    result.setProvider(each.getProvider());
                     return result;
                 }).collect(Collectors.toList());
     }

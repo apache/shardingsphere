@@ -127,4 +127,3 @@ public final class TypedSPIRegistry {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
 }
- 

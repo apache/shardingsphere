@@ -48,7 +48,6 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
                     result.add(each.getType());
                     result.add(each.getDescription());
                     result.add(Joiner.on(",").join(each.getSupportedDatabaseTypes()));
-                    result.add(each.getProvider());
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
