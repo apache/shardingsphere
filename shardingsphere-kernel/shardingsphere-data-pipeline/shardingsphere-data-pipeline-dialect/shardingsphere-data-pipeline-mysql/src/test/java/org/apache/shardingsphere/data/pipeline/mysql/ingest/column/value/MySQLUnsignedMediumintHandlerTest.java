@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedMediumintHandler;
+import org.junit.Test;
+
 import java.io.Serializable;
 
-/**
- * Unsigned int handler.
- */
-public final class UnsignedIntHandler implements ValueHandler {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedMediumintHandlerTest {
     
-    private static final long INT_MODULO = 4294967296L;
+    private final MySQLUnsignedMediumintHandler handler = new MySQLUnsignedMediumintHandler();
     
-    @Override
-    public Serializable handle(final Serializable value) {
-        int intValue = (int) value;
-        return intValue < 0 ? INT_MODULO + intValue : intValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "INT UNSIGNED";
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle(1);
+        assertThat(actual, is(1));
+        actual = handler.handle(-1);
+        assertThat(actual, is(16777215));
     }
 }

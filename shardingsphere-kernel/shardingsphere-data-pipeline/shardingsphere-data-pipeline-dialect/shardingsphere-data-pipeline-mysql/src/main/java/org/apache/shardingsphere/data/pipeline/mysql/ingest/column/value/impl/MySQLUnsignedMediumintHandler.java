@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
 
-import org.junit.Test;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class UnsignedMediumintHandlerTest {
+/**
+ * MySQL unsigned mediumint handler.
+ */
+public final class MySQLUnsignedMediumintHandler implements MySQLDataTypeHandler {
     
-    private final UnsignedMediumintHandler handler = new UnsignedMediumintHandler();
+    private static final int MEDIUMINT_MODULO = 16777216;
     
-    @Test
-    public void assertHandle() {
-        Serializable actual = handler.handle(1);
-        assertThat(actual, is(1));
-        actual = handler.handle(-1);
-        assertThat(actual, is(16777215));
+    @Override
+    public Serializable handle(final Serializable value) {
+        int intValue = (int) value;
+        return 0 > intValue ? MEDIUMINT_MODULO + intValue : intValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "MEDIUMINT UNSIGNED";
     }
 }

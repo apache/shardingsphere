@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedTinyintHandler;
+import org.junit.Test;
 
 import java.io.Serializable;
 
-/**
- * Value handler.
- */
-public interface ValueHandler extends StatelessTypedSPI {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedTinyintHandlerTest {
     
-    /**
-     * Handle column value.
-     *
-     * @param value column value
-     * @return handled column value
-     */
-    Serializable handle(Serializable value);
+    private final MySQLUnsignedTinyintHandler handler = new MySQLUnsignedTinyintHandler();
+    
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle((byte) 1);
+        assertThat(actual, is(1));
+        actual = handler.handle((byte) -1);
+        assertThat(actual, is(255));
+    }
 }

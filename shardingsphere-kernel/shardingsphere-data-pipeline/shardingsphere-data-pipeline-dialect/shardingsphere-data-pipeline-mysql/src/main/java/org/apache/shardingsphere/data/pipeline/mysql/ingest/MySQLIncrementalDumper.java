@@ -44,11 +44,10 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandlerFactory;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -61,10 +60,6 @@ import java.util.Random;
  */
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
-    
-    static {
-        ShardingSphereServiceLoader.register(ValueHandler.class);
-    }
     
     private final BinlogPosition binlogPosition;
     
@@ -175,8 +170,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        Optional<ValueHandler> valueHandler = TypedSPIRegistry.findRegisteredService(ValueHandler.class, columnMetaData.getDataTypeName());
-        return valueHandler.isPresent() ? valueHandler.get().handle(value) : value;
+        Optional<MySQLDataTypeHandler> dataTypeHandler = MySQLDataTypeHandlerFactory.newInstance(columnMetaData.getDataTypeName());
+        return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {

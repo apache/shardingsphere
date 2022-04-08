@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedSmallintHandler;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -24,15 +25,15 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class UnsignedTinyintHandlerTest {
+public final class MySQLUnsignedSmallintHandlerTest {
     
-    private final UnsignedTinyintHandler handler = new UnsignedTinyintHandler();
+    private final MySQLUnsignedSmallintHandler handler = new MySQLUnsignedSmallintHandler();
     
     @Test
     public void assertHandle() {
-        Serializable actual = handler.handle((byte) 1);
+        Serializable actual = handler.handle((short) 1);
         assertThat(actual, is(1));
-        actual = handler.handle((byte) -1);
-        assertThat(actual, is(255));
+        actual = handler.handle((short) -1);
+        assertThat(actual, is(65535));
     }
 }
