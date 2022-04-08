@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.example.generator.core.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
@@ -28,6 +31,7 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JDBC example generator.
@@ -49,7 +53,11 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
     
     private Map<String, String> buildDataModel(final YamlExampleConfiguration configuration, final String framework, final String feature) {
         Map<String, String> result = new LinkedHashMap<>();
-        configuration.getProps().forEach((key, value) -> result.put(key.toString(), value.toString()));
+        Set<String> propsSets = Sets.newHashSet("host", "port", "username", "password");
+        configuration.getProps().forEach((key, value) -> {
+            result.put(key.toString(), value.toString());
+            Preconditions.checkArgument(propsSets.contains(key.toString()) && Strings.isNullOrEmpty(value.toString()), "Example configuration(in the config.yaml) error: " + key + " in props must not be empty");
+        });
         result.put("product", getType());
         // TODO support mode & transaction combination
         result.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
