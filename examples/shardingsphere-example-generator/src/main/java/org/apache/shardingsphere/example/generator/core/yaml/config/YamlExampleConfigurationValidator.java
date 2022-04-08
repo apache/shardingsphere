@@ -44,7 +44,7 @@ public class YamlExampleConfigurationValidator {
         valueMap.put("products", new ConfigurationData(configuration.getProducts(), Sets.newHashSet("jdbc", "proxy")));
         valueMap.put("modes", new ConfigurationData(configuration.getModes(), Sets.newHashSet("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file")));
         valueMap.put("transactions", new ConfigurationData(configuration.getTransactions(), Sets.newHashSet("local")));
-        valueMap.put("features", new ConfigurationData(configuration.getFeatures(), Sets.newHashSet("sharding", "readwrite-splitting", "encrypt", "db-discovery")));
+        valueMap.put("features", new ConfigurationData(configuration.getFeatures(), Sets.newHashSet("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery")));
         valueMap.put("frameworks", new ConfigurationData(configuration.getFrameworks(), Sets.newHashSet("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis")));
         Properties props = configuration.getProps();
         valueMap.put("host", new ConfigurationData(props.get("host") != null ? Lists.newArrayList(props.get("host").toString()) : null, Sets.newHashSet()));
