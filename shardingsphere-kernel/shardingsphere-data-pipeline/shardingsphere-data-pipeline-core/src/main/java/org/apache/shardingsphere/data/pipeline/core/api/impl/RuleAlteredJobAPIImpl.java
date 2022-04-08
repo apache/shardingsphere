@@ -245,12 +245,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()
                 .stream().map(each -> {
-                    DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
-                    algorithmInfo.setType(each.getType());
-                    algorithmInfo.setDescription(each.getDescription());
-                    algorithmInfo.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-                    algorithmInfo.setProvider(each.getProvider());
-                    return algorithmInfo;
+                    DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
+                    result.setType(each.getType());
+                    result.setDescription(each.getDescription());
+                    result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+                    return result;
                 }).collect(Collectors.toList());
     }
     

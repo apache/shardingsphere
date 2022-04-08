@@ -121,7 +121,6 @@ public final class RuleAlteredJobAPIImplTest {
         FixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new FixtureDataConsistencyCheckAlgorithm();
         assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
         assertThat(algorithmInfo.getSupportedDatabaseTypes(), is(fixtureAlgorithm.getSupportedDatabaseTypes()));
-        assertThat(algorithmInfo.getProvider(), is(fixtureAlgorithm.getProvider()));
     }
     
     @Test

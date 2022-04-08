@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConf
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -78,7 +78,7 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Map<String, ContextManagerLifecycleListener> listeners = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
+        Map<String, ContextManagerLifecycleListener> listeners = TypedSPIRegistry.getRegisteredServices(ContextManagerLifecycleListener.class);
         log.info("listeners.keySet={}", listeners.keySet());
         for (Entry<String, ContextManagerLifecycleListener> entry : listeners.entrySet()) {
             try {

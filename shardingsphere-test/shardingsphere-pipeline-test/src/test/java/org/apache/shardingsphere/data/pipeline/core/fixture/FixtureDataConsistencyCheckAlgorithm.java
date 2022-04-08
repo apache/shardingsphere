@@ -50,11 +50,6 @@ public final class FixtureDataConsistencyCheckAlgorithm implements DataConsisten
     }
     
     @Override
-    public String getProvider() {
-        return "ShardingSphere";
-    }
-    
-    @Override
     public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
         return SingleTableDataCalculatorRegistry.newServiceInstance(TYPE, supportedDatabaseType);
     }
