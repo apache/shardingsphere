@@ -48,4 +48,15 @@ public final class ProcessNode {
     public static String getShowProcessListIdPath(final String showProcessListId) {
         return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId);
     }
+    
+    /**
+     * Get show process list instance path.
+     *
+     * @param showProcessListId show process list id
+     * @param instancePath instance path
+     * @return execution path
+     */
+    public static String getShowProcessListInstancePath(final String showProcessListId, final String instancePath) {
+        return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId, instancePath);
+    }
 }

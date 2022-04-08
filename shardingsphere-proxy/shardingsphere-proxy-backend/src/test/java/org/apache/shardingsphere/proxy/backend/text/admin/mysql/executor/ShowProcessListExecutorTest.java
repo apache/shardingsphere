@@ -40,24 +40,25 @@ public final class ShowProcessListExecutorTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcessListExecutor = new ShowProcessListExecutor();
-        setupProcessListData();
+        setupProcessPackages();
     }
     
-    private void setupProcessListData() throws NoSuchFieldException, IllegalAccessException {
-        Field processListDataField = showProcessListExecutor.getClass().getDeclaredField("processListData");
-        processListDataField.setAccessible(true);
-        String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
-            + "sql: alter table t_order add column a varchar(64) after order_id\n"
-            + "startTimeMillis: 1617939785160\n"
-            + "schemaName: sharding_db\n"
-            + "username: sharding\n"
-            + "hostname: 127.0.0.1\n"
-            + "unitStatuses:\n"
-            + "- status: EXECUTE_STATUS_START\n"
-            + "  unitID: unitID1\n"
-            + "- status: EXECUTE_STATUS_DONE\n"
-            + "  unitID: unitID2\n";
-        processListDataField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
+    private void setupProcessPackages() throws NoSuchFieldException, IllegalAccessException {
+        Field processPackagesField = showProcessListExecutor.getClass().getDeclaredField("processPackages");
+        processPackagesField.setAccessible(true);
+        String executionNodeValue = "contexts:\n"
+            + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+            + "  sql: alter table t_order add column a varchar(64) after order_id\n"
+            + "  startTimeMillis: 1617939785160\n"
+            + "  schemaName: sharding_db\n"
+            + "  username: sharding\n"
+            + "  hostname: 127.0.0.1\n"
+            + "  unitStatuses:\n"
+            + "  - status: EXECUTE_STATUS_START\n"
+            + "    unitID: unitID1\n"
+            + "  - status: EXECUTE_STATUS_DONE\n"
+            + "    unitID: unitID2\n";
+        processPackagesField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
     
     @Test

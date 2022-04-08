@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * Show process list response event.
  */
@@ -27,5 +29,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShowProcessListResponseEvent {
     
-    private final String processListData;
+    private final Collection<String> processPackages;
 }

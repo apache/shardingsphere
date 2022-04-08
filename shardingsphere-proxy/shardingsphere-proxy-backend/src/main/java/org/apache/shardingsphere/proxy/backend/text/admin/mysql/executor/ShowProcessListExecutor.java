@@ -41,6 +41,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private String processListData;
+    private Collection<String> processPackages;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -69,7 +70,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
      */
     @Subscribe
     public void receiveProcessListData(final ShowProcessListResponseEvent event) {
-        processListData = event.getProcessListData();
+        processPackages = event.getProcessPackages();
     }
     
     @Override
@@ -80,10 +81,13 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     private QueryResult getQueryResult() {
         ShardingSphereEventBus.getInstance().post(new ShowProcessListRequestEvent());
-        if (null == processListData || processListData.isEmpty()) {
+        if (null == processPackages || processPackages.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = YamlEngine.unmarshal(processListData, YamlExecuteProcessContextPackage.class).getContexts();
+        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
+        for (String each : processPackages) {
+            processContexts.addAll(YamlEngine.unmarshal(each, YamlExecuteProcessContextPackage.class).getContexts());
+        }
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
             rowValues.add(processContext.getExecutionID());

@@ -283,7 +283,8 @@ public final class ClusterContextManagerCoordinator {
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
         if (!processContexts.isEmpty()) {
-            registryCenter.getRepository().persist(ProcessNode.getShowProcessListIdPath(event.getShowProcessListId()),
+            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(), 
+                    instanceDefinition.getInstanceType().name().toLowerCase() + "_" + instanceDefinition.getInstanceId().getId()), 
                     YamlEngine.marshal(new YamlExecuteProcessContextPackage(new LinkedList<>(processContexts))));
         }
         registryCenter.getRepository().delete(ComputeNode
