@@ -24,7 +24,7 @@ import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 import java.util.Collection;
 
 /**
- * Data consistency check algorithm, SPI.
+ * Data consistency check algorithm.
  */
 public interface DataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor, SingletonSPI {
     
