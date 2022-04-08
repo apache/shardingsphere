@@ -48,10 +48,10 @@ url ::=
 - `dataSourceName` needs to be unique within the current schema
 - `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool parameter name, `value` supports int and String types
-- String mode is recommended when `password` contains special characters
+- When `password` contains special characters, it is recommended to use the string form; for example, the string form of `password@123` is `"password@123"`
 
  ### Example
-- Add resources using standard mode
+- Add resource using standard mode
 ```SQL
 ADD RESOURCE ds_0 (
     HOST=127.0.0.1,
@@ -62,7 +62,7 @@ ADD RESOURCE ds_0 (
 );
 ```
 
-- Add resources and set connection pool parameters using standard mode
+- Add resource and set connection pool parameters using standard mode
 ```SQL
 ADD RESOURCE ds_1 (
     HOST=127.0.0.1,
@@ -74,7 +74,7 @@ ADD RESOURCE ds_1 (
 );
 ```
 
-- Add resources and set connection pool parameters using URL patterns
+- Add resource and set connection pool parameters using URL patterns
 ```SQL
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
@@ -85,11 +85,6 @@ ADD RESOURCE ds_2 (
 ```
 
 ### Reserved word
-- Resource name reserved words
-
-    SYS、MYSQL、INFORMATION_SCHEMA、PERFORMANCE_SCHEMA
-
-- Standard reserved words 
 
     ADD、RESOURCE、HOST、PORT、DB、USER、PASSWORD、PROPERTIES、URL
 

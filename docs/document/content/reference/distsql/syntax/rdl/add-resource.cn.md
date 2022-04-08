@@ -48,7 +48,7 @@ url ::=
 - `dataSourceName` 在当前逻辑库中需要唯一
 - `dataSourceName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头
 - `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型
-- 当 `password` 包含特殊字符时，建议使用字符串的模式
+- 当 `password` 包含特殊字符时，建议使用 string 形式；例如 `password@123`的 string 形式为 `"password@123"`
 
  ### 示例
 - 使用标准模式添加资源
@@ -85,11 +85,6 @@ ADD RESOURCE ds_2 (
 ```
 
 ### 保留字
-- 资源名保留字
-
-    SYS、MYSQL、INFORMATION_SCHEMA、PERFORMANCE_SCHEMA
-
-- 标准保留字 
 
     ADD、RESOURCE、HOST、PORT、DB、USER、PASSWORD、PROPERTIES、URL
 
