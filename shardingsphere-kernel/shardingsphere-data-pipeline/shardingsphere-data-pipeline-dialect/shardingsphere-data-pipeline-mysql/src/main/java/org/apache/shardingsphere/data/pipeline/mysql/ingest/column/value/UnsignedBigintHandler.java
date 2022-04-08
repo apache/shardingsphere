@@ -20,18 +20,21 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+/**
+ * Unsigned bigint handler.
+ */
 public final class UnsignedBigintHandler implements ValueHandler {
     
     private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
     @Override
-    public String getTypeName() {
-        return "BIGINT UNSIGNED";
-    }
-    
-    @Override
     public Serializable handle(final Serializable value) {
         long longValue = (long) value;
         return 0 > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "BIGINT UNSIGNED";
     }
 }

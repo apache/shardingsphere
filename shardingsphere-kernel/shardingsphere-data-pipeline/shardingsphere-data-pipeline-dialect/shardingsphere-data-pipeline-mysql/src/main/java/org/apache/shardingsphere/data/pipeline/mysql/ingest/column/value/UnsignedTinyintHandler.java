@@ -19,18 +19,21 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
 import java.io.Serializable;
 
+/**
+ * Unsigned tinyint handler.
+ */
 public final class UnsignedTinyintHandler implements ValueHandler {
     
     private static final int TINYINT_MODULO = 256;
     
     @Override
-    public String getTypeName() {
-        return "TINYINT UNSIGNED";
-    }
-    
-    @Override
     public Serializable handle(final Serializable value) {
         byte byteValue = (byte) value;
         return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "TINYINT UNSIGNED";
     }
 }

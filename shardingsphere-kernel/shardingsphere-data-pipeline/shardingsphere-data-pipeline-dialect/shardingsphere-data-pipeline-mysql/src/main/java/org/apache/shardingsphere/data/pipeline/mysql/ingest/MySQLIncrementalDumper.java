@@ -48,12 +48,12 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHa
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -65,8 +65,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     static {
         ShardingSphereServiceLoader.register(ValueHandler.class);
     }
-    
-    private static final Map<String, ValueHandler> VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
     
     private final BinlogPosition binlogPosition;
     
@@ -177,11 +175,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        ValueHandler valueHandler = VALUE_HANDLER_MAP.get(columnMetaData.getDataTypeName());
-        if (null != valueHandler) {
-            return valueHandler.handle(value);
-        }
-        return value;
+        Optional<ValueHandler> valueHandler = TypedSPIRegistry.findRegisteredService(ValueHandler.class, columnMetaData.getDataTypeName());
+        return valueHandler.isPresent() ? valueHandler.get().handle(value) : value;
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {

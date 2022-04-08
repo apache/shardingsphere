@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.io.Serializable;
 
 /**
  * Value handler.
  */
-public interface ValueHandler extends SingletonSPI {
-    
-    /**
-     * Get support type name.
-     *
-     * @return type name
-     */
-    String getTypeName();
+public interface ValueHandler extends StatelessTypedSPI {
     
     /**
      * Handle column value.

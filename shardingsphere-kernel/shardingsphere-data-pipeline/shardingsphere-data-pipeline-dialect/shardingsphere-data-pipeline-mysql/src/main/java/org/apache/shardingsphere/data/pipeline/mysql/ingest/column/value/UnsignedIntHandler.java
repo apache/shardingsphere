@@ -19,18 +19,21 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
 import java.io.Serializable;
 
+/**
+ * Unsigned int handler.
+ */
 public final class UnsignedIntHandler implements ValueHandler {
     
     private static final long INT_MODULO = 4294967296L;
     
     @Override
-    public String getTypeName() {
-        return "INT UNSIGNED";
+    public Serializable handle(final Serializable value) {
+        int intValue = (int) value;
+        return intValue < 0 ? INT_MODULO + intValue : intValue;
     }
     
     @Override
-    public Serializable handle(final Serializable value) {
-        int intValue = (int) value;
-        return 0 > intValue ? INT_MODULO + intValue : intValue;
+    public String getType() {
+        return "INT UNSIGNED";
     }
 }
