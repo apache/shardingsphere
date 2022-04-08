@@ -201,5 +201,4 @@ public final class DataSourceProperties {
         JdbcUrl jdbcUrl = parseStandardJdbcUrlParserByJdbcUrl(parseJdbcUrl());
         return jdbcUrl.getDatabase();
     }
-
 }

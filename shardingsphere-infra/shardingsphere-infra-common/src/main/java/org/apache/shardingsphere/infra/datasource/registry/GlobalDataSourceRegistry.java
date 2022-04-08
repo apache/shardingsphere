@@ -26,18 +26,21 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Global data source registry.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter
 @Getter
+@Setter
 public final class GlobalDataSourceRegistry {
 
     private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
 
-    private volatile Map<Instance, DataSource> dataSourceCache = new LinkedHashMap<>();
+    private volatile Map<Instance, DataSource> cachedDataSources = new LinkedHashMap<>();
 
     private volatile Map<String, String> dataSourceSchema = new LinkedHashMap<>();
 
-    private boolean dataSourceAggregationEnabled;
+    private volatile boolean dataSourceAggregationEnabled;
 
     /**
      * Get global data source.
@@ -47,5 +50,4 @@ public final class GlobalDataSourceRegistry {
     public static GlobalDataSourceRegistry getInstance() {
         return INSTANCE;
     }
-
 }
