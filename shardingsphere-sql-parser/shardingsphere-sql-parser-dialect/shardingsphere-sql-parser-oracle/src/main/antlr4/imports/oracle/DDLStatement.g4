@@ -2069,6 +2069,10 @@ dropDimension
     : DROP DIMENSION dimensionName
     ;
 
+dropDirectory
+    : DROP DIRECTORY directoryName
+    ;
+
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
