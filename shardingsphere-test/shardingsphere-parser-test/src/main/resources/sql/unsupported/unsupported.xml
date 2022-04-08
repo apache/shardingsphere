@@ -5347,31 +5347,6 @@
     <sql-case id="drop_by_postgresql_source_test_case221" value="DROP SERVER s6;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case222" value="DROP SERVER s7;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case223" value="DROP SERVER test_server_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case224" value="DROP STATISTICS ab1_a_b_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case225" value="DROP STATISTICS ab1_a_b_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case226" value="DROP STATISTICS expr_stats_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case227" value="DROP STATISTICS func_deps_stat;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case228" value="DROP STATISTICS func_deps_stat;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case229" value="DROP STATISTICS func_deps_stat;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case230" value="DROP STATISTICS mcv_lists_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case231" value="DROP STATISTICS mcv_lists_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case232" value="DROP STATISTICS mcv_lists_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case233" value="DROP STATISTICS mcv_lists_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case234" value="DROP STATISTICS mcv_lists_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case235" value="DROP STATISTICS mcv_lists_stats_1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case236" value="DROP STATISTICS mcv_lists_stats_2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case237" value="DROP STATISTICS mcv_lists_stats_3;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case238" value="DROP STATISTICS regress_schema_2.ab1_a_b_stats;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case239" value="DROP STATISTICS s10;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case240" value="DROP STATISTICS s10;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case241" value="DROP STATISTICS s10;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case242" value="DROP STATISTICS s11;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case243" value="DROP STATISTICS s11;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case244" value="DROP STATISTICS s11;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case245" value="DROP STATISTICS s12;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case246" value="DROP STATISTICS s12;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case247" value="DROP STATISTICS s12;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case248" value="DROP STATISTICS s12;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case249" value="DROP SUBSCRIPTION IF EXISTS regress_testsub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case250" value="DROP SUBSCRIPTION regress_addr_sub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case251" value="DROP SUBSCRIPTION regress_testsub3;" db-types="PostgreSQL"/>

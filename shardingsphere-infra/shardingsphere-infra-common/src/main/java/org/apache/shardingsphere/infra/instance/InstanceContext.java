@@ -153,4 +153,11 @@ public final class InstanceContext {
         }
         return result;
     }
+    
+    /**
+     * Init lock context.
+     */
+    public void initLockContext() {
+        lockContext.initLockState(this);
+    }
 }

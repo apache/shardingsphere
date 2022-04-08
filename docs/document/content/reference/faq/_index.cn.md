@@ -386,3 +386,30 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	... 
 ```
 从异常堆栈中分析可知： `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置是否存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下使用了 Binder，不规范的属性名称（如：驼峰或下划线等）会导致属性设置不生效。
+
+## [ShardingSphere-JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
+
+回答：
+
+需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下SQL查看元数据的具体情况：
+```
+SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
+```
+
+ShardingSphere 使用 `OracleTableMetaDataLoader` 对 Oracle 元数据进行加载，配置时需确保表名、字段名的大小写配置与数据库中的一致。
+
+ShardingSphere 查询元数据关键SQL:
+```
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+        StringBuilder stringBuilder = new StringBuilder(28);
+        if (versionContainsIdentityColumn(metaData)) {
+            stringBuilder.append(", IDENTITY_COLUMN");
+        }
+        if (versionContainsCollation(metaData)) {
+            stringBuilder.append(", COLLATION");
+        }
+        String collation = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+```

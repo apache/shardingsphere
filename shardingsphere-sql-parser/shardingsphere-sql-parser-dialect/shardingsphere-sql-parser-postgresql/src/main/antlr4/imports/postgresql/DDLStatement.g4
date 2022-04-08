@@ -1724,7 +1724,7 @@ dropServer
     ;
 
 dropStatistics
-    : DROP STATISTICS existClause? qualifiedNameList
+    : DROP STATISTICS existClause? qualifiedNameList dropBehavior?
     ;
 
 dropSubscription

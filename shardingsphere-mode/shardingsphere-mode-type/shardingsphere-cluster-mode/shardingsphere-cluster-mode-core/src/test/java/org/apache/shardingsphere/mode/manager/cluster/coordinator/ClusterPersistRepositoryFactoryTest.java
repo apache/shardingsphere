@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.ClusterPersistRepositoryFixture;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -29,7 +28,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ClusterPersistRepositoryFactoryTest {
 
@@ -40,7 +38,7 @@ public final class ClusterPersistRepositoryFactoryTest {
     @Test
     public void assertNewInstance() {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.newInstance(config, mock(InstanceDefinition.class));
+        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.newInstance(config);
         assertThat(clusterPersistRepository.getType(), is("TEST"));
     }
 }

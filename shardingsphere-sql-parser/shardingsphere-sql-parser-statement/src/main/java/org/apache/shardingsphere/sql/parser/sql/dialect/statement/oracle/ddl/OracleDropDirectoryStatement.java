@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
-
-import java.sql.SQLException;
-import java.sql.Statement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Statement memory strictly fetch size setter.
+ * Oracle drop directory statement.
  */
-public interface StatementMemoryStrictlyFetchSizeSetter extends StatelessTypedSPI {
-    
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement) throws SQLException;
+@ToString
+public final class OracleDropDirectoryStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

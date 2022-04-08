@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
-
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Statement memory strictly fetch size setter.
+ * Drop statistics statement test case.
  */
-public interface StatementMemoryStrictlyFetchSizeSetter extends StatelessTypedSPI {
-    
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement) throws SQLException;
+public final class DropStatisticsStatementTestCase extends SQLParserTestCase {
 }

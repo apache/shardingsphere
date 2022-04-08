@@ -130,5 +130,6 @@ execute
     | dropForeignDataWrapper
     | dropRule
     | dropType
+    | dropStatistics
     ) SEMI_?
     ;
