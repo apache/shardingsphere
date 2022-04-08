@@ -26,7 +26,10 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -66,8 +69,9 @@ public final class CommandExecutorTask implements Runnable {
     @Override
     public void run() {
         boolean isNeedFlush = false;
+        boolean sqlShowEnabled = isSQLShowEnabled();
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
-            fillLogMDC();
+            fillLogMDC(sqlShowEnabled);
             connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
@@ -87,7 +91,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
-            clearLogMDC();
+            clearLogMDC(sqlShowEnabled);
         }
     }
     
@@ -135,12 +139,21 @@ public final class CommandExecutorTask implements Runnable {
         processException(ex);
     }
     
-    private void fillLogMDC() {
-        MDC.put(LogMDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
-        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
+    private void fillLogMDC(final boolean sqlShowEnabled) {
+        if (sqlShowEnabled) {
+            MDC.put(LogMDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
+            MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString()); 
+        }
     }
     
-    private void clearLogMDC() {
-        MDC.clear();
+    private void clearLogMDC(final boolean sqlShowEnabled) {
+        if (sqlShowEnabled) {
+            MDC.clear();
+        }
+    }
+    
+    private boolean isSQLShowEnabled() {
+        ConfigurationProperties props = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
+        return props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW);
     }
 }
