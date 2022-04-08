@@ -81,7 +81,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized boolean isLockedSchema(final String schemaName) {
+    public boolean isLockedSchema(final String schemaName) {
         Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
         return getGlobalLock(schemaName).map(shardingSphereGlobalLock -> shardingSphereGlobalLock.isLocked(schemaName)).orElse(false);
     }
