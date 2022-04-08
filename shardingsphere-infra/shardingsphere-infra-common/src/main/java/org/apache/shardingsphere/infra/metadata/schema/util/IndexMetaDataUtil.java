@@ -20,9 +20,13 @@ package org.apache.shardingsphere.infra.metadata.schema.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Index meta data utility class.
@@ -69,5 +73,29 @@ public class IndexMetaDataUtil {
             builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
         }
         return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
+    }
+    
+    /**
+     * Get table names from metadata.
+     *
+     * @param schema schema
+     * @param indexes indexes
+     * @return table names
+     */
+    public static Collection<String> getTableNamesFromMetaData(final ShardingSphereSchema schema, final Collection<IndexSegment> indexes) {
+        Collection<String> result = new LinkedList<>();
+        for (IndexSegment each : indexes) {
+            findLogicTableNameFromMetaData(schema, each.getIdentifier().getValue()).ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
+        for (String each : schema.getAllTableNames()) {
+            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
 }
