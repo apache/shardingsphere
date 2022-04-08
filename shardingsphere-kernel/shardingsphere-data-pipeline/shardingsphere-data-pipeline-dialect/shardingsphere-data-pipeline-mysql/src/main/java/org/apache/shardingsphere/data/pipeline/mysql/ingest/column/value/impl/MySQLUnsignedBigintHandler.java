@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
+
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
-public final class UnsignedSmallintHandler implements ValueHandler {
+/**
+ * MySQL unsigned bigint handler.
+ */
+public final class MySQLUnsignedBigintHandler implements MySQLDataTypeHandler {
     
-    private static final int SMALLINT_MODULO = 65536;
-    
-    @Override
-    public String getTypeName() {
-        return "SMALLINT UNSIGNED";
-    }
+    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
     @Override
     public Serializable handle(final Serializable value) {
-        short shortValue = (short) value;
-        return 0 > shortValue ? SMALLINT_MODULO + shortValue : shortValue;
+        long longValue = (long) value;
+        return 0 > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "BIGINT UNSIGNED";
     }
 }

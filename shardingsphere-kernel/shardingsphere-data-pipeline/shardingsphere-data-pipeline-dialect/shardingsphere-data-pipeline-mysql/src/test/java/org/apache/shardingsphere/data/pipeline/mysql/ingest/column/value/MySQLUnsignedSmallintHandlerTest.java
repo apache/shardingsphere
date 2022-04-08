@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedSmallintHandler;
+import org.junit.Test;
+
 import java.io.Serializable;
 
-public final class UnsignedTinyintHandler implements ValueHandler {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedSmallintHandlerTest {
     
-    private static final int TINYINT_MODULO = 256;
+    private final MySQLUnsignedSmallintHandler handler = new MySQLUnsignedSmallintHandler();
     
-    @Override
-    public String getTypeName() {
-        return "TINYINT UNSIGNED";
-    }
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        byte byteValue = (byte) value;
-        return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle((short) 1);
+        assertThat(actual, is(1));
+        actual = handler.handle((short) -1);
+        assertThat(actual, is(65535));
     }
 }

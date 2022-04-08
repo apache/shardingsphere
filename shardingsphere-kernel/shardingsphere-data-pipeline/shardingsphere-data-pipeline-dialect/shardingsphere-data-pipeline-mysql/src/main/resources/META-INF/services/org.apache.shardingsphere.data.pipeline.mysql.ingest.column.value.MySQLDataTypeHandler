@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.UnsignedTinyintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.UnsignedSmallintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.UnsignedMediumintHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.UnsignedIntHandler
-org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.UnsignedBigintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedTinyintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedSmallintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedMediumintHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedIntHandler
+org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedBigintHandler
