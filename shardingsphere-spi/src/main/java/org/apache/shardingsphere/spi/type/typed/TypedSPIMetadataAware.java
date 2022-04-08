@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.spi.type.typed;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import java.util.Collection;
 
 /**
- * Environment checker for PostgreSQL.
+ * Typed sPI metadata aware.
  */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+public interface TypedSPIMetadataAware {
     
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return PostgreSQLDataSourcePreparer.class;
-    }
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
+    
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    String getDescription();
 }

@@ -236,4 +236,15 @@ public final class TablesContextTest {
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
         new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeRegistry.getDefaultDatabaseType()).getDatabaseName();
     }
+
+    @Test
+    public void assertGetSchemaName() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeRegistry.getDefaultDatabaseType());
+        assertTrue(tablesContext.getSchemaName().isPresent());
+        assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
+    }
 }

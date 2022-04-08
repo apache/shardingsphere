@@ -47,21 +47,12 @@ public final class DataSourceGeneratedSchemaConfiguration implements SchemaConfi
     public DataSourceGeneratedSchemaConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
         this.dataSources = DataSourcePoolCreator.create(createDataSourcePropertiesMap(dataSources));
         this.ruleConfigurations = ruleConfigurations;
-        this.dataSourceProperties = createDataSourcePropertiesMap(dataSources);
+        dataSourceProperties = createDataSourcePropertiesMap(dataSources);
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-
-    /**
-     * Get data source properties.
-     *
-     * @return data source map
-     */
-    public Map<String, DataSourceProperties> getDataSourceProperties() {
-        return this.dataSourceProperties;
     }
 
 }
