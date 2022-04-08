@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterAggregateContext;
@@ -97,6 +96,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Val
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -747,7 +747,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     @Override
-    public ASTNode visitComment(final OpenGaussStatementParser.CommentContext ctx) {
+    public ASTNode visitComment(final CommentContext ctx) {
         return new OpenGaussCommentStatement();
     }
 }
