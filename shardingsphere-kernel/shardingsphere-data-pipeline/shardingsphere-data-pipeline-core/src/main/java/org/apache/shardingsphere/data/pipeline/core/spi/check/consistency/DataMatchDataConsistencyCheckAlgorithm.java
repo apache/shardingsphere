@@ -31,13 +31,13 @@ public final class DataMatchDataConsistencyCheckAlgorithm extends AbstractDataCo
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
     
     @Override
-    public String getDescription() {
-        return "Match raw data of records.";
+    public Collection<String> getSupportedDatabaseTypes() {
+        return SUPPORTED_DATABASE_TYPES;
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+    public String getDescription() {
+        return "Match raw data of records.";
     }
     
     @Override
