@@ -7,8 +7,6 @@ weight = 3
 
 ---
 
-### Standard reserved words
-
 ```sql
 ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL
 ```
