@@ -6,7 +6,7 @@ weight = 2
 
 ## ADD RESOURCE
 
----
+
 The `ADD RESOURCE` syntax is used to add resources for the currently selected schema.
 
 
