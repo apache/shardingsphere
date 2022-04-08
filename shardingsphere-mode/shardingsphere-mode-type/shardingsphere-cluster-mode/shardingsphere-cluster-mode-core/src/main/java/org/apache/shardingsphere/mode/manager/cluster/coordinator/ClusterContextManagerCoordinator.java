@@ -41,8 +41,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
@@ -281,7 +280,7 @@ public final class ClusterContextManagerCoordinator {
         if (!instanceDefinition.getInstanceId().getId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
             return;
         }
-        Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ShowProcessListHolder.getInstance().getAll();
+        Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ShowProcessListManager.getInstance().getAllProcessContext();
         for (YamlExecuteProcessContext each : yamlExecuteProcessContexts) {
             registryCenter.getRepository().persist(ProcessNode.getShowProcessListIdExecutionPath(event.getShowProcessListId(), each.getExecutionID()), YamlEngine.marshal(each));
         }
@@ -296,7 +295,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListLockHolder.getInstance().getLocks().get(event.getShowProcessListId());
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getShowProcessListId());
         if (null != simpleLock) {
             simpleLock.doNotify();
         }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -59,7 +59,7 @@ public final class ProcessRegistrySubscriberTest {
     private ProcessRegistrySubscriber processRegistrySubscriber;
     
     @Mock
-    private ShowProcessListHolder showProcessListHolder;
+    private ShowProcessListManager showProcessListManager;
     
     @Test
     public void assertLoadShowProcessListData() {
@@ -72,25 +72,25 @@ public final class ProcessRegistrySubscriberTest {
     
     @Test
     public void assertReportExecuteProcessSummary() {
-        try (MockedStatic<ShowProcessListHolder> mockedStatic = mockStatic(ShowProcessListHolder.class)) {
-            mockedStatic.when(ShowProcessListHolder::getInstance).thenReturn(showProcessListHolder);
+        try (MockedStatic<ShowProcessListManager> mockedStatic = mockStatic(ShowProcessListManager.class)) {
+            mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
             ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
             ExecuteProcessSummaryReportEvent event = mock(ExecuteProcessSummaryReportEvent.class);
             when(event.getExecuteProcessContext()).thenReturn(executeProcessContext);
             when(executeProcessContext.getExecutionID()).thenReturn("id");
             processRegistrySubscriber.reportExecuteProcessSummary(event);
-            verify(showProcessListHolder, times(1)).put(any(), any());
+            verify(showProcessListManager, times(1)).putProcessContext(any(), any());
         }
     }
     
     @Test
     public void assertReportExecuteProcessUnit() {
-        try (MockedStatic<ShowProcessListHolder> mockedStatic = mockStatic(ShowProcessListHolder.class)) {
-            mockedStatic.when(ShowProcessListHolder::getInstance).thenReturn(showProcessListHolder);
+        try (MockedStatic<ShowProcessListManager> mockedStatic = mockStatic(ShowProcessListManager.class)) {
+            mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
             ExecuteProcessUnitReportEvent event = mock(ExecuteProcessUnitReportEvent.class);
             when(event.getExecutionID()).thenReturn("id");
             YamlExecuteProcessContext context = mockYamlExecuteProcessContext();
-            when(showProcessListHolder.get(event.getExecutionID())).thenReturn(context);
+            when(showProcessListManager.getProcessContext(event.getExecutionID())).thenReturn(context);
             ExecuteProcessUnit unit = mockExecuteProcessUnit();
             when(event.getExecuteProcessUnit()).thenReturn(unit);
             processRegistrySubscriber.reportExecuteProcessUnit(event);
@@ -100,12 +100,12 @@ public final class ProcessRegistrySubscriberTest {
     
     @Test
     public void assertReportExecuteProcess() {
-        try (MockedStatic<ShowProcessListHolder> mockedStatic = mockStatic(ShowProcessListHolder.class)) {
-            mockedStatic.when(ShowProcessListHolder::getInstance).thenReturn(showProcessListHolder);
+        try (MockedStatic<ShowProcessListManager> mockedStatic = mockStatic(ShowProcessListManager.class)) {
+            mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
             ExecuteProcessReportEvent event = mock(ExecuteProcessReportEvent.class);
-            when(showProcessListHolder.get(any())).thenReturn(mock(YamlExecuteProcessContext.class));
+            when(showProcessListManager.getProcessContext(any())).thenReturn(mock(YamlExecuteProcessContext.class));
             processRegistrySubscriber.reportExecuteProcess(event);
-            verify(showProcessListHolder, times(1)).remove(any());
+            verify(showProcessListManager, times(1)).removeProcessContext(any());
         }
     }
     

@@ -18,29 +18,34 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Show process list holder.
+ * Show process list manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowProcessListHolder {
+public final class ShowProcessListManager {
     
-    private static final ShowProcessListHolder INSTANCE = new ShowProcessListHolder();
+    private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     private final Map<String, YamlExecuteProcessContext> processContextMap = new ConcurrentHashMap<>();
     
+    @Getter
+    private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
+    
     /**
-     * Get show process list holder.
+     * Get show process list manager.
      *
-     * @return show process list holder
+     * @return show process list manager
      */
-    public static ShowProcessListHolder getInstance() {
+    public static ShowProcessListManager getInstance() {
         return INSTANCE;
     }
     
@@ -50,7 +55,7 @@ public final class ShowProcessListHolder {
      * @param executionId execution id
      * @param processContext process context
      */
-    public void put(final String executionId, final YamlExecuteProcessContext processContext) {
+    public void putProcessContext(final String executionId, final YamlExecuteProcessContext processContext) {
         processContextMap.put(executionId, processContext);
     }
     
@@ -60,7 +65,7 @@ public final class ShowProcessListHolder {
      * @param executionId execution id
      * @return execute process context
      */
-    public YamlExecuteProcessContext get(final String executionId) {
+    public YamlExecuteProcessContext getProcessContext(final String executionId) {
         return processContextMap.get(executionId);
     }
     
@@ -69,7 +74,7 @@ public final class ShowProcessListHolder {
      * 
      * @param executionId execution id
      */
-    public void remove(final String executionId) {
+    public void removeProcessContext(final String executionId) {
         processContextMap.remove(executionId);
     }
     
@@ -78,7 +83,7 @@ public final class ShowProcessListHolder {
      * 
      * @return collection execute process context
      */
-    public Collection<YamlExecuteProcessContext> getAll() {
+    public Collection<YamlExecuteProcessContext> getAllProcessContext() {
         return processContextMap.values();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.process;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -54,6 +54,6 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     
     @Override
     public void reportClean(final String executionID) {
-        ShowProcessListHolder.getInstance().remove(executionID);
+        ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
 }

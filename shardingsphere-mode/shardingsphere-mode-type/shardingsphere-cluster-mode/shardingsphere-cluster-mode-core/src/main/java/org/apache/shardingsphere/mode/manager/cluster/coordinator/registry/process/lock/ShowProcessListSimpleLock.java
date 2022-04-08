@@ -29,24 +29,34 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ShowProcessListSimpleLock {
     
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 500L;
+    
     private final Lock lock = new ReentrantLock();
     
     private final Condition condition = lock.newCondition();
     
     /**
+     * Lock.
+     */
+    public void lock() {
+        lock.lock();
+    }
+    
+    /**
+     * Unlock.
+     */
+    public void unlock() {
+        lock.unlock();
+    }
+    
+    /**
      * Await.
      * 
-     * @param waitTime wait time
      * @return boolean
      */
-    @SneakyThrows(InterruptedException.class)
-    public boolean doAwait(final long waitTime) {
-        lock.lock();
-        try {
-            return condition.await(waitTime, TimeUnit.MILLISECONDS);
-        } finally {
-            lock.unlock();
-        }
+    @SneakyThrows
+    public boolean awaitDefaultTime() {
+        return condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
     }
     
     /**

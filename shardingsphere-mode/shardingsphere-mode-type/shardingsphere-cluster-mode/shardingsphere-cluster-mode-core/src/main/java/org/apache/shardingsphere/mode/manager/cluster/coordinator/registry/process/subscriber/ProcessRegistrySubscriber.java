@@ -21,13 +21,12 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
@@ -88,20 +87,19 @@ public final class ProcessRegistrySubscriber {
     
     @SneakyThrows
     private boolean waitUntilShowProcessIsReady(final String showProcessListId, final Collection<String> triggerPaths) {
+        ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
+        ShowProcessListManager.getInstance().getLocks().put(showProcessListId, simpleLock);
+        simpleLock.lock();
         try {
-            ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
-            ShowProcessListLockHolder.getInstance().getLocks().put(showProcessListId, simpleLock);
-            int retryCount = 0;
             while (!isReady(triggerPaths)) {
-                if (!simpleLock.doAwait(2000L)) {
-                    if (++retryCount > 4) {
-                        return false;
-                    }
+                if (!simpleLock.awaitDefaultTime()) {
+                    return false;
                 }
             }
             return true;
         } finally {
-            ShowProcessListLockHolder.getInstance().getLocks().remove(showProcessListId);
+            simpleLock.unlock();
+            ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
         }
     }
     
@@ -124,7 +122,7 @@ public final class ProcessRegistrySubscriber {
     @AllowConcurrentEvents
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        ShowProcessListHolder.getInstance().put(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
+        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
     }
     
     /**
@@ -136,7 +134,7 @@ public final class ProcessRegistrySubscriber {
     @AllowConcurrentEvents
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         String executionID = event.getExecutionID();
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(executionID);
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
         for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
             if (each.getUnitID().equals(executeProcessUnit.getUnitID())) {
@@ -153,12 +151,12 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     @AllowConcurrentEvents
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListHolder.getInstance().get(event.getExecutionID());
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(event.getExecutionID());
         for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
             if (each.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
                 return;
             }
         }
-        ShowProcessListHolder.getInstance().remove(event.getExecutionID());
+        ShowProcessListManager.getInstance().removeProcessContext(event.getExecutionID());
     }
 }
