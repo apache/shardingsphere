@@ -534,10 +534,16 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
         PostgreSQLAlterIndexStatement result = new PostgreSQLAlterIndexStatement();
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
+        result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
         if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
             result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
         }
+        return result;
+    }
+    
+    private IndexSegment createIndexSegment(final SimpleTableSegment tableSegment) {
+        IndexSegment result = new IndexSegment(tableSegment.getStartIndex(), tableSegment.getStopIndex(), tableSegment.getTableName().getIdentifier());
+        tableSegment.getOwner().ifPresent(result::setOwner);
         return result;
     }
     
@@ -545,8 +551,16 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement();
-        result.getIndexes().addAll(((CollectionValue<IndexSegment>) visit(ctx.indexNames())).getValue());
+        result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
         result.setContainsExistClause(null != ctx.existClause());
+        return result;
+    }
+    
+    private Collection<IndexSegment> createIndexSegments(final Collection<SimpleTableSegment> tableSegments) {
+        Collection<IndexSegment> result = new LinkedList<>();
+        for (SimpleTableSegment each : tableSegments) {
+            result.add(createIndexSegment(each));
+        }
         return result;
     }
     
