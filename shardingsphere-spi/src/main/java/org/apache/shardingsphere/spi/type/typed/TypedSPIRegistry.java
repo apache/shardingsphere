@@ -117,17 +117,6 @@ public final class TypedSPIRegistry {
     }
     
     /**
-     * Get registered service.
-     * 
-     * @param spiClass stateless typed SPI class
-     * @param <T> SPI class type
-     * @return registered service
-     */
-    public static <T extends StatelessTypedSPI> Map<String, T> getRegisteredServices(final Class<T> spiClass) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
-    }
-    
-    /**
      * Get registered service meta data map.
      *
      * @param spiClass stateless typed SPI class
