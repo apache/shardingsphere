@@ -126,4 +126,15 @@ public final class TypedSPIRegistry {
     public static <T extends StatelessTypedSPI> Map<String, T> getRegisteredServices(final Class<T> spiClass) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
+    
+    /**
+     * Get registered service meta data map.
+     *
+     * @param spiClass stateless typed SPI class
+     * @param <T> SPI class type
+     * @return registered service meta data map, key is type name, value is meta data it self
+     */
+    public static <T extends TypedSPIMetadataAware & TypedSPI> Map<String, T> getRegisteredServiceMetaDataMap(final Class<T> spiClass) {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+    }
 }

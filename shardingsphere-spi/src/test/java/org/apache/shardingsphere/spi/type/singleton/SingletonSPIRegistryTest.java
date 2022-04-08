@@ -40,11 +40,4 @@ public final class SingletonSPIRegistryTest {
         assertThat(singletonSPIFixtureMap.size(), is(1));
         assertTrue(singletonSPIFixtureMap.containsKey("SINGLETON_FIXTURE"));
     }
-    
-    @Test
-    public void assertGetTypedSingletonInstancesMap() {
-        Map<String, SingletonSPIFixture> singletonSPIFixtureMap = SingletonSPIRegistry.getTypedSingletonInstancesMap(SingletonSPIFixture.class);
-        assertThat(singletonSPIFixtureMap.size(), is(1));
-        assertTrue(singletonSPIFixtureMap.containsKey("SINGLETON_FIXTURE"));
-    }
 }
