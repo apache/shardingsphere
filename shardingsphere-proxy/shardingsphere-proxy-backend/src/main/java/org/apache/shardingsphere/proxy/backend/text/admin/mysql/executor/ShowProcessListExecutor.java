@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContextPackage;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -49,7 +50,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private Collection<String> processListData;
+    private String processListData;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -82,8 +83,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == processListData || processListData.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = processListData.stream()
-            .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
+        Collection<YamlExecuteProcessContext> processContexts = YamlEngine.unmarshal(processListData, YamlExecuteProcessContextPackage.class).getContexts();
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
             rowValues.add(processContext.getExecutionID());

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContextPackage;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
@@ -280,9 +281,10 @@ public final class ClusterContextManagerCoordinator {
         if (!instanceDefinition.getInstanceId().getId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
             return;
         }
-        Collection<YamlExecuteProcessContext> yamlExecuteProcessContexts = ShowProcessListManager.getInstance().getAllProcessContext();
-        for (YamlExecuteProcessContext each : yamlExecuteProcessContexts) {
-            registryCenter.getRepository().persist(ProcessNode.getShowProcessListIdExecutionPath(event.getShowProcessListId(), each.getExecutionID()), YamlEngine.marshal(each));
+        Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
+        if (!processContexts.isEmpty()) {
+            registryCenter.getRepository().persist(ProcessNode.getShowProcessListIdPath(event.getShowProcessListId()),
+                    YamlEngine.marshal(new YamlExecuteProcessContextPackage(new LinkedList<>(processContexts))));
         }
         registryCenter.getRepository().delete(ComputeNode
                 .getProcessTriggerInstanceIdNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType(), event.getShowProcessListId()));

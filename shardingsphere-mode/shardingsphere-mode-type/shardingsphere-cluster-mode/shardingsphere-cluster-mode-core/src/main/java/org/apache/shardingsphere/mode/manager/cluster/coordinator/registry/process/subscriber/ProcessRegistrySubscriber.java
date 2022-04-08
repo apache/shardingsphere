@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -106,9 +105,8 @@ public final class ProcessRegistrySubscriber {
     }
     
     private void sendShowProcessList(final String showProcessListId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getShowProcessListIdPath(showProcessListId));
-        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(ProcessNode.getShowProcessListIdExecutionPath(showProcessListId, key))).collect(Collectors.toList());
-        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
+        String processList = repository.get(ProcessNode.getShowProcessListIdPath(showProcessListId));
+        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processList));
     }
     
     /**
