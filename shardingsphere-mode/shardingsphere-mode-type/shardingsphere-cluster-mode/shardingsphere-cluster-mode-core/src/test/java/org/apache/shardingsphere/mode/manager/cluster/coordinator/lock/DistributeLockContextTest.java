@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.junit.Test;
@@ -102,5 +103,15 @@ public final class DistributeLockContextTest {
         assertTrue(distributeLockContext.getSchemaLock("schema").isPresent());
         distributeLockContext.renew(new AckLockReleasedEvent("schema-127.0.0.1@3307"));
         assertFalse(distributeLockContext.getSchemaLock("schema").isPresent());
+    }
+
+    @Test
+    public void assertRenew() throws IllegalAccessException, NoSuchFieldException{
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
+        Field declaredField = DistributeLockContext.class.getDeclaredField("currentInstance");
+        declaredField.setAccessible(true);
+        declaredField.set(distributeLockContext, new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307")));
+        AckLockedEvent event = new AckLockedEvent("lockName-schema");
+        distributeLockContext.renew(event);
     }
 }
