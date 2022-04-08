@@ -39,11 +39,6 @@ public abstract class AbstractDataConsistencyCheckAlgorithm implements DataConsi
     }
     
     @Override
-    public String getProvider() {
-        return "ShardingSphere";
-    }
-    
-    @Override
     public final SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
         SingleTableDataCalculator result = SingleTableDataCalculatorRegistry.newServiceInstance(getType(), supportedDatabaseType);
         result.setAlgorithmProps(props);
