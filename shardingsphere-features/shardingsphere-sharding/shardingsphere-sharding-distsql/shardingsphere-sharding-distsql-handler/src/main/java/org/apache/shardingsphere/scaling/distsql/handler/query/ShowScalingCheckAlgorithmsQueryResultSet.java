@@ -54,7 +54,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "description", "supported_database_types", "provider");
+        return Arrays.asList("type", "description", "supported_database_types");
     }
     
     @Override
