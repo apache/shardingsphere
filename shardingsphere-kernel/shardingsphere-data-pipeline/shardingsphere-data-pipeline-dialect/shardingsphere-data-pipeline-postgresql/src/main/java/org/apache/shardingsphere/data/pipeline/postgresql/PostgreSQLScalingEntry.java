@@ -48,7 +48,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "PostgreSQL";
     }
 }

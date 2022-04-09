@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureScalingEntry;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -26,11 +27,10 @@ public final class ScalingEntryFactoryTest {
     
     @Test
     public void assertGetFixtureInstance() {
-        ScalingEntry actual = ScalingEntryFactory.getInstance("H2");
-        assertTrue(actual instanceof FixtureScalingEntry);
+        assertTrue(ScalingEntryFactory.getInstance("H2") instanceof FixtureScalingEntry);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = ServiceProviderNotFoundException.class)
     public void assertGetInstanceFailure() {
         ScalingEntryFactory.getInstance("None");
     }
