@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -705,5 +707,42 @@ public final class ShardingRuleTest {
         DataNode sixthDataNode = iterator.next();
         assertThat(sixthDataNode.getDataSourceName(), is("ds_1"));
         assertThat(sixthDataNode.getTableName(), is("table_2"));
+    }
+    
+    @Test
+    public void assertGetDatabaseShardingStrategyConfiguration() {
+        ShardingRule actual = createMaximumShardingRule();
+        TableRule logicTable = actual.getTableRule("Logic_Table");
+        ShardingStrategyConfiguration databaseShardingStrategyConfiguration = actual.getDatabaseShardingStrategyConfiguration(logicTable);
+        assertThat(databaseShardingStrategyConfiguration.getShardingAlgorithmName(), is("database_inline"));
+    }
+    
+    @Test
+    public void assertGetTableShardingStrategyConfiguration() {
+        ShardingRule actual = createMaximumShardingRule();
+        TableRule logicTable = actual.getTableRule("Logic_Table");
+        ShardingStrategyConfiguration tableShardingStrategyConfiguration = actual.getTableShardingStrategyConfiguration(logicTable);
+        assertThat(tableShardingStrategyConfiguration.getShardingAlgorithmName(), is("table_inline"));
+    }
+    
+    @Test
+    public void assertIsGenerateKeyColumn() {
+        ShardingRule actual = createMaximumShardingRule();
+        assertTrue(actual.isGenerateKeyColumn("id", "logic_table"));
+    }
+    
+    @Test
+    public void assertGetShardingRuleTableNames() {
+        ShardingRule actual = createMaximumShardingRule();
+        Collection<String> shardingRuleTableNames = actual.getShardingRuleTableNames(Collections.singleton("Logic_Table"));
+        assertTrue(shardingRuleTableNames.contains("Logic_Table"));
+    }
+    
+    @Test
+    public void assertGetLogicAndActualTablesFromBindingTable() {
+        ShardingRule actual = createMaximumShardingRule();
+        Map<String, String> logicAndActualTablesFromBindingTable =
+                actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Lists.newArrayList("logic_table", "sub_logic_table"));
+        assertThat(logicAndActualTablesFromBindingTable.get("sub_logic_table"), is("sub_table_0"));
     }
 }
