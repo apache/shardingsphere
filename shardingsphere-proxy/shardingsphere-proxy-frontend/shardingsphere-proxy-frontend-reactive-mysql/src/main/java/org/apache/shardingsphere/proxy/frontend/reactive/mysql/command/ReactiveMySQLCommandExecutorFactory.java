@@ -53,7 +53,9 @@ public final class ReactiveMySQLCommandExecutorFactory {
      */
     @SneakyThrows(SQLException.class)
     public static ReactiveCommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
-        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (log.isDebugEnabled()) {
+            log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        }
         switch (commandPacketType) {
             case COM_FIELD_LIST:
                 return new ReactiveMySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, connectionSession);

@@ -40,7 +40,10 @@ public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandl
             ctx.fireChannelActive();
             return;
         }
-        log.debug("Closing channel {} due to the number of server connections has reached max connections {}", ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getMaxConnections());
+        if (log.isDebugEnabled()) {
+            log.debug("Closing channel {} due to the number of server connections has reached max connections {}",
+                    ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getMaxConnections());
+        }
         // TODO This is not how actual databases does and should be refactored.
         ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendTooManyConnectionsException()));
         ctx.close();

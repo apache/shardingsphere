@@ -50,7 +50,9 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             do {
                 reRegistered = reRegister(client);
             } while (!reRegistered);
-            log.debug("instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
+            if (log.isDebugEnabled()) {
+                log.debug("instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
+            }
         }
     }
     

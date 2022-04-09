@@ -34,9 +34,9 @@ public final class CuratorZookeeperExceptionHandler {
     
     /**
      * Handle exception.
-     * 
+     *
      * <p>Ignore interrupt and connection invalid exception.</p>
-     * 
+     *
      * @param cause to be handled exception
      */
     public static void handleException(final Exception cause) {
@@ -44,7 +44,9 @@ public final class CuratorZookeeperExceptionHandler {
             return;
         }
         if (isIgnoredException(cause) || null != cause.getCause() && isIgnoredException(cause.getCause())) {
-            log.debug("Ignored exception for: {}", cause.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug("Ignored exception for: {}", cause.getMessage());
+            }
         } else if (cause instanceof InterruptedException) {
             Thread.currentThread().interrupt();
         } else {

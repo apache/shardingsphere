@@ -71,7 +71,9 @@ public final class OpenGaussCommandExecutorFactory {
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
-        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (log.isDebugEnabled()) {
+            log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        }
         if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
         }
