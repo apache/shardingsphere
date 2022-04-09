@@ -71,7 +71,9 @@ public final class CommandExecutorTask implements Runnable {
         boolean isNeedFlush = false;
         boolean sqlShowEnabled = isSQLShowEnabled();
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
-            fillLogMDC(sqlShowEnabled);
+            if (sqlShowEnabled) {
+                fillLogMDC();
+            }
             connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
@@ -91,7 +93,9 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
-            clearLogMDC(sqlShowEnabled);
+            if (sqlShowEnabled) {
+                clearLogMDC();
+            }
         }
     }
     
@@ -139,17 +143,13 @@ public final class CommandExecutorTask implements Runnable {
         processException(ex);
     }
     
-    private void fillLogMDC(final boolean sqlShowEnabled) {
-        if (sqlShowEnabled) {
-            MDC.put(LogMDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
-            MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString()); 
-        }
+    private void fillLogMDC() {
+        MDC.put(LogMDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
+        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
     }
     
-    private void clearLogMDC(final boolean sqlShowEnabled) {
-        if (sqlShowEnabled) {
-            MDC.clear();
-        }
+    private void clearLogMDC() {
+        MDC.clear();
     }
     
     private boolean isSQLShowEnabled() {
