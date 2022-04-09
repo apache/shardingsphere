@@ -28,11 +28,6 @@ import java.util.Collections;
 public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
-    
-    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singleton("jdbc:mysql:");
     }
@@ -45,5 +40,10 @@ public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
         } catch (final ClassNotFoundException ignore) {
             return "com.mysql.jdbc.Driver";
         }
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

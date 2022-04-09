@@ -30,12 +30,9 @@ import java.util.Collections;
  */
 public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecognizer {
     
-    public static final String DRIVER_CLASS_NAME = "com.p6spy.engine.spy.P6SpyDriver";
-    
     @Override
     public JDBCDriverURLRecognizer getDriverURLRecognizer(final String url) {
-        String realUrl = extractRealUrl(url);
-        JDBCDriverURLRecognizer driverURLRecognizer = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(realUrl);
+        JDBCDriverURLRecognizer driverURLRecognizer = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(url.replace("p6spy:", ""));
         return new JDBCDriverURLRecognizer() {
             
             @Override
@@ -45,7 +42,7 @@ public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecogniz
             
             @Override
             public String getDriverClassName() {
-                return DRIVER_CLASS_NAME;
+                return "com.p6spy.engine.spy.P6SpyDriver";
             }
             
             @Override
@@ -55,21 +52,6 @@ public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecogniz
         };
     }
     
-    /**
-     * Parses out the real JDBC connection URL by removing "p6spy:".
-     *
-     * @param url the connection URL
-     * @return the parsed URL
-     */
-    private String extractRealUrl(final String url) {
-        return url.replace("p6spy:", "");
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        throw new ShardingSphereException("Unsupported getDatabaseType method!");
-    }
-    
     @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singleton("jdbc:p6spy:");
@@ -77,6 +59,11 @@ public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecogniz
     
     @Override
     public String getDriverClassName() {
-        return DRIVER_CLASS_NAME;
+        return "com.p6spy.engine.spy.P6SpyDriver";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        throw new ShardingSphereException("Unsupported getDatabaseType method!");
     }
 }

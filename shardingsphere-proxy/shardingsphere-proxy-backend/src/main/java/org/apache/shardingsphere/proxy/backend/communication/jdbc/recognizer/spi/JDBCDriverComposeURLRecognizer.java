@@ -23,10 +23,10 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.sp
 public interface JDBCDriverComposeURLRecognizer extends JDBCDriverURLRecognizer {
     
     /**
-     * get url recognizer base on url.
+     * Get driver URL recognizer.
      *
-     * @param url jdbc url
-     * @return jdbc url recognizer
+     * @param url jdbc URL
+     * @return driver URL recognizer
      */
     JDBCDriverURLRecognizer getDriverURLRecognizer(String url);
 }
