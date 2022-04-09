@@ -40,6 +40,7 @@ public final class ReactiveOKProxyStateTest {
     
     private final ReactiveOKProxyState state = new ReactiveOKProxyState();
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() {
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
@@ -50,7 +51,7 @@ public final class ReactiveOKProxyStateTest {
         when(channel.<ReactiveDatabaseProtocolFrontendEngine>attr(AttributeKey.valueOf(ReactiveDatabaseProtocolFrontendEngine.class.getName()))).thenReturn(attribute);
         when(channelHandlerContext.channel()).thenReturn(channel);
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = mock(DatabaseProtocolFrontendEngine.class);
-        when(databaseProtocolFrontendEngine.getDatabaseType()).thenReturn("Dummy");
+        when(databaseProtocolFrontendEngine.getType()).thenReturn("Dummy");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         state.execute(channelHandlerContext, null, databaseProtocolFrontendEngine, connectionSession);
         verify(attribute).setIfAbsent(any(DummyReactiveDatabaseProtocolFrontendEngine.class));

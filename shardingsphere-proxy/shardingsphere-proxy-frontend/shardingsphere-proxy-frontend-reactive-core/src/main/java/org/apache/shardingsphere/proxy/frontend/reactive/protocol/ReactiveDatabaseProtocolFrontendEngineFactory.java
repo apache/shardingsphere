@@ -19,9 +19,11 @@ package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.frontend.reactive.spi.ReactiveDatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Properties;
 
 /**
  * Reactive database protocol frontend engine factory.
@@ -40,11 +42,6 @@ public final class ReactiveDatabaseProtocolFrontendEngineFactory {
      * @return new instance of reactive database protocol frontend engine
      */
     public static ReactiveDatabaseProtocolFrontendEngine newInstance(final String databaseType) {
-        for (ReactiveDatabaseProtocolFrontendEngine each : ShardingSphereServiceLoader.newServiceInstances(ReactiveDatabaseProtocolFrontendEngine.class)) {
-            if (DatabaseTypeRegistry.getActualDatabaseType(each.getDatabaseType()).getName().equals(databaseType)) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s' in reactive", databaseType));
+        return TypedSPIRegistry.getRegisteredService(ReactiveDatabaseProtocolFrontendEngine.class, databaseType, new Properties());
     }
 }

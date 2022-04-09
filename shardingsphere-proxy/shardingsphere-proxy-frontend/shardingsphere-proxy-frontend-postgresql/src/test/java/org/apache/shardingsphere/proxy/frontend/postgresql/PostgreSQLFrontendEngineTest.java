@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
@@ -28,20 +27,12 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class PostgreSQLFrontendEngineTest {
-    
-    @Test
-    public void assertGetDatabaseType() {
-        String actual = new PostgreSQLFrontendEngine().getDatabaseType();
-        assertThat(actual, is(new PostgreSQLDatabaseType().getName()));
-    }
     
     @Test
     public void assertRelease() {
