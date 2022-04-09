@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.junit.Test;
 
@@ -32,11 +31,6 @@ import static org.mockito.Mockito.when;
 public final class OpenGaussQueryHeaderBuilderTest {
     
     @Test
-    public void assertDatabaseType() {
-        assertThat(new OpenGaussQueryHeaderBuilder().getDatabaseType(), is(new OpenGaussDatabaseType().getName()));
-    }
-    
-    @Test
     public void assertBuildOpenGaussQueryHeader() throws SQLException {
         final int columnIndex = 1;
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
@@ -44,8 +38,8 @@ public final class OpenGaussQueryHeaderBuilderTest {
         when(queryResultMetaData.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
         when(queryResultMetaData.getColumnTypeName(columnIndex)).thenReturn("int");
         when(queryResultMetaData.getColumnLength(columnIndex)).thenReturn(11);
-        QueryHeader expected = new PostgreSQLQueryHeaderBuilder().doBuild(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
-        QueryHeader actual = new OpenGaussQueryHeaderBuilder().doBuild(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
+        QueryHeader expected = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
+        QueryHeader actual = new OpenGaussQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
         assertThat(actual.getColumnLabel(), is(expected.getColumnLabel()));
         assertThat(actual.getColumnType(), is(expected.getColumnType()));
         assertThat(actual.getColumnTypeName(), is(expected.getColumnTypeName()));

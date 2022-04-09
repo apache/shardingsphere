@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -34,17 +33,12 @@ import java.util.Optional;
 /**
  * QueryHeaderBuilder for MySQL.
  */
-public final class MySQLQueryHeaderBuilder extends QueryHeaderBuilder {
-    
-    @Override
-    public String getDatabaseType() {
-        return new MySQLDatabaseType().getName();
-    }
+public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     @SneakyThrows(ConcurrentException.class)
     @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel, 
-                                  final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
+                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
         String schemaName = null == metaData ? "" : metaData.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
@@ -65,5 +59,15 @@ public final class MySQLQueryHeaderBuilder extends QueryHeaderBuilder {
         boolean notNull = queryResultMetaData.isNotNull(columnIndex);
         boolean autoIncrement = queryResultMetaData.isAutoIncrement(columnIndex);
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

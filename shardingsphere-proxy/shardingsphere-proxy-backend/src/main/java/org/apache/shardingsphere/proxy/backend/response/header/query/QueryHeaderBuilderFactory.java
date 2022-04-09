@@ -20,33 +20,27 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQueryHeaderBuilder;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Factory for {@link QueryHeaderBuilder}.
+ * Query header builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryHeaderBuilderFactory {
     
-    private static final Map<String, QueryHeaderBuilder> QUERY_HEADER_BUILDERS = new HashMap<>();
-    
-    private static final QueryHeaderBuilder DEFAULT_QUERY_HEADER_BUILDER = new MySQLQueryHeaderBuilder();
-    
     static {
-        ServiceLoader.load(QueryHeaderBuilder.class).forEach(each -> QUERY_HEADER_BUILDERS.put(each.getDatabaseType(), each));
+        ShardingSphereServiceLoader.register(QueryHeaderBuilder.class);
     }
     
     /**
-     * Get {@link QueryHeaderBuilder} for specified database type.
+     * Create new instance of query header builder.
      *
      * @param databaseType database type
-     * @return query header builder
+     * @return new instance of query header builder
      */
-    public static QueryHeaderBuilder getQueryHeaderBuilder(final DatabaseType databaseType) {
-        return QUERY_HEADER_BUILDERS.getOrDefault(null == databaseType ? null : databaseType.getName(), DEFAULT_QUERY_HEADER_BUILDER);
+    public static QueryHeaderBuilder newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getName()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
     }
 }
