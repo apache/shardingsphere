@@ -28,11 +28,6 @@ import java.util.Collections;
 public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
-    
-    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singleton("jdbc:opengauss:");
     }
@@ -40,5 +35,10 @@ public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
     @Override
     public String getDriverClassName() {
         return "org.opengauss.Driver";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "openGauss";
     }
 }

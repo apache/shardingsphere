@@ -28,11 +28,6 @@ import java.util.Collection;
 public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
-    
-    @Override
     public Collection<String> getURLPrefixes() {
         return Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:");
     }
@@ -40,5 +35,10 @@ public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
     @Override
     public String getDriverClassName() {
         return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "SQLServer";
     }
 }

@@ -28,11 +28,6 @@ import java.util.Collections;
 public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
-    
-    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singleton("jdbc:postgresql:");
     }
@@ -40,5 +35,10 @@ public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     @Override
     public String getDriverClassName() {
         return "org.postgresql.Driver";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

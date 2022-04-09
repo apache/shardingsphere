@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-
 import java.util.Collection;
 
 /**
  * JDBC driver URL recognizer.
  */
-public interface JDBCDriverURLRecognizer extends DatabaseTypeAwareSPI {
+public interface JDBCDriverURLRecognizer {
     
     /**
      * Get JDBC URL prefixes.
@@ -39,4 +37,11 @@ public interface JDBCDriverURLRecognizer extends DatabaseTypeAwareSPI {
      * @return driver class name
      */
     String getDriverClassName();
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
 }

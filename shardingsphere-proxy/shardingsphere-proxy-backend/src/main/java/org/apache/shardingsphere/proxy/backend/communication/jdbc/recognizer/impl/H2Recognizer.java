@@ -28,11 +28,6 @@ import java.util.Collections;
 public final class H2Recognizer implements JDBCDriverURLRecognizer {
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
-    
-    @Override
     public Collection<String> getURLPrefixes() {
         return Collections.singleton("jdbc:h2:");
     }
@@ -40,5 +35,10 @@ public final class H2Recognizer implements JDBCDriverURLRecognizer {
     @Override
     public String getDriverClassName() {
         return "org.h2.Driver";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }

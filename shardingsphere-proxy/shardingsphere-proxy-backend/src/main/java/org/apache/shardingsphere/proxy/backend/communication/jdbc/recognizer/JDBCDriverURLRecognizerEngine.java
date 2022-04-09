@@ -22,10 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverComposeURLRecognizer;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.ServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
  * JDBC driver URL recognizer engine.
@@ -33,12 +30,8 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCDriverURLRecognizerEngine {
     
-    private static final Collection<JDBCDriverURLRecognizer> JDBC_DRIVER_URL_RECOGNIZERS = new LinkedList<>();
-    
     static {
-        for (JDBCDriverURLRecognizer each : ServiceLoader.load(JDBCDriverURLRecognizer.class)) {
-            JDBC_DRIVER_URL_RECOGNIZERS.add(each);
-        }
+        ShardingSphereServiceLoader.register(JDBCDriverURLRecognizer.class);
     }
     
     /**
@@ -48,7 +41,7 @@ public final class JDBCDriverURLRecognizerEngine {
      * @return JDBC driver URL recognizer
      */
     public static JDBCDriverURLRecognizer getJDBCDriverURLRecognizer(final String url) {
-        JDBCDriverURLRecognizer result = JDBC_DRIVER_URL_RECOGNIZERS.stream().filter(each -> isMatchURL(url, each)).findAny()
+        JDBCDriverURLRecognizer result = ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCDriverURLRecognizer.class).stream().filter(each -> isMatchURL(url, each)).findAny()
                 .orElseThrow(() -> new ShardingSphereException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName()));
         if (result instanceof JDBCDriverComposeURLRecognizer) {
             return ((JDBCDriverComposeURLRecognizer) result).getDriverURLRecognizer(url);
@@ -56,7 +49,7 @@ public final class JDBCDriverURLRecognizerEngine {
         return result;
     }
     
-    private static boolean isMatchURL(final String url, final JDBCDriverURLRecognizer jdbcDriverURLRecognizer) {
-        return jdbcDriverURLRecognizer.getURLPrefixes().stream().anyMatch(url::startsWith);
+    private static boolean isMatchURL(final String url, final JDBCDriverURLRecognizer recognizer) {
+        return recognizer.getURLPrefixes().stream().anyMatch(url::startsWith);
     }
 }
