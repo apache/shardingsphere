@@ -50,9 +50,6 @@ public final class EnvironmentCheckerFactory {
     public static DataSourcePreparer getDataSourcePreparer(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Class<? extends DataSourcePreparer> preparerClass = scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourcePreparerClass();
-        if (null == preparerClass) {
-            return null;
-        }
-        return preparerClass.getConstructor().newInstance();
+        return null == preparerClass ? null : preparerClass.getConstructor().newInstance();
     }
 }
