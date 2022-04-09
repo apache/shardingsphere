@@ -162,7 +162,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "MySQL";
     }
 }

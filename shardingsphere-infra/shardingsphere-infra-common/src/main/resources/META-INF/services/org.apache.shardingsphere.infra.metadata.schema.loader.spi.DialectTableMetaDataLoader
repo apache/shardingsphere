@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.schema.loader.dialect.MySQLTableMetaDataLoader
-org.apache.shardingsphere.infra.metadata.schema.loader.dialect.OracleTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.loader.dialect.PostgreSQLTableMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.MySQLTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.loader.dialect.OpenGaussTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.loader.dialect.SQLServerTableMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.OracleTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.loader.dialect.H2TableMetaDataLoader
