@@ -8,7 +8,7 @@ chapter = true
 
 > 如无特别声明，以下示例中的数据库指 MySQL。
 
-## 一、这个项目做什么
+## 这个项目做什么
 
 ShardingSphere-Proxy，可以让用户像使用原生数据库一样使用 Apache ShardingSphere。
 
@@ -20,7 +20,7 @@ ShardingSphere-Proxy，可以让用户像使用原生数据库一样使用 Apach
 
 先明确一个概念，ShardingSphere-Proxy 是一个服务进程。从客户端程序连接来说，它和 MySQL 数据库并没有什么区别。
 
-## 二、为什么要用 Proxy
+## 为什么要用 Proxy
 
 在做了分库分表或其他规则的情况下，数据会分散到多个数据库实例上，在管理上难免会有一些不便；或者使用非 Java 语言的开发者，需要 ShardingSphere 所提供的能力…… 以上这些情况，正是 ShardingSphere-Proxy 力所能及之处。
 
@@ -28,7 +28,7 @@ ShardingSphere-Proxy，可以让用户像使用原生数据库一样使用 Apach
 
 日常工作中，大家使用 ShardingSphere-JDBC 进行分库分表的场景是比较多的。假设你有一张用户表，通过用户 ID 以 Hash 的方式进行了水平分库，那么此时客户端连接数据库的方式是这样：
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce1.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce1.png)
 
 我们举例工作中真实存在的几个场景：
 
@@ -45,7 +45,7 @@ ShardingSphere-Proxy 隐藏了后端实际数据库，对于客户端来说就�
 1. 逻辑表：相同结构的水平拆分数据库（表）的逻辑名称，是 SQL 中表的逻辑标识。 例：用户数据根据主键尾数拆分为 10 张表，分别是 `t_user_0` 到 `t_user_9`，他们的逻辑表名为 `t_user`。
 2. 真实表：在水平拆分的数据库中真实存在的物理表。 即上个示例中的 `t_user_0` 到 `t_user_9`。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce2.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce2.png)
 
 ### 2. JDBC 和 Proxy 的区别
 
@@ -72,9 +72,9 @@ ShardingSphere-Proxy 既然对应用无侵入，而且两者复用同一内核�
 
 当然，ShardingSphere-JDBC 和 ShardingSphere-Proxy 可以进行混合部署，ShardingSphere-JDBC 适用于 Java 开发的高性能的轻量级 OLTP 应用，ShardingSphere-Proxy 适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce3.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce3.png)
 
-## 三、如何开始
+## 如何开始
 
 ShardingSphere-Proxy 的启动方式有三种：二进制包、Docker、Helm，并分为单机部署和集群部署。文章以单机二进制包的方式启动。
 
@@ -168,11 +168,11 @@ props: # 公用配置
 [INFO ] xxx-xx-xx xx:xx:xx.xxx [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy Standalone mode started successfully
 ```
 
-## 四、场景实践
+## 场景实践
 
 本章节从实战场景的前提出发，通过 ShardingSphere-Proxy 完成上述需求。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce4.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce4.png)
 
 ### 1. 初始化数据库表
 
@@ -360,18 +360,18 @@ mysql> select * from t_user where create_date > '2022-00-00 00:00:00';
 
 第三个问题同上。
 
-## 五、最后总结
+## 最后总结
 
 文章通过图文并茂的方式帮助大家过了一遍 ShardingSphere-Proxy 的基本概念，引申出了分库分表后产生的实际运维场景，并演示了如何通过 ShardingSphere-Proxy 解决相关问题。
 
 相信大家看完对 ShardingSphere-Proxy 有了更深入的认识。首先要明白 ShardingSphere-Proxy 的定位是协助开发运维的产品，掌握 ShardingSphere-JDBC 和 ShardingSphere-Proxy 有哪些区别，以及理解两者的优缺点和实现方式是怎么样的。在这个基础上去阅读两者的源码，也就更容易理解了。
 
-## 六、巨人的肩膀
+## 巨人的肩膀
 
 [Apache ShardingSphere 官网](https://shardingsphere.apache.org/)
 
 [打造基于 PostgreSQL/openGauss 的分布式数据库解决方案](https://community.sphere-ex.com/t/topic/497)
 
-## 七、作者简介
+## 作者简介
 
 龙台，Apache ShardingSphere Contributor，Github 2.1k star hippo4j 作者，Github ID：longtai-cn。
