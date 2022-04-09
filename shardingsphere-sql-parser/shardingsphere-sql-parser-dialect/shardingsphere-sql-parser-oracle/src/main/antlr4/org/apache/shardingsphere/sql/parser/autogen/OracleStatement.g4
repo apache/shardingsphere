@@ -69,5 +69,6 @@ execute
     | createFunction
     | dropDatabaseLink
     | dropDirectory
+    | dropView
     ) SEMI_?
     ;

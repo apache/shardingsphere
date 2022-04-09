@@ -43,6 +43,10 @@ dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
     ;
 
+dropView
+    : DROP VIEW (schemaName DOT_)? viewName (CASCADE CONSTRAINTS)?
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;
