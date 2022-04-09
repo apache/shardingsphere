@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -29,18 +28,18 @@ import java.sql.SQLException;
 /**
  * QueryHeaderBuilder for openGauss.
  */
-public final class OpenGaussQueryHeaderBuilder extends QueryHeaderBuilder {
+public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     
     private final PostgreSQLQueryHeaderBuilder delegated = new PostgreSQLQueryHeaderBuilder();
     
     @Override
-    public String getDatabaseType() {
-        return new OpenGaussDatabaseType().getName();
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
+                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+        return delegated.build(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
     }
     
     @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel, 
-                                  final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        return delegated.doBuild(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+    public String getType() {
+        return "openGauss";
     }
 }

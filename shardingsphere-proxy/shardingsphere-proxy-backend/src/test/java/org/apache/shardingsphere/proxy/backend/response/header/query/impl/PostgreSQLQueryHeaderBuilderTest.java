@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.junit.Test;
 
@@ -39,15 +38,10 @@ public final class PostgreSQLQueryHeaderBuilderTest {
         when(queryResultMetaData.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
         when(queryResultMetaData.getColumnTypeName(columnIndex)).thenReturn("int");
         when(queryResultMetaData.getColumnLength(columnIndex)).thenReturn(11);
-        QueryHeader actual = new PostgreSQLQueryHeaderBuilder().doBuild(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
+        QueryHeader actual = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
         assertThat(actual.getColumnLabel(), is("label"));
         assertThat(actual.getColumnType(), is(Types.INTEGER));
         assertThat(actual.getColumnTypeName(), is("int"));
         assertThat(actual.getColumnLength(), is(11));
-    }
-    
-    @Test
-    public void assertDatabaseType() {
-        assertThat(new PostgreSQLQueryHeaderBuilder().getDatabaseType(), is(new PostgreSQLDatabaseType().getName()));
     }
 }

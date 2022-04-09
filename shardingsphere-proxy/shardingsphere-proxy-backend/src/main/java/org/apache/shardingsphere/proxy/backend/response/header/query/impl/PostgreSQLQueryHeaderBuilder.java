@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -29,7 +28,7 @@ import java.sql.SQLException;
 /**
  * QueryHeaderBuilder for PostgreSQL.
  */
-public final class PostgreSQLQueryHeaderBuilder extends QueryHeaderBuilder {
+public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     private static final int UNUSED_INT_FIELD = 0;
     
@@ -38,17 +37,17 @@ public final class PostgreSQLQueryHeaderBuilder extends QueryHeaderBuilder {
     private static final boolean UNUSED_BOOLEAN_FIELD = false;
     
     @Override
-    public String getDatabaseType() {
-        return new PostgreSQLDatabaseType().getName();
-    }
-    
-    @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
-                                  final int columnIndex, final LazyInitializer<DataNodeContainedRule> unused) throws SQLException {
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
+                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> unused) throws SQLException {
         int columnType = queryResultMetaData.getColumnType(columnIndex);
         String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
         int columnLength = queryResultMetaData.getColumnLength(columnIndex);
         return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
                 UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD);
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }
