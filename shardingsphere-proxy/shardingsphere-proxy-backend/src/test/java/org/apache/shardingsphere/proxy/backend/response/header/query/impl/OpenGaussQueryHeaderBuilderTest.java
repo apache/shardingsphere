@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.junit.Test;
 
 import java.sql.SQLException;
