@@ -43,14 +43,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public final class IndexMetaDataUtilTest {
 
+    private static final String TABLE = "table";
+
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-
-    private static final String TABLE = "table";
 
     @Test
     public void assertGetLogicIndexNameWithIndexNameSuffix() {
@@ -79,8 +78,8 @@ public final class IndexMetaDataUtilTest {
 
     @Test
     public void assertGetGeneratedLogicIndexName() {
-        ColumnSegment columnSegment =  new ColumnSegment(0, 0, new IdentifierValue("user_id"));
-        ColumnSegment columnSegment1 =  new ColumnSegment(0, 0, new IdentifierValue("user_name"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        ColumnSegment columnSegment1 = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
         assertThat(IndexMetaDataUtil.getGeneratedLogicIndexName(Lists.newArrayList(columnSegment, columnSegment1)), is("user_id_user_name_idx"));
     }
 
@@ -90,7 +89,7 @@ public final class IndexMetaDataUtilTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
         ShardingSphereSchema schema = buildSchema();
-        IndexSegment indexSegment1 =  new IndexSegment(0, 0, new IdentifierValue(TABLE));
+        IndexSegment indexSegment1 = new IndexSegment(0, 0, new IdentifierValue(TABLE));
         assertThat(IndexMetaDataUtil.getTableNamesFromMetaData(schema, Lists.newArrayList(indexSegment1)), is(Collections.singletonList(TABLE)));
     }
 
@@ -99,5 +98,4 @@ public final class IndexMetaDataUtilTest {
         TableMetaData tableMetaData = new TableMetaData(TABLE, Collections.emptyList(), Collections.singletonList(indexMetaData), Collections.emptyList());
         return new ShardingSphereSchema(ImmutableMap.of(TABLE, tableMetaData));
     }
-
 }
