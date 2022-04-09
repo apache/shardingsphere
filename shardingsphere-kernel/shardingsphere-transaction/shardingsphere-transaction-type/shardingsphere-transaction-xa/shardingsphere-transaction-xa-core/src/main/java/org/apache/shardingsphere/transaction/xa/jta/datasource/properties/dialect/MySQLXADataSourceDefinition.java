@@ -28,12 +28,12 @@ import java.util.Collection;
 public final class MySQLXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
+    public Collection<String> getXADriverClassName() {
+        return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
     }
     
     @Override
-    public Collection<String> getXADriverClassName() {
-        return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
+    public String getType() {
+        return "MySQL";
     }
 }

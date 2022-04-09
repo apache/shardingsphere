@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -29,15 +31,10 @@ import static org.junit.Assert.assertTrue;
 
 public final class H2RepositoryTest {
     
-    private H2Repository h2Repository = new H2Repository();
+    private final H2Repository h2Repository = new H2Repository();
     
-    @Test
-    public void assertMethod() {
-        assertThat(h2Repository.getType(), is("H2"));
-        h2Repository.close();
-    }
-    
-    private void assertSetProperty() {
+    @Before
+    public void setUp() {
         Properties props = new Properties();
         props.setProperty("jdbc_url", "jdbc:h2:~/h2_repository");
         props.setProperty("user", "sa");
@@ -45,10 +42,14 @@ public final class H2RepositoryTest {
         props.setProperty("driver_class", "org.h2.Driver");
         h2Repository.setProps(props);
     }
+    
+    @Test
+    public void assertType() {
+        assertThat(h2Repository.getType(), is("H2"));
+    }
 
     @Test
     public void assertPersistAndGet() {
-        assertSetProperty();
         h2Repository.persist("/testPath/test1", "test1_content");
         assertThat(h2Repository.get("/testPath/test1"), is("test1_content"));
         h2Repository.persist("/testPath/test1", "modify_content");
@@ -57,7 +58,6 @@ public final class H2RepositoryTest {
 
     @Test
     public void assertPersistAndGetChildrenKeys() {
-        assertSetProperty();
         h2Repository.persist("/testPath/test1", "test1_content");
         h2Repository.persist("/testPath/test2", "test2_content");
         List<String> childrenKeys = h2Repository.getChildrenKeys("/testPath");
@@ -67,8 +67,12 @@ public final class H2RepositoryTest {
 
     @Test
     public void assertDelete() {
-        assertSetProperty();
         h2Repository.delete("/testPath");
         assertTrue(StringUtils.isBlank(h2Repository.get("/testPath")));
+    }
+    
+    @After
+    public void stop() {
+        h2Repository.close();
     }
 }

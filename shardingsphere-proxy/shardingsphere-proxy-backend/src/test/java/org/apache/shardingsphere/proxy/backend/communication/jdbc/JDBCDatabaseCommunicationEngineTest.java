@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,17 +118,15 @@ public final class JDBCDatabaseCommunicationEngineTest {
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
         ShardingSphereMetaData metaData = createMetaData();
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(new MySQLQueryHeaderBuilder().build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
+        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(
+                new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
         Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-            
-            private MemoryQueryResultRow memoryQueryResultRow;
             
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
                                                       final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
-                memoryQueryResultRow = mock(MemoryQueryResultRow.class);
-                return Collections.singletonList(memoryQueryResultRow);
+                return Collections.singletonList(mock(MemoryQueryResultRow.class));
             }
         });
         Exception ex = null;
@@ -171,7 +169,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         return new LazyInitializer<DataNodeContainedRule>() {
             
             @Override
-            protected DataNodeContainedRule initialize() throws ConcurrentException {
+            protected DataNodeContainedRule initialize() {
                 return (DataNodeContainedRule) metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().orElse(null);
             }
         };

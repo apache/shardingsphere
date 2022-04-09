@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,7 +28,7 @@ import java.util.Map;
 /**
  * Dialect table meta data loader.
  */
-public interface DialectTableMetaDataLoader extends DatabaseTypeAwareSPI, SingletonSPI {
+public interface DialectTableMetaDataLoader extends StatelessTypedSPI {
     
     /**
      * Load table meta data.

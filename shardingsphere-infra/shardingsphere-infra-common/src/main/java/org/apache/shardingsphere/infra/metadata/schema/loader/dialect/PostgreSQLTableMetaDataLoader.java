@@ -166,7 +166,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "PostgreSQL";
     }
 }

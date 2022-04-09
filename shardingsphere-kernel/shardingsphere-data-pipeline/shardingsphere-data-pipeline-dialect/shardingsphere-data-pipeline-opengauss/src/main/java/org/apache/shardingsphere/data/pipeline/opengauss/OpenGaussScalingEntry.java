@@ -48,7 +48,7 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "openGauss";
     }
 }

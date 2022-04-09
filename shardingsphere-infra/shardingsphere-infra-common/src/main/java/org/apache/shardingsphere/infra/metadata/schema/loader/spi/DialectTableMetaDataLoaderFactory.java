@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
+package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.reactive.spi.ReactiveDatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
+import java.util.Optional;
 
 /**
- * Reactive database protocol frontend engine factory.
+ * Dialect table meta data loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReactiveDatabaseProtocolFrontendEngineFactory {
+public final class DialectTableMetaDataLoaderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ReactiveDatabaseProtocolFrontendEngine.class);
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
     
     /**
-     * Create new instance of reactive database protocol frontend engine.
-     *
+     * Create new instance of dialect table meta data loader.
+     * 
      * @param databaseType database type
-     * @return new instance of reactive database protocol frontend engine
+     * @return new instance of dialect table meta data loader
      */
-    public static ReactiveDatabaseProtocolFrontendEngine newInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(ReactiveDatabaseProtocolFrontendEngine.class, databaseType, new Properties());
+    public static Optional<DialectTableMetaDataLoader> newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectTableMetaDataLoader.class, databaseType.getName());
     }
 }
