@@ -44,7 +44,7 @@ alterDefaultShardingStrategy
     ;
 
 dropDefaultShardingStrategy
-    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY 
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY existsClause?
     ;
 
 createShardingKeyGenerator
@@ -72,23 +72,23 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)*
     ;
 
 dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+    : DROP SHARDING BINDING TABLE RULES existsClause? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
+    : DROP SHARDING BROADCAST TABLE RULES existsClause? (tableName (COMMA tableName)*)?
     ;
 
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP SHARDING ALGORITHM existsClause? algorithmName (COMMA algorithmName)*
     ;
 
 dropShardingKeyGenerator
-    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    : DROP SHARDING KEY GENERATOR existsClause? keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
 shardingTableRuleDefinition
@@ -213,4 +213,8 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
+    ;
+
+existClause
+    : IF EXISTS
     ;

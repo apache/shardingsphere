@@ -20,7 +20,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 > Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
-2. 解压缩 proxy 发布包，修改配置文件`conf/config-sharding.yaml`。详情请参见[proxy启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
+2. 解压缩 proxy 发布包，修改配置文件 `conf/config-sharding.yaml`。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
 3. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
@@ -42,7 +42,7 @@ mode:
   overwrite: false
 ```
 
-4. 开启 scaling
+4. 开启 scaling。
 
 方法1：修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
@@ -131,7 +131,7 @@ DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 ```
 
-详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
+详情请参见 [RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 5. 启动 ShardingSphere-Proxy：
 

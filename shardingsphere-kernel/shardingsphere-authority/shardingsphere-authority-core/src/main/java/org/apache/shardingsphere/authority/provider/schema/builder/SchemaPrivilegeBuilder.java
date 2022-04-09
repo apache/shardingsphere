@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -92,7 +93,7 @@ public final class SchemaPrivilegeBuilder {
     
     private static Set<String> getUserSchemas(final ShardingSphereUser shardingSphereUser, final Map<ShardingSphereUser, Set<String>> userSchemaMappings) {
         Set<String> result = new HashSet<>();
-        for (Map.Entry<ShardingSphereUser, Set<String>> entry : userSchemaMappings.entrySet()) {
+        for (Entry<ShardingSphereUser, Set<String>> entry : userSchemaMappings.entrySet()) {
             boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), shardingSphereUser);
             if (isAnyOtherHost || shardingSphereUser == entry.getKey() || shardingSphereUser.equals(entry.getKey())) {
                 result.addAll(entry.getValue());

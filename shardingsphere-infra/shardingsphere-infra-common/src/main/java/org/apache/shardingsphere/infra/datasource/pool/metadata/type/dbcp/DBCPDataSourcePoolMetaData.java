@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
-import lombok.Getter;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -29,17 +28,16 @@ import java.util.Map;
 /**
  * DBCP data source pool meta data.
  */
-@Getter
-public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
-    private final Collection<String> transientFieldNames = new LinkedList<>();
+    private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
     
-    public DBCPDataSourcePoolMetaData() {
+    static {
         buildTransientFieldNames();
     }
     
-    private void buildTransientFieldNames() {
-        transientFieldNames.add("closed");
+    private static void buildTransientFieldNames() {
+        TRANSIENT_FIELD_NAMES.add("closed");
     }
     
     @Override
@@ -58,12 +56,22 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<
     }
     
     @Override
-    public DBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new DBCPDataSourceJdbcUrlMetaData();
+    public Collection<String> getTransientFieldNames() {
+        return TRANSIENT_FIELD_NAMES;
+    }
+    
+    @Override
+    public DBCPDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new DBCPDataSourcePoolFieldMetaData();
     }
     
     @Override
     public String getType() {
-        return BasicDataSource.class.getName();
+        return "org.apache.commons.dbcp2.BasicDataSource";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
     }
 }

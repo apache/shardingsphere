@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertInit() {
-        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
         assertThat(jobProgress.getSourceDatabaseType(), is("H2"));
         assertThat(jobProgress.getInventoryTaskProgressMap().size(), is(4));
@@ -54,7 +54,7 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetIncrementalPosition() {
-        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         Optional<IngestPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
         assertTrue(positionOptional.isPresent());
         assertTrue(positionOptional.get() instanceof PlaceholderPosition);
@@ -62,10 +62,46 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetInventoryPosition() {
-        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(jobProgress.getInventoryPosition("ds0").size(), is(2));
         assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_2") instanceof PrimaryKeyPosition);
+    }
+    
+    @Test
+    public void assertGetInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(50));
+    }
+    
+    @Test
+    public void assertGetNoFinishedInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(0));
+    }
+    
+    @Test
+    public void assertGetAllFinishedInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(100));
+    }
+    
+    @Test
+    public void assertGetIncrementalLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
+    }
+    
+    @Test
+    public void assertGetIncrementalDataLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(50L));
+    }
+    
+    @Test
+    public void assertGetNoIncrementalDataLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
     }
 }

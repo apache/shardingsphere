@@ -16,7 +16,7 @@ rules:
           assistedQueryColumn (?):  # Assisted query column name
           plainColumn (?): # Plain column name
           encryptorName: # Encrypt algorithm name
-    queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
+      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
     
   # Encrypt algorithm configuration
   encryptors:

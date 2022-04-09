@@ -41,21 +41,21 @@ import static org.junit.Assert.fail;
 @Slf4j
 public final class OpenTelemetryPluginIT extends BasePluginIT {
     
-    private static final String SS_ROOTINVOKE = "/shardingsphere/rootinvoke/";
+    private static final String ROOT_INVOKE = "/shardingsphere/rootinvoke/";
     
-    private static final String SS_PARSESQL = "/shardingsphere/parsesql/";
+    private static final String PARSE_SQL = "/shardingsphere/parsesql/";
     
-    private static final String SS_EXECUTESQL = "/shardingsphere/executesql/";
+    private static final String EXECUTE_SQL = "/shardingsphere/executesql/";
 
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+        Properties props = IntegrationTestEnvironment.getInstance().getProps();
         try {
-            Thread.sleep(Long.parseLong(engineEnvProps.getProperty("opentelemetry.waitMs", "60000")));
+            Thread.sleep(Long.parseLong(props.getProperty("opentelemetry.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
-        String url = engineEnvProps.getProperty("opentelemetry.zipkin.url") + engineEnvProps.getProperty("opentelemetry.servername");
+        String url = props.getProperty("opentelemetry.zipkin.url") + props.getProperty("opentelemetry.servername");
         String response = null;
         try {
             response = OkHttpUtils.getInstance().get(url);
@@ -84,13 +84,13 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
             assertNotNull(localEndPoint.get("ipv4"));
             Map<String, String> tags = tracingResult.getTags();
             switch (name) {
-                case SS_ROOTINVOKE:
+                case ROOT_INVOKE:
                     assertRootInvokeTags(tags);
                     break;
-                case SS_PARSESQL:
+                case PARSE_SQL:
                     assertParseSqlTags(tags);
                     break;
-                case SS_EXECUTESQL:
+                case EXECUTE_SQL:
                     assertExecuteSqlTags(tags);
                     break;
                 default:

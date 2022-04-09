@@ -57,13 +57,16 @@ public final class ExecutionContextBuilder {
     }
     
     private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
-        String dataSourceName = metaData.getResource().getDataSourcesMetaData().getAllInstanceDataSourceNames().iterator().next();
-        return Collections.singletonList(new ExecutionUnit(dataSourceName,
+        Collection<String> instanceDataSourceNames = metaData.getResource().getDataSourcesMetaData().getAllInstanceDataSourceNames();
+        if (instanceDataSourceNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(new ExecutionUnit(instanceDataSourceNames.iterator().next(), 
                 new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getGenericTableRouteMappers(sqlStatementContext))));
     }
     
     private static Collection<ExecutionUnit> build(final RouteSQLRewriteResult sqlRewriteResult) {
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        Collection<ExecutionUnit> result = new LinkedHashSet<>(sqlRewriteResult.getSqlRewriteUnits().size(), 1f);
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteResult.getSqlRewriteUnits().entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(),
                     new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters(), getRouteTableRouteMappers(entry.getKey().getTableMappers()))));

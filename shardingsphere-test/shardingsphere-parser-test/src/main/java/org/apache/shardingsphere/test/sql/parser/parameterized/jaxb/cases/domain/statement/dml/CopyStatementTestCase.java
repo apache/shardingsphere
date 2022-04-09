@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
  * Copy statement test case.
  */
-@Getter
-@Setter
 public final class CopyStatementTestCase extends SQLParserTestCase {
 }

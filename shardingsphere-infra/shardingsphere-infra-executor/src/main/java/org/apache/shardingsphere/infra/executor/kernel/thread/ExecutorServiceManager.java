@@ -44,7 +44,6 @@ public final class ExecutorServiceManager {
     
     public ExecutorServiceManager(final int executorSize, final String nameFormat) {
         executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
-        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {

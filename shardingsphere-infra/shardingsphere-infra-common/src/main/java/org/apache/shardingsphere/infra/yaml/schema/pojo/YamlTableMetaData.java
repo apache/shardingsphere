@@ -35,4 +35,6 @@ public final class YamlTableMetaData implements YamlConfiguration {
     private Map<String, YamlColumnMetaData> columns;
     
     private Map<String, YamlIndexMetaData> indexes;
+    
+    private Map<String, YamlConstraintMetaData> constraints;
 }

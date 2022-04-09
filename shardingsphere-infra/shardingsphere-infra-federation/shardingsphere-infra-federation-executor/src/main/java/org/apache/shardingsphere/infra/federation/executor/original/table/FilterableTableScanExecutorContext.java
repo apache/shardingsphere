@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 @Getter
 public final class FilterableTableScanExecutorContext {
     
+    private final String databaseName;
+    
     private final String schemaName;
     
     private final ConfigurationProperties props;

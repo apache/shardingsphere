@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * unlabel instance statement test case.
+ * Unlabel instance statement test case.
  */
 @Getter
 @Setter

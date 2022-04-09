@@ -24,9 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Updatable scaling RAL backend handler factory.
@@ -43,7 +41,7 @@ public final class UpdatableScalingRALBackendHandler implements TextProtocolBack
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ResponseHeader execute() {
-        RALUpdater updater = TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        RALUpdater updater = TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName());
         updater.executeUpdate(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }

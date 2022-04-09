@@ -104,15 +104,15 @@ algorithmProperty:
 keyGeneratorDefinition: 
     keyGeneratorName (algorithmDefinition)
 ```
-- `RESOURCES` 需使用 RDL 管理的数据源资源
-- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
-- 重复的 `tableName` 将无法被创建
-- `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除
-- 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`
-- `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)
-- `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) 
-- 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`
+- `RESOURCES` 需使用 RDL 管理的数据源资源；
+- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)；
+- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)；
+- 重复的 `tableName` 将无法被创建；
+- `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除；
+- 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
+- `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)；
+- `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) ；
+- 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`。
 
 ### Sharding Binding Table Rule
 
@@ -180,9 +180,9 @@ batchSize:
 intValue:
     INT
 ```
-- `ENABLE` 用于设置启用哪个弹性伸缩配置
-- `DISABLE` 将禁用当前正在使用的配置
-- 创建 schema 中第一个弹性伸缩配置时，默认启用
+- `ENABLE` 用于设置启用哪个弹性伸缩配置；
+- `DISABLE` 将禁用当前正在使用的配置；
+- 创建 schema 中第一个弹性伸缩配置时，默认启用。
 
 ## 示例
 

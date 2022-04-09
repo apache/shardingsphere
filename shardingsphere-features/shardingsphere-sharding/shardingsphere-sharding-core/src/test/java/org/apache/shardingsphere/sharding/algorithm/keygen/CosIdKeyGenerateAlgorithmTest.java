@@ -20,7 +20,7 @@ import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.util.MockIdGenerator;
-import org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithm.ID_NAME_KEY, idName);
+        properties.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         keyGenerateAlgorithm.setProps(properties);
         keyGenerateAlgorithm.init();
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
@@ -74,7 +74,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         DefaultIdGeneratorProvider.INSTANCE.set(idName, MockIdGenerator.INSTANCE);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithm.ID_NAME_KEY, idName);
+        properties.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         properties.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, "true");
         keyGenerateAlgorithm.setProps(properties);
         keyGenerateAlgorithm.init();

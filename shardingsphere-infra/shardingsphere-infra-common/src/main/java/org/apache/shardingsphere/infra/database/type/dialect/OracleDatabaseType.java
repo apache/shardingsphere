@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -70,5 +71,15 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

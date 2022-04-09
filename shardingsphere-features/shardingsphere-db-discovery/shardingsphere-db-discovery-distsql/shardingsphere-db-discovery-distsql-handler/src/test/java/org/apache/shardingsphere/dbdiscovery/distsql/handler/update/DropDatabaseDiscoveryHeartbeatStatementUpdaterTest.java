@@ -21,7 +21,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
@@ -36,7 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,7 +61,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "heartbeat_name", "");
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), 
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration),
                 Collections.singletonMap("heartbeat_name", null), Collections.emptyMap()));
     }
     
@@ -69,19 +70,30 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration);
         assertFalse(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DropDatabaseDiscoveryHeartbeatStatement dropDatabaseDiscoveryHeartbeatStatement = createSQLStatementWithIfExists();
+        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryHeartbeatStatement, databaseDiscoveryRuleConfiguration);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryHeartbeatStatement, databaseDiscoveryRuleConfiguration));
+        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
+        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().size(), is(2));
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatement() {
         return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name"));
     }
     
+    private DropDatabaseDiscoveryHeartbeatStatement createSQLStatementWithIfExists() {
+        return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name_0"), true);
+    }
+    
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
-        discoveryTypes.put("type_name", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()));
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = new HashMap<>(1, 1);
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = new HashMap<>(2, 1);
         discoveryHeartbeat.put("heartbeat_name", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
         discoveryHeartbeat.put("other", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
-        return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), discoveryHeartbeat, discoveryTypes);
+        return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), discoveryHeartbeat, Collections.emptyMap());
     }
 }

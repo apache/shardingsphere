@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class DropReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
+public final class DropReadwriteSplittingRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "rule")
     private List<String> rules = new LinkedList<>();

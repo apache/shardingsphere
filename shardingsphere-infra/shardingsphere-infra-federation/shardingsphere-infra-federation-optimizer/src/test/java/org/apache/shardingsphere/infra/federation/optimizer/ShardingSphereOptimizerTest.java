@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -94,9 +95,11 @@ public final class ShardingSphereOptimizerTest {
             + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
             + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
     
+    private final String databaseName = "sharding_db";
+    
     private final String schemaName = "federate_jdbc";
     
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+    private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
     
     private ShardingSphereOptimizer optimizer;
     
@@ -105,8 +108,8 @@ public final class ShardingSphereOptimizerTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, mockResource(), null, new ShardingSphereSchema(tableMetaDataMap));
-        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseName, mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, metaData), createGlobalRuleMetaData()));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
@@ -126,21 +129,20 @@ public final class ShardingSphereOptimizerTest {
         ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.VARCHAR, true, false, false);
         ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, false, false, false);
         ColumnMetaData statusColumn = new ColumnMetaData("status", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList());
+        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     private TableMetaData createUserInfoTableMetaData() {
         ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, true, false, false);
         ColumnMetaData informationColumn = new ColumnMetaData("information", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList());
+        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
     public void assertSelectCrossJoinCondition() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN_CONDITION, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = 
               "EnumerableCalc(expr#0..6=[{inputs}],order_id=[$t3],user_id=[$t4],user_id0=[$t0])"
             + "  EnumerableHashJoin(condition=[=($2,$6)],joinType=[inner])"
@@ -153,10 +155,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereAllFields() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
             + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]])";
@@ -165,10 +166,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereSingleField() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
             + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]],projects=[[0]])";
@@ -177,10 +177,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableCalc(expr#0..6=[{inputs}],order_id=[$t3],user_id=[$t4],user_id0=[$t0])"
             + "  EnumerableMergeJoin(condition=[=($2,$6)],joinType=[inner])"
@@ -195,10 +194,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossJoin() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = 
               "EnumerableCalc(expr#0..6=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t4])"
             + "  EnumerableMergeJoin(condition=[=($3,$6)],joinType=[inner])"
@@ -213,10 +211,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectJoinWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE_CONDITION, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t3])"
             + "  EnumerableInterpreterBindableJoin(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)],joinType=[inner])"
@@ -227,10 +224,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryFrom() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
             + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[>(CAST($0):INTEGER,1)]])";
@@ -239,10 +235,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereExist() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_EXIST, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = 
               "EnumerableCalc(expr#0..3=[{inputs}],expr#4=[ISNOTNULL($t3)],proj#0..1=[{exprs}],$condition=[$t4])"
             + "  EnumerableCorrelate(correlation=[$cor0],joinType=[left],requiredColumns=[{1}]) "
@@ -255,10 +250,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereIn() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_IN, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = 
                   "EnumerableInterpreter"
                 + "  BindableProject(order_id=[$0],user_id=[$1])"
@@ -270,10 +264,9 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereBetween() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-            DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_BETWEEN, false);
-        String actual = optimizer.optimize(schemaName, sqlStatement).explain();
+        String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = 
               "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}])"
             + "  EnumerableInterpreterBindableFilter(condition=[AND(>=($1,$3),<=($1,$4))])"

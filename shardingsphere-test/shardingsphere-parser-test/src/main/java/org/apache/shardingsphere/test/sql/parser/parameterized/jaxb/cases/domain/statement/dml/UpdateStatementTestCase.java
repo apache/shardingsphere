@@ -43,10 +43,10 @@ public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;
-
+    
     @XmlElement(name = "order-by")
     private ExpectedOrderByClause orderByClause;
-
+    
     @XmlElement(name = "limit")
     private ExpectedLimitClause limitClause;
 }

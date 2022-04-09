@@ -21,6 +21,7 @@ import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +30,7 @@ import java.time.LocalDateTime;
  */
 public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
     
-    public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
+    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
     
     public static final String EPOCH_KEY = "epoch";
     

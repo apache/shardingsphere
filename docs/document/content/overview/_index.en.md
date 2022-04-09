@@ -58,7 +58,7 @@ As the cornerstone of enterprises, the relational database has a huge market sha
 
 ### ShardingSphere-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra services at the Java JDBC layer.
 With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.

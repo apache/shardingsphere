@@ -529,7 +529,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) capacityUnit?
     ;
 
 maxsizeClause
@@ -2014,6 +2014,10 @@ createDatabaseLink
     : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
+    
+dropDatabaseLink
+    : DROP PUBLIC? DATABASE LINK dbLink 
+    ;
 
 connectToClause
     : CONNECT TO (CURRENT_USER | username IDENTIFIED BY password dbLinkAuthentication?)
@@ -2063,4 +2067,115 @@ alterDimensionDropClause
 
 dropDimension
     : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
+    ;
+
+createFunction
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
+    ;
+
+plsqlFunctionSource
+    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
+    sharingClause? (invokerRightsClause
+    | accessibleByClause 
+    | defaultCollationoOptionClause
+    | deterministicClause
+    | parallelEnableClause
+    | resultCacheClause
+    | aggregateClause
+    | pipelinedClause
+    | sqlMacroClause)* 
+    (IS | AS) callSpec
+    ;
+
+parameterDeclaration
+    : parameterName (IN? dataType ((COLON_ EQ_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
+    ;
+
+sharingClause
+    : SHARING EQ_ (METADATA | NONE)
+    ;
+
+invokerRightsClause
+    : AUTHID (CURRENT_USER DEFINER)
+    ;
+
+accessibleByClause
+    : ACCESSIBLE BY LP_ accessor (COMMA_ accessor)* RP_
+    ;
+
+accessor
+    : unitKind unitName
+    ;
+
+unitKind
+    : FUNCTION | PROCEDURE | PACKAGE | TRIGGER | TYPE
+    ;
+
+defaultCollationoOptionClause
+    : DEFAULT COLLATION collationOption
+    ;
+
+collationOption
+    : USING_NLS_COMP
+    ;
+
+deterministicClause
+    : DETERMINISTIC
+    ;
+
+parallelEnableClause
+    : PARALLEL_ENABLE (LP_ PARTITION argument BY (ANY 
+    | (HASH | RANGE) LP_ columnName (COMMA_ columnName)* RP_ streamingCluase?
+    | VALUE LP_ columnName RP_) RP_)?
+    ;
+
+streamingCluase
+    : (ORDER | CLUSTER) expr BY LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+resultCacheClause
+    : RESULT_CACHE (RELIES_ON LP_ (dataSource (COMMA_ dataSource)*)? RP_)?
+    ;
+
+aggregateClause
+    : AGGREGATE USING implementationType
+    ;
+
+pipelinedClause
+    : PIPELINED ((USING implementationType)? 
+    | (ROW | TABLE) POLYMORPHIC (USING implementationPackage)?)
+    ;
+
+sqlMacroClause
+    : SQL_MARCO
+    ;
+
+callSpec
+    : javaDeclaration | cDeclaration
+    ;
+
+javaDeclaration
+    : LANGUAGE JAVA NAME STRING_
+    ;
+
+cDeclaration
+    : (LANGUAGE SINGLE_C | EXTERNAL) 
+    ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?) 
+    (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
+    (WITH CONTEXT)?
+    (PARAMETERS LP_ externalParameter (COMMA_ externalParameter)* RP_)?
+    ;
+
+externalParameter
+    : (CONTEXT 
+    | SELF (TDO | property)?
+    | (parameterName | RETURN) property? (BY REFERENCE)? externalDatatype)
+    ;
+
+property
+    : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
     ;

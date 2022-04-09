@@ -35,7 +35,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 | data-source-names | 标签  | 数据源名称，多个数据源以逗号分隔                                                         |
 | rule-refs         | 标签  | 规则名称，多个规则以逗号分隔                                                            |
 | mode (?)          | 标签  | 运行模式配置                                                                         |
-| props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/configuration/props) |
+| props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/props) |
 
 ### 配置示例
 

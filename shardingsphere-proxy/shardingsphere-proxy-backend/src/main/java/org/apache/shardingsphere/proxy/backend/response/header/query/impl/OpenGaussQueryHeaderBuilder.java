@@ -39,8 +39,8 @@ public final class OpenGaussQueryHeaderBuilder extends QueryHeaderBuilder {
     }
     
     @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex,
-                                  final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        return delegated.doBuild(queryResultMetaData, metaData, columnName, columnIndex, dataNodeContainedRule);
+    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel, 
+                                  final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+        return delegated.doBuild(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
     }
 }

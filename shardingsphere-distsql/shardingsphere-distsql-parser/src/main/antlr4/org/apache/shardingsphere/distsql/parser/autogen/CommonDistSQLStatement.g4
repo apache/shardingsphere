@@ -24,6 +24,7 @@ execute
     | alterResource
     | dropResource
     | showResources
+    | showUnusedResources
     | setVariable
     | showVariable
     | showAllVariables
@@ -34,7 +35,12 @@ execute
     | showInstanceMode
     | labelInstance
     | unlabelInstance
+    | countInstanceRules
+    | alterInstance
     | countSchemaRules
+    | prepareDistSQL
+    | applyDistSQL
+    | discardDistSQL
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule
@@ -53,5 +59,6 @@ execute
     | alterTrafficRule
     | exportSchemaConfiguration
     | showRulesUsedResource
+    | importSchemaConfiguration
     ) SEMI?
     ;

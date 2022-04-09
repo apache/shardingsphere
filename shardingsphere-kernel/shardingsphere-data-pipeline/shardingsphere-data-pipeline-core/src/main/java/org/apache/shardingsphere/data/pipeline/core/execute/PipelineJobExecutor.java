@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -43,9 +41,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d+)/config");
-    
-    private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
     
     @Override
     protected void doStart() {
@@ -60,8 +56,6 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
             if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
-                log.info("remove and stop {}", jobConfigPOJO.getJobName());
-                EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
                 ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
@@ -72,8 +66,11 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    if (PipelineSimpleLock.getInstance().tryLock(jobConfig.getWorkflowConfig().getSchemaName(), 1000)) {
+                    String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+                    if (PipelineSimpleLock.getInstance().tryLock(schemaName, 1000)) {
                         execute(jobConfigPOJO);
+                    } else {
+                        log.info("tryLock failed, schemaName={}", schemaName);
                     }
                     break;
                 default:
@@ -97,7 +94,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        if (EXECUTING_JOBS.add(jobConfigPOJO.getJobName())) {
+        if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
             log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
             new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
         } else {

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,12 +46,14 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,7 +74,6 @@ public class ShardingTableMetaDataBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -282,9 +282,10 @@ public class ShardingTableMetaDataBuilderTest {
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         assertThat(actual.keySet().iterator().next(), is("t_order"));
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("ID"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("PWD_CIPHER"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("PWD_PLAIN"));
+        List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("ID"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("PWD_CIPHER"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("PWD_PLAIN"));
         assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER_T_ORDER_0"));
     }
     
@@ -330,9 +331,10 @@ public class ShardingTableMetaDataBuilderTest {
     
     private void assertResult(final Map<String, TableMetaData> actual) {
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("pwd_plain"));
         IndexMetaData indexMetaData = tableMetaData.getIndexes().values().iterator().next();
         assertThat(indexMetaData.getName(), is("order_index_t_order_t_order_0"));
     }
@@ -348,9 +350,10 @@ public class ShardingTableMetaDataBuilderTest {
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -364,9 +367,10 @@ public class ShardingTableMetaDataBuilderTest {
         ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
         Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -388,6 +392,6 @@ public class ShardingTableMetaDataBuilderTest {
                 new ColumnMetaData("pwd_cipher", 2, false, false, true),
                 new ColumnMetaData("pwd_plain", 2, false, false, true),
                 new ColumnMetaData("product_id", 2, false, false, true));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
 }

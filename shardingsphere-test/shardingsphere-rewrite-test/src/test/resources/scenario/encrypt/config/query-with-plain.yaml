@@ -17,11 +17,7 @@
 
 dataSources:
   encrypt_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:ds_encrypt;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !ENCRYPT
@@ -39,11 +35,15 @@ rules:
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
+        amount_new:
+          cipherColumn: amount_new_cipher
+          encryptorName: normal
     t_account_bak:
       columns:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
+          plainColumn: plain_certificate_number
           encryptorName: assisted_query
         password:
           cipherColumn: cipher_password
@@ -64,6 +64,7 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
+          plainColumn: plain_certificate_number
           encryptorName: assisted_query
         password:
           cipherColumn: cipher_password
@@ -77,9 +78,9 @@ rules:
       queryWithCipherColumn: true
     t_order:
       columns:
-        content:
-          cipherColumn: cipher_content
-          plainColumn: plain_content
+        CONTENT:
+          cipherColumn: CIPHER_CONTENT
+          plainColumn: PLAIN_CONTENT
           encryptorName: schema_based
   encryptors:
     normal:

@@ -83,7 +83,7 @@ public final class XAShardingSphereTransactionManagerTest {
         assertFalse(xaTransactionManager.isInTransaction());
         xaTransactionManager.begin();
         assertTrue(xaTransactionManager.isInTransaction());
-        xaTransactionManager.commit();
+        xaTransactionManager.commit(false);
     }
     
     @Test
@@ -95,7 +95,7 @@ public final class XAShardingSphereTransactionManagerTest {
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
-        xaTransactionManager.commit();
+        xaTransactionManager.commit(false);
     }
     
     @Test
@@ -107,7 +107,7 @@ public final class XAShardingSphereTransactionManagerTest {
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
-        xaTransactionManager.commit();
+        xaTransactionManager.commit(false);
         assertTrue(transactions.get().isEmpty());
     }
     
@@ -115,7 +115,7 @@ public final class XAShardingSphereTransactionManagerTest {
         xaTransactionManager.begin();
         xaTransactionManager.getConnection("ds1");
         assertThat(transactions.get().size(), is(2));
-        xaTransactionManager.commit();
+        xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));
     }
     
@@ -130,7 +130,7 @@ public final class XAShardingSphereTransactionManagerTest {
     public void assertCommit() {
         xaTransactionManager.begin();
         assertTrue(xaTransactionManager.isInTransaction());
-        xaTransactionManager.commit();
+        xaTransactionManager.commit(false);
         assertFalse(xaTransactionManager.isInTransaction());
     }
     

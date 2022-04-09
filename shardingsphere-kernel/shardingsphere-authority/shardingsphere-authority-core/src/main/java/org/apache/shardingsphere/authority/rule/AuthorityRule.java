@@ -69,7 +69,7 @@ public final class AuthorityRule implements GlobalRule {
     public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
         provider.refresh(metaDataMap, users);
     }
-
+    
     /**
      * Find user.
      * @param grantee grantee user

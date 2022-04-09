@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -46,7 +47,7 @@ public abstract class QueryHeaderBuilder implements DatabaseTypeAwareSPI {
      */
     public final QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData,
                                    final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        return doBuild(queryResultMetaData, metaData, queryResultMetaData.getColumnName(columnIndex), columnIndex, dataNodeContainedRule);
+        return doBuild(queryResultMetaData, metaData, queryResultMetaData.getColumnName(columnIndex), queryResultMetaData.getColumnLabel(columnIndex), columnIndex, dataNodeContainedRule);
     }
     
     /**
@@ -62,7 +63,13 @@ public abstract class QueryHeaderBuilder implements DatabaseTypeAwareSPI {
      */
     public final QueryHeader build(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData,
                                     final ShardingSphereMetaData metaData, final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        return doBuild(queryResultMetaData, metaData, getColumnName(projectionsContext, queryResultMetaData, columnIndex), columnIndex, dataNodeContainedRule);
+        return doBuild(queryResultMetaData, metaData, getColumnName(projectionsContext, queryResultMetaData, columnIndex), 
+                getColumnLabel(projectionsContext, queryResultMetaData, columnIndex), columnIndex, dataNodeContainedRule);
+    }
+    
+    private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
+        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
+        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : queryResultMetaData.getColumnLabel(columnIndex);
     }
     
     private String getColumnName(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {
@@ -70,6 +77,6 @@ public abstract class QueryHeaderBuilder implements DatabaseTypeAwareSPI {
         return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResultMetaData.getColumnName(columnIndex);
     }
     
-    protected abstract QueryHeader doBuild(QueryResultMetaData queryResultMetaData, ShardingSphereMetaData metaData, String columnName, int columnIndex,
+    protected abstract QueryHeader doBuild(QueryResultMetaData queryResultMetaData, ShardingSphereMetaData metaData, String columnName, String columnLabel, int columnIndex,
                                            LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException;
 }

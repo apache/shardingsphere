@@ -23,14 +23,17 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query.CheckScalingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query.ShowScalingCheckAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query.ShowScalingListStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query.ShowScalingStatusStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingStatusStatementTestCase;
 
 /**
  * Queryable RAL statement assert.
@@ -53,6 +56,8 @@ public final class QueryableScalingRALStatementAssert {
             ShowScalingCheckAlgorithmsStatementAssert.assertIs(assertContext, (ShowScalingCheckAlgorithmsStatement) actual, (ShowScalingCheckAlgorithmsStatementTestCase) expected);
         } else if (actual instanceof CheckScalingStatement) {
             CheckScalingStatementAssert.assertIs(assertContext, (CheckScalingStatement) actual, (CheckScalingStatementTestCase) expected);
+        } else if (actual instanceof ShowScalingStatusStatement) {
+            ShowScalingStatusStatementAssert.assertIs(assertContext, (ShowScalingStatusStatement) actual, (ShowScalingStatusStatementTestCase) expected);
         }
     }
 }

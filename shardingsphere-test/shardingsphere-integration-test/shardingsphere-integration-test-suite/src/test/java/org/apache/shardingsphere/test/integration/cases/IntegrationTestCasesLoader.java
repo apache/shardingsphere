@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -70,8 +71,7 @@ public final class IntegrationTestCasesLoader {
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
-        URL url = IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/");
-        Preconditions.checkNotNull(url, "Can not find integration test cases.");
+        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/"));
         return loadIntegrationTestCaseContexts(url, sqlCommandType);
     }
     

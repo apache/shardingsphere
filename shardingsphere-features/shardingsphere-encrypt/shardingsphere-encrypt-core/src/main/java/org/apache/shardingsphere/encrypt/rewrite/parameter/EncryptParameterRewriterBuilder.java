@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -54,14 +52,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final boolean containsEncryptTable;
-    
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        if (!containsEncryptTable) {
-            return Collections.emptyList();
-        }
         Collection<ParameterRewriter> result = new LinkedList<>();
         addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
         addParameterRewriter(result, new EncryptPredicateParameterRewriter());
@@ -70,25 +63,26 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
+    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter<?> toBeAddedParameterRewriter) {
+        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
+            setUpParameterRewriter(toBeAddedParameterRewriter);
+            parameterRewriters.add(toBeAddedParameterRewriter);
+        }
+    }
+    
     @SuppressWarnings("rawtypes")
-    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
+    private void setUpParameterRewriter(final ParameterRewriter toBeAddedParameterRewriter) {
         if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
         }
         if (toBeAddedParameterRewriter instanceof EncryptRuleAware) {
             ((EncryptRuleAware) toBeAddedParameterRewriter).setEncryptRule(encryptRule);
         }
-        if (toBeAddedParameterRewriter instanceof QueryWithCipherColumnAware) {
-            ((QueryWithCipherColumnAware) toBeAddedParameterRewriter).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
-        }
         if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);
         }
         if (toBeAddedParameterRewriter instanceof SchemaNameAware) {
             ((SchemaNameAware) toBeAddedParameterRewriter).setSchemaName(schemaName);
-        }
-        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
-            parameterRewriters.add(toBeAddedParameterRewriter);
         }
     }
 }

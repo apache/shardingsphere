@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 public final class ResetStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "option")
-    private List<ExpectedResetOptionSegment> options = new LinkedList<>();
+    private final List<ExpectedResetOptionSegment> options = new LinkedList<>();
 }

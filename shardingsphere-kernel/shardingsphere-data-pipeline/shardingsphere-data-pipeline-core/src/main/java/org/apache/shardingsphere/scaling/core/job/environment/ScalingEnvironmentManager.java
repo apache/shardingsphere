@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.environment;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -32,6 +33,7 @@ import java.util.Collection;
 /**
  * Scaling environment manager.
  */
+@Slf4j
 public final class ScalingEnvironmentManager {
     
     private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
@@ -45,6 +47,7 @@ public final class ScalingEnvironmentManager {
     // TODO seems it should be removed, dangerous to use
     public void cleanupTargetTables(final JobConfiguration jobConfig) throws SQLException {
         Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
+        log.info("cleanupTargetTables, tables={}", tables);
         YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
         try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
              Connection connection = dataSource.getConnection()) {

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.integration.scaling.test.mysql;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.DataImporter;
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,9 +41,8 @@ public final class ScalingIT {
     
     private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
     
-    @SneakyThrows(InterruptedException.class)
     @Test
-    public void assertScaling() {
+    public void assertScaling() throws InterruptedException {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
             DataImporter dataImporter = new DataImporter();
@@ -60,24 +56,19 @@ public final class ScalingIT {
         }
     }
     
-    @SneakyThrows(IOException.class)
     private String assertStartJob() {
         String configuration = ITEnvironmentContext.INSTANCE.getScalingConfiguration();
-        Pair<Boolean, String> response = ScalingUtil.getInstance().startJob(configuration);
-        assertTrue(response.getLeft());
-        return response.getRight();
+        return ScalingUtil.startJob(configuration);
     }
     
     private void waitInventoryFinish(final String jobId) {
-        new ExecuteUtil(() -> "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getInstance().getJobStatus(jobId)), (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
+        new ExecuteUtil(() -> "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getJobStatus(jobId)), (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
     }
     
-    @SneakyThrows(IOException.class)
     private void assertJobCheck(final String jobId) {
-        Map<String, Pair<Boolean, Boolean>> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
-        for (Entry<String, Pair<Boolean, Boolean>> entry : checkResult.entrySet()) {
-            assertTrue(entry.getValue().getLeft());
-            assertTrue(entry.getValue().getRight());
+        Map<String, Boolean> checkResult = ScalingUtil.getJobCheckResult(jobId);
+        for (Entry<String, Boolean> entry : checkResult.entrySet()) {
+            assertTrue(entry.getValue());
         }
     }
 }

@@ -41,6 +41,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrationTestCaseAssertion {
     
+    @XmlAttribute(name = "expected-data-source-name")
+    private String expectedDataSourceName;
+    
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     

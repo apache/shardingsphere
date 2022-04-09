@@ -136,8 +136,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                         sql = skipCreateTableExtendSet(sql);
                         return sql;
                     case ALTER_TABLE:
-                        sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
-                        return sql;
+                        return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                     default:
                         return "";
                 }

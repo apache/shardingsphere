@@ -17,23 +17,27 @@
 
 package org.apache.shardingsphere.agent.metrics.api.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
- * Metrics Utils.
+ * Metrics Util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsUtil {
     
     /**
-     * check if it has proxy class.
+     * Check whether class existed.
      *
-     * @param className the class name
-     * @return true if it has proxy class by the class name, otherwise false
+     * @param className class name
+     * @return class existed or not
      */
-    public static boolean classNotExist(final String className) {
+    public static boolean isClassExisted(final String className) {
         try {
             Class.forName(className);
         } catch (ClassNotFoundException ex) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

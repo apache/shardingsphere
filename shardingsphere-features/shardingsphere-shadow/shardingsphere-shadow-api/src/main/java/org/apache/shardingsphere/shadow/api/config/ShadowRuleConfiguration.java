@@ -21,19 +21,23 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration.
  */
 @Getter
 @Setter
-public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
+public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
     
     private String defaultShadowAlgorithmName;
     
@@ -42,4 +46,9 @@ public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, D
     private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    
+    @Override
+    public Collection<String> getRequiredResource() {
+        return dataSources.values().stream().map(each -> Arrays.asList(each.getSourceDataSourceName(), each.getShadowDataSourceName())).flatMap(Collection::stream).collect(Collectors.toSet());
+    }
 }

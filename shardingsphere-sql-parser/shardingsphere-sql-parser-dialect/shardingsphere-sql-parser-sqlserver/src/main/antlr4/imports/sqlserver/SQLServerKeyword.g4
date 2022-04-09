@@ -1790,3 +1790,55 @@ UNCOMMITTED
 COMMITTED
     : C O M M I T T E D
     ;
+
+STOPLIST
+    : S T O P L I S T
+    ;
+
+SEARCH
+    : S E A R C H
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+LIST
+    : L I S T
+    ;
+
+SEND
+    : S E N D
+    ;
+
+MEMBER
+    : M E M B E R
+    ;
+
+HASHED
+    : H A S H E D
+    ;
+
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
+CHECK_EXPIRATION
+    : C H E C K UL_ E X P I R A T I O N
+    ;
+
+CHECK_POLICY
+    : C H E C K UL_ P O L I C Y
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;

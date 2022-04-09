@@ -62,7 +62,7 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     public void assertExecuteWithExist() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("uuid", buildProps()));
+        shardingRuleConfiguration.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("uuid", new Properties()));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
     }
     
@@ -77,7 +77,7 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getKeyGenerators().put("snowflake_key_generator", new ShardingSphereAlgorithmConfiguration("INVALID_ALGORITHM", buildProps()));
+        shardingRuleConfiguration.getKeyGenerators().put("snowflake_key_generator", new ShardingSphereAlgorithmConfiguration("INVALID_ALGORITHM", new Properties()));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
     }
     
@@ -86,12 +86,6 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     }
     
     private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment() {
-        return new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", buildProps()));
-    }
-    
-    private Properties buildProps() {
-        Properties result = new Properties();
-        result.put("worker-id", "123");
-        return result;
+        return new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
     }
 }

@@ -39,13 +39,13 @@ public final class ExplainStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;
-
+    
     @XmlElement(name = "insert")
     private InsertStatementTestCase insertClause;
-
+    
     @XmlElement(name = "update")
     private UpdateStatementTestCase updateClause;
-
+    
     @XmlElement(name = "delete")
     private DeleteStatementTestCase deleteClause;
     

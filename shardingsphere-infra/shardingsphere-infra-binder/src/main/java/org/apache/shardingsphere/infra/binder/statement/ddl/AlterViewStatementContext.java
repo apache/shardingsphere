@@ -48,6 +48,6 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext<A
             extractor.extractTablesFromSelect(select);
             tables.addAll(extractor.getRewriteTables());
         });
-        tablesContext = new TablesContext(tables);
+        tablesContext = new TablesContext(tables, getDatabaseType());
     }
 }

@@ -27,13 +27,17 @@
     </parent>
     <artifactId>shardingsphere-parser-core</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-
 </project>

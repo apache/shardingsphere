@@ -56,6 +56,8 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_CON_COUNT_ERROR(1040, "HY000", "Too many connections"),
     
+    ER_UNKNOWN_CHARACTER_SET(1115, "42000", "Unknown character set: '%s'"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");

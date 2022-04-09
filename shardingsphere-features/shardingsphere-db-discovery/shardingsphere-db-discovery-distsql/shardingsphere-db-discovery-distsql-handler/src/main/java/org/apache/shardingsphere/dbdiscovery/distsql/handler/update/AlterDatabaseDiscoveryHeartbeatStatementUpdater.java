@@ -57,7 +57,7 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
     }
     
     private void checkCurrentConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig != null, new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(currentRuleConfig != null, () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
     }
     
     private void checkNotExistHeartbeat(final String schemaName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
@@ -65,12 +65,12 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
         Collection<String> currentHeartbeats = currentRuleConfig.getDiscoveryHeartbeats().keySet();
         Collection<String> notExistHeartbeats = sqlStatement.getHeartbeats().stream().map(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName)
                 .filter(each -> !currentHeartbeats.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistHeartbeats.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName, notExistHeartbeats));
+        DistSQLException.predictionThrow(notExistHeartbeats.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, schemaName, notExistHeartbeats));
     }
     
     private void checkDuplicateHeartbeat(final String schemaName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement) throws DistSQLException {
         Collection<String> duplicateRuleNames = getToBeCreatedDuplicateRuleNames(sqlStatement);
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), new DuplicateRuleException(RULE_TYPE, schemaName, duplicateRuleNames));
+        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, schemaName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement) {

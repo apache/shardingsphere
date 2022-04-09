@@ -28,7 +28,7 @@
     <artifactId>shardingsphere-integration-agent-test-plugins</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>shardingsphere-integration-agent-test-metrics</module>
         <module>shardingsphere-integration-agent-test-common</module>
@@ -36,6 +36,4 @@
         <module>shardingsphere-integration-agent-test-jaeger</module>
         <module>shardingsphere-integration-agent-test-opentelemetry</module>
     </modules>
-
 </project>
-

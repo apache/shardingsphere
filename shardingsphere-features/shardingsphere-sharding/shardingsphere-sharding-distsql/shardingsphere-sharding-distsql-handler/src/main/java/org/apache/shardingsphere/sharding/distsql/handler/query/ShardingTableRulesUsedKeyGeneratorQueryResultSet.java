@@ -58,7 +58,7 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
         });
         shardingRuleConfiguration.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(schemaName, "autoTable", each.getLogicTable()));
+                result.add(Arrays.asList(schemaName, "auto_table", each.getLogicTable()));
             }
         });
     }

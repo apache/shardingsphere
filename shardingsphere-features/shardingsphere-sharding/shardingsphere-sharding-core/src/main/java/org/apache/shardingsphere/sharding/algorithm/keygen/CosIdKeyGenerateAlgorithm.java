@@ -20,7 +20,7 @@ import lombok.Setter;
 import me.ahoo.cosid.CosId;
 import me.ahoo.cosid.provider.IdGeneratorProvider;
 import me.ahoo.cosid.provider.LazyIdGenerator;
-import org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
@@ -44,7 +44,7 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
     public void init() {
-        lazyIdGenerator = new LazyIdGenerator(getProps().getProperty(CosIdAlgorithm.ID_NAME_KEY, IdGeneratorProvider.SHARE));
+        lazyIdGenerator = new LazyIdGenerator(getProps().getProperty(CosIdAlgorithmConstants.ID_NAME_KEY, IdGeneratorProvider.SHARE));
         String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
         asString = Boolean.parseBoolean(asStringStr);
         lazyIdGenerator.tryGet(false);

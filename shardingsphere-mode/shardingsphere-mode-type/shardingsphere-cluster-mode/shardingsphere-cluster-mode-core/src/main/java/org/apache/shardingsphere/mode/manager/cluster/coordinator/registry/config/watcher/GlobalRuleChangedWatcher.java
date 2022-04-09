@@ -49,7 +49,7 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalR
     
     @Override
     public Optional<GlobalRuleConfigurationsChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event)));
+        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
     }
     
     @SuppressWarnings("unchecked")

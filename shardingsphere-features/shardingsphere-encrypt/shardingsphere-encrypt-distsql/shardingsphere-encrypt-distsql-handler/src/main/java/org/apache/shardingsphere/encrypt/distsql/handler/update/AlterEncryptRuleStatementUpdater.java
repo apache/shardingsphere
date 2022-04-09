@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -84,7 +84,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     private void checkDataType(final AlterEncryptRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream()
                 .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(invalidRules.isEmpty(), new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
+        DistSQLException.predictionThrow(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {

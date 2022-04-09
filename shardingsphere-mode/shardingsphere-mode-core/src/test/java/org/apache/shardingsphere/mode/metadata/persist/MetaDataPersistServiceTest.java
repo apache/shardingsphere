@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -52,6 +53,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -152,5 +154,14 @@ public final class MetaDataPersistServiceTest {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    }
+    
+    @Test
+    public void assertGetEffectiveDataSources() {
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
+        Map<String, SchemaConfiguration> schemaConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs));
+        Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", schemaConfigs);
+        assertTrue(resultEffectiveDataSources.isEmpty());
     }
 }

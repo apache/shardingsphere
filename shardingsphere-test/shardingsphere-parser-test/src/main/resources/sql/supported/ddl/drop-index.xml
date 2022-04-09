@@ -29,6 +29,7 @@
     <sql-case id="drop_index_with_quota" value="DROP INDEX &quot;order_index&quot; ON &quot;t_order&quot;" db-types="Oracle" />
     <sql-case id="drop_index_with_double_quota" value="DROP INDEX &quot;order_index&quot;" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_concurrently" value="DROP INDEX CONCURRENTLY order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_index_with_schema" value="DROP INDEX public.order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_with_bracket" value="DROP INDEX [order_index] ON [t_order]" db-types="SQLServer" />
     <sql-case id="drop_index_if_exists_on_table" value="DROP INDEX IF EXISTS order_index ON t_order" db-types="SQLServer" />
     <sql-case id="drop_index_with_online_force_invalidation" value="DROP INDEX order_index ONLINE FORCE DEFERRED INVALIDATION" db-types="Oracle" />

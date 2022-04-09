@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-standalone-mode-repository-file</module>
+        <module>shardingsphere-standalone-mode-repository-h2</module>
     </modules>
 </project>

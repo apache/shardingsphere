@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.preprocess;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RuleDefinitionAlterPreprocessor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface RuleDefinitionAlterPreprocessor<T extends SQLStatement, R extends RuleConfiguration> extends StatelessTypedSPI {
     
     /**
      * Preprocess current rule configuration.

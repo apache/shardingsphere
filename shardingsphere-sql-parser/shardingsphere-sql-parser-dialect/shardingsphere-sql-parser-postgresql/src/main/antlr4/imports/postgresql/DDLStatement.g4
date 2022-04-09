@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DDLStatement;
+parser grammar DDLStatement;
 
 import DMLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 createTable
     : CREATE createTableSpecification TABLE notExistClause? tableName
@@ -128,6 +130,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropGroup
+    : DROP GROUP existClause? name (COMMA_ name)*
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -149,7 +155,7 @@ alterTable
     ;
 
 alterIndex
-    : ALTER INDEX (existClause? | ALL IN TABLESPACE) indexName alterIndexDefinitionClause
+    : ALTER INDEX (existClause? | ALL IN TABLESPACE) qualifiedName alterIndexDefinitionClause
     ;
 
 dropTable
@@ -161,7 +167,7 @@ dropTableOpt
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause existClause? indexNames dropIndexOpt?
+    : DROP INDEX concurrentlyClause existClause? qualifiedNameList dropIndexOpt?
     ;
 
 dropIndexOpt
@@ -1718,7 +1724,7 @@ dropServer
     ;
 
 dropStatistics
-    : DROP STATISTICS existClause? qualifiedNameList
+    : DROP STATISTICS existClause? qualifiedNameList dropBehavior?
     ;
 
 dropSubscription

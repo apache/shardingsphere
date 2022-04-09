@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +40,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -122,10 +124,12 @@ public final class SingleTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource),
                 rules, props));
         assertFalse(actual.isEmpty());
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(3));
+        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
     }
     
     @Test
@@ -135,14 +139,17 @@ public final class SingleTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource),
                 rules, props));
         assertFalse(actual.isEmpty());
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(3));
+        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("tbl");
-        assertThat(tableMetaData.getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(tableMetaData.getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(tableMetaData.getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
         assertThat(tableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
         assertThat(tableMetaData.getIndexes().get("idx_name"), is(new IndexMetaData("idx_name")));

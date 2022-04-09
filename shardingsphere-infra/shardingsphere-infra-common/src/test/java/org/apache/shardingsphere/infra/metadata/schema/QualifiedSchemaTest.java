@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,16 +25,10 @@ import static org.junit.Assert.assertThat;
 public final class QualifiedSchemaTest {
     
     @Test
-    public void assertNewQualifiedSchemaWithDataSourceNameOnly() {
-        QualifiedSchema actual = new QualifiedSchema("test_ds");
-        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.getDataSourceName(), is("test_ds"));
-    }
-    
-    @Test
     public void assertNewQualifiedSchemaWithSchemaNameAndDataSourceName() {
-        QualifiedSchema actual = new QualifiedSchema("test_schema.test_ds");
+        QualifiedSchema actual = new QualifiedSchema("test_schema.test_group_name.test_ds");
         assertThat(actual.getSchemaName(), is("test_schema"));
+        assertThat(actual.getGroupName(), is("test_group_name"));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
 }

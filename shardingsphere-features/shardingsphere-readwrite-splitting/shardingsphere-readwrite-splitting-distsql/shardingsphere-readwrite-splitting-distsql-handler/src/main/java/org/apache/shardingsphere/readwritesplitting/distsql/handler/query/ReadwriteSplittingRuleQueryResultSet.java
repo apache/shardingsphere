@@ -60,15 +60,16 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     private void buildExportableMap(final ShardingSphereMetaData metaData) {
         Optional<ExportableRule> exportableRule = getExportableRule(metaData);
         exportableRule.ifPresent(op -> {
-            Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE));
+            Map<String, Object> exportable = exportableRule.get()
+                    .export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE));
             exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap());
-            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap());
+            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap());
         });
     }
     
     private Optional<ExportableRule> getExportableRule(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE))).findAny();
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE))).findAny();
     }
     
     private Collection<Collection<Object>> buildData(final ReadwriteSplittingRuleConfiguration configuration) {
@@ -85,10 +86,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Map<String, String> exportDataSources = DYNAMIC.equalsIgnoreCase(dataSourceConfiguration.getType()) ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceConfiguration.getLoadBalancerName()));
         return Arrays.asList(name,
-                dataSourceConfiguration.getAutoAwareDataSourceName().orElse(null),
+                dataSourceConfiguration.getAutoAwareDataSourceName().orElse(""),
                 getWriteDataSourceName(dataSourceConfiguration, exportDataSources),
                 getReadDataSourceNames(dataSourceConfiguration, exportDataSources),
-                loadBalancer.map(TypedSPIConfiguration::getType).orElse(null),
+                loadBalancer.map(TypedSPIConfiguration::getType).orElse(""),
                 loadBalancer.map(each -> PropertiesConverter.convert(each.getProps())).orElse(""));
     }
     

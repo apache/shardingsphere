@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.ahoo.cosid.sharding.IntervalStep;
 import me.ahoo.cosid.sharding.IntervalTimeline;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -75,12 +76,12 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
         if (getProps().containsKey(ZONE_ID_KEY)) {
             zoneId = ZoneId.of(getRequiredValue(ZONE_ID_KEY));
         }
-        String logicNamePrefix = getRequiredValue(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
+        String logicNamePrefix = getRequiredValue(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
         LocalDateTime effectiveLower = LocalDateTime.parse(getRequiredValue(DATE_TIME_LOWER_KEY), DEFAULT_DATE_TIME_FORMATTER);
         LocalDateTime effectiveUpper = LocalDateTime.parse(getRequiredValue(DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
         DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(SHARDING_SUFFIX_FORMAT_KEY));
         ChronoUnit stepUnit = ChronoUnit.valueOf(getRequiredValue(INTERVAL_UNIT_KEY));
-        int stepAmount = Integer.parseInt(getProps().getProperty(INTERVAL_AMOUNT_KEY, "1"));
+        int stepAmount = Integer.parseInt(getProps().getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
         intervalTimeline = new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
     }
     
@@ -91,13 +92,13 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {
         LocalDateTime shardingTime = convertShardingValue(shardingValue.getValue());
-        return this.intervalTimeline.sharding(shardingTime);
+        return intervalTimeline.sharding(shardingTime);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<T> shardingValue) {
         Range<LocalDateTime> shardingRangeTime = convertRangeShardingValue(shardingValue.getValueRange());
-        return this.intervalTimeline.sharding(shardingRangeTime);
+        return intervalTimeline.sharding(shardingRangeTime);
     }
     
     /**

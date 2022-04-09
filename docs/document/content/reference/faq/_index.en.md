@@ -391,3 +391,30 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	... 
 ```
 From the exception stack, the `AbstractAlgorithmProvidedBeanRegistry.registerBean` method calls `PropertyUtil.containPropertyPrefix (environment, prefix)` , and `PropertyUtil.containPropertyPrefix (environment, prefix)` determines that the configuration of the specified prefix does not exist, while the method uses Binder in an unsatisfied property name (such as camelcase or underscore) causing property settings does not to take effect.
+
+## [ShardingSphere-JDBC] The tableName and columnName configured in yaml or properties leading incorrect result when loading Oracle metadata？
+
+Answer：
+
+Note that, in Oracle's metadata, the tableName and columnName is default UPPERCASE, while double-quoted such as `CREATE TABLE "TableName"("Id" number)` the tableName and columnName is the actual content double-quoted, refer to the following SQL for the reality in metadata:
+```
+SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
+```
+
+The ShardingSphere uses the `OracleTableMetaDataLoader` to load the metadata, keep the tableName and columnName in the yaml or properties consistent with the metadata.
+
+The ShardingSphere assembled the SQL using the following code:
+```
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+        StringBuilder stringBuilder = new StringBuilder(28);
+        if (versionContainsIdentityColumn(metaData)) {
+            stringBuilder.append(", IDENTITY_COLUMN");
+        }
+        if (versionContainsCollation(metaData)) {
+            stringBuilder.append(", COLLATION");
+        }
+        String collation = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+```

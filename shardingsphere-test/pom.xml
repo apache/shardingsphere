@@ -44,7 +44,7 @@
     <properties>
         <testcontainers.version>1.15.2</testcontainers.version>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>

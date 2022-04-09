@@ -23,9 +23,11 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,10 +42,13 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
+    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+    
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
+        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -60,5 +65,10 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     @Override
     public Collection<WhereSegment> getWhereSegments() {
         return whereSegments;
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return columnSegments;
     }
 }

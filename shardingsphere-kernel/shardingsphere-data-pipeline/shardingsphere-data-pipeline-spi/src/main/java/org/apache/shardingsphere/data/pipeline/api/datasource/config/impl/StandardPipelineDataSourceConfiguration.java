@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari.HikariDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -49,29 +49,29 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     private final DataSourceProperties dataSourceProperties;
     
     @Getter
-    private final HikariConfig hikariConfig;
+    private final YamlJdbcConfiguration jdbcConfig;
     
     @Getter
     private final DatabaseType databaseType;
     
     @SuppressWarnings("unchecked")
     public StandardPipelineDataSourceConfiguration(final String parameter) {
-        this(YamlEngine.unmarshal(parameter, Map.class), parameter);
+        this(parameter, YamlEngine.unmarshal(parameter, Map.class));
     }
     
     public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
-        this(yamlDataSourceConfig, YamlEngine.marshal(yamlDataSourceConfig));
+        this(YamlEngine.marshal(yamlDataSourceConfig), yamlDataSourceConfig);
     }
     
-    private StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlConfig, final String parameter) {
+    private StandardPipelineDataSourceConfiguration(final String parameter, final Map<String, Object> yamlConfig) {
         this.parameter = parameter;
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
-            yamlConfig.put(DATA_SOURCE_CLASS_NAME, HikariDataSource.class.getName());
+            yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
         }
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
-        hikariConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), HikariConfig.class, true);
-        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
+        jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcConfig.getJdbcUrl());
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -80,9 +80,10 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1);
-        result.put("jdbcUrl", jdbcUrl);
-        result.put("username", username);
-        result.put("password", password);
+        HikariDataSourcePoolFieldMetaData fieldMetaData = new HikariDataSourcePoolFieldMetaData();
+        result.put(fieldMetaData.getJdbcUrlFieldName(), jdbcUrl);
+        result.put(fieldMetaData.getUsernameFieldName(), username);
+        result.put(fieldMetaData.getPasswordFieldName(), password);
         return result;
     }
     
@@ -98,7 +99,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     @Override
     public void appendJDBCQueryProperties(final Properties queryProps) {
-        hikariConfig.setJdbcUrl(new JdbcUrlAppender().appendQueryProperties(hikariConfig.getJdbcUrl(), queryProps));
+        jdbcConfig.setJdbcUrl(new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getJdbcUrl(), queryProps));
     }
     
     // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)

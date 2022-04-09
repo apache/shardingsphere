@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
     
-    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1);
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     @Test
     public void assertStandardStrategyInit() {

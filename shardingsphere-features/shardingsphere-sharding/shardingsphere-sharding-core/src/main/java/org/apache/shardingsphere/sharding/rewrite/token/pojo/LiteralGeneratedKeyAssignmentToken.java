@@ -31,6 +31,6 @@ public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssign
     
     @Override
     protected String getRightValue() {
-        return value instanceof String ? String.format("'%s'", value) : value.toString();
+        return value instanceof String ? "'" + value + "'" : value.toString();
     }
 }

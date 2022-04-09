@@ -45,7 +45,7 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     
     @Override
     public String toString() {
-        Collection<String> items = Collections2.transform(columnNames, input -> String.format("%s = ?", input));
+        Collection<String> items = Collections2.transform(columnNames, input -> input + " = ?");
         return Joiner.on(", ").join(items);
     }
 }

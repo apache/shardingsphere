@@ -38,11 +38,6 @@ public final class ReactiveMySQLFrontendEngine implements ReactiveDatabaseProtoc
         (type, packet, connectionSession) -> ReactiveMySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, connectionSession);
     
     @Override
-    public String getDatabaseType() {
-        return delegated.getDatabaseType();
-    }
-    
-    @Override
     public FrontendContext getFrontendContext() {
         return delegated.getFrontendContext();
     }
@@ -68,7 +63,16 @@ public final class ReactiveMySQLFrontendEngine implements ReactiveDatabaseProtoc
     }
     
     @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
     public ReactiveCommandExecuteEngine getReactiveCommandExecuteEngine() {
         return reactiveCommandExecuteEngine;
+    }
+    
+    @Override
+    public String getType() {
+        return delegated.getType();
     }
 }

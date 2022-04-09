@@ -20,23 +20,36 @@ package org.apache.shardingsphere.sharding.schedule;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sharding rule altered detector.
  */
 public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_CONFIG_YAML_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
+    
+    private static final OnRuleAlteredActionConfigurationYamlSwapper RULE_ALTERED_ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     @Override
     public String getYamlRuleConfigClassName() {
@@ -49,17 +62,33 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     }
     
     @Override
-    public boolean isRuleAltered(final YamlRuleConfiguration sourceRuleConfig, final YamlRuleConfiguration targetRuleConfig) {
+    public List<String> findRuleAlteredLogicTables(final YamlRuleConfiguration sourceRuleConfig, final YamlRuleConfiguration targetRuleConfig,
+                                                         final Map<String, Map<String, Object>> sourceDataSources, final Map<String, Map<String, Object>> targetDataSources) {
         if ((null == sourceRuleConfig) ^ (null == targetRuleConfig)) {
-            return true;
+            YamlRuleConfiguration ruleConfig = null != sourceRuleConfig ? sourceRuleConfig : targetRuleConfig;
+            return extractAllLogicTables((YamlShardingRuleConfiguration) ruleConfig);
         }
         if (null == sourceRuleConfig) {
-            return false;
+            return Collections.emptyList();
         }
-        return !isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig);
+        if (isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig)) {
+            return Collections.emptyList();
+        }
+        ShardingRuleConfiguration sourceShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) sourceRuleConfig);
+        ShardingRuleConfiguration targetShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) targetRuleConfig);
+        ShardingRule sourceShardingRule = new ShardingRule(sourceShardingConfig, sourceDataSources.keySet());
+        ShardingRule targetShardingRule = new ShardingRule(targetShardingConfig, targetDataSources.keySet());
+        return extractRuleAlteredLogicTables(sourceShardingRule, targetShardingRule);
     }
     
-    // TODO more accurate comparison
+    private List<String> extractAllLogicTables(final YamlShardingRuleConfiguration shardingRuleConfig) {
+        List<String> result = new ArrayList<>();
+        result.addAll(shardingRuleConfig.getTables().keySet());
+        result.addAll(shardingRuleConfig.getAutoTables().keySet());
+        // TODO handle broadcastTables
+        return result;
+    }
+    
     private boolean isShardingRulesTheSame(final YamlShardingRuleConfiguration sourceShardingConfig, final YamlShardingRuleConfiguration targetShardingConfig) {
         for (Entry<String, YamlTableRuleConfiguration> entry : sourceShardingConfig.getTables().entrySet()) {
             entry.getValue().setLogicTable(null);
@@ -67,9 +96,50 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         for (Entry<String, YamlTableRuleConfiguration> entry : targetShardingConfig.getTables().entrySet()) {
             entry.getValue().setLogicTable(null);
         }
+        for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : sourceShardingConfig.getAutoTables().entrySet()) {
+            entry.getValue().setLogicTable(null);
+        }
+        for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : targetShardingConfig.getAutoTables().entrySet()) {
+            entry.getValue().setLogicTable(null);
+        }
         String sourceShardingConfigYaml = YamlEngine.marshal(sourceShardingConfig);
         String targetShardingConfigYaml = YamlEngine.marshal(targetShardingConfig);
         return sourceShardingConfigYaml.equals(targetShardingConfigYaml);
+    }
+    
+    private List<String> extractRuleAlteredLogicTables(final ShardingRule sourceShardingRule, final ShardingRule targetShardingRule) {
+        List<String> result = new ArrayList<>();
+        for (Entry<String, TableRule> entry : sourceShardingRule.getTableRules().entrySet()) {
+            TableRule targetTableRule = targetShardingRule.getTableRule(entry.getKey());
+            if (doesLogicTableNeedReSharding(entry.getValue(), targetTableRule)) {
+                result.add(entry.getKey());
+            }
+        }
+        // TODO handle broadcast tables
+        return result;
+    }
+    
+    private boolean doesLogicTableNeedReSharding(final TableRule sourceTableRule, final TableRule targetTableRule) {
+        List<DataNode> sourceActualDataNodes = sourceTableRule.getActualDataNodes();
+        List<DataNode> targetActualDataNodes = targetTableRule.getActualDataNodes();
+        if (sourceActualDataNodes.size() == targetActualDataNodes.size() && sourceActualDataNodes.equals(targetActualDataNodes)) {
+            return false;
+        }
+        if (hasCommonDataSourceNames(sourceActualDataNodes, targetActualDataNodes)) {
+            throw new RuntimeException("Scale on source dataSources is not supported for now");
+        }
+        return true;
+    }
+    
+    private boolean hasCommonDataSourceNames(final List<DataNode> sourceActualDataNodes, final List<DataNode> targetActualDataNodes) {
+        Set<String> sourceDataSourceNames = sourceActualDataNodes.stream().map(each -> each.getDataSourceName().toLowerCase()).collect(Collectors.toSet());
+        Set<String> targetDataSourceNames = targetActualDataNodes.stream().map(each -> each.getDataSourceName().toLowerCase()).collect(Collectors.toSet());
+        for (String each : sourceDataSourceNames) {
+            if (targetDataSourceNames.contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
@@ -85,7 +155,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         OnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
         if (null == result) {
             YamlOnRuleAlteredActionConfiguration yamlConfig = new YamlOnRuleAlteredActionConfiguration();
-            result = CONFIG_YAML_SWAPPER.swapToObject(yamlConfig);
+            result = RULE_ALTERED_ACTION_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig);
         }
         return Optional.of(result);
     }

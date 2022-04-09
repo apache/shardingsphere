@@ -6,7 +6,7 @@ chapter = true
 
 ## 提交者选举流程
 
-**1. 在 @private 邮件列表讨论并投票，投票由现有的PMC成员发起，邮件内容主要陈述提名者的活动和社区贡献。**
+**1. 在 @private 邮件列表讨论并投票，投票由现有的 PMC 成员发起，邮件内容主要陈述提名者的活动和社区贡献。**
 
 ```
 例如：
@@ -30,9 +30,9 @@ https://github.com/apache/shardingsphere/pull/6211
 
 [^ means these words are subject to change in different case]
 ```
-**2. 等待3*24h社区Committer投票。**
+**2. 等待 3*24h 社区 Committer 投票。**
 
-**3. PMC成员总结社区投票结果并发布邮件。**
+**3. PMC 成员总结社区投票结果并发布邮件。**
 
 ```
 例如：
@@ -51,7 +51,7 @@ I am glad to receive your votes, and the voting result is,
 Therefore, I will send the invitation to (提名者).
 ```
 
-**4. 如果投票通过，对提名者发布邀请函并抄送@private 邮件列表给发送邀请函。**
+**4. 如果投票通过，对提名者发布邀请函并抄送 @private 邮件列表给发送邀请函。**
 
 ```
 To: (提名者邮箱)
@@ -84,9 +84,9 @@ Best wishes,
 (PMC)
 
 ```
-**5. 准Committer回复邀请函内容，回复表达同意与感谢。**
+**5. 准 Committer 回复邀请函内容，回复表达同意与感谢。**
 
-**6. PMC做出回复。**
+**6. PMC 做出回复。**
 ```
 Hi (提名者),
 
@@ -116,15 +116,15 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-**7. 准Committer签署iCLA 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)。**
+**7. 准 Committer 签署 iCLA 具体步骤参考[签署 iCLA 指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)。**
 
-**8. 等待Secretary通知创建账户。**
+**8. 等待 Secretary 通知创建账户。**
 
-**9. PMC添加新Committer到[roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
+**9. PMC 添加新 Committer 到 [roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
 
-**10. 新Committer开通github权限，完成[Setup](https://gitbox.apache.org/setup/)内容。**
+**10. 新 Committer 开通 Github 权限，完成 [Setup](https://gitbox.apache.org/setup/)内容。**
 
-**11. PMC在社区宣布并欢迎新的Committer加入。**
+**11. PMC 在社区宣布并欢迎新的 Committer 加入。**
 
 ```
 To: dev@shardingsphere.apache.org
@@ -144,9 +144,9 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-**12. 新Commiter更新[提交者名单](/cn/team/)。**
+**12. 新 Committer 更新[提交者名单](/cn/team/)。**
 
-**13. 如果进行PMC选举，需额外增加一个步骤。由投票发起人发邮件到 board@apache.org。**
+**13. 如果进行 PMC 选举，需额外增加一个步骤。由投票发起人发邮件到 board@apache.org。**
 
 ```
 The Apache ShardingSphere project proposes to invite (提名者) to join the PMC.
@@ -154,7 +154,7 @@ The vote result is available here:
 (投票详情链接)
 
 Thank you，
-（发起人）
+(发起人)
 ```
 
 

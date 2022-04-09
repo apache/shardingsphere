@@ -35,12 +35,12 @@ public final class IntegrationTestEnvironment {
     
     private final boolean isEnvironmentPrepared;
     
-    private final Properties engineEnvProps;
+    private final Properties props;
     
     @SneakyThrows
     private IntegrationTestEnvironment() {
-        engineEnvProps = loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = engineEnvProps.getProperty("it.env.value").equals(engineEnvProps.getProperty("it.env.type"));
+        props = loadProperties("env/engine-env.properties");
+        isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
     }
     
     private Properties loadProperties(final String propsFileName) {
@@ -58,13 +58,13 @@ public final class IntegrationTestEnvironment {
      */
     public void waitForEnvironmentReady() {
         log.info("wait begin scaling environment");
-        new ExecuteUtil(this::isScalingReady, Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30")),
-                Long.parseLong(engineEnvProps.getProperty("scaling.waitMs", "1000"))).execute();
+        new ExecuteUtil(this::isScalingReady, Integer.parseInt(props.getProperty("scaling.retry", "30")),
+                Long.parseLong(props.getProperty("scaling.waitMs", "1000"))).execute();
     }
     
     private boolean isScalingReady() {
         try {
-            ScalingUtil.getInstance().getJobList();
+            ScalingUtil.getJobList();
         } catch (final IOException ignore) {
             return false;
         }

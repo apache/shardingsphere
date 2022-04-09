@@ -41,6 +41,9 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     
     @Override
     protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
+        if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
+            throw new UnsupportedOperationException("Only allowed in cluster mode");
+        }
         InstanceId operationInstanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort()));
         boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
         if (isDisable) {
@@ -69,7 +72,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         if (metaDataPersistService.isPresent()) {
             metaDataPersistService.get().getComputeNodePersistService().loadAllComputeNodeInstances().forEach(each -> {
-                if (each.getStatus().contains(StateType.CIRCUIT_BREAK.name()) && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
+                if (StateType.CIRCUIT_BREAK == each.getState().getCurrentState() && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
                     throw new UnsupportedOperationException(String.format("`%s` compute node has been disabled", operationInstanceId.getId()));
                 }
             });

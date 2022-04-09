@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedRenameDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -30,9 +29,8 @@ import java.util.List;
  * Rename table statement test case.
  */
 @Getter
-@Setter
 public final class RenameTableStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "rename")
     private final List<ExpectedRenameDefinition> renames = new LinkedList<>();
 }

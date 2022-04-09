@@ -3283,6 +3283,16 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_assignment_operator_and_keyword">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="@KEY := ''" start-index="7" stop-index="16" />
+            <expression-projection text="@num := 123" start-index="19" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="36" stop-index="42" />
+        </from>
+    </select>
+
     <select sql-case-id="select_from_dual" >
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7" />
@@ -4140,5 +4150,119 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_table" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="34">
+                <owner name="public" start-index="21" stop-index="26" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />             
+        </projections>
+        <where start-index="36" stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="42" stop-index="69">
+                    <left>
+                        <binary-operation-expression start-index="42" stop-index="52">
+                            <left>
+                                <column name="user_id" start-index="42" stop-index="48" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="52" stop-index="52" />
+                                <parameter-marker-expression parameter-index="0" start-index="52" stop-index="52" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="58" stop-index="69">
+                            <left>
+                                <column name="order_id" start-index="58" stop-index="65" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="69" stop-index="69" />
+                                <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_database_name_and_schema_name_in_table" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="46">
+                <owner name="public" start-index="33" stop-index="38">
+                    <owner name="sharding_db" start-index="21" stop-index="31" />
+                </owner>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="48" stop-index="81">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="81">
+                    <left>
+                        <binary-operation-expression start-index="54" stop-index="64">
+                            <left>
+                                <column name="user_id" start-index="54" stop-index="60" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="64" stop-index="64" />
+                                <parameter-marker-expression parameter-index="0" start-index="64" stop-index="64" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="70" stop-index="81">
+                            <left>
+                                <column name="order_id" start-index="70" stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="81" stop-index="81" />
+                                <parameter-marker-expression parameter-index="1" start-index="81" stop-index="81" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_underscore_charset" >
+        <projections start-index="7" stop-index="14">
+            <column-projection name="_code" start-index="7" stop-index="11"/>
+            <column-projection name="_a" start-index="13" stop-index="14"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_with_capacity_unit_charset">
+        <from>
+            <simple-table name="T_RATION_INFO" alias="T" start-index="22" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="15">
+            <column-projection name="USER_NO" start-index="7" stop-index="15">
+                <owner name="T" start-index="7" stop-index="7" />
+            </column-projection>>
+         </projections>
+    </select>
+
+    <select sql-case-id="select_with_character_charset">
+        <projections start-index="7" stop-index="24">
+    <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+            <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
+        </projections>
     </select>
 </sql-parser-test-cases>

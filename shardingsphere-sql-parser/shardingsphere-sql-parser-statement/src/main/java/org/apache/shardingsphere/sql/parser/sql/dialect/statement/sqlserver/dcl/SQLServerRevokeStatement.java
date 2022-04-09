@@ -17,13 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
+import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * SQLServer revoke statement.
  */
 @ToString
+@Getter
 public final class SQLServerRevokeStatement extends RevokeStatement implements SQLServerStatement {
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
 }

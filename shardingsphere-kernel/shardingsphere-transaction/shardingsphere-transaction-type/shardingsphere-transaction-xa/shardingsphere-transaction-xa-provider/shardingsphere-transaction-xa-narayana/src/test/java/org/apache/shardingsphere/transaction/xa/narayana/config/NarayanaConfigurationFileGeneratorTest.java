@@ -91,12 +91,12 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Test
     public void assertNarayanaConfigurationFileGenerator() throws JAXBException, FileNotFoundException {
-        narayanaConfigurationFileGenerator.generateFile(transactionRule, instanceContext);
+        narayanaConfigurationFileGenerator.generateFile(transactionRule.getProps(), instanceContext);
         JAXBContext jaxbContext = JAXBContext.newInstance(NarayanaConfiguration.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         InputStream inputStream = new FileInputStream(new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
         NarayanaConfiguration narayanaConfiguration = (NarayanaConfiguration) unmarshaller.unmarshal(inputStream);
-        assertThat(narayanaConfiguration.getEntries().size(), is(26));
+        assertThat(narayanaConfiguration.getEntries().size(), is(27));
         assertCommitOnePhase(narayanaConfiguration);
         assertTransactionSync(narayanaConfiguration);
         assertNodeIdentifier(narayanaConfiguration);

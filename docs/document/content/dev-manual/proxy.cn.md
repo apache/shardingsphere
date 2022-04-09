@@ -9,7 +9,7 @@ chapter = true
 
 | *SPI 名称*                       | *详细说明*                                      |
 | ------------------------------- | ---------------------------------------------- |
-| DatabaseProtocolFrontendEngine  | 用于ShardingSphere-Proxy解析与适配访问数据库的协议 |
+| DatabaseProtocolFrontendEngine  | 用于 ShardingSphere-Proxy 解析与适配访问数据库的协议 |
 
 | *已知实现类*              | *详细说明*                                      |
 | ------------------------ | ---------------------------------------------- |

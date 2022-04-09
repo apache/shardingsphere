@@ -122,3 +122,11 @@ CIPHER_DATA_TYPE
 ASSISTED_QUERY_DATA_TYPE
     : A S S I S T E D UL_ Q U E R Y UL_ D A T A UL_ T Y P E
     ;
+
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;

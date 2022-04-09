@@ -33,6 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
@@ -170,7 +171,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
             log.error("EtcdRepository releaseLock error, key:{}", key, ex);
         }
     }
-
+    
+    @Override
+    public void watchSessionConnection(final InstanceContext instanceContext) {
+    }
+    
     @Override
     public void close() {
         client.close();

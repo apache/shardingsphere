@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -53,6 +54,16 @@ public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public Optional<String> getDataSourceClassName() {
-        return Optional.of(SQLServerDataSource.class.getName());
+        return Optional.of("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

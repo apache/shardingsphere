@@ -45,6 +45,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
+    private static final Pattern PATTERN_CREATE_INDEX = Pattern.compile("CREATE\\s+(UNIQUE\\s+)?INDEX+\\s", Pattern.CASE_INSENSITIVE);
+    
+    private static final Pattern PATTERN_DROP_INDEX = Pattern.compile("DROP\\s+INDEX+\\s", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern PATTERN_COMMENT_ON = Pattern.compile("COMMENT\\s+ON\\s+(COLUMN\\s+|TABLE\\s+)", Pattern.CASE_INSENSITIVE);
+    
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     protected final PipelineDataSourceWrapper getSourceCachedDataSource(final PipelineConfiguration pipelineConfig, final PipelineDataSourceManager dataSourceManager) {
@@ -80,6 +86,15 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         if (PATTERN_ALTER_TABLE.matcher(sql).find()) {
             return TableDefinitionSQLType.ALTER_TABLE;
+        }
+        if (PATTERN_CREATE_INDEX.matcher(sql).find()) {
+            return TableDefinitionSQLType.CREATE_INDEX;
+        }
+        if (PATTERN_DROP_INDEX.matcher(sql).find()) {
+            return TableDefinitionSQLType.DROP_INDEX;
+        }
+        if (PATTERN_COMMENT_ON.matcher(sql).find()) {
+            return TableDefinitionSQLType.COMMENT_ON;
         }
         return TableDefinitionSQLType.UNKNOWN;
     }

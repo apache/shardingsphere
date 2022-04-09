@@ -79,10 +79,7 @@ public final class DataRecordMerger {
         Map<String, List<DataRecord>> tableGroup = mergedDataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
         for (Entry<String, List<DataRecord>> each : tableGroup.entrySet()) {
             Map<String, List<DataRecord>> typeGroup = each.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
-            result.add(new GroupedDataRecord(each.getKey(),
-                    typeGroup.get(IngestDataChangeType.INSERT),
-                    typeGroup.get(IngestDataChangeType.UPDATE),
-                    typeGroup.get(IngestDataChangeType.DELETE)));
+            result.add(new GroupedDataRecord(each.getKey(), typeGroup.get(IngestDataChangeType.INSERT), typeGroup.get(IngestDataChangeType.UPDATE), typeGroup.get(IngestDataChangeType.DELETE)));
         }
         return result;
     }

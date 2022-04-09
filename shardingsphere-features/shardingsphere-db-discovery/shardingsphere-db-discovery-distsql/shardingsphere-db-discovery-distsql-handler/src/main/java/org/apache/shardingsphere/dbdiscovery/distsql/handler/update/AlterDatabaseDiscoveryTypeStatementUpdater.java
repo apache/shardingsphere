@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -64,17 +64,17 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
         Collection<String> existTypes = currentRuleConfig.getDiscoveryTypes().keySet();
         Collection<String> notExistTypes = sqlStatement.getTypes().stream().map(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName)
                 .filter(each -> !existTypes.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistTypes.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(notExistTypes.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
         
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
     }
     
     private void checkDuplicateDiscoveryType(final String schemaName, final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
         Collection<String> duplicateTypeNames = getToBeAlteredDuplicateTypeNames(sqlStatement);
-        DistSQLException.predictionThrow(duplicateTypeNames.isEmpty(), new DuplicateRuleException(RULE_TYPE, schemaName, duplicateTypeNames));
+        DistSQLException.predictionThrow(duplicateTypeNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, schemaName, duplicateTypeNames));
     }
     
     private Collection<String> getToBeAlteredDuplicateTypeNames(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
@@ -85,7 +85,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     private void checkInvalidDiscoverType(final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidType = sqlStatement.getTypes().stream().map(each -> each.getAlgorithmSegment().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidType.isEmpty(), new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
+        DistSQLException.predictionThrow(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
     }
     
     @Override

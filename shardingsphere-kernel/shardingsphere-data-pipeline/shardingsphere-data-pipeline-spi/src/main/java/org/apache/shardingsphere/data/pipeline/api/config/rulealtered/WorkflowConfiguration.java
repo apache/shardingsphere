@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @Getter
@@ -34,13 +35,19 @@ public final class WorkflowConfiguration {
     
     private String schemaName;
     
-    private List<String> alteredRuleYamlClassNames;
+    /**
+     * Map{altered rule yaml class name, re-shard needed table names}.
+     */
+    private Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
     
-    private String schemaVersion;
+    private Integer activeVersion;
     
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final String schemaVersion) {
+    private Integer newVersion;
+    
+    public WorkflowConfiguration(final String schemaName, final Map<String, List<String>> alteredRuleYamlClassNameTablesMap, final int activeVersion, final int newVersion) {
         this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.schemaVersion = schemaVersion;
+        this.alteredRuleYamlClassNameTablesMap = alteredRuleYamlClassNameTablesMap;
+        this.activeVersion = activeVersion;
+        this.newVersion = newVersion;
     }
 }

@@ -19,16 +19,15 @@ package org.apache.shardingsphere.traffic.api.traffic.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
 
 /**
  * Hint traffic value.
- *
- * @param <T> class type of hint value
  */
 @RequiredArgsConstructor
 @Getter
-public final class HintTrafficValue<T extends Comparable<?>> implements TrafficValue {
+public final class HintTrafficValue implements TrafficValue {
     
-    private final T value;
+    private final SQLHintProperties sqlHintProps;
 }

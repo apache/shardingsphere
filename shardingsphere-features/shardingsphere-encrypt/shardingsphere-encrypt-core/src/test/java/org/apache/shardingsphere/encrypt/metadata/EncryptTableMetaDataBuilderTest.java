@@ -24,14 +24,13 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +44,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,7 +72,6 @@ public final class EncryptTableMetaDataBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -179,9 +179,10 @@ public final class EncryptTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource),
                 rules, props));
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(columnNames.get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(columnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(columnNames.get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -270,9 +271,10 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private void assertResult(final Map<String, TableMetaData> actual) {
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(columnNames.get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(columnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(columnNames.get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -297,9 +299,10 @@ public final class EncryptTableMetaDataBuilderTest {
         Map<String, TableMetaData> metaDataMap = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
         assertFalse(metaDataMap.isEmpty());
         TableMetaData actual = metaDataMap.values().iterator().next();
-        assertThat(actual.getColumnMetaData(0).getName(), is("id"));
-        assertThat(actual.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(actual.getColumnMetaData(2).getName(), is("pwd_plain"));
+        List<String> actualColumnNames = new ArrayList<>(actual.getColumns().keySet());
+        assertThat(actual.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
+        assertThat(actual.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
+        assertThat(actual.getColumns().get(actualColumnNames.get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -343,6 +346,7 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private EncryptRule createEncryptRuleWithDataTypeConfig() {
         EncryptRule result = createEncryptRule();
+        assertTrue(result.findEncryptTable(TABLE_NAME).isPresent());
         EncryptTable encryptTable = result.findEncryptTable(TABLE_NAME).get();
         EncryptColumn encryptColumn = mock(EncryptColumn.class);
         EncryptColumnDataType encryptColumnDataType = mock(EncryptColumnDataType.class);
@@ -367,7 +371,7 @@ public final class EncryptTableMetaDataBuilderTest {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true),
                 new ColumnMetaData("pwd_cipher", 2, false, false, true),
                 new ColumnMetaData("pwd_plain", 2, false, false, true));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
     
     private SingleTableRule createSingleTableRule() {

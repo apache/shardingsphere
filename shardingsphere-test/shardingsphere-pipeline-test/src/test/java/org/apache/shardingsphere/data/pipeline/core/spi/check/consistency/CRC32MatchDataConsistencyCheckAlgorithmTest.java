@@ -33,7 +33,6 @@ public final class CRC32MatchDataConsistencyCheckAlgorithmTest {
         checkAlgorithm.init();
         assertThat(checkAlgorithm.getType(), is(CRC32MatchDataConsistencyCheckAlgorithm.TYPE));
         assertNotNull(checkAlgorithm.getDescription());
-        assertThat(checkAlgorithm.getProvider(), is("ShardingSphere"));
         assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
     }
     

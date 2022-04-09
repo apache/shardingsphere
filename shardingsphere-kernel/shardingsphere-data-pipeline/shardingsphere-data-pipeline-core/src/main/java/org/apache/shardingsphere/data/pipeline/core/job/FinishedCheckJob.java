@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -49,6 +51,9 @@ public final class FinishedCheckJob implements SimpleJob {
                 continue;
             }
             String jobId = jobInfo.getJobId();
+            if (isNotAllowDataCheck(jobId)) {
+                continue;
+            }
             try {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
@@ -91,6 +96,18 @@ public final class FinishedCheckJob implements SimpleJob {
                 log.error("scaling job {} finish check failed!", jobId, ex);
             }
         }
+    }
+    
+    private boolean isNotAllowDataCheck(final String jobId) {
+        Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
+        boolean flag = false;
+        for (JobProgress each : jobProgressMap.values()) {
+            if (null == each || !JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
     
     private boolean dataConsistencyCheck(final JobConfiguration jobConfig) {

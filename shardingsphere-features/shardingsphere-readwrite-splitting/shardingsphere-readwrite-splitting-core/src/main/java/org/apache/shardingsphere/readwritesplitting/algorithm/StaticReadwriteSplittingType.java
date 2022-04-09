@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -43,14 +44,14 @@ public class StaticReadwriteSplittingType implements ReadwriteSplittingType {
     
     private String writeDataSourceName;
     
-    private String readDataSourceNames;
+    private List<String> readDataSourceNames;
     
     @Override
     public void init() {
         writeDataSourceName = props.getProperty("write-data-source-name");
-        readDataSourceNames = props.getProperty("read-data-source-names");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(readDataSourceNames), "Read data source names are required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
+        readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
     }
     
     @Override
@@ -60,14 +61,14 @@ public class StaticReadwriteSplittingType implements ReadwriteSplittingType {
     
     @Override
     public List<String> getReadDataSources() {
-        return Splitter.on(",").trimResults().splitToList(readDataSourceNames);
+        return readDataSourceNames;
     }
     
     @Override
     public Map<String, String> getDataSources() {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
-        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, readDataSourceNames);
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, Joiner.on(",").join(readDataSourceNames));
         return result;
     }
     
@@ -76,7 +77,7 @@ public class StaticReadwriteSplittingType implements ReadwriteSplittingType {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
         actualDataSourceNames.add(writeDataSourceName);
-        actualDataSourceNames.addAll(Splitter.on(",").trimResults().splitToList(readDataSourceNames));
+        actualDataSourceNames.addAll(readDataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
     }

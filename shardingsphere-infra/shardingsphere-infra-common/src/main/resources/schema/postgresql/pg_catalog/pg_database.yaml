@@ -1,0 +1,108 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_database
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+  datname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datname
+    primaryKey: false
+  datdba:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datdba
+    primaryKey: false
+  encoding:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: encoding
+    primaryKey: false
+  datcollate:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datcollate
+    primaryKey: false
+  datctype:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: datctype
+    primaryKey: false
+  datistemplate:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: datistemplate
+    primaryKey: false
+  datallowconn:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: datallowconn
+    primaryKey: false
+  datconnlimit:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: datconnlimit
+    primaryKey: false
+  datlastsysoid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: datlastsysoid
+    primaryKey: false
+  datfrozenxid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: datfrozenxid
+    primaryKey: false
+  datminmxid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: datminmxid
+    primaryKey: false
+  dattablespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: dattablespace
+    primaryKey: false
+  datacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: datacl
+    primaryKey: false
+indexes:
+  pg_database_datname_index:
+    name: pg_database_datname_index
+  pg_database_oid_index:
+    name: pg_database_oid_index 

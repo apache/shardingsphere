@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.mgr.MGRDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -57,25 +57,6 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     @Test
     public void assertGetDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
-    public void assertGetDataSourceNamesWithDisabledDataSourceNames() {
-        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        databaseDiscoveryDataSourceRule.disableDataSource("ds_0");
-        databaseDiscoveryDataSourceRule.enableDataSource("ds_0");
         assertThat(databaseDiscoveryDataSourceRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     

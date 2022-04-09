@@ -36,7 +36,7 @@ weight = 3
 | *名称*                     | *类型* | *说明*          |
 | ------------------------- | ----- | --------------- |
 | logic-table               | 属性  | 逻辑表名称        |
-| actual-data-nodes         | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
+| actual-data-nodes         | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
 | database-strategy-ref     | 属性  | 标准分片表分库策略名称      |
 | table-strategy-ref        | 属性  | 标准分片表分表策略名称      |
 | key-generate-strategy-ref | 属性  | 分布式序列策略名称 |
@@ -270,13 +270,13 @@ weight = 3
 
 | *名称*                            | *类型* | *说明*                                                       |
 | --------------------------------- | ------ | ------------------------------------------------------------ |
-| data-source-names                 | 属性   | 数据源Bean列表，多个Bean以逗号分隔                           |
+| data-source-names                 | 属性   | 数据源 Bean 列表，多个 Bean 以逗号分隔                           |
 | table-rules                       | 标签   | 表分片规则配置对象                                           |
 | binding-table-rules (?)           | 标签   | 绑定表规则列表                                               |
 | broadcast-table-rules (?)         | 标签   | 广播表规则列表                                               |
 | default-data-source-name (?)      | 属性   | 未配置分片规则的表将通过默认数据源定位                       |
-| default-database-strategy-ref (?) | 属性   | 默认数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示不分库 |
-| default-table-strategy-ref (?)    | 属性   | 默认表分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示不分表 |
+| default-database-strategy-ref (?) | 属性   | 默认数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示不分库 |
+| default-table-strategy-ref (?)    | 属性   | 默认表分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示不分表 |
 | default-key-generator-ref (?)     | 属性   | 默认自增列值生成器引用，缺省使用 <span style='background: #FFF7DD'>org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator</span> |
 | encrypt-rule (?)                  | 标签   | 脱敏规则                                                     |
 
@@ -291,9 +291,9 @@ weight = 3
 | *名称*                    | *类型* | *说明*                                                       |
 | ------------------------- | ------ | ------------------------------------------------------------ |
 | logic-table               | 属性   | 逻辑表名称                                                   |
-| actual-data-nodes (?)     | 属性   | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
-| database-strategy-ref (?) | 属性   | 数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示使用 <sharding:sharding-rule /> 配置的默认数据库分片策略 |
-| table-strategy-ref (?)    | 属性   | 表分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认表分片策略 |
+| actual-data-nodes (?)     | 属性   | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
+| database-strategy-ref (?) | 属性   | 数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示使用 <sharding:sharding-rule /> 配置的默认数据库分片策略 |
+| table-strategy-ref (?)    | 属性   | 表分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认表分片策略 |
 | key-generator-ref (?)     | 属性   | 自增列值生成器引用，缺省表示使用默认自增列值生成器           |
 
 \<sharding:binding-table-rules />
@@ -327,8 +327,8 @@ weight = 3
 | ----------------------- | ------ | ------------------------------------------------------------ |
 | id                      | 属性   | Spring Bean Id                                               |
 | sharding-column         | 属性   | 分片列名称                                                   |
-| precise-algorithm-ref   | 属性   | 精确分片算法引用，用于=和IN。该类需实现PreciseShardingAlgorithm接口 |
-| range-algorithm-ref (?) | 属性   | 范围分片算法引用，用于BETWEEN。该类需实现RangeShardingAlgorithm接口 |
+| precise-algorithm-ref   | 属性   | 精确分片算法引用，用于 = 和 IN。该类需实现 PreciseShardingAlgorithm 接口 |
+| range-algorithm-ref (?) | 属性   | 范围分片算法引用，用于 BETWEEN。该类需实现 RangeShardingAlgorithm 接口 |
 
 \<sharding:complex-strategy />
 
@@ -336,7 +336,7 @@ weight = 3
 | ------------------------ | ------ | ---------- |
 | id | 属性   | Spring Bean Id |
 | sharding-columns | 属性 | 分片列名称，多个列以逗号分隔 |
-| algorithm-ref | 属性 | 复合分片算法引用。该类需实现ComplexKeysShardingAlgorithm接口 |
+| algorithm-ref | 属性 | 复合分片算法引用。该类需实现 ComplexKeysShardingAlgorithm 接口 |
 
 \<sharding:inline-strategy />
 
@@ -351,7 +351,7 @@ weight = 3
 | *名称*        | *类型* | *说明*                                            |
 | ------------- | ------ | ------------------------------------------------- |
 | id            | 属性   | Spring Bean Id                                    |
-| algorithm-ref | 属性   | Hint分片算法。该类需实现HintShardingAlgorithm接口 |
+| algorithm-ref | 属性   | Hint 分片算法。该类需实现 HintShardingAlgorithm 接口 |
 
 \<sharding:none-strategy />
 
@@ -375,8 +375,8 @@ weight = 3
 
 | *名称*                                        | *类型* | *说明*                                                       |
 | --------------------------------------------- | ------ | ------------------------------------------------------------ |
-| max.tolerate.time.difference.milliseconds (?) | long   | 最大容忍时钟回退时间，单位：毫秒。默认为10毫秒               |
-| max.vibration.offset (?)                      | int    | 最大抖动上限值，范围[0, 4096)，默认为1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的key取模2^n (2^n一般为分库或分表数) 之后结果总为0或1。为防止上述分片问题，建议将此属性值配置为(2^n)-1 |
+| max.tolerate.time.difference.milliseconds (?) | long   | 最大容忍时钟回退时间，单位：毫秒。默认为 10 毫秒               |
+| max.vibration.offset (?)                      | int    | 最大抖动上限值，范围[0, 4096)，默认为 1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的 key 取模 2^n (2^n一般为分库或分表数) 之后结果总为 0 或 1。为防止上述分片问题，建议将此属性值配置为 (2^n)-1 |
 
 \<sharding:encrypt-rule />
 
@@ -389,7 +389,7 @@ weight = 3
 | *名称*                  | *类型* | *说明*     |
 | ----------------------- | ------ | ---------- |
 | sql.show (?) | 属性   | 是否开启SQL显示，默认值: false |
-| executor.size (?) | 属性   | 工作线程数量，默认值: CPU核数 |
+| executor.size (?) | 属性   | 工作线程数量，默认值: CPU 核数 |
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?) | 属性   | 是否在启动时检查分表元数据一致性，默认值: false |
 | query.with.cipher.column (?) | 属性   | 当存在明文列时，是否使用密文列查询，默认值: true |
@@ -405,9 +405,9 @@ weight = 3
 | *名称*                  | *类型* | *说明*                                                       |
 | ----------------------- | ------ | ------------------------------------------------------------ |
 | id                      | 属性   | Spring Bean Id                                               |
-| master-data-source-name | 属性   | 主库数据源Bean Id                                            |
-| slave-data-source-names | 属性   | 从库数据源Bean Id列表，多个Bean以逗号分隔                    |
-| strategy-ref (?)        | 属性   | 从库负载均衡算法引用。该类需实现MasterSlaveLoadBalanceAlgorithm接口 |
+| master-data-source-name | 属性   | 主库数据源 Bean Id                                            |
+| slave-data-source-names | 属性   | 从库数据源 Bean Id 列表，多个 Bean 以逗号分隔                    |
+| strategy-ref (?)        | 属性   | 从库负载均衡算法引用。该类需实现 MasterSlaveLoadBalanceAlgorithm 接口 |
 | strategy-type (?)       | 属性   | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若 <span style='background: #FFF7DD'>strategy-ref</span> 存在则忽略该配置 |
 | props (?)               | 标签   | 属性配置                                                     |
 
@@ -455,7 +455,7 @@ weight = 3
 | --------- | ------ | ------------------------------------------------------------ |
 | id        | 属性   | 加密器的名称                                                 |
 | type      | 属性   | 加解密器类型，可自定义或选择内置类型：MD5/AES                |
-| props-ref | 属性   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value |
+| props-ref | 属性   | 属性配置，注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value |
 
 \<encrypt:tables />
 
@@ -498,8 +498,8 @@ weight = 3
 | *名称*              | *类型* | *说明*                                                       |
 | ------------------- | ------ | ------------------------------------------------------------ |
 | id                  | 属性   | ID                                                           |
-| data-source-ref (?) | 属性   | 被治理的数据库id                                             |
-| registry-center-ref | 属性   | 注册中心id                                                   |
+| data-source-ref (?) | 属性   | 被治理的数据库 id                                             |
+| registry-center-ref | 属性   | 注册中心 id                                                   |
 | overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 #### 读写分离 + 治理
@@ -513,8 +513,8 @@ weight = 3
 | *名称*              | *类型* | *说明*                                                       |
 | ------------------- | ------ | ------------------------------------------------------------ |
 | id                  | 属性   | ID                                                           |
-| data-source-ref (?) | 属性   | 被治理的数据库id                                             |
-| registry-center-ref | 属性   | 注册中心id                                                   |
+| data-source-ref (?) | 属性   | 被治理的数据库 id                                             |
+| registry-center-ref | 属性   | 注册中心 id                                                   |
 | overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 #### 数据脱敏 + 治理
@@ -528,8 +528,8 @@ weight = 3
 | *名称*              | *类型* | *说明*                                                       |
 | ------------------- | ------ | ------------------------------------------------------------ |
 | id                  | 属性   | ID                                                           |
-| data-source-ref (?) | 属性   | 被治理的数据库id                                             |
-| registry-center-ref | 属性   | 注册中心id                                                   |
+| data-source-ref (?) | 属性   | 被治理的数据库 id                                             |
+| registry-center-ref | 属性   | 注册中心 id                                                   |
 | overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 #### 治理注册中心
@@ -547,10 +547,10 @@ weight = 3
 | server-lists                       | 属性   | 连接注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181 |
 | namespace (?)                      | 属性   | 注册中心的命名空间                                           |
 | digest (?)                         | 属性   | 连接注册中心的权限令牌。缺省为不需要权限验证                 |
-| operation-timeout-milliseconds (?) | 属性   | 操作超时的毫秒数，默认500毫秒                                |
-| max-retries (?)                    | 属性   | 连接失败后的最大重试次数，默认3次                            |
-| retry-interval-milliseconds (?)    | 属性   | 重试间隔毫秒数，默认500毫秒                                  |
-| time-to-live-seconds (?)           | 属性   | 临时节点存活秒数，默认60秒                                   |
+| operation-timeout-milliseconds (?) | 属性   | 操作超时的毫秒数，默认 500 毫秒                                |
+| max-retries (?)                    | 属性   | 连接失败后的最大重试次数，默认 3 次                            |
+| retry-interval-milliseconds (?)    | 属性   | 重试间隔毫秒数，默认 500 毫秒                                  |
+| time-to-live-seconds (?)           | 属性   | 临时节点存活秒数，默认 60 秒                                   |
 | props-ref (?)                      | 属性   | 配置中心其它属性                                             |
 
 ## ShardingSphere-3.x
@@ -574,13 +574,13 @@ weight = 3
 
 | *名称*                            | *类型* | *说明*                                                       |
 | --------------------------------- | ------ | ------------------------------------------------------------ |
-| data-source-names                 | 属性   | 数据源Bean列表，多个Bean以逗号分隔                           |
+| data-source-names                 | 属性   | 数据源 Bean 列表，多个 Bean 以逗号分隔                           |
 | table-rules                       | 标签   | 表分片规则配置对象                                           |
 | binding-table-rules (?)           | 标签   | 绑定表规则列表                                               |
 | broadcast-table-rules (?)         | 标签   | 广播表规则列表                                               |
 | default-data-source-name (?)      | 属性   | 未配置分片规则的表将通过默认数据源定位                       |
-| default-database-strategy-ref (?) | 属性   | 默认数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示不分库 |
-| default-table-strategy-ref (?)    | 属性   | 默认表分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示不分表 |
+| default-database-strategy-ref (?) | 属性   | 默认数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示不分库 |
+| default-table-strategy-ref (?)    | 属性   | 默认表分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示不分表 |
 | default-key-generator-ref (?)     | 属性   | 默认自增列值生成器引用，缺省使用 <span style='background: #FFF7DD'>io.shardingsphere.core.keygen.DefaultKeyGenerator</span>。该类需实现KeyGenerator接口 |
 
 \<sharding:table-rules />
@@ -594,12 +594,12 @@ weight = 3
 | *名称*                       | *类型* | *说明*                                                       |
 | ---------------------------- | ------ | ------------------------------------------------------------ |
 | logic-table                  | 属性   | 逻辑表名称                                                   |
-| actual-data-nodes (?)        | 属性   | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
-| database-strategy-ref (?)    | 属性   | 数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认数据库分片策略 |
-| table-strategy-ref (?)       | 属性   | 表分片策略，对应 \<sharding:xxx-strategy> 中的策略Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认表分片策略 |
+| actual-data-nodes (?)        | 属性   | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
+| database-strategy-ref (?)    | 属性   | 数据库分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认数据库分片策略 |
+| table-strategy-ref (?)       | 属性   | 表分片策略，对应 \<sharding:xxx-strategy> 中的策略 Id，缺省表示使用 \<sharding:sharding-rule /> 配置的默认表分片策略 |
 | generate-key-column-name (?) | 属性   | 自增列名称，缺省表示不使用自增主键生成器                     |
-| key-generator-ref (?)        | 属性   | 自增列值生成器引用，缺省表示使用默认自增列值生成器.该类需实现KeyGenerator接口 |
-| logic-index (?)              | 属性   | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |
+| key-generator-ref (?)        | 属性   | 自增列值生成器引用，缺省表示使用默认自增列值生成器.该类需实现 KeyGenerator 接口 |
+| logic-index (?)              | 属性   | 逻辑索引名称，对于分表的 Oracle/PostgreSQL 数据库中 DROP INDEX XXX 语句，需要通过配置逻辑索引名称定位所执行 SQL 的真实分表 |
 
 \<sharding:binding-table-rules />
 
@@ -780,7 +780,7 @@ weight = 3
 | *名称*                | *类型* | *数据类型* | *必填* | *说明*                                                       |
 | --------------------- | ------ | ---------- | ------ | ------------------------------------------------------------ |
 | logic-table           | 属性   | String     | 是     | 逻辑表名                                                     |
-| actual-data-nodes (?) | 属性   | String     | 否     | 真实数据节点，由数据源名（读写分离引用[master-slave:data-source](master-slave:data-source)中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。 |
+| actual-data-nodes (?) | 属性   | String     | 否     | 真实数据节点，由数据源名（读写分离引用[master-slave:data-source](master-slave:data-source)中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。 |
 | database-strategy-ref (?) | 属性   | String     | 否     | 分库策略，对应 \<sharding:xxx-strategy> 中的策略id，不填则使用 \<sharding:sharding-rule/> 配置的default-database-strategy-ref |
 | table-strategy-ref (?) | 属性   | String     | 否     | 分表策略，对应 \<sharding:xxx-strategy> 中的略id，不填则使用 \<sharding:sharding-rule/> 配置的default-table-strategy-ref |
 | logic-index (?)       | 属性   | String     | 否     | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表 |

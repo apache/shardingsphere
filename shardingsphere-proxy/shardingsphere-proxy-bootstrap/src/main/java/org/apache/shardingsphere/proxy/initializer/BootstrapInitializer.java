@@ -27,16 +27,15 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
 
 /**
  * Bootstrap initializer.
@@ -44,6 +43,10 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 @Slf4j
 public final class BootstrapInitializer {
+    
+    static {
+        ShardingSphereServiceLoader.register(ContextManagerLifecycleListener.class);
+    }
     
     /**
      * Initialize.
@@ -73,15 +76,14 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Map<String, ContextManagerLifecycleListener> listeners = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
-        log.info("listeners.keySet={}", listeners.keySet());
-        for (Entry<String, ContextManagerLifecycleListener> entry : listeners.entrySet()) {
+        Collection<ContextManagerLifecycleListener> listeners = ShardingSphereServiceLoader.getSingletonServiceInstances(ContextManagerLifecycleListener.class);
+        for (ContextManagerLifecycleListener each : listeners) {
             try {
-                entry.getValue().onInitialized(modeConfig, contextManager);
+                each.onInitialized(modeConfig, contextManager);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
+                log.error("contextManager onInitialized callback for '{}' failed", each.getClass().getName(), ex);
             }
         }
     }

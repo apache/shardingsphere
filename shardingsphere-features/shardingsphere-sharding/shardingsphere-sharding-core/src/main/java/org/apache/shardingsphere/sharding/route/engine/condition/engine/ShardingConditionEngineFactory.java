@@ -48,6 +48,6 @@ public final class ShardingConditionEngineFactory {
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule) {
         return logicSQL.getSqlStatementContext() instanceof InsertStatementContext
-                ? new InsertClauseShardingConditionEngine(rule, metaData.getSchema()) : new WhereClauseShardingConditionEngine(rule, metaData.getSchema());
+                ? new InsertClauseShardingConditionEngine(rule, metaData.getDefaultSchema()) : new WhereClauseShardingConditionEngine(rule, metaData.getDefaultSchema());
     }
 }

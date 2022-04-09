@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -37,16 +38,17 @@ import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTraf
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Traffic rule.
@@ -58,6 +60,7 @@ public final class TrafficRule implements GlobalRule {
         ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
     }
     
+    @Getter
     private final Collection<TrafficStrategyRule> strategyRules;
     
     public TrafficRule(final TrafficRuleConfiguration config) {
@@ -106,7 +109,7 @@ public final class TrafficRule implements GlobalRule {
             result = new TrafficStrategyRule(strategyConfig.getName(), Collections.emptyList(), trafficAlgorithm, null);
         } else {
             TrafficLoadBalanceAlgorithm loadBalancer = getLoadBalancer(loadBalancers, strategyConfig.getLoadBalancerName());
-            result = new TrafficStrategyRule(strategyConfig.getName(), strategyConfig.getLabels(), trafficAlgorithm, loadBalancer);
+            result = new TrafficStrategyRule(strategyConfig.getName(), new LinkedHashSet<>(strategyConfig.getLabels()), trafficAlgorithm, loadBalancer);
         }
         return result;
     }
@@ -119,11 +122,12 @@ public final class TrafficRule implements GlobalRule {
      * Find matched strategy rule.
      * 
      * @param logicSQL logic SQL
+     * @param inTransaction is in transaction
      * @return matched strategy rule
      */
-    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL) {
+    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL, final boolean inTransaction) {
         for (TrafficStrategyRule each : strategyRules) {
-            if (match(each.getTrafficAlgorithm(), logicSQL)) {
+            if (match(each.getTrafficAlgorithm(), logicSQL, inTransaction)) {
                 return Optional.of(each);
             }
         }
@@ -136,48 +140,36 @@ public final class TrafficRule implements GlobalRule {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL) {
+    @SuppressWarnings("rawtypes")
+    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
-            return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm);
+            return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            return matchHintTraffic((HintTrafficAlgorithm<Comparable<?>>) trafficAlgorithm, sqlStatement);
+            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext 
+                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties() : new SQLHintProperties(new Properties());
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
-            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL, sqlStatement);
+            SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
+            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL.getSql(), sqlStatement);
         }
         return false;
     }
     
-    private boolean matchHintTraffic(final HintTrafficAlgorithm<Comparable<?>> trafficAlgorithm, final SQLStatement sqlStatement) {
-        for (HintTrafficValue<Comparable<?>> each : getHintTrafficValues(sqlStatement)) {
-            if (trafficAlgorithm.match(each)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final SQLHintProperties sqlHintProps) {
+        HintTrafficValue hintTrafficValue = new HintTrafficValue(sqlHintProps);
+        return trafficAlgorithm.match(hintTrafficValue);
     }
     
-    private boolean matchSegmentTraffic(final SegmentTrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final SQLStatement sqlStatement) {
-        SegmentTrafficValue segmentTrafficValue = new SegmentTrafficValue(sqlStatement, logicSQL.getSql());
+    private boolean matchSegmentTraffic(final SegmentTrafficAlgorithm trafficAlgorithm, final String sql, final SQLStatement sqlStatement) {
+        SegmentTrafficValue segmentTrafficValue = new SegmentTrafficValue(sqlStatement, sql);
         return trafficAlgorithm.match(segmentTrafficValue);
     }
     
-    private boolean matchTransactionTraffic(final TransactionTrafficAlgorithm trafficAlgorithm) {
-        TransactionTrafficValue transactionTrafficValue = new TransactionTrafficValue(TransactionHolder.isTransaction());
+    private boolean matchTransactionTraffic(final TransactionTrafficAlgorithm trafficAlgorithm, final boolean inTransaction) {
+        TransactionTrafficValue transactionTrafficValue = new TransactionTrafficValue(inTransaction);
         return trafficAlgorithm.match(transactionTrafficValue);
-    }
-    
-    private Collection<HintTrafficValue<Comparable<?>>> getHintTrafficValues(final SQLStatement sqlStatement) {
-        Collection<HintTrafficValue<Comparable<?>>> result = new LinkedList<>();
-        if (sqlStatement instanceof AbstractSQLStatement) {
-            for (CommentSegment each : ((AbstractSQLStatement) sqlStatement).getCommentSegments()) {
-                result.add(new HintTrafficValue<>(each.getText()));
-            }
-        }
-        return result;
     }
     
     private TrafficLoadBalanceAlgorithm getLoadBalancer(final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers, final String loadBalancerName) {

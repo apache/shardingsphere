@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
-
-import java.util.Map;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Pipeline data source creator factory.
  */
 public final class PipelineDataSourceCreatorFactory {
     
-    private static final Map<String, PipelineDataSourceCreator> DATA_SOURCE_CREATOR_MAP = SingletonSPIRegistry.getTypedSingletonInstancesMap(PipelineDataSourceCreator.class);
+    static {
+        ShardingSphereServiceLoader.register(PipelineDataSourceCreator.class);
+    }
     
     /**
      * Get pipeline data source creator instance.
@@ -35,6 +36,6 @@ public final class PipelineDataSourceCreatorFactory {
      * @return pipeline data source creator instance
      */
     public static PipelineDataSourceCreator getInstance(final String type) {
-        return DATA_SOURCE_CREATOR_MAP.get(type);
+        return TypedSPIRegistry.getRegisteredService(PipelineDataSourceCreator.class, type);
     }
 }

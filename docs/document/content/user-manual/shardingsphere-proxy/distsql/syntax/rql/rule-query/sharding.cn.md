@@ -27,8 +27,8 @@ SHOW SHARDING TABLE NODES;
 tableRule:
     RULE tableName
 ```
--  支持查询所有数据分片规则和指定表查询
--  支持查询所有分片算法
+-  支持查询所有数据分片规则和指定表查询；
+-  支持查询所有分片算法。
 
 ### Sharding Binding Table Rule
 

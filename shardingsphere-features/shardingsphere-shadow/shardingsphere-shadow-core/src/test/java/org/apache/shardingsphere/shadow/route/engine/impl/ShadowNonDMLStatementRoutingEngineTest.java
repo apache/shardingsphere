@@ -54,11 +54,9 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     
     private SQLStatementContext<?> createSQLStatementContext() {
         CreateTableStatementContext result = mock(CreateTableStatementContext.class);
-        MySQLCreateTableStatement mySQLCreateTableStatement = new MySQLCreateTableStatement();
-        Collection<CommentSegment> commentSegments = new LinkedList<>();
-        commentSegments.add(new CommentSegment("/*shadow:true*/", 0, 20));
-        mySQLCreateTableStatement.setCommentSegments(commentSegments);
-        when(result.getSqlStatement()).thenReturn(mySQLCreateTableStatement);
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        createTableStatement.getCommentSegments().add(new CommentSegment("/*shadow:true*/", 0, 20));
+        when(result.getSqlStatement()).thenReturn(createTableStatement);
         return result;
     }
     

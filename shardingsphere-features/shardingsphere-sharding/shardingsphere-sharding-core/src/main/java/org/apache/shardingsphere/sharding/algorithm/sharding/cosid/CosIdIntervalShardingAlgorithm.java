@@ -17,6 +17,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.base.Strings;
 import me.ahoo.cosid.util.LocalDateTimeConvert;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +28,7 @@ import java.util.Date;
  */
 public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
     
-    public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "INTERVAL";
+    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL";
     
     public static final String DATE_TIME_PATTERN_KEY = "datetime-pattern";
     
@@ -46,7 +47,7 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardi
                 && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(getProps().getProperty(TIMESTAMP_UNIT_KEY))) {
             isSecondTs = true;
         }
-        final String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
+        String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }
     

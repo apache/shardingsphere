@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
@@ -52,8 +50,8 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     }
     
     private ShardingSphereSchema swapSchema(final YamlSchema schema) {
-        return new ShardingSphereSchema(MapUtils.isEmpty(schema.getTables()) ? Maps.newLinkedHashMap() : schema.getTables().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        return new ShardingSphereSchema(null == schema.getTables() || schema.getTables().isEmpty() ? new LinkedHashMap<>()
+                : schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     private TableMetaData swapTable(final YamlTableMetaData table) {

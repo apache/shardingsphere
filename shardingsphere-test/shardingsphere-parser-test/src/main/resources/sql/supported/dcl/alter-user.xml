@@ -20,8 +20,6 @@
     <sql-case id="alter_user_identified_without_hostname" value="ALTER USER user_dev identified by passwd_dev" db-types="Oracle" />
     <sql-case id="alter_user_identified_with_hostname" value="ALTER USER 'user_dev'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
     <sql-case id="alter_user_account" value="ALTER USER user_dev account lock" db-types="Oracle" />
-    <sql-case id="alter_login_name" value="ALTER LOGIN login_dev WITH NAME = login_dev_new" db-types="SQLServer" />
-    <sql-case id="alter_login_passwd" value="ALTER LOGIN login_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <sql-case id="alter_username_with_name" value="ALTER USER user_dev WITH NAME = user_dev_new" db-types="SQLServer" />
     <sql-case id="alter_username_rename" value="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_user_passwd_with_equality" value="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />

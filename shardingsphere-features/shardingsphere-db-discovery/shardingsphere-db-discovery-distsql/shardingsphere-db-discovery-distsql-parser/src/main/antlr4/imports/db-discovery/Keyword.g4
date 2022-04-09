@@ -82,3 +82,11 @@ DB_DISCOVERY
 HEARTBEAT
     : H E A R T B E A T
     ;
+
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;

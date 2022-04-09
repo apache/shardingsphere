@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+
 /**
  * Pagination value segment for parameter marker.
  */
-public interface ParameterMarkerPaginationValueSegment extends PaginationValueSegment {
+public interface ParameterMarkerPaginationValueSegment extends PaginationValueSegment, ParameterMarkerSegment {
     
     /**
      * Get parameter index.

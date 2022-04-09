@@ -157,7 +157,7 @@ public final class ApmPluginLoader extends ClassLoader implements Closeable, Plu
     }
     
     @Override
-    @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     public <T> T getOrCreateInstance(final String adviceClassName) {
         if (objectPool.containsKey(adviceClassName)) {
@@ -167,7 +167,7 @@ public final class ApmPluginLoader extends ClassLoader implements Closeable, Plu
         try {
             Object inst = objectPool.get(adviceClassName);
             if (Objects.isNull(inst)) {
-                inst = Class.forName(adviceClassName, true, this).newInstance();
+                inst = Class.forName(adviceClassName, true, this).getDeclaredConstructor().newInstance();
                 objectPool.put(adviceClassName, inst);
             }
             return (T) inst;

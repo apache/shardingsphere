@@ -47,8 +47,8 @@ public final class MySQLPipelineSQLBuilderTest {
     
     @Test
     public void assertBuildSumCrc32SQL() {
-        String actual = sqlBuilder.buildSumCrc32SQL("t2", "id");
-        assertThat(actual, is("SELECT SUM(CRC32(`id`)) AS checksum FROM `t2`"));
+        String actual = sqlBuilder.buildCRC32SQL("t2", "id");
+        assertThat(actual, is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

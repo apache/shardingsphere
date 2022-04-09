@@ -47,7 +47,7 @@ public final class DefaultTokenGeneratorBuilderTest {
     @Test
     public void assertGetSQLTokenGeneratorsWithSelect() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getSchemaName().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
 
@@ -55,7 +55,7 @@ public final class DefaultTokenGeneratorBuilderTest {
     public void assertGetSQLTokenGeneratorsWithShowColumns() {
         ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
-        when(sqlStatementContext.getTablesContext().getSchemaName().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
 

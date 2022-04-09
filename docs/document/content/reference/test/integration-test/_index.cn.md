@@ -37,15 +37,15 @@ weight = 1
 
 测试引擎通过将用例和环境进行排列组合，以达到用最少的用例测试尽可能多场景的目的。
 
-每条 SQL 会以`数据库类型 * 接入端类型 * SQL 执行模式 * JDBC 执行模式 * 场景`的组合方式生成测试报告，目前各个维度的支持情况如下：
+每条 SQL 会以 `数据库类型 * 接入端类型 * SQL 执行模式 * JDBC 执行模式 * 场景` 的组合方式生成测试报告，目前各个维度的支持情况如下：
 
   - 数据库类型：H2、MySQL、PostgreSQL、SQLServer 和 Oracle；
   - 接入端类型：ShardingSphere-JDBC 和 ShardingSphere-Proxy；
   - SQL 执行模式：Statement 和 PreparedStatement；
-  - JDBC 执行模式：execute 和 executeQuery (查询) / executeUpdate (更新)；
+  - JDBC 执行模式：execute 和 executeQuery（查询） / executeUpdate（更新）；
   - 场景：分库、分表、读写分离和分库分表 + 读写分离。
 
-因此，1 条 SQL 会驱动：`数据库类型(5) * 接入端类型(2) * SQL 执行模式(2) * JDBC 执行模式(2) * 场景(4) = 160` 个测试用例运行，以达到项目对于高质量的追求。
+因此，1 条 SQL 会驱动：`数据库类型（5） * 接入端类型（2） * SQL 执行模式（2） * JDBC 执行模式（2） * 场景（4） = 160` 个测试用例运行，以达到项目对于高质量的追求。
 
 ## 使用指南
 
@@ -99,21 +99,21 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
 目录：`src/test/resources/env/${SCENARIO-TYPE}`
 
-  - `scenario-env.properties`: 数据源配置
-  - `rules.yaml`: 规则配置
-  - `databases.xml`: 真实库名称
-  - `dataset.xml`: 初始化数据
-  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构
-  - `authority.xml`: 待补充
+  - `scenario-env.properties`: 数据源配置；
+  - `rules.yaml`: 规则配置；
+  - `databases.xml`: 真实库名称；
+  - `dataset.xml`: 初始化数据；
+  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构；
+  - `authority.xml`: 待补充。
 
 #### Docker 环境配置
 
 目录：`src/test/resources/docker/${SCENARIO-TYPE}`
 
-  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动
-  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置
+  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动；
+  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置。
 
-**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `docker-compose.yml` 文件的 `shardingsphere-proxy`中找到第 2 个暴露的端口用于远程调试。**
+**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `docker-compose.yml` 文件的 `shardingsphere-proxy` 中找到第 2 个暴露的端口用于远程调试。**
 
 ### 运行测试引擎
 
@@ -133,7 +133,7 @@ it.run.additional.cases=false
 
 # 配置环境类型，只支持单值。可选值：docker或空，默认值：空
 it.cluster.env.type=${it.env}
-# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
+# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
 it.cluster.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL

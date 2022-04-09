@@ -30,6 +30,7 @@ import java.sql.Array;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 
 /**
@@ -161,6 +162,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.commit();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             TrafficContextHolder.remove();
         }
@@ -171,8 +173,39 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.rollback();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             TrafficContextHolder.remove();
+        }
+    }
+    
+    @Override
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        connectionManager.rollback(savepoint);
+    }
+    
+    @Override
+    public Savepoint setSavepoint(final String name) throws SQLException {
+        checkClose();
+        return connectionManager.setSavepoint(name);
+    }
+    
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        checkClose();
+        return connectionManager.setSavepoint();
+    }
+    
+    @Override
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        connectionManager.releaseSavepoint(savepoint);
+    }
+    
+    private void checkClose() throws SQLException {
+        if (isClosed()) {
+            throw new SQLException("This connection has been closed");
         }
     }
     

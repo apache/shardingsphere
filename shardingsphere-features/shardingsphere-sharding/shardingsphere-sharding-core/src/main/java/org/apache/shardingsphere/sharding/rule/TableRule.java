@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 
 import java.util.Collection;
@@ -57,6 +57,8 @@ import java.util.stream.Collectors;
 public final class TableRule {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
+    
+    private static final char DEFAULT_PADDING_CHAR = '0';
     
     private final String logicTable;
     
@@ -134,13 +136,13 @@ public final class TableRule {
     private DataNodeInfo createDataSourceDataNode(final Collection<DataNode> actualDataNodes) {
         String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getDataSourceName()).replaceAll("");
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getDataSourceName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
-        return new DataNodeInfo(prefix, suffixMinLength);
+        return new DataNodeInfo(prefix, suffixMinLength, DEFAULT_PADDING_CHAR);
     }
     
     private DataNodeInfo createTableDataNode(final Collection<DataNode> actualDataNodes) {
         String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getTableName()).replaceAll("");
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
-        return new DataNodeInfo(prefix, suffixMinLength);
+        return new DataNodeInfo(prefix, suffixMinLength, DEFAULT_PADDING_CHAR);
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {

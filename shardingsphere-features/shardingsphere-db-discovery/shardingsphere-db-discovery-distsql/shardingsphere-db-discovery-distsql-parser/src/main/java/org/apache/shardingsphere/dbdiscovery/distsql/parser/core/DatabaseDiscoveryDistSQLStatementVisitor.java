@@ -112,7 +112,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()), null != ctx.existClause());
     }
     
     @Override
@@ -182,18 +182,20 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
-        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
+        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
+                null != ctx.existClause());
     }
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryHeartbeat(final DropDatabaseDiscoveryHeartbeatContext ctx) {
-        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
+        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
+                null != ctx.existClause());
     }
     
     private Properties getProperties(final PropertiesContext ctx) {
         Properties result = new Properties();
         for (PropertyContext each : ctx.property()) {
-            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
     }

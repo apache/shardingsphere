@@ -63,7 +63,7 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
         schema = new ShardingSphereSchema(tableMetaDataMap);

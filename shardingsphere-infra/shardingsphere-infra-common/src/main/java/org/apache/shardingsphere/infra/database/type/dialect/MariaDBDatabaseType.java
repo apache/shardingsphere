@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
-import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -55,11 +55,21 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     
     @Override
     public Optional<String> getDataSourceClassName() {
-        return Optional.of(MariaDbDataSource.class.getName());
+        return Optional.of("org.mariadb.jdbc.MariaDbDataSource");
     }
     
     @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

@@ -25,7 +25,7 @@ import me.ahoo.cosid.snowflake.SnowflakeId;
 import me.ahoo.cosid.snowflake.StringSnowflakeId;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceRequiredAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
@@ -35,7 +35,7 @@ import java.util.Properties;
  */
 public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
     
-    public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "SNOWFLAKE";
+    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
     
     public static final long DEFAULT_EPOCH = SnowflakeKeyGenerateAlgorithm.EPOCH;
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.strategy;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingStrategyTest {
     
-    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("logicTable_", 1);
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("logicTable_", 1, '0');
     
     private final Collection<String> targets = Arrays.asList("1", "2", "3");
     

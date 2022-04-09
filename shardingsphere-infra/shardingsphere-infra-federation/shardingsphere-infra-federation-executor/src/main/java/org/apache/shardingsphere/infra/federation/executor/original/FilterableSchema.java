@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.federation.executor.original;
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTable;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +44,7 @@ public final class FilterableSchema extends AbstractSchema {
     }
     
     private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
-        Map<String, Table> result = new LinkedMap<>(schemaMetaData.getTables().size(), 1);
+        Map<String, Table> result = new LinkedHashMap<>(schemaMetaData.getTables().size(), 1);
         for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
             result.put(each.getName(), new FilterableTable(each, executor, new FederationTableStatistic()));
         }

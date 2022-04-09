@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.aware;
 
 import lombok.Getter;
-import org.apache.shardingsphere.spi.optional.OptionalSPIRegistry;
+import org.apache.shardingsphere.spi.type.optional.OptionalSPIRegistry;
 
 import java.util.Optional;
 

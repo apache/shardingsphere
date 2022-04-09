@@ -126,7 +126,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         String schemaName = connectionSession.getSchemaName();
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getSchema().get(logicTableName);
+        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {
@@ -173,7 +173,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String schemaName = connectionSession.getSchemaName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), preparedStatement.getSqlStatement(), schemaName);
+                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), preparedStatement.getSqlStatement(), schemaName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());

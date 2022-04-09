@@ -20,13 +20,12 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
             elementFormDefault="qualified">
-    <xsd:import namespace="http://www.springframework.org/schema/beans"
-                schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
-
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    
     <xsd:element name="rule">
         <xsd:complexType>
-            <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="sql-comment-parse-enable" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="sql-comment-parse-enable" type="xsd:boolean" default="false" />
             <xsd:attribute name="sql-statement-cache-ref" type="xsd:string" />
             <xsd:attribute name="parse-tree-cache-ref" type="xsd:string" />
         </xsd:complexType>
@@ -35,10 +34,9 @@
     <xsd:element name="cache-option">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="initial-capacity" type="xsd:int" use="required"/>
-            <xsd:attribute name="maximum-size" type="xsd:long" use="required"/>
-            <xsd:attribute name="concurrency-level" type="xsd:int" use="required"/>
+            <xsd:attribute name="initial-capacity" type="xsd:int" use="required" />
+            <xsd:attribute name="maximum-size" type="xsd:long" use="required" />
+            <xsd:attribute name="concurrency-level" type="xsd:int" use="required" />
         </xsd:complexType>
     </xsd:element>
-
 </xsd:schema>

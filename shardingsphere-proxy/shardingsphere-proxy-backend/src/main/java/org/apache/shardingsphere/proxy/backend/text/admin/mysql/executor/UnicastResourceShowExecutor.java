@@ -45,7 +45,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -80,7 +79,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         try {
             connectionSession.setCurrentSchema(schemaName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
-                    Collections.emptyList(), sqlStatement, connectionSession.getDefaultSchemaName());
+                    sqlStatement, connectionSession.getDefaultSchemaName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());

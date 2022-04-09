@@ -26,11 +26,11 @@
     </parent>
     <artifactId>shardingsphere-parser-test</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -84,5 +84,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
 </project>

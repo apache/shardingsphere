@@ -96,17 +96,17 @@ Anyone with a GitHub account can ask questions (error reports) about shardingsph
 **How to ask questions?**
 
 1. Attach the problem document link.
-1. Describe the problem in detail.
-1. Describe the problems caused to users.
-1. Propose the repair method.
-1. In [Issues](https://github.com/apache/shardingsphere/issues),`New issue ` asks your question.
+2. Describe the problem in detail.
+3. Describe the problems caused to users.
+4. Propose the repair method.
+5. In [Issues](https://github.com/apache/shardingsphere/issues),`New issue ` asks your question.
 
 ## Submission changes
 
 **Operation steps:**
 
 1. Locate the file you want to operate in the master branch directory structure.
-1. After the file operation is completed, pull request is raised to the master branch.
+2. After the file operation is completed, pull request is raised to the master branch.
 
 ## Appointment
 

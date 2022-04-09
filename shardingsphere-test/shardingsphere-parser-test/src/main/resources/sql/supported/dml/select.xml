@@ -83,6 +83,7 @@
     <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_assignment_operator_and_keyword" value="SELECT @KEY := '', @num := 123 FROM t_order" db-types="MySQL" />
     <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL"/>
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL"/>
@@ -116,4 +117,9 @@
     <sql-case id="select_with_binary_keyword" value="select position(binary 'll' in 'hello'),position('a' in binary 'hello')" db-types="MySQL" />
     <sql-case id="select_with_schema_name_in_shorthand_projection" value="SELECT sharding_db.t_order.* FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_schema_name_in_column_projection" value="SELECT sharding_db.t_order.order_id FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
+    <sql-case id="select_with_schema_name_in_table" value="SELECT order_id FROM public.t_order WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_database_name_and_schema_name_in_table" value="SELECT order_id FROM sharding_db.public.t_order WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_underscore_charset" value="SELECT _code,_a FROM t_order" db-types="MySQL" />
+    <sql-case id="select_table_with_capacity_unit_charset" value="SELECT T.USER_NO FROM T_RATION_INFO T" db-types="Oracle" />
+    <sql-case id="select_with_character_charset" value="SELECT _binary 'abc' as a" db-types="MySQL" />
 </sql-cases>

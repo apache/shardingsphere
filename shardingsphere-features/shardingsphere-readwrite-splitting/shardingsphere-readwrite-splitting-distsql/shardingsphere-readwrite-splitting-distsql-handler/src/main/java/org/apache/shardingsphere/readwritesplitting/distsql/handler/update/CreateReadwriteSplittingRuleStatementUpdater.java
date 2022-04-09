@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -33,8 +35,9 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.Readw
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -59,19 +62,27 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
+        checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig, shardingSphereMetaData.getResource());
         checkToBeCreatedResources(schemaName, sqlStatement, shardingSphereMetaData);
         checkToBeCreatedLoadBalancers(sqlStatement);
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
-                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement,
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+        Collection<String> currentRuleNames = new ArrayList<>();
+        if (null != resource && null != resource.getDataSources()) {
+            currentRuleNames.addAll(resource.getDataSources().keySet());
+        }
+        Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
+        if (!duplicateRuleNames.isEmpty()) {
+            throw new InvalidRuleConfigurationException("readwrite splitting", duplicateRuleNames, Collections.singleton(String.format("%s already exists in resource", duplicateRuleNames)));
+        }
         if (null != currentRuleConfig) {
-            Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            if (!duplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleException("readwrite splitting", schemaName, duplicateRuleNames);
-            }
+            currentRuleNames.addAll(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
+        }
+        duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
+        if (!duplicateRuleNames.isEmpty()) {
+            throw new DuplicateRuleException("readwrite splitting", schemaName, duplicateRuleNames);
         }
     }
     
@@ -88,10 +99,10 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
             }
         });
         Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), new RequiredResourceMissedException(schemaName, notExistResources));
+        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistResources));
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
         Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), new RequiredResourceMissedException(schemaName, notExistLogicResources));
+        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistLogicResources));
     }
     
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {

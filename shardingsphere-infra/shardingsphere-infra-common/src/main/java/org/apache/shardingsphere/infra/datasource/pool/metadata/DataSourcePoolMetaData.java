@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Data source pool meta data.
- * 
- * @param <T> type of target data source
  */
-public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI {
+public interface DataSourcePoolMetaData extends StatelessTypedSPI {
     
     /**
      * Get default properties.
@@ -59,9 +56,9 @@ public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI {
     Collection<String> getTransientFieldNames();
     
     /**
-     * Get JDBC URL meta data.
+     * Get data source pool field meta data.
      * 
-     * @return data source JDBC URL meta data
+     * @return data source pool field meta data
      */
-    DataSourceJdbcUrlMetaData<T> getJdbcUrlMetaData();
+    DataSourcePoolFieldMetaData getFieldMetaData();
 }

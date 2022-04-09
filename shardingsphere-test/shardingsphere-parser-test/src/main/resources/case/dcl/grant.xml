@@ -50,6 +50,7 @@
         <table name="t_order" start-index="27" stop-index="38">
             <owner name="ds_0" start-index="27" stop-index="30" />
         </table>
+        <column name="order_id" start-index="14" stop-index="21" />
     </grant>
     
     <grant sql-case-id="grant_select_to_local_user" />
@@ -199,6 +200,7 @@
     
     <grant sql-case-id="grant_select_to_users">
         <table name="t_order" start-index="27" stop-index="33" />
+        <column name="order_id" start-index="14" stop-index="21" />
     </grant>
     
     <grant sql-case-id="grant_select_on_table_for_postgresql">
@@ -217,4 +219,56 @@
         <!-- FIXME ds_0 is not table, should be schema -->
         <!--<table name="ds_0" start-index="24" stop-index="27" />-->
     </grant>
+    
+    <grant sql-case-id="grant_view_definition_on_availability_group" />
+    <grant sql-case-id="grant_take_ownership_on_availability_group" />
+    <grant sql-case-id="grant_control_on_availability_group" />
+    <grant sql-case-id="grant_create_table_to_user" />
+    <grant sql-case-id="grant_showplan_to_application_role" />
+    <grant sql-case-id="grant_create_view_to_user" />
+    <grant sql-case-id="grant_control_to_database_user" />
+    <grant sql-case-id="grant_control_to_user" />
+    <grant sql-case-id="grant_view_definition_on_role_to_user" />
+    <grant sql-case-id="grant_impersonate_to_application_role" />
+    <grant sql-case-id="grant_view_definition_endpoint_to_sqlserver_login" />
+    <grant sql-case-id="grant_take_ownership_endpoint_to_sqlserver_login" />
+    <grant sql-case-id="grant_control_on_fulltext_catalog" />
+    <grant sql-case-id="grant_view_definition_on_fulltext_stoplist" />
+
+    <grant sql-case-id="grant_select_on_object_table">
+        <table name="order_id" start-index="24" stop-index="33">
+            <owner name="t" start-index="24" stop-index="24" />
+        </table>
+    </grant>
+
+    <grant sql-case-id="grant_execute_on_object_stored_procedure">
+        <table name="sp1" start-index="25" stop-index="32">
+            <owner name="ds_0" start-index="25" stop-index="28" />
+        </table>
+    </grant>
+
+    <grant sql-case-id="grant_references_on_column">
+        <table name="order_id" start-index="39" stop-index="48">
+            <owner name="t" start-index="39" stop-index="39" />
+        </table>
+        <column name="order_id" start-index="18" stop-index="25" />
+    </grant>
+
+    <grant sql-case-id="grant_execute_on_stored_procedure">
+        <table name="sp1" start-index="17" stop-index="24">
+            <owner name="ds_0" start-index="17" stop-index="20" />
+        </table>
+    </grant>
+
+    <grant sql-case-id="grant_insert_on_schema" />
+    <grant sql-case-id="grant_insert_on_schema_with_grant_option" />
+    <grant sql-case-id="grant_view_definition_on_search_property_list" />
+    <grant sql-case-id="grant_control_server_to_sqlserver_login" />
+    <grant sql-case-id="grant_alter_any_event_notification_to_sqlserver_login" />
+    <grant sql-case-id="grant_alter_any_database_to_role" />
+    <grant sql-case-id="grant_impersonate_on_login" />
+    <grant sql-case-id="grant_alter_on_symmetric_key" />
+    <grant sql-case-id="grant_view_server_state_to_sqlserver_login" />
+    <grant sql-case-id="grant_view_definition_on_type" />
+    <grant sql-case-id="grant_execute_on_xml_schema_collection" />
 </sql-parser-test-cases>

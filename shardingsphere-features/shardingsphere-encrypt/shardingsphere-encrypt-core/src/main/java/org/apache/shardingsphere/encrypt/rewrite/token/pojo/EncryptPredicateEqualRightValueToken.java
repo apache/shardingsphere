@@ -48,7 +48,7 @@ public final class EncryptPredicateEqualRightValueToken extends SQLToken impleme
     @Override
     public String toString() {
         if (parameterMarkerIndexes.isEmpty()) {
-            return indexValues.get(0) instanceof String ? String.format("'%s'", indexValues.get(0)) : indexValues.get(0).toString();
+            return indexValues.get(0) instanceof String ? "'" + indexValues.get(0) + "'" : indexValues.get(0).toString();
         }
         return "?";
     }

@@ -30,7 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-db-discovery-mgr</module>
+        <module>shardingsphere-db-discovery-mysql</module>
         <module>shardingsphere-db-discovery-opengauss</module>
     </modules>
 </project>

@@ -49,8 +49,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern thinUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
-    private final Pattern connectDescriptorUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*(\\d+(\\."
-            + "((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
+    private final Pattern connectDescriptorUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
     
     public OracleDataSourceMetaData(final String url, final String username) {
         List<Matcher> matcherList = Arrays.asList(thinUrlPattern.matcher(url), connectDescriptorUrlPattern.matcher(url));
@@ -64,13 +63,12 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             hostname = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
             catalog = matcher.group(5);
-            schema = username;
         } else {
             hostname = matcher.group(2);
-            port = Integer.parseInt(matcher.group(7));
-            catalog = matcher.group(8);
-            schema = username;
+            port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3));
+            catalog = matcher.group(4);
         }
+        schema = username;
     }
     
     @Override

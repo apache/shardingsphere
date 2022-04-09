@@ -23,8 +23,10 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSi
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultSingleTableRuleStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Drop default single table rule statement assert.
@@ -39,12 +41,13 @@ public final class DropDefaultSingleTableRuleAssert {
      * @param actual actual drop default single table rule statement
      * @param expected expected drop default single table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDefaultSingleTableRuleStatement actual, 
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDefaultSingleTableRuleStatement actual,
                                 final DropDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("Actual statement should exist."), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
         }
     }
 }

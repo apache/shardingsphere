@@ -30,6 +30,7 @@
     <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
     <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
     <distsql-case id="show-instance" value="SHOW INSTANCE LIST" />
+    <distsql-case id="count-instance-rules" value="COUNT INSTANCE RULES" />
     <distsql-case id="show-readwrite-splitting-read-resources" value="show readwrite_splitting read resources" />
     <distsql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM schema_name" />
     <distsql-case id="refresh-table-metadata" value="refresh table metadata" />
@@ -48,4 +49,10 @@
     <distsql-case id="relabel-instance" value="RELABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1,OLAP_2" />
     <distsql-case id="unlabel-instance" value="UNLABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1" />
     <distsql-case id="unlabel-instance-without-label" value="UNLABEL INSTANCE 127.0.0.1@3309" />
+    <distsql-case id="prepare-distsql" value="PREPARE DISTSQL" />
+    <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
+    <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
+    <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE 1.2.3.4@3307 SET XA_RECOVERY_NODES=1.2.3.4@3308" />
+    <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE 1.2.3.4@3307 SET XA_RECOVERY_NODES=1.2.3.4@3308,1.2.3.4@3307 " />
+    <distsql-case id="import-schema-config" value="IMPORT SCHEMA CONFIG FILE='/yaml/config-sharding.yaml'" />
 </sql-cases>

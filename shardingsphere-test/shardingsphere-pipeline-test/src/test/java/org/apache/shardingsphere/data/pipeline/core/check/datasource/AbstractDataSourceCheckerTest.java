@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +27,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.mockito.Mockito.verify;
@@ -39,12 +43,18 @@ public final class AbstractDataSourceCheckerTest {
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
-    @Mock
-    private Connection connection;
-    
     private AbstractDataSourceChecker dataSourceChecker;
     
     private Collection<DataSource> dataSources;
+    
+    @Mock
+    private Connection connection;
+    
+    @Mock
+    private PreparedStatement preparedStatement;
+    
+    @Mock
+    private ResultSet resultSet;
     
     @Before
     public void setUp() {
@@ -67,8 +77,9 @@ public final class AbstractDataSourceCheckerTest {
         dataSources.add(dataSource);
     }
     
+    @SneakyThrows
     @Test
-    public void assertCheckConnection() throws SQLException {
+    public void assertCheckConnection() {
         when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
         verify(dataSource).getConnection();
@@ -78,5 +89,22 @@ public final class AbstractDataSourceCheckerTest {
     public void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
         dataSourceChecker.checkConnection(dataSources);
+    }
+    
+    @Test
+    public void assertCheckTargetTable() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
+    }
+    
+    @Test(expected = PipelineJobPrepareFailedException.class)
+    public void assertCheckTargetTableFailed() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
     }
 }

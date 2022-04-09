@@ -36,7 +36,7 @@ public final class AnalyzeTableStatementContext extends CommonSQLStatementContex
     
     public AnalyzeTableStatementContext(final AnalyzeTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override

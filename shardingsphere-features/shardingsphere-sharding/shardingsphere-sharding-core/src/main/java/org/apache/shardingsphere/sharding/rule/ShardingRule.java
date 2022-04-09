@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -61,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -121,6 +122,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -137,6 +139,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
@@ -215,6 +218,72 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
+    }
+    
+    private boolean isValidBindingTableConfiguration(final Collection<String> bindingTableGroups) {
+        for (String each : bindingTableGroups) {
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
+            if (bindingTables.size() <= 1) {
+                continue;
+            }
+            Iterator<String> iterator = bindingTables.iterator();
+            TableRule sampleTableRule = getTableRule(iterator.next());
+            while (iterator.hasNext()) {
+                TableRule tableRule = getTableRule(iterator.next());
+                if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
+                    return false;
+                }
+                if (!isValidShardingAlgorithm(sampleTableRule, tableRule, true) 
+                        || !isValidShardingAlgorithm(sampleTableRule, tableRule, false)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
+        return sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
+    }
+    
+    private boolean isValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
+        for (String each : sampleTableRule.getActualDatasourceNames()) {
+            Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(actualTableName 
+                -> actualTableName.replace(sampleTableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
+            Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(actualTableName 
+                -> actualTableName.replace(tableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
+            if (!sampleActualTableNames.equals(actualTableNames)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm) {
+        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm);
+        String algorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm);
+        return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
+    }
+    
+    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm) {
+        ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
+                ? null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig()
+                : null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
+        ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName());
+        String originAlgorithmExpression = null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
+        String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
+        String shardingColumn = getShardingColumn(shardingStrategyConfig);
+        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "");
+    }
+    
+    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
+            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
+        }
+        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
+            return ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
+        }
+        return StringUtils.defaultString(defaultShardingColumn, "");
     }
     
     @Override
@@ -638,11 +707,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             if (!isJoinConditionExpression(each)) {
                 continue;
             }
-            ColumnProjection leftColumn = buildColumnProjection((ColumnSegment) ((BinaryOperationExpression) each).getLeft());
-            ColumnProjection rightColumn = buildColumnProjection((ColumnSegment) ((BinaryOperationExpression) each).getRight());
-            Map<String, String> columnTableNames = select.getTablesContext().findTableName(Arrays.asList(leftColumn, rightColumn), schema);
-            Optional<TableRule> leftTableRule = findTableRule(columnTableNames.get(leftColumn.getExpression()));
-            Optional<TableRule> rightTableRule = findTableRule(columnTableNames.get(rightColumn.getExpression()));
+            ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
+            ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
+            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftColumn, rightColumn), schema);
+            Optional<TableRule> leftTableRule = findTableRule(columnExpressionTableNames.get(leftColumn.getExpression()));
+            Optional<TableRule> rightTableRule = findTableRule(columnExpressionTableNames.get(rightColumn.getExpression()));
             if (!leftTableRule.isPresent() || !rightTableRule.isPresent()) {
                 continue;
             }
@@ -650,17 +719,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                     ? getDatabaseShardingStrategyConfiguration(leftTableRule.get()) : getTableShardingStrategyConfiguration(leftTableRule.get());
             ShardingStrategyConfiguration rightConfiguration = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(rightTableRule.get()) : getTableShardingStrategyConfiguration(rightTableRule.get());
-            if (findShardingColumn(leftConfiguration, leftColumn.getName()).isPresent() && findShardingColumn(rightConfiguration, rightColumn.getName()).isPresent()) {
-                result.add(columnTableNames.get(leftColumn.getExpression()));
-                result.add(columnTableNames.get(rightColumn.getExpression()));
+            if (findShardingColumn(leftConfiguration, leftColumn.getIdentifier().getValue()).isPresent() 
+                    && findShardingColumn(rightConfiguration, rightColumn.getIdentifier().getValue()).isPresent()) {
+                result.add(columnExpressionTableNames.get(leftColumn.getExpression()));
+                result.add(columnExpressionTableNames.get(rightColumn.getExpression()));
             }
         }
         return result;
-    }
-    
-    private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
-        String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
     private boolean isJoinConditionExpression(final ExpressionSegment expression) {

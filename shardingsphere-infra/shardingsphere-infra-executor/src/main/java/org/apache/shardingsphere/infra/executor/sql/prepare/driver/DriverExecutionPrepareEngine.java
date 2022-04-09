@@ -25,14 +25,13 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.Driver
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -46,7 +45,9 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
     
-    private final ExecutorDriverManager<C, ?, ?> executorDriverManager;
+    private final ExecutorConnectionManager<C> connectionManager;
+    
+    private final ExecutorStatementManager<C, ?, ?> statementManager;
     
     private final StorageResourceOption option;
     
@@ -57,10 +58,11 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         ShardingSphereServiceLoader.register(SQLExecutionUnitBuilder.class);
     }
     
-    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager, 
-                                        final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
+    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorConnectionManager<C> connectionManager, 
+                                        final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
-        this.executorDriverManager = executorDriverManager;
+        this.connectionManager = connectionManager;
+        this.statementManager = statementManager;
         this.option = option;
         sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
     }
@@ -75,7 +77,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     private SQLExecutionUnitBuilder getCachedSqlExecutionUnitBuilder(final String type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
+            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key));
         }
         return result;
     }
@@ -83,7 +85,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @Override
     protected List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
-        List<C> connections = executorDriverManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
+        List<C> connections = connectionManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
             result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
@@ -95,7 +97,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
-            result.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), executorDriverManager, connection, connectionMode, option));
+            result.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }

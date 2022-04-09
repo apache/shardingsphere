@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -48,7 +49,7 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
     
     public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override
@@ -78,6 +79,7 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
         for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
             each.getConstraintDefinition().getIndexName().ifPresent(result::add);
         }
+        getSqlStatement().getDropIndexDefinitions().stream().map(DropIndexDefinitionSegment::getIndexSegment).forEach(result::add);
         return result;
     }
     

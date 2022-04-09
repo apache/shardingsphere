@@ -40,7 +40,7 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     
     public ShowColumnsStatementContext(final MySQLShowColumnsStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -30,12 +31,15 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,7 +69,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected ShardingSphereSchema mockSchema() {
+    protected Map<String, ShardingSphereSchema> mockSchemas() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
@@ -82,11 +86,15 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        return result;
+        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
     }
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
+    }
+    
+    @Override
+    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
 
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

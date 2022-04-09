@@ -33,6 +33,8 @@ header:
     - '**/*.json'
     - '**/*.iml'
     - '**/*.ini'
+    - '**/_helpers.tpl'
+    - '**/.helmignore'
     - 'LICENSE'
     - 'NOTICE'
     - '**/release-docs/**'

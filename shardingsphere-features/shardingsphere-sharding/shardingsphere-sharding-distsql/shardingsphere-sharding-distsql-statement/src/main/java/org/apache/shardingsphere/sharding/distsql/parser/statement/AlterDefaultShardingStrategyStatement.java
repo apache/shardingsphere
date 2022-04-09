@@ -21,13 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 
 /**
  * Alter default sharding strategy statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterDefaultShardingStrategyStatement extends AlterRuleStatement {
+public final class AlterDefaultShardingStrategyStatement extends AlterRuleStatement implements ShardingSubjectSupplier {
     
     private final String defaultType;
     

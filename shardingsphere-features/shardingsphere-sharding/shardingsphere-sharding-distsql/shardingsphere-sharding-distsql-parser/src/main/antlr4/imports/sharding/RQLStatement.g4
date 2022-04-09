@@ -55,6 +55,10 @@ showUnusedShardingKeyGenerators
     : SHOW UNUSED SHARDING KEY GENERATORS (FROM schemaName)?
     ;
 
+showShardingTableRulesUsedAlgorithm
+    : SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName (FROM schemaName)?
+    ;
+
 showShardingTableRulesUsedKeyGenerator
     : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM schemaName)?
     ;

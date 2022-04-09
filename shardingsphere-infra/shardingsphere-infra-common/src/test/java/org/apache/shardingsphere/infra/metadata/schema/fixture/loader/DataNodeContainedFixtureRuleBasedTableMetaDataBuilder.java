@@ -35,7 +35,7 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String tableName : tableNames) {
-                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
+                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
             }
             return result;
         }

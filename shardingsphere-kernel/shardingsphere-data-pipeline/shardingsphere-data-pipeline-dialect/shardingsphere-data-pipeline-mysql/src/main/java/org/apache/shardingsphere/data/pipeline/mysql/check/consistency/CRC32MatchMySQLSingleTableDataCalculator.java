@@ -58,9 +58,9 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
-            String sql = SQL_BUILDER.buildSumCrc32SQL(logicTableName, each);
+            String sql = SQL_BUILDER.buildCRC32SQL(logicTableName, each);
             try {
-                return sumCrc32(dataCalculateParameter.getDataSource(), sql);
+                return calculateCRC32(dataCalculateParameter.getDataSource(), sql);
             } catch (final SQLException ex) {
                 throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
             }
@@ -68,7 +68,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
         return Collections.unmodifiableList(result);
     }
     
-    private long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
+    private long calculateCRC32(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

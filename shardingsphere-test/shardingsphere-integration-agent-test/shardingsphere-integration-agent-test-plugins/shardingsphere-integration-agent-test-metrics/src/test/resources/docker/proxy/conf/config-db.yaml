@@ -68,5 +68,3 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
-        props:
-          worker-id: 123

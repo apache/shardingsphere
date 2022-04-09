@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
@@ -37,53 +35,44 @@ import java.util.Map;
 /**
  * Embedded storage container.
  */
-@RequiredArgsConstructor
-@Getter(AccessLevel.PROTECTED)
+@Getter
 public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, StorageContainer {
     
     private final DatabaseType databaseType;
     
     private final String scenario;
     
-    private Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap;
     
-    private DataSource verificationDataSource;
+    private final Map<String, DataSource> expectedDataSourceMap;
     
-    @Override
-    @SneakyThrows({IOException.class, JAXBException.class})
-    public Map<String, DataSource> getActualDataSourceMap() {
-        if (null != actualDataSourceMap) {
-            return actualDataSourceMap;
-        }
-        synchronized (this) {
-            if (null != actualDataSourceMap) {
-                return actualDataSourceMap;
-            } 
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-            actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-            dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-            return actualDataSourceMap;
-        }
+    public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
+        this.databaseType = databaseType;
+        this.scenario = scenario;
+        actualDataSourceMap = createActualDataSourceMap();
+        expectedDataSourceMap = createExpectedDataSourceMap();
     }
     
-    @Override
-    public final DataSource getVerificationDataSource() {
-        if (null != verificationDataSource) {
-            return verificationDataSource;
-        }
-        synchronized (this) {
-            if (null != verificationDataSource) {
-                return verificationDataSource;
-            }
-            verificationDataSource = createDataSource("verification_dataset");
-            return verificationDataSource;
-        }
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private Map<String, DataSource> createActualDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
+    }
+    
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private Map<String, DataSource> createExpectedDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
     }
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, dataSourceName));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + dataSourceName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(4);

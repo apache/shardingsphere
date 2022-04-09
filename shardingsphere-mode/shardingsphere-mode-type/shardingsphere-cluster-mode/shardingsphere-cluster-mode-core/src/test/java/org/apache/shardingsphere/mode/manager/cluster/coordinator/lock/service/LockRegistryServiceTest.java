@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,8 +58,29 @@ public final class LockRegistryServiceTest {
     }
     
     @Test
-    public void assertDeleteLockAck() {
-        lockRegistryService.deleteLockAck("test");
-        verify(clusterPersistRepository).delete(anyString());
+    public void assertGetAllGlobalLock() {
+        lockRegistryService.getAllGlobalLock();
+        verify(clusterPersistRepository).getChildrenKeys(LockNode.getGlobalLocksNodePath());
+    }
+    
+    @Test
+    public void assertReleaseGlobalLock() {
+        String schemaLockName = LockNode.generateSchemaLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseGlobalLock(schemaLockName);
+        verify(clusterPersistRepository).delete(schemaLockName);
+    }
+    
+    @Test
+    public void assertAckLock() {
+        String schemaAckLock = LockNode.generateSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.ackLock(schemaAckLock, "127.0.0.1@3307");
+        verify(clusterPersistRepository).persistEphemeral(schemaAckLock, "127.0.0.1@3307");
+    }
+    
+    @Test
+    public void assertReleaseAckLock() {
+        String schemaAckLock = LockNode.generateSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseAckLock(schemaAckLock);
+        verify(clusterPersistRepository).delete(schemaAckLock);
     }
 }

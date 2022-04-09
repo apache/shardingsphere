@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
+import com.google.common.collect.Range;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 
 import java.util.Collection;
@@ -66,10 +66,8 @@ public final class DataCalculateParameter {
     
     /**
      * Used for range query.
-     * If it's configured, then it could be translated to SQL like "uniqueKey >= pair.left AND uniqueKey <= pair.right".
-     * One of left and right of pair could be null.
      */
-    private volatile Pair<Object, Object> uniqueKeyValueRange;
+    private volatile Range<? extends Comparable<?>> uniqueKeyValueRange;
     
     /**
      * Used for multiple records query.

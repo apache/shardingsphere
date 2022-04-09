@@ -17,8 +17,9 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -38,14 +39,14 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
+        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
                 CosIdIntervalShardingAlgorithmTest.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
                 CosIdIntervalShardingAlgorithmTest.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
+        properties.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         CosIdSnowflakeIntervalShardingAlgorithm result = new CosIdSnowflakeIntervalShardingAlgorithm();
         result.setProps(properties);
         result.init();
@@ -93,7 +94,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             PreciseShardingValue shardingValue = new PreciseShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, 
-                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, new DataNodeInfo(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, 6), snowflakeId);
+                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, new DataNodeInfo(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, 6, '0'), snowflakeId);
             String actual = shardingAlgorithm.doSharding(CosIdIntervalShardingAlgorithmTest.ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
@@ -126,7 +127,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             RangeShardingValue shardingValue = new RangeShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, 
-                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, new DataNodeInfo(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, 6), rangeValue);
+                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, new DataNodeInfo(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(CosIdIntervalShardingAlgorithmTest.ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }

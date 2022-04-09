@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Alter SQL parser rule statement executor.
+ * Alter SQL parser rule statement handler.
  */
 public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
     
@@ -74,10 +74,9 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     }
     
     private CacheOption buildCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
-        CacheOption result = new CacheOption();
-        result.setInitialCapacity(null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity());
-        result.setMaximumSize(null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize());
-        result.setConcurrencyLevel(null == segment.getConcurrencyLevel() ? cacheOption.getConcurrencyLevel() : segment.getConcurrencyLevel());
-        return result;
+        int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
+        long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
+        int concurrencyLevel = null == segment.getConcurrencyLevel() ? cacheOption.getConcurrencyLevel() : segment.getConcurrencyLevel();
+        return new CacheOption(initialCapacity, maximumSize, concurrencyLevel);
     }
 }

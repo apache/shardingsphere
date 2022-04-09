@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +37,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropEncryptRuleStatementUpdaterTest {
@@ -51,31 +52,41 @@ public final class DropEncryptRuleStatementUpdaterTest {
     private final DropEncryptRuleStatementUpdater updater = new DropEncryptRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_encrypt"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), encryptRuleConfiguration));
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), encryptRuleConfiguration));
         assertTrue(encryptRuleConfiguration.getEncryptors().isEmpty());
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), encryptRuleConfiguration));
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), encryptRuleConfiguration));
         assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
     }
     
-    private DropEncryptRuleStatement createSQLStatement() {
-        return new DropEncryptRuleStatement(Collections.singleton("t_encrypt"));
+    private DropEncryptRuleStatement createSQLStatement(final String tableName) {
+        return new DropEncryptRuleStatement(Collections.singleton(tableName));
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+        EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfiguration();
+        DropEncryptRuleStatement statement = createSQLStatement("t_encrypt_1");
+        statement.setContainsExistClause(true);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, mock(EncryptRuleConfiguration.class));
+        assertFalse(updater.updateCurrentRuleConfiguration(statement, encryptRuleConfiguration));
+        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

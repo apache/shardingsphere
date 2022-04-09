@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -36,7 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,19 +70,30 @@ public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration);
         assertFalse(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DropDatabaseDiscoveryTypeStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
+        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration));
+        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
+        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(2));
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatement() {
         return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name"));
     }
     
+    private DropDatabaseDiscoveryTypeStatement createSQLStatementWithIfExists() {
+        return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name_0"), true);
+    }
+    
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
+        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(2, 1);
         discoveryTypes.put("type_name", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()));
         discoveryTypes.put("other", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()));
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = new HashMap<>(1, 1);
-        discoveryHeartbeat.put("heartbeat_name", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
-        return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), discoveryHeartbeat, discoveryTypes);
+        return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), discoveryTypes);
     }
 }

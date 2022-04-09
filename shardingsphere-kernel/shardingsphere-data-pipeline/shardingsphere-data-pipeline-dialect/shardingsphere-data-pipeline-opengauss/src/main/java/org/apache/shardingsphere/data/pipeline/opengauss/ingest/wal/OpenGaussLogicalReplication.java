@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
@@ -34,48 +35,45 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * OpenGauss logical replication.
+ * Logical replication for openGauss.
  */
 public final class OpenGaussLogicalReplication {
-
+    
     public static final String SLOT_NAME_PREFIX = "sharding_scaling";
-
+    
     public static final String DECODE_PLUGIN = "mppdb_decoding";
-
+    
     public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
-
+    
     /**
-     * Create OpenGauss connection.
+     * Create connection.
      *
      * @param pipelineDataSourceConfig pipeline data source configuration
-     * @return OpenGauss connection
+     * @return connection
      * @throws SQLException SQL exception
      */
-    public Connection createPgConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
-        return createConnection(pipelineDataSourceConfig);
-    }
-    
-    private Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+    public Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, pipelineDataSourceConfig.getHikariConfig().getUsername());
-        PGProperty.PASSWORD.set(props, pipelineDataSourceConfig.getHikariConfig().getPassword());
+        YamlJdbcConfiguration jdbcConfig = pipelineDataSourceConfig.getJdbcConfig();
+        PGProperty.USER.set(props, jdbcConfig.getUsername());
+        PGProperty.PASSWORD.set(props, jdbcConfig.getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.4");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
+        return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
     }
     
     /**
      * Create OpenGauss replication stream.
      *
-     * @param pgConnection OpenGauss connection
+     * @param connection connection
      * @param startPosition start position
-     * @param slotName the setted slotName
+     * @param slotName slot name
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection pgConnection, final BaseLogSequenceNumber startPosition, final String slotName) throws SQLException {
-        return pgConnection.getReplicationAPI()
+    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName) throws SQLException {
+        return connection.getReplicationAPI()
                 .replicationStream()
                 .logical()
                 .withSlotName(slotName)
@@ -84,49 +82,46 @@ public final class OpenGaussLogicalReplication {
                 .withStartPosition((LogSequenceNumber) startPosition.get())
                 .start();
     }
-
+    
     /**
      * Create slots (drop existed slot before create).
      *
-     * @param conn the datasource connection
-     * @throws SQLException the sql exp
+     * @param connection connection
+     * @throws SQLException SQL exception
      */
-    public static void createIfNotExists(final Connection conn) throws SQLException {
-        if (isSlotNameExist(conn)) {
-            return;
+    public static void createIfNotExists(final Connection connection) throws SQLException {
+        if (!isSlotNameExist(connection)) {
+            createSlotBySQL(connection);
         }
-        createSlotBySql(conn);
     }
     
     /**
      * Drop replication slot by connection.
      *
-     * @param conn the database connection
-     * @throws SQLException drop sql with error
+     * @param connection connection
+     * @throws SQLException drop SQL with error
      */
-    public static void dropSlot(final Connection conn) throws SQLException {
-        String sql = String.format("select * from pg_drop_replication_slot('%s')", getUniqueSlotName(conn));
-        try (CallableStatement cs = conn.prepareCall(sql)) {
-            cs.execute();
+    public static void dropSlot(final Connection connection) throws SQLException {
+        String sql = String.format("select * from pg_drop_replication_slot('%s')", getUniqueSlotName(connection));
+        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
+            callableStatement.execute();
         }
     }
-
-    private static boolean isSlotNameExist(final Connection conn) throws SQLException {
+    
+    private static boolean isSlotNameExist(final Connection connection) throws SQLException {
         String sql = "select * from pg_replication_slots where slot_name=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, getUniqueSlotName(conn));
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, getUniqueSlotName(connection));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next();
             }
         }
     }
-
-    private static void createSlotBySql(final Connection connection) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(
-                String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')",
-                        getUniqueSlotName(connection),
-                        DECODE_PLUGIN))) {
-            ps.execute();
+    
+    private static void createSlotBySQL(final Connection connection) throws SQLException {
+        String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", getUniqueSlotName(connection), DECODE_PLUGIN);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.execute();
         } catch (final PSQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
                 throw ex;
@@ -137,11 +132,11 @@ public final class OpenGaussLogicalReplication {
     /**
      * Get the unique slot name by connection.
      *
-     * @param conn the connection
+     * @param connection connection
      * @return the unique name by connection
      * @throws SQLException failed when getCatalog
      */
-    public static String getUniqueSlotName(final Connection conn) throws SQLException {
-        return String.format("%s_%s", SLOT_NAME_PREFIX, conn.getCatalog());
+    public static String getUniqueSlotName(final Connection connection) throws SQLException {
+        return String.format("%s_%s", SLOT_NAME_PREFIX, connection.getCatalog());
     }
 }

@@ -173,6 +173,7 @@
     
     <revoke sql-case-id="revoke_select_to_users">
         <table name="t_order" start-index="28" stop-index="34" />
+        <column name="order_id" start-index="15" stop-index="22" />
     </revoke>
     
     <revoke sql-case-id="revoke_crud_on_table">
@@ -186,4 +187,45 @@
     <revoke sql-case-id="revoke_select_on_table_for_sqlserver">
         <table name="t_order" start-index="17" stop-index="23" />
     </revoke>
+
+    <revoke sql-case-id="revoke_view_definition_on_availability_group_to_login" />
+    <revoke sql-case-id="revoke_take_ownership_on_availability_group_to_user" />
+    <revoke sql-case-id="revoke_grant_option_on_availability_group_to_user" />
+    <revoke sql-case-id="revoke_create_certificate_from_user" />
+    <revoke sql-case-id="revoke_references_from_role" />
+    <revoke sql-case-id="revoke_view_definition_from_user" />
+    <revoke sql-case-id="revoke_control_on_user" />
+    <revoke sql-case-id="revoke_view_definition_on_role_from_user" />
+    <revoke sql-case-id="revoke_impersonate_on_user" />
+    <revoke sql-case-id="revoke_view_definition_on_endpoint_from_login" />
+    <revoke sql-case-id="revoke_take_ownership_on_endpoint_from_user" />
+
+    <revoke sql-case-id="revoke_select_on_object_from_user">
+        <table name="t_order" start-index="25" stop-index="35" >
+            <owner name="db1" start-index="25" stop-index="27" />
+        </table>
+    </revoke>
+
+    <revoke sql-case-id="revoke_execute_on_object_from_role">
+        <table name="t_order" start-index="26" stop-index="36" >
+            <owner name="db1" start-index="26" stop-index="28" />
+        </table>
+    </revoke>
+
+    <revoke sql-case-id="revoke_references_on_object_from_user">
+        <table name="t_order" start-index="40" stop-index="50" >
+            <owner name="db1" start-index="40" stop-index="42" />
+        </table>
+        <column name="order_id" start-index="19" stop-index="26" />
+    </revoke>
+
+    <revoke sql-case-id="revoke_view_server_state_from_login" />
+    <revoke sql-case-id="revoke_grant_option_for_connect_sql_from_login" />
+    <revoke sql-case-id="revoke_impersonate_on_login_from_windows_user" />
+    <revoke sql-case-id="revoke_view_definition_on_login" />
+    <revoke sql-case-id="revoke_view_definition_on_server_role" />
+    <revoke sql-case-id="revoke_alter_on_symmetric_key_to_user" />
+    <revoke sql-case-id="revoke_execute_on_system_object" />
+    <revoke sql-case-id="revoke_view_definition_on_type" />
+    <revoke sql-case-id="revoke_execute_on_xml_schema_collection" />
 </sql-parser-test-cases>

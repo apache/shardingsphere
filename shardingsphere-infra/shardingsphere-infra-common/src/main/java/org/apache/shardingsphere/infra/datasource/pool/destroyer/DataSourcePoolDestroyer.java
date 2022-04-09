@@ -17,21 +17,52 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetectorFactory;
+
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Data source pool destroyer.
  */
-public interface DataSourcePoolDestroyer extends TypedSPI, RequiredSPI {
+@RequiredArgsConstructor
+public final class DataSourcePoolDestroyer {
+    
+    private final DataSource dataSource;
     
     /**
-     * destroy data source pool gracefully.
-     * 
-     * @param dataSource data source pool to be destroyed
-     * @throws SQLException SQL exception
+     * Asynchronous destroy data source pool gracefully.
      */
-    void destroy(DataSource dataSource) throws SQLException;
+    public void asyncDestroy() {
+        if (!(dataSource instanceof AutoCloseable)) {
+            return;
+        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(this::graceDestroy);
+        executor.shutdown();
+    }
+    
+    private void graceDestroy() {
+        waitUntilActiveConnectionComplete();
+        close();
+    }
+    
+    private void waitUntilActiveConnectionComplete() {
+        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = DataSourcePoolActiveDetectorFactory.newInstance(dataSource.getClass().getName());
+        while (dataSourcePoolActiveDetector.containsActiveConnection(dataSource)) {
+            try {
+                Thread.sleep(10L);
+            } catch (final InterruptedException ignore) {
+            }
+        }
+    }
+    
+    @SneakyThrows
+    private void close() {
+        ((AutoCloseable) dataSource).close();
+    }
 }

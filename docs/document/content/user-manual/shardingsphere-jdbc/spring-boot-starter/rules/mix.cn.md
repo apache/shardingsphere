@@ -14,20 +14,20 @@ weight = 6
 # 数据源名称，多数据源以逗号分隔
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0.jdbc-url= # 数据库 URL 连接
 spring.shardingsphere.datasource.write-ds0.type=  # 数据库连接池类名称
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # 数据库驱动类名
 spring.shardingsphere.datasource.write-ds0.username= # 数据库用户名
 spring.shardingsphere.datasource.write-ds0.password= # 数据库密码
 spring.shardingsphere.datasource.write-ds0.xxx=  # 数据库连接池的其它属性
 
-spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0-read0.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1-read0.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
 # 分片规则配置
@@ -70,7 +70,7 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # 分片算法配置
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# 表达式`ds_$->{user_id % 2}` 枚举的数据源为读写分离配置的逻辑数据源名称
+# 表达式 `ds_$->{user_id % 2}` 枚举的数据源为读写分离配置的逻辑数据源名称
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds_$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}

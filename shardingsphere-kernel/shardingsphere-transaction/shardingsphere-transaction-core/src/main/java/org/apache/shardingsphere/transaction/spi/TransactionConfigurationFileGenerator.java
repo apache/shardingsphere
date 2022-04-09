@@ -19,31 +19,30 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Properties;
 
 /**
  * Transaction configuration file generator.
  */
-public interface TransactionConfigurationFileGenerator extends TypedSPI {
+public interface TransactionConfigurationFileGenerator extends StatelessTypedSPI {
     
     /**
      * Generate transaction configuration file.
      *
-     * @param transactionRule transaction rule
+     * @param transactionProps transaction properties
      * @param instanceContext instance context
      */
-    void generateFile(TransactionRule transactionRule, InstanceContext instanceContext);
+    void generateFile(Properties transactionProps, InstanceContext instanceContext);
     
     /**
-     * Get transaction configuration.
+     * Get transaction rule props.
      *
-     * @param transactionRuleConfiguration transaction rule configuration
+     * @param originTransactionProps origin transaction properties
      * @param schemaConfiguration schema configuration
+     * @param modeType mode type
      * @return transaction rule props
      */
-    Properties getTransactionProps(TransactionRuleConfiguration transactionRuleConfiguration, SchemaConfiguration schemaConfiguration);
+    Properties getTransactionProps(Properties originTransactionProps, SchemaConfiguration schemaConfiguration, String modeType);
 }

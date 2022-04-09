@@ -13,6 +13,8 @@ weight = 2
 ## Unsupported
 
 * Recover committing and rolling back in other machines after the service is down.
+* Savepoint.
+* In the transaction block, the SQL execution is abnormal, and run `Commit`, and data remains consistent.
 
 ## XA Transaction managed by XA Statement
 

@@ -27,11 +27,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
     @Override
-    public String getDatabaseType() {
-        return new FixtureDatabaseType().getName();
-    }
-    
-    @Override
     public FrontendContext getFrontendContext() {
         return null;
     }
@@ -53,5 +48,14 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     
     @Override
     public void release(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
+    public String getType() {
+        return new FixtureDatabaseType().getName();
     }
 }

@@ -53,37 +53,37 @@ public final class GeneralDQLIT extends BaseDQLIT {
     public void assertExecuteQuery() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteQueryForStatement(actualConnection, verificationConnection);
+                assertExecuteQueryForStatement(actualConnection, expectedConnection);
             } else {
-                assertExecuteQueryForPreparedStatement(actualConnection, verificationConnection);
+                assertExecuteQueryForPreparedStatement(actualConnection, expectedConnection);
             }
         }
     }
     
-    private void assertExecuteQueryForStatement(final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+    private void assertExecuteQueryForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement();
                 ResultSet actualResultSet = actualStatement.executeQuery(getSQL());
-                Statement verificationStatement = verificationConnection.createStatement();
-                ResultSet verificationResultSet = verificationStatement.executeQuery(getSQL())) {
-            assertResultSet(actualResultSet, verificationResultSet);
+                Statement expectedStatement = expectedConnection.createStatement();
+                ResultSet expectedResultSet = expectedStatement.executeQuery(getSQL())) {
+            assertResultSet(actualResultSet, expectedResultSet);
         }
     }
     
-    private void assertExecuteQueryForPreparedStatement(final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+    private void assertExecuteQueryForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
-                PreparedStatement verificationPreparedStatement = verificationConnection.prepareStatement(getSQL())) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (
                     ResultSet actualResultSet = actualPreparedStatement.executeQuery();
-                    ResultSet verificationResultSet = verificationPreparedStatement.executeQuery()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.executeQuery()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
@@ -92,41 +92,41 @@ public final class GeneralDQLIT extends BaseDQLIT {
     public void assertExecute() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteForStatement(actualConnection, verificationConnection);
+                assertExecuteForStatement(actualConnection, expectedConnection);
             } else {
-                assertExecuteForPreparedStatement(actualConnection, verificationConnection);
+                assertExecuteForPreparedStatement(actualConnection, expectedConnection);
             }
         }
     }
     
-    private void assertExecuteForStatement(final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+    private void assertExecuteForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement();
-                Statement verificationStatement = verificationConnection.createStatement()) {
-            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && verificationStatement.execute(getSQL()));
+                Statement expectedStatement = expectedConnection.createStatement()) {
+            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
     
-    private void assertExecuteForPreparedStatement(final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+    private void assertExecuteForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
-                PreparedStatement verificationPreparedStatement = verificationConnection.prepareStatement(getSQL())) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && verificationPreparedStatement.execute());
+            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationPreparedStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }

@@ -18,78 +18,55 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.testcontainers.utility.MountableFile;
+import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Docker storage container.
  */
+@Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    @Getter(AccessLevel.PROTECTED)
     private final DatabaseType databaseType;
     
     private final String scenario;
     
-    private Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap;
     
-    private DataSource verificationDataSource;
+    private final Map<String, DataSource> expectedDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        actualDataSourceMap = new LinkedHashMap<>();
+        expectedDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
     protected void configure() {
-        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/verification/init-sql/" + databaseType.getName().toLowerCase()), "/docker-entrypoint-initdb.d/");
+        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
-    public final Map<String, DataSource> getActualDataSourceMap() {
-        if (null != actualDataSourceMap) {
-            return actualDataSourceMap;
-        }
-        synchronized (this) {
-            if (null != actualDataSourceMap) {
-                return actualDataSourceMap;
-            }
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-            actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-            dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-            return actualDataSourceMap;
-        }
-    }
-    
-    @Override
-    public final DataSource getVerificationDataSource() {
-        if (null != verificationDataSource) {
-            return verificationDataSource;
-        }
-        synchronized (this) {
-            if (null != verificationDataSource) {
-                return verificationDataSource;
-            }
-            verificationDataSource = createDataSource("verification_dataset");
-            return verificationDataSource;
-        }
+    protected void postStart() {
+        DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
     }
     
     private DataSource createDataSource(final String dataSourceName) {

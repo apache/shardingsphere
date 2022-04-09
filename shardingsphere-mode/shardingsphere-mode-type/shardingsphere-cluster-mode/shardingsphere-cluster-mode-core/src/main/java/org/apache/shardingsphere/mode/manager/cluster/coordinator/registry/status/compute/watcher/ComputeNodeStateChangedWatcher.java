@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -41,12 +45,12 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(ComputeNode.getAttributesNodePath());
+        return Collections.singleton(ComputeNode.getComputeNodePath());
     }
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
@@ -60,7 +64,21 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
             } else if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
+            } else if (event.getKey().equals(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId))) {
+                return Optional.of(new XaRecoveryIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : event.getValue()));
             }
+        } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
+            Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
+            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType()) : Optional.empty();
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type) {
+        if (type == Type.ADDED) {
+            return Optional.of(new InstanceOnlineEvent(instanceDefinition));
+        } else if (type == Type.DELETED) {
+            return Optional.of(new InstanceOfflineEvent(instanceDefinition));
         }
         return Optional.empty();
     }

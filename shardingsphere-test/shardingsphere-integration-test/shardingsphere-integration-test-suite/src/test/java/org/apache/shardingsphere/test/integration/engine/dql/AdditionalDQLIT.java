@@ -55,39 +55,39 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, verificationConnection);
+                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, expectedConnection);
             } else {
-                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, verificationConnection);
+                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, expectedConnection);
             }
         }
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 ResultSet actualResultSet = actualStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()));
-                Statement verificationStatement = verificationConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                ResultSet verificationResultSet = verificationStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()))) {
-            assertResultSet(actualResultSet, verificationResultSet);
+                Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet expectedResultSet = expectedStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()))) {
+            assertResultSet(actualResultSet, expectedResultSet);
         }
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                PreparedStatement verificationPreparedStatement = verificationConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (
                     ResultSet actualResultSet = actualPreparedStatement.executeQuery();
-                    ResultSet verificationResultSet = verificationPreparedStatement.executeQuery()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.executeQuery()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
@@ -96,41 +96,41 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, verificationConnection);
+                assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, expectedConnection);
             } else {
-                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, verificationConnection);
+                assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, expectedConnection);
             }
         }
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 ResultSet actualResultSet = actualStatement.executeQuery(sql);
-                Statement verificationStatement = verificationConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                ResultSet verificationResultSet = verificationStatement.executeQuery(sql)) {
-            assertResultSet(actualResultSet, verificationResultSet);
+                Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+                ResultSet expectedResultSet = expectedStatement.executeQuery(sql)) {
+            assertResultSet(actualResultSet, expectedResultSet);
         }
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                PreparedStatement verificationPreparedStatement
-                        = verificationConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(
+                        getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (
                     ResultSet actualResultSet = actualPreparedStatement.executeQuery();
-                    ResultSet verificationResultSet = verificationPreparedStatement.executeQuery()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.executeQuery()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
@@ -139,43 +139,43 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, verificationConnection);
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, expectedConnection);
             } else {
-                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, verificationConnection);
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(actualConnection, expectedConnection);
             }
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                Statement verificationStatement = verificationConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+                Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && verificationStatement.execute(sql));
+            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
     
     private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                PreparedStatement verificationPreparedStatement = verificationConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && verificationPreparedStatement.execute());
+            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationPreparedStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
@@ -184,45 +184,45 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
-                Connection verificationConnection = getVerificationDataSource().getConnection()) {
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, verificationConnection);
+                assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, expectedConnection);
             } else {
-                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, verificationConnection);
+                assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(actualConnection, expectedConnection);
             }
         }
     }
     
     private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                Statement verificationStatement = verificationConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+                Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && verificationStatement.execute(sql));
+            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
     
     private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection verificationConnection) throws SQLException, ParseException {
+            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                PreparedStatement verificationPreparedStatement = verificationConnection.prepareStatement(
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(
                         getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
-                verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && verificationPreparedStatement.execute());
+            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
-                    ResultSet verificationResultSet = verificationPreparedStatement.getResultSet()) {
-                assertResultSet(actualResultSet, verificationResultSet);
+                    ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.type;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
@@ -32,4 +33,11 @@ public interface WhereAvailable {
      * @return where segments
      */
     Collection<WhereSegment> getWhereSegments();
+    
+    /**
+     * Get column segments.
+     *
+     * @return column segments
+     */
+    Collection<ColumnSegment> getColumnSegments();
 }

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mode.metadata.persist;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
@@ -35,11 +36,11 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -119,16 +120,15 @@ public final class MetaDataPersistService {
      * @param schemaName schema name
      * @param schemaConfigs schema configurations
      * @return effective data sources
-     * @throws SQLException SQL exception
      */
-    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) throws SQLException {
+    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(schemaName);
         return schemaConfigs.containsKey(schemaName)
                 ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(schemaName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(
-            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) throws SQLException {
+            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();
@@ -140,7 +140,7 @@ public final class MetaDataPersistService {
                 result.put(dataSourceName, localConfiguredDataSource);
             } else {
                 result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-                DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
+                new DataSourcePoolDestroyer(localConfiguredDataSource).asyncDestroy();
             }
         }
         return result;
@@ -153,12 +153,13 @@ public final class MetaDataPersistService {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof TransactionRuleConfiguration) {
-                ((TransactionRuleConfiguration) each).getProps().putAll(props);
-            }
+        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
+        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Preconditions.checkState(ruleConfig.isPresent());
+        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().clear();
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().putAll(props);
+            globalRuleService.persist(ruleConfigs, isOverwrite);
         }
-        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }

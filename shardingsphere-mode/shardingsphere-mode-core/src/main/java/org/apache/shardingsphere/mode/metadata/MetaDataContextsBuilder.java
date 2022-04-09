@@ -22,12 +22,16 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -37,6 +41,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -51,7 +56,7 @@ public final class MetaDataContextsBuilder {
     private final Map<String, Collection<ShardingSphereRule>> schemaRulesMap = new LinkedHashMap<>();
     
     @Getter
-    private final Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
@@ -69,20 +74,35 @@ public final class MetaDataContextsBuilder {
      * Add schema information.
      * 
      * @param schemaName schema name
+     * @param databaseType database type
      * @param schemaConfig schema configuration
      * @param props properties
      * @throws SQLException SQL exception
      */
-    public void addSchema(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
+    public void addSchema(final String schemaName, final DatabaseType databaseType, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
         Collection<ShardingSphereRule> schemaRules = getSchemaRules(schemaName, schemaConfig, props);
-        ShardingSphereSchema schema = SchemaLoader.load(schemaConfig.getDataSources(), schemaRules, props);
+        ShardingSphereDatabase database = DatabaseLoader.load(schemaName, databaseType, schemaConfig.getDataSources(), schemaRules, props);
         schemaConfigMap.put(schemaName, schemaConfig);
         schemaRulesMap.put(schemaName, schemaRules);
-        schemaMap.put(schemaName, schema);
+        databaseMap.put(schemaName, database);
     }
     
-    private Collection<ShardingSphereRule> getSchemaRules(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) {
-        return SchemaRulesBuilder.buildRules(schemaName, schemaConfig, new ConfigurationProperties(props));
+    /**
+     * Add system schemas.
+     *
+     * @param databaseType database type
+     */
+    public void addSystemSchemas(final DatabaseType databaseType) {
+        for (String each : databaseType.getSystemDatabaseSchemaMap().keySet()) {
+            if (databaseMap.containsKey(each)) {
+                continue;
+            }
+            databaseMap.put(each, DatabaseLoader.load(each, databaseType));
+        }
+    }
+    
+    private Collection<ShardingSphereRule> getSchemaRules(final String databaseName, final SchemaConfiguration schemaConfig, final Properties props) {
+        return SchemaRulesBuilder.buildRules(databaseName, schemaConfig, new ConfigurationProperties(props));
     }
     
     /**
@@ -99,11 +119,26 @@ public final class MetaDataContextsBuilder {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigMap.size(), 1);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
-            String schemaName = entry.getKey();
-            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemaMap.get(schemaName), entry.getValue(), schemaRulesMap.get(schemaName)));
+        DatabaseType defaultDatabaseType = DatabaseTypeFactory.getDatabaseType(schemaConfigMap, props);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(databaseMap.size(), 1);
+        for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
+            String databaseName = entry.getKey();
+            // TODO support database and schema configuration separately
+            SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
+            Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, new LinkedList<>());
+            result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), schemaConfig, rules, defaultDatabaseType));
         }
         return result;
+    }
+    
+    /**
+     * Get schema map.
+     * 
+     * @param databaseName database name
+     * @return ShardingSphere schema
+     */
+    public ShardingSphereSchema getSchemaMap(final String databaseName) {
+        // TODO remove these logic when mode support persist ShardingSphereDatabase
+        return databaseMap.get(databaseName).getSchemas().get(databaseName);
     }
 }
