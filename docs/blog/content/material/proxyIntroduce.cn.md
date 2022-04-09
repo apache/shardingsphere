@@ -28,7 +28,7 @@ ShardingSphere-Proxy，可以让用户像使用原生数据库一样使用 Apach
 
 日常工作中，大家使用 ShardingSphere-JDBC 进行分库分表的场景是比较多的。假设你有一张用户表，通过用户 ID 以 Hash 的方式进行了水平分库，那么此时客户端连接数据库的方式是这样：
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce1.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce1.png)
 
 我们举例工作中真实存在的几个场景：
 
@@ -45,7 +45,7 @@ ShardingSphere-Proxy 隐藏了后端实际数据库，对于客户端来说就�
 1. 逻辑表：相同结构的水平拆分数据库（表）的逻辑名称，是 SQL 中表的逻辑标识。 例：用户数据根据主键尾数拆分为 10 张表，分别是 `t_user_0` 到 `t_user_9`，他们的逻辑表名为 `t_user`。
 2. 真实表：在水平拆分的数据库中真实存在的物理表。 即上个示例中的 `t_user_0` 到 `t_user_9`。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce2.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce2.png)
 
 ### 2. JDBC 和 Proxy 的区别
 
@@ -72,7 +72,7 @@ ShardingSphere-Proxy 既然对应用无侵入，而且两者复用同一内核�
 
 当然，ShardingSphere-JDBC 和 ShardingSphere-Proxy 可以进行混合部署，ShardingSphere-JDBC 适用于 Java 开发的高性能的轻量级 OLTP 应用，ShardingSphere-Proxy 适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce3.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce3.png)
 
 ## 三、如何开始
 
@@ -172,7 +172,7 @@ props: # 公用配置
 
 本章节从实战场景的前提出发，通过 ShardingSphere-Proxy 完成上述需求。
 
-![](https://shardingsphere.apache.org/document/current/img/proxyIntroduce4.png)
+![](https://shardingsphere.apache.org/blog/img/proxyIntroduce4.png)
 
 ### 1. 初始化数据库表
 
