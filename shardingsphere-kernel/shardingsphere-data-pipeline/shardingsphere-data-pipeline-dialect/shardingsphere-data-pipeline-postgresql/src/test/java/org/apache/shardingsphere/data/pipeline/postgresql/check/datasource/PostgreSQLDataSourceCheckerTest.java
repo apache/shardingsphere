@@ -17,83 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLDataSourceCheckerTest {
-
-    private static final String CATALOG = "test";
     
-    @Mock
-    private Connection connection;
+    private final Collection<DataSource> dataSources = Collections.emptyList();
     
-    @Mock
-    private PreparedStatement preparedStatement;
-    
-    @Mock
-    private ResultSet resultSet;
-    
-    @Mock
-    private DatabaseMetaData metaData;
-
-    private Collection<DataSource> dataSources;
-
-    @Before
-    public void setUp() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mockConnection();
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(metaData.getTables(CATALOG, null, "%", new String[]{"TABLE"})).thenReturn(resultSet);
-        dataSources = new LinkedList<>();
-        dataSources.add(dataSource);
-    }
-
-    private Connection mockConnection() throws SQLException {
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(connection.getCatalog()).thenReturn(CATALOG);
-        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenReturn(preparedStatement);
-        return connection;
-    }
-
     @Test
-    public void assertCheckPrivilege() throws SQLException {
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(3)).thenReturn("test");
-        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
-        dataSourceChecker.checkPrivilege(dataSources);
-        verify(preparedStatement).executeQuery();
-    }
-    
-    @Test(expected = PipelineJobPrepareFailedException.class)
-    public void assertCheckPrivilegeWithoutTable() throws SQLException {
-        when(resultSet.next()).thenReturn(false);
-        PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
-        dataSourceChecker.checkPrivilege(dataSources);
-    }
-    
-    @Test(expected = PipelineJobPrepareFailedException.class)
-    public void assertCheckPrivilegeFailure() throws SQLException {
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(3)).thenReturn("test");
-        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenThrow(new SQLException(""));
+    public void assertCheckPrivilege() {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         dataSourceChecker.checkPrivilege(dataSources);
     }
