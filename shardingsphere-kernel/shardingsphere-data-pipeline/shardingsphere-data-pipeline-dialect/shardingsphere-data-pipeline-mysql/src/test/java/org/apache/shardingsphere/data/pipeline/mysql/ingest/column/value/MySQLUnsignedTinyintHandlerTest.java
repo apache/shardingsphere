@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import java.io.Serializable;
-import java.math.BigInteger;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedTinyintHandler;
+import org.junit.Test;
 
-public final class UnsignedBigintHandler implements ValueHandler {
+import java.io.Serializable;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedTinyintHandlerTest {
     
-    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
+    private final MySQLUnsignedTinyintHandler handler = new MySQLUnsignedTinyintHandler();
     
-    @Override
-    public String getTypeName() {
-        return "BIGINT UNSIGNED";
-    }
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        long longValue = (long) value;
-        return 0 > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle((byte) 1);
+        assertThat(actual, is(1));
+        actual = handler.handle((byte) -1);
+        assertThat(actual, is(255));
     }
 }

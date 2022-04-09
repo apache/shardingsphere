@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
+
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 
 import java.io.Serializable;
 
-public final class UnsignedSmallintHandler implements ValueHandler {
+/**
+ * MySQL unsigned smallint handler.
+ */
+public final class MySQLUnsignedSmallintHandler implements MySQLDataTypeHandler {
     
     private static final int SMALLINT_MODULO = 65536;
-    
-    @Override
-    public String getTypeName() {
-        return "SMALLINT UNSIGNED";
-    }
     
     @Override
     public Serializable handle(final Serializable value) {
         short shortValue = (short) value;
         return 0 > shortValue ? SMALLINT_MODULO + shortValue : shortValue;
+    }
+    
+    @Override
+    public String getType() {
+        return "SMALLINT UNSIGNED";
     }
 }
