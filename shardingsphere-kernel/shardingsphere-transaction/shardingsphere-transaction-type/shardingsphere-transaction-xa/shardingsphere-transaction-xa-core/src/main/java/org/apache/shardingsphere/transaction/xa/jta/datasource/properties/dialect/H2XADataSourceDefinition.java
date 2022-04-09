@@ -28,12 +28,12 @@ import java.util.Collections;
 public final class H2XADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("org.h2.jdbcx.JdbcDataSource");
     }
     
     @Override
-    public Collection<String> getXADriverClassName() {
-        return Collections.singletonList("org.h2.jdbcx.JdbcDataSource");
+    public String getType() {
+        return "H2";
     }
 }

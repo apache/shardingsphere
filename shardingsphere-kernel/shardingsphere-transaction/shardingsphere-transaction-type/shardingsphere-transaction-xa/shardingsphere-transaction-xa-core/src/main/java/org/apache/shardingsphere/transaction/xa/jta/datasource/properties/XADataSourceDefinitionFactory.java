@@ -19,12 +19,9 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * XA data source definition factory.
@@ -32,11 +29,8 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceDefinitionFactory {
     
-    private static final Map<DatabaseType, XADataSourceDefinition> XA_DATA_SOURCE_DEFINITIONS = new HashMap<>();
-    
     static {
-        ServiceLoader.load(XADataSourceDefinition.class)
-                .forEach(each -> XA_DATA_SOURCE_DEFINITIONS.put(DatabaseTypeRegistry.getActualDatabaseType(each.getDatabaseType()), each));
+        ShardingSphereServiceLoader.register(XADataSourceDefinition.class);
     }
     
     /**
@@ -46,6 +40,6 @@ public final class XADataSourceDefinitionFactory {
      * @return XA data source definition
      */
     public static XADataSourceDefinition getXADataSourceDefinition(final DatabaseType databaseType) {
-        return XA_DATA_SOURCE_DEFINITIONS.get(databaseType);
+        return TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getName());
     }
 }
