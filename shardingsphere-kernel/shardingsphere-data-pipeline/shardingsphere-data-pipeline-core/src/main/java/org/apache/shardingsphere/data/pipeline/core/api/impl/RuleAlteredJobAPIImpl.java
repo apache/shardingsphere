@@ -56,7 +56,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -68,7 +67,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -80,9 +78,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     static {
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
     }
-    
-    private static final Map<String, DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_MAP = new TreeMap<>(
-            TypedSPIRegistry.getRegisteredServiceMetaDataMap(DataConsistencyCheckAlgorithm.class));
     
     @Override
     public List<JobInfo> list() {
@@ -243,7 +238,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(DataConsistencyCheckAlgorithm.class)
                 .stream().map(each -> {
                     DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
                     result.setType(each.getType());
