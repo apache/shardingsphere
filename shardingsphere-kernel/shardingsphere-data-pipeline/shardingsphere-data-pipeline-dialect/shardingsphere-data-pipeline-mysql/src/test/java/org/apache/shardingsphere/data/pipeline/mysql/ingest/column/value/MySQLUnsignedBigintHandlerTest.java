@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import java.io.Serializable;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedBigintHandler;
+import org.junit.Test;
 
-public final class UnsignedMediumintHandler implements ValueHandler {
+import java.io.Serializable;
+import java.math.BigInteger;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedBigintHandlerTest {
     
-    private static final int MEDIUMINT_MODULO = 16777216;
+    private final MySQLUnsignedBigintHandler handler = new MySQLUnsignedBigintHandler();
     
-    @Override
-    public String getTypeName() {
-        return "MEDIUMINT UNSIGNED";
-    }
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        int intValue = (int) value;
-        return 0 > intValue ? MEDIUMINT_MODULO + intValue : intValue;
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle(1L);
+        assertThat(actual, is(1L));
+        actual = handler.handle(-1L);
+        assertThat(actual, is(new BigInteger("18446744073709551615")));
     }
 }

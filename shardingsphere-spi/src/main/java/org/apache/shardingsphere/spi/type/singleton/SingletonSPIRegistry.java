@@ -20,7 +20,6 @@ package org.apache.shardingsphere.spi.type.singleton;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,16 +44,5 @@ public final class SingletonSPIRegistry {
     public static <K, T extends SingletonSPI> Map<K, T> getSingletonInstancesMap(final Class<T> spiClass, final Function<? super T, ? extends K> keyMapper) {
         Collection<T> instances = ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass);
         return instances.stream().collect(Collectors.toMap(keyMapper, Function.identity()));
-    }
-    
-    /**
-     * Get typed singleton instances map.
-     *
-     * @param spiClass singleton SPI class
-     * @param <T> the type of the input elements
-     * @return singleton instances map
-     */
-    public static <T extends TypedSPI & SingletonSPI> Map<String, T> getTypedSingletonInstancesMap(final Class<T> spiClass) {
-        return getSingletonInstancesMap(spiClass, TypedSPI::getType);
     }
 }

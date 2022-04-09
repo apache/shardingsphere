@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.listener;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Context manager lifecycle listener.
- * <p>
- *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
- * </p>
+ * PostgreSQL drop trigger statement.
  */
-public interface ContextManagerLifecycleListener {
-    
-    /**
-     * Callback on initialized.
-     *
-     * @param modeConfig mode configuration
-     * @param contextManager context manager
-     */
-    void onInitialized(ModeConfiguration modeConfig, ContextManager contextManager);
+@ToString
+public final class PostgreSQLDropTriggerStatement extends DropTriggerStatement implements PostgreSQLStatement {
 }

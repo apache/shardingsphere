@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import java.io.Serializable;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-public final class UnsignedIntHandler implements ValueHandler {
-    
-    private static final long INT_MODULO = 4294967296L;
-    
-    @Override
-    public String getTypeName() {
-        return "INT UNSIGNED";
-    }
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        int intValue = (int) value;
-        return 0 > intValue ? INT_MODULO + intValue : intValue;
-    }
+/**
+ * Drop trigger statement.
+ */
+@ToString
+public abstract class DropTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

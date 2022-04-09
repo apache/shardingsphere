@@ -46,15 +46,15 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();
                     result.add(each.getType());
-                    result.add(each.getDescription());
                     result.add(Joiner.on(",").join(each.getSupportedDatabaseTypes()));
+                    result.add(each.getDescription());
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "description", "supported_database_types");
+        return Arrays.asList("type", "supported_database_types", "description");
     }
     
     @Override

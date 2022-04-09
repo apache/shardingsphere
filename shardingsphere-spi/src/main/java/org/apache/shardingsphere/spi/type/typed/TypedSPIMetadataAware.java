@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.listener;
+package org.apache.shardingsphere.spi.type.typed;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import java.util.Collection;
 
 /**
- * Context manager lifecycle listener.
- * <p>
- *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
- * </p>
+ * Typed sPI metadata aware.
  */
-public interface ContextManagerLifecycleListener {
+public interface TypedSPIMetadataAware {
     
     /**
-     * Callback on initialized.
+     * Get supported database types.
      *
-     * @param modeConfig mode configuration
-     * @param contextManager context manager
+     * @return supported database types
      */
-    void onInitialized(ModeConfiguration modeConfig, ContextManager contextManager);
+    Collection<String> getSupportedDatabaseTypes();
+    
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    String getDescription();
 }

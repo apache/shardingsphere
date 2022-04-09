@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedMediumintHandler;
+import org.junit.Test;
 
 import java.io.Serializable;
 
-/**
- * Value handler.
- */
-public interface ValueHandler extends SingletonSPI {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedMediumintHandlerTest {
     
-    /**
-     * Get support type name.
-     *
-     * @return type name
-     */
-    String getTypeName();
+    private final MySQLUnsignedMediumintHandler handler = new MySQLUnsignedMediumintHandler();
     
-    /**
-     * Handle column value.
-     *
-     * @param value column value
-     * @return handled column value
-     */
-    Serializable handle(Serializable value);
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle(1);
+        assertThat(actual, is(1));
+        actual = handler.handle(-1);
+        assertThat(actual, is(16777215));
+    }
 }

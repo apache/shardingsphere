@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.listener;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedIntHandler;
+import org.junit.Test;
 
-/**
- * Context manager lifecycle listener.
- * <p>
- *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
- * </p>
- */
-public interface ContextManagerLifecycleListener {
+import java.io.Serializable;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLUnsignedIntHandlerTest {
     
-    /**
-     * Callback on initialized.
-     *
-     * @param modeConfig mode configuration
-     * @param contextManager context manager
-     */
-    void onInitialized(ModeConfiguration modeConfig, ContextManager contextManager);
+    private final MySQLUnsignedIntHandler handler = new MySQLUnsignedIntHandler();
+    
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle(1);
+        assertThat(actual, is(1L));
+        actual = handler.handle(-1);
+        assertThat(actual, is(4294967295L));
+    }
 }
