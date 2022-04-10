@@ -86,10 +86,9 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         Map<String, List<DataNode>> result = new LinkedHashMap<>();
         Set<String> reShardNeededTables = new HashSet<>(workflowConfig.getAlteredRuleYamlClassNameTablesMap().get(YamlShardingRuleConfiguration.class.getName()));
         for (Entry<String, TableRule> entry : tableRules.entrySet()) {
-            if (!reShardNeededTables.contains(entry.getKey())) {
-                continue;
+            if (reShardNeededTables.contains(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue().getActualDataNodes());
             }
-            result.put(entry.getKey(), entry.getValue().getActualDataNodes());
         }
         return result;
     }
