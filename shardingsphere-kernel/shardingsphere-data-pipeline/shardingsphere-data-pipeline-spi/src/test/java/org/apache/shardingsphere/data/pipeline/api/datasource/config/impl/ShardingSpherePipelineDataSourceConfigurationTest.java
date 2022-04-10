@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.datasource.props.InvalidDataSourcePropert
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,7 +40,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         Properties queryProps = new Properties();
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         dataSourceConfig.appendJDBCQueryProperties(queryProps);
-        List<DataSourceProperties> actual = new ArrayList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
+        List<DataSourceProperties> actual = new LinkedList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
         assertThat(actual.get(0).getAllLocalProperties().get("jdbcUrl"), is("jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
         assertThat(actual.get(1).getAllLocalProperties().get("jdbcUrl"), is("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
     }
@@ -64,7 +64,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
     @Test
     public void assertDataSourceCanBeAggregation() throws InvalidDataSourcePropertiesException {
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceAggregationYaml());
-        List<DataSourceProperties> actual = new ArrayList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
+        List<DataSourceProperties> actual = new LinkedList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
         assertTrue(actual.get(0).isInSameDatabaseInstance(actual.get(0).getAllLocalProperties().get("jdbcUrl").toString(), actual.get(1).getAllLocalProperties().get("jdbcUrl").toString()));
         actual.get(0).checkToBeAggregatedDataSources(actual.get(1));
     }
