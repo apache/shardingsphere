@@ -44,7 +44,7 @@ dropIndex
     ;
 
 dropView
-    : DROP VIEW (schemaName DOT_)? viewName (CASCADE CONSTRAINTS)?
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
 truncateTable
