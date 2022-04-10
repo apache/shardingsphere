@@ -70,7 +70,6 @@ public final class SchemaRulesBuilder {
                 DataSourceGeneratedSchemaConfiguration configuration = (DataSourceGeneratedSchemaConfiguration) schemaConfig;
                 checkDataSourceAggregations(configuration.getDataSourceProperties());
             }
-
             result.add(entry.getValue().build(entry.getKey(), schemaName, schemaConfig.getDataSources(), result, props));
         }
         return result;
