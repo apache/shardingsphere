@@ -132,5 +132,6 @@ execute
     | dropRule
     | dropType
     | dropStatistics
+    | dropPublication
     ) SEMI_?
     ;
