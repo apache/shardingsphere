@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule altered detector, SPI interface.
+ * Rule altered detector.
  */
 public interface RuleAlteredDetector {
     
