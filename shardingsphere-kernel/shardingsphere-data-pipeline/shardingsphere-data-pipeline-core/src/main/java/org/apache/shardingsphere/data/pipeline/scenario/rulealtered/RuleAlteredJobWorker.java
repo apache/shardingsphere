@@ -158,7 +158,7 @@ public final class RuleAlteredJobWorker {
     
     private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByYamlRuleClass(final RuleConfiguration ruleConfig) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-                .filter(each -> each.getYamlRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
+                .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
