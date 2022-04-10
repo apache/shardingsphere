@@ -162,9 +162,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         break;
                     }
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
-                } else if (0 == round % 50) {
+                if (0 == round % 50) {
                     log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
                 }
                 return Optional.ofNullable(maxUniqueKeyValue);
