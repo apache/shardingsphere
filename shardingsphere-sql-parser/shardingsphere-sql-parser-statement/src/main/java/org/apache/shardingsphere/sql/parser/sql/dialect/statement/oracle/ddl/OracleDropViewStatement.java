@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop view statement.
  */
 @ToString
-public final class OracleDropViewStatement extends DropViewStatement {
+public final class OracleDropViewStatement extends DropViewStatement implements OracleStatement {
 }
