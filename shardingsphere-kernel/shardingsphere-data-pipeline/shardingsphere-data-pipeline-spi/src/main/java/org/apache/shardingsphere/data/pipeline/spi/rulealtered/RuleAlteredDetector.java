@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Optional;
 /**
  * Rule altered detector, SPI interface.
  */
-public interface RuleAlteredDetector extends SingletonSPI {
+public interface RuleAlteredDetector {
     
     /**
      * Get YAML rule configuration class name.

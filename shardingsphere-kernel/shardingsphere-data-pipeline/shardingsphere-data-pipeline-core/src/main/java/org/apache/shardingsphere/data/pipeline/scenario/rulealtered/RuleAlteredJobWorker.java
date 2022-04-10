@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +58,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -78,17 +78,11 @@ import java.util.stream.Collectors;
 public final class RuleAlteredJobWorker {
     
     static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
         ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
+        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
     }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
-    
-    private static final Map<String, RuleAlteredDetector> RULE_CLASS_NAME_DETECTOR_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            RuleAlteredDetector.class, RuleAlteredDetector::getRuleConfigClassName);
-    
-    private static final Map<String, RuleAlteredDetector> YAML_RULE_CLASS_NAME_DETECTOR_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            RuleAlteredDetector.class, RuleAlteredDetector::getYamlRuleConfigClassName);
         
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
@@ -104,8 +98,13 @@ public final class RuleAlteredJobWorker {
         if (null == ruleConfig) {
             return false;
         }
-        RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
-        return null != detector && detector.getOnRuleAlteredActionConfig(ruleConfig).isPresent();
+        Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByRuleClass(ruleConfig);
+        return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
+    }
+    
+    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByRuleClass(final RuleConfiguration ruleConfig) {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+            .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
@@ -147,13 +146,19 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("could not find altered rule");
         }
         RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
-        Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(ruleConfig);
-        if (!onRuleAlteredActionConfigOptional.isPresent()) {
+        Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByYamlRuleClass(ruleConfig);
+        Preconditions.checkState(detector.isPresent());
+        Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
+        if (!onRuleAlteredActionConfig.isPresent()) {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new RuleAlteredContext(onRuleAlteredActionConfigOptional.get());
+        return new RuleAlteredContext(onRuleAlteredActionConfig.get());
+    }
+    
+    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByYamlRuleClass(final RuleConfiguration ruleConfig) {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+                .filter(each -> each.getYamlRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
@@ -201,14 +206,13 @@ public final class RuleAlteredJobWorker {
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             String type = (null != each.getLeft() ? each.getLeft() : each.getRight()).getClass().getName();
-            RuleAlteredDetector detector = YAML_RULE_CLASS_NAME_DETECTOR_MAP.get(type);
-            if (null == detector) {
+            Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByYamlRuleType(type);
+            if (!detector.isPresent()) {
                 continue;
             }
-            List<String> ruleAlteredLogicTables = detector.findRuleAlteredLogicTables(each.getLeft(), each.getRight(),
-                    sourceRootConfig.getDataSources(), targetRootConfig.getDataSources());
+            List<String> ruleAlteredLogicTables = detector.get().findRuleAlteredLogicTables(each.getLeft(), each.getRight(), sourceRootConfig.getDataSources(), targetRootConfig.getDataSources());
             log.info("type={}, ruleAlteredLogicTables={}", type, ruleAlteredLogicTables);
-            if (ruleAlteredLogicTables.size() > 0) {
+            if (!ruleAlteredLogicTables.isEmpty()) {
                 alteredRuleYamlClassNameTablesMap.put(type, ruleAlteredLogicTables);
             }
         }
@@ -240,6 +244,11 @@ public final class RuleAlteredJobWorker {
             }
         }
         return result;
+    }
+    
+    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByYamlRuleType(final String type) {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+                .filter(each -> each.getYamlRuleConfigClassName().equals(type)).findFirst();
     }
     
     private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
