@@ -21,7 +21,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop publication statement.
+ * Drop  publication  statement.
  */
 @ToString
 public abstract class DropPublicationStatement extends AbstractSQLStatement implements DDLStatement {
