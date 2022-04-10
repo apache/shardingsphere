@@ -29,7 +29,7 @@ import com.google.common.collect.Maps;
 /**
  * Example configuration validator.
  */
-public class YamlExampleConfigurationValidator {
+public final class YamlExampleConfigurationValidator {
 
     /**
      * Verify the entrance.
