@@ -39,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExec
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetectorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -98,13 +99,8 @@ public final class RuleAlteredJobWorker {
         if (null == ruleConfig) {
             return false;
         }
-        Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByRuleClass(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
-    }
-    
-    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByRuleClass(final RuleConfiguration ruleConfig) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-            .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
@@ -146,7 +142,7 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("could not find altered rule");
         }
         RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByYamlRuleClass(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(ruleConfig);
         Preconditions.checkState(detector.isPresent());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfig.isPresent()) {
@@ -154,11 +150,6 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
         return new RuleAlteredContext(onRuleAlteredActionConfig.get());
-    }
-    
-    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByYamlRuleClass(final RuleConfiguration ruleConfig) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-                .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
@@ -205,15 +196,15 @@ public final class RuleAlteredJobWorker {
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
-            String type = (null != each.getLeft() ? each.getLeft() : each.getRight()).getClass().getName();
-            Optional<RuleAlteredDetector> detector = findRuleAlteredDetectorByYamlRuleType(type);
+            YamlRuleConfiguration yamlRuleConfig = null == each.getLeft() ? each.getRight() : each.getLeft();
+            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(yamlRuleConfig);
             if (!detector.isPresent()) {
                 continue;
             }
             List<String> ruleAlteredLogicTables = detector.get().findRuleAlteredLogicTables(each.getLeft(), each.getRight(), sourceRootConfig.getDataSources(), targetRootConfig.getDataSources());
-            log.info("type={}, ruleAlteredLogicTables={}", type, ruleAlteredLogicTables);
+            log.info("type={}, ruleAlteredLogicTables={}", yamlRuleConfig.getClass().getName(), ruleAlteredLogicTables);
             if (!ruleAlteredLogicTables.isEmpty()) {
-                alteredRuleYamlClassNameTablesMap.put(type, ruleAlteredLogicTables);
+                alteredRuleYamlClassNameTablesMap.put(yamlRuleConfig.getClass().getName(), ruleAlteredLogicTables);
             }
         }
         if (alteredRuleYamlClassNameTablesMap.isEmpty()) {
@@ -244,11 +235,6 @@ public final class RuleAlteredJobWorker {
             }
         }
         return result;
-    }
-    
-    private static Optional<RuleAlteredDetector> findRuleAlteredDetectorByYamlRuleType(final String type) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-                .filter(each -> each.getYamlRuleConfigClassName().equals(type)).findFirst();
     }
     
     private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
