@@ -35,7 +35,7 @@ public final class YamlProxyDataSourceConfigurationSwapper {
      * @param yamlConfig YAML proxy data source configuration
      * @param schemaName Schema name
      * @param dataSourceName Data source name
-     * @param isDataSourceAggregation Is data source aggregation
+     * @param isDataSourceAggregation is data source aggregation
      * @return data source configuration
      */
     public DataSourceConfiguration swap(final YamlProxyDataSourceConfiguration yamlConfig, final String schemaName, final String dataSourceName, final boolean isDataSourceAggregation) {
