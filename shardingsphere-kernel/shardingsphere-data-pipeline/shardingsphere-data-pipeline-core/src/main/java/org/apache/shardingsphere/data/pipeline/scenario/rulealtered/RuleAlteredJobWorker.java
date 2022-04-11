@@ -99,7 +99,7 @@ public final class RuleAlteredJobWorker {
         if (null == ruleConfig) {
             return false;
         }
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
     
@@ -142,7 +142,7 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("could not find altered rule");
         }
         RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
         Preconditions.checkState(detector.isPresent());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfig.isPresent()) {
@@ -197,7 +197,7 @@ public final class RuleAlteredJobWorker {
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             YamlRuleConfiguration yamlRuleConfig = null == each.getLeft() ? each.getRight() : each.getLeft();
-            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findRuleAlteredDetector(yamlRuleConfig);
+            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(yamlRuleConfig);
             if (!detector.isPresent()) {
                 continue;
             }
