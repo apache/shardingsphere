@@ -3,9 +3,7 @@ title = "保留字"
 weight = 3
 +++
 
-## 保留字
-
----
+### 描述
 
 ```sql
 ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL

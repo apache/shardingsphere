@@ -4,7 +4,7 @@ weight = 2
 +++
 
 
-## SHOW RESOURCE
+### 描述
 
 `SHOW RESOURCE` 语法用于查询指定逻辑库已经添加的资源。
 
@@ -34,7 +34,7 @@ schemaName ::=
 | attribute | 数据源参数 |
 
  ### 示例
-- 查询指定 `schemaName` 的资源
+- 查询指定逻辑库的资源
 ```sql
 SHOW SCHEMA RESOURCES FROM example_db;
 ```
@@ -48,7 +48,7 @@ SHOW SCHEMA RESOURCES FROM example_db;
 2 rows in set (0.26 sec)
 ```
 
-- 查询当前 `schemaName`的资源 
+- 查询当前逻辑库的资源 
 ```sql
 SHOW SCHEMA RESOURCES;
 ```

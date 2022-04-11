@@ -4,7 +4,7 @@ weight = 2
 +++
 
 
-## SHOW RESOURCE
+### Description
 
 The `SHOW RESOURCE` syntax is used to query the resources that have been added to the specified schema.
 
@@ -34,7 +34,7 @@ schemaName ::=
 | attribute | Data source attribute |
 
  ### Example
-- Query resources for the specified `schemaName`
+- Query resources for the specified schema
 
 ```sql
 SHOW SCHEMA RESOURCES FROM example_db;
@@ -49,7 +49,7 @@ SHOW SCHEMA RESOURCES FROM example_db;
 2 rows in set (0.26 sec)
 ```
 
-- Query resources for the current `schemaName`
+- Query resources for the current schema
 ```sql
 SHOW SCHEMA RESOURCES;
 ```
