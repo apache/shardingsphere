@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.text.extra;
 
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Extra text protocol backend handler.
  */
+@SingletonSPI
 public interface ExtraTextProtocolBackendHandler extends TextProtocolBackendHandler {
     
     /**

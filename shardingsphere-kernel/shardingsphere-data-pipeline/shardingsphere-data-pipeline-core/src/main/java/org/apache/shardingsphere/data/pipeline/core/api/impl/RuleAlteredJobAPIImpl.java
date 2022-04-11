@@ -240,7 +240,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(DataConsistencyCheckAlgorithm.class)
+        return ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCheckAlgorithm.class)
                 .stream().map(each -> {
                     DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
                     result.setType(each.getType());
