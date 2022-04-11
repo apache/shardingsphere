@@ -34,7 +34,7 @@ schemaName ::=
 | attribute | 数据源参数 |
 
  ### 示例
-- 指定 `schemaName` 
+- 查询指定 `schemaName` 的资源
 ```sql
 SHOW SCHEMA RESOURCES FROM example_db;
 ```
@@ -48,7 +48,7 @@ SHOW SCHEMA RESOURCES FROM example_db;
 2 rows in set (0.26 sec)
 ```
 
-- 未指定 `schemaName`
+- 查询当前 `schemaName`的资源 
 ```sql
 SHOW SCHEMA RESOURCES;
 ```

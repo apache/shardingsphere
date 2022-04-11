@@ -34,7 +34,7 @@ schemaName ::=
 | attribute | Data source attribute |
 
  ### Example
-- `schemaName` specified 
+- Query resources for the specified `schemaName`
 
 ```sql
 SHOW SCHEMA RESOURCES FROM example_db;
@@ -49,7 +49,7 @@ SHOW SCHEMA RESOURCES FROM example_db;
 2 rows in set (0.26 sec)
 ```
 
-- `schemaName` not specified
+- Query resources for the current `schemaName`
 ```sql
 SHOW SCHEMA RESOURCES;
 ```
