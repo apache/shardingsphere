@@ -201,10 +201,9 @@ public final class IntervalShardingAlgorithmTest {
         intervalShardingAlgorithm.getProps().setProperty("datetime-interval-unit", "DAYS");
         intervalShardingAlgorithm.init();
         Collection<String> actual = intervalShardingAlgorithm.doSharding(availableTablesForDayDataSources,
-                new RangeShardingValue<>("t_order", "create_time",
-                        DATA_NODE_INFO,
-                        Range.closed(LocalDateTime.of(2021,6,15,2,25,27),
-                                LocalDateTime.of(2021,7,31,2,25,27))));
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27),
+                                LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
         assertThat(actual.size(), is(24));
     }
 }
