@@ -45,7 +45,7 @@ public final class CuratorZookeeperExceptionHandler {
             return;
         }
         if (isIgnoredException(cause) || null != cause.getCause() && isIgnoredException(cause.getCause())) {
-            log.info("Ignored exception", cause);
+            log.debug("Ignored exception for: {}", cause.getMessage());
         } else if (cause instanceof InterruptedException) {
             log.info("InterruptedException caught");
             Thread.currentThread().interrupt();

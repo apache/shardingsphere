@@ -40,6 +40,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
     
+    // TODO pipeline doesn't need cache even if cache is enabled, since there might be some temp data sources
+    // TODO when all data source configurations of instance are dropped by DistSQL, cached data source should be closed
+    
     /**
      * Create data sources.
      *
@@ -62,6 +65,7 @@ public final class DataSourcePoolCreator {
                 return GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceProps.getInstance());
             }
         }
+        // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);

@@ -41,6 +41,7 @@ import java.util.Properties;
 @Slf4j
 public final class OpenGaussLogicalReplication {
     
+    // TODO it should be private
     public static final String SLOT_NAME_PREFIX = "sharding_scaling";
     
     public static final String DECODE_PLUGIN = "mppdb_decoding";
