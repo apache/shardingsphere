@@ -181,6 +181,7 @@ public final class RuleAlteredJobWorker {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getActiveVersion(), event.getNewVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+            ShardingSphereEventBus.getInstance().post(new ScalingReleaseSchemaNameLockEvent(event.getSchemaName()));
         }
     }
     
