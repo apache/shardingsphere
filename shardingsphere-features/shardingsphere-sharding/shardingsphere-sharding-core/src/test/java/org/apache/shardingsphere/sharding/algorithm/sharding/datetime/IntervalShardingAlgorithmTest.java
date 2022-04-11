@@ -189,4 +189,22 @@ public final class IntervalShardingAlgorithmTest {
         assertThat(tableNameShardedByQuarter, is("202004"));
         assertThat(tableNameShardedByMonth, is("202010"));
     }
+
+    @Test
+    public void assertLocalDateTimeWithZeroMillisecond() {
+        IntervalShardingAlgorithm intervalShardingAlgorithm = new IntervalShardingAlgorithm();
+        intervalShardingAlgorithm.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00.000");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00.000");
+        intervalShardingAlgorithm.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-amount", "1");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-unit", "DAYS");
+        intervalShardingAlgorithm.init();
+        Collection<String> actual = intervalShardingAlgorithm.doSharding(availableTablesForDayDataSources,
+                new RangeShardingValue<>("t_order", "create_time",
+                        DATA_NODE_INFO,
+                        Range.closed(LocalDateTime.of(2021,6,15,2,25,27),
+                                LocalDateTime.of(2021,7,31,2,25,27))));
+        assertThat(actual.size(), is(24));
+    }
 }
