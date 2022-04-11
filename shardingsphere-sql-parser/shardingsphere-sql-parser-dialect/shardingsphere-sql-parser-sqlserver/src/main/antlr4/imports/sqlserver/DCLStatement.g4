@@ -433,7 +433,7 @@ createLoginForAnalyticsPlatformSystemOptionListClause
     ;
 
 dropLogin
-    : DROP LOGIN
+    : DROP LOGIN ignoredNameIdentifier
     ;
 
 alterLogin
