@@ -41,14 +41,14 @@ propretyDefinition ::=
   - The attribute `TYPE` in `strategyDefinition` is used to specify the type of [sharding algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm), currently only supports `STANDARD`, `COMPLEX`
 - use auto sharding table rule
     - `RESOURCES` can only use resources that have been added to the current schema, and the required resources can be specified by enumeration or INLINE expression
-    - Only auto sharding algorithm can be used, please refer to [Auto sharding algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm)    
-- The auto-generated algorithm naming rule is `tableName`_`strategyType`_`shardingAlgorithmType`
-- The auto-generated primary key strategy naming rule is `tableName`_`strategyType`
+    - Only auto sharding algorithm can be used, please refer to [auto sharding algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm)    
+- The auto-generated algorithm naming rule is `tableName` _ `strategyType` _ `shardingAlgorithmType`
+- The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key generation strategy, please refer to [Distributed Primary Key](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
 
 ### Example
 
-#### 1.standard sharding table rule
+#### 1.Standard sharding table rule
 
 - ##### Create standard sharding table rule by specifying sharding algorithms
 

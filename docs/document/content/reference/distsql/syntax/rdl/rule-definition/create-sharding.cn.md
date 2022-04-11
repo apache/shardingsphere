@@ -42,8 +42,8 @@ propretyDefinition ::=
 - 当使用自动分片时：
     - `RESOURCES` 只能使用已经添加到当前逻辑库的资源，可通过枚举或 INLINE 表达式指定需要的资源
     - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#自动分片算法)
-- 自动生成的算法命名规则为  `tableName`_`strategyType`_`shardingAlgorithmType`
-- 自动生成的主键策略命名规则为 `tableName`_`strategyType`
+- 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `shardingAlgorithmType`
+- 自动生成的主键策略命名规则为 `tableName` _ `strategyType`
 - `KEY_GENERATE_STRATEGY` 用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
 
 ### 示例
@@ -139,8 +139,6 @@ CREATE SHARDING TABLE RULE t_order (
 ### 保留字
 
     CREATE、SHARDING、TABLE、RULE、DATANODES、DATABASE_STRATEGY、TABLE_STRATEGY、KEY_GENERATE_STRATEGY、RESOURCES、SHARDING_COLUMN、TYPE、SHARDING_COLUMN、KEY_GENERATOR、SHARDING_ALGORITHM、COLUMN、NAME、PROPERTIES
-
-### 相关链接
 
 ### 相关链接
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
