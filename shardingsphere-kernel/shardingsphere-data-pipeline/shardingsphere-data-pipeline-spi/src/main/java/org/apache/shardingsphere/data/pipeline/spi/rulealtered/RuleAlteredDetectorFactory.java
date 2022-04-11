@@ -36,23 +36,23 @@ public final class RuleAlteredDetectorFactory {
     }
     
     /**
-     * Find rule altered detector.
+     * Create new instance of rule altered detector.
      * 
-     * @param ruleConfig rule configuration to be found
-     * @return found rule altered detector
+     * @param ruleConfig rule configuration
+     * @return new instance of rule altered detector
      */
-    public static Optional<RuleAlteredDetector> findRuleAlteredDetector(final RuleConfiguration ruleConfig) {
+    public static Optional<RuleAlteredDetector> newInstance(final RuleConfiguration ruleConfig) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
                 .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
     /**
-     * Find rule altered detector.
+     * Create new instance of rule altered detector.
      * 
-     * @param yamlRuleConfig YAML rule configuration to be found
-     * @return found rule altered detector
+     * @param yamlRuleConfig YAML rule configuration
+     * @return new instance of rule altered detector
      */
-    public static Optional<RuleAlteredDetector> findRuleAlteredDetector(final YamlRuleConfiguration yamlRuleConfig) {
+    public static Optional<RuleAlteredDetector> newInstance(final YamlRuleConfiguration yamlRuleConfig) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
                 .filter(each -> each.getYamlRuleConfigClassName().equals(yamlRuleConfig.getClass().getName())).findFirst();
     }
