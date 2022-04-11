@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     
-    private static final String DB_DISCOVERY = "database discovery";
+    private static final String DB_DISCOVERY = "Database discovery";
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
@@ -70,7 +70,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     private void checkDiscoverTypeAndHeartbeat(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(TypedSPIConfiguration::getType)
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY, invalidInput));
+        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
         currentRuleConfig.getDataSources().stream().forEach(each -> {
             if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {
                 invalidInput.add(each.getDiscoveryTypeName());
@@ -79,6 +79,6 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
                 invalidInput.add(each.getDiscoveryHeartbeatName());
             }
         });
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(schemaName, invalidInput));
+        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(DB_DISCOVERY, schemaName, invalidInput));
     }
 }
