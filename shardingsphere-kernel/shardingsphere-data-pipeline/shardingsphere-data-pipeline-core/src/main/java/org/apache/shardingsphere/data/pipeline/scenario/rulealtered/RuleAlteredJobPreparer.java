@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.Inve
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -48,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job preparer.
@@ -87,9 +91,30 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
-        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
+        ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(jobConfig.getWorkflowConfig().getSchemaName());
+        // TODO make sure only the first thread execute prepare
+        boolean skipPrepare = !lock.tryLock("prepareTargetTablesLock", 100);
+        if (skipPrepare) {
+            // TODO polling until first thread finish prepare, then just return
+            while (lock.isLocked("prepareTargetTablesLock")) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    lock.releaseLock("prepareTargetTablesLock");
+                }
+            }
+            lock.releaseLock("prepareTargetTablesLock");
+            return;
+        }
+        try {
+            JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
+            PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes,
+                    jobConfig.getPipelineConfig(), dataSourceManager);
+            dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        } finally {
+            lock.releaseLock("prepareTargetTablesLock");
+        }
     }
     
     private void initAndCheckDataSource(final RuleAlteredJobContext jobContext) {
