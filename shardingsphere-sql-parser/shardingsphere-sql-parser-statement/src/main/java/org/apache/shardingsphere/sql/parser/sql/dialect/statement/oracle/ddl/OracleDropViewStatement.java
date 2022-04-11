@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-
-import java.util.Collection;
-import java.util.Collections;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * JDBC URL recognizer for openGauss.
+ * Oracle drop view statement.
  */
-public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
-    
-    @Override
-    public Collection<String> getURLPrefixes() {
-        return Collections.singleton("jdbc:opengauss:");
-    }
-    
-    @Override
-    public String getDriverClassName() {
-        return "org.opengauss.Driver";
-    }
+@ToString
+public final class OracleDropViewStatement extends DropViewStatement implements OracleStatement {
 }

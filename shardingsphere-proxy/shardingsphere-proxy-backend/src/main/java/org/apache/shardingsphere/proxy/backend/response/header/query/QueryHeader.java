@@ -15,27 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.proxy.backend.response.header.query;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class OracleRecognizerTest {
+/**
+ * Query header.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class QueryHeader {
     
-    private final JDBCDriverURLRecognizer recognizer = new OracleRecognizer();
+    private final String schema;
     
-    @Test
-    public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:oracle:")));
-    }
+    private final String table;
     
-    @Test
-    public void assertGetDriverClassName() {
-        assertThat(recognizer.getDriverClassName(), is("oracle.jdbc.driver.OracleDriver"));
-    }
+    private final String columnLabel;
+    
+    private final String columnName;
+    
+    private final int columnType;
+    
+    private final String columnTypeName;
+    
+    private final int columnLength;
+    
+    private final int decimals;
+    
+    private final boolean signed;
+    
+    private final boolean primaryKey;
+    
+    private final boolean notNull;
+    
+    private final boolean autoIncrement;
 }

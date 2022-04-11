@@ -18,4 +18,6 @@
 
 <sql-parser-test-cases>
     <drop-view sql-case-id="drop_view" />
+    <drop-view sql-case-id="drop_view_with_schemaname" />
+    <drop-view sql-case-id="drop_view_cascade_constraints" />
 </sql-parser-test-cases>
