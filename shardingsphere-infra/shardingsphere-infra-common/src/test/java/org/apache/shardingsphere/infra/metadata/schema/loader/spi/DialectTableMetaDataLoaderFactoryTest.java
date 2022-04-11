@@ -38,27 +38,47 @@ import static org.junit.Assert.assertTrue;
 public final class DialectTableMetaDataLoaderFactoryTest {
 
     @Test
-    public void assertNewInstance() {
+    public void assertNewInstanceWithH2TableMetaDataLoader() {
         H2DatabaseType h2DatabaseType = new H2DatabaseType();
         Optional<DialectTableMetaDataLoader> h2TableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(h2DatabaseType);
         assertTrue(h2TableMetaDataLoader.isPresent());
         assertTrue(h2TableMetaDataLoader.get() instanceof H2TableMetaDataLoader);
+    }
+
+    @Test
+    public void assertNewInstanceWithOracleTableMetaDataLoader() {
         OracleDatabaseType oracleDatabaseType = new OracleDatabaseType();
         Optional<DialectTableMetaDataLoader> oracleTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(oracleDatabaseType);
         assertTrue(oracleTableMetaDataLoader.isPresent());
         assertTrue(oracleTableMetaDataLoader.get() instanceof OracleTableMetaDataLoader);
+    }
+
+    @Test
+    public void assertNewInstanceWithSQLServerTableMetaDataLoader() {
         SQLServerDatabaseType sqlServerDatabaseType = new SQLServerDatabaseType();
         Optional<DialectTableMetaDataLoader> sQLServerTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(sqlServerDatabaseType);
         assertTrue(sQLServerTableMetaDataLoader.isPresent());
         assertTrue(sQLServerTableMetaDataLoader.get() instanceof SQLServerTableMetaDataLoader);
+    }
+
+    @Test
+    public void assertNewInstanceWithOpenGaussDatabaseType() {
         OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
         Optional<DialectTableMetaDataLoader> openGaussTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(openGaussDatabaseType);
         assertTrue(openGaussTableMetaDataLoader.isPresent());
         assertTrue(openGaussTableMetaDataLoader.get() instanceof OpenGaussTableMetaDataLoader);
+    }
+
+    @Test
+    public void assertNewInstanceWithMySQLTableMetaDataLoader() {
         MySQLDatabaseType mySQLDatabaseType = new MySQLDatabaseType();
         Optional<DialectTableMetaDataLoader> mySQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(mySQLDatabaseType);
         assertTrue(mySQLTableMetaDataLoader.isPresent());
         assertTrue(mySQLTableMetaDataLoader.get() instanceof MySQLTableMetaDataLoader);
+    }
+
+    @Test
+    public void assertNewInstanceWithPostgreSQLTableMetaDataLoader() {
         PostgreSQLDatabaseType postgreSQLDatabaseType = new PostgreSQLDatabaseType();
         Optional<DialectTableMetaDataLoader> postgreSQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(postgreSQLDatabaseType);
         assertTrue(postgreSQLTableMetaDataLoader.isPresent());
