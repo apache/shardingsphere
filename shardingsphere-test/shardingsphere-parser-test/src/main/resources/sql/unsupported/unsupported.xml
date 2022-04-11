@@ -5223,27 +5223,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case108" value="DROP OPERATOR FAMILY IF EXISTS no_such_schema.float_ops USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case109" value="DROP OPERATOR FAMILY IF EXISTS test_operator_family USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case110" value="DROP OPERATOR FAMILY IF EXISTS test_operator_family USING no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case111" value="DROP OPERATOR FAMILY alt_opf10 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case112" value="DROP OPERATOR FAMILY alt_opf11 USING gist;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case113" value="DROP OPERATOR FAMILY alt_opf12 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case114" value="DROP OPERATOR FAMILY alt_opf13 USING hash;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case115" value="DROP OPERATOR FAMILY alt_opf14 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case116" value="DROP OPERATOR FAMILY alt_opf15 USING hash;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case117" value="DROP OPERATOR FAMILY alt_opf16 USING gist;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case118" value="DROP OPERATOR FAMILY alt_opf17 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case119" value="DROP OPERATOR FAMILY alt_opf18 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case120" value="DROP OPERATOR FAMILY alt_opf19 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case121" value="DROP OPERATOR FAMILY alt_opf4 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case122" value="DROP OPERATOR FAMILY alt_opf4 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case123" value="DROP OPERATOR FAMILY alt_opf5 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case124" value="DROP OPERATOR FAMILY alt_opf7 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case125" value="DROP OPERATOR FAMILY alt_opf8 USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case126" value="DROP OPERATOR FAMILY alt_opf9 USING gist;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case127" value="DROP OPERATOR FAMILY test_operator_family USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case128" value="DROP OPERATOR FAMILY test_operator_family USING no_such_am;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case197" value="DROP ROUTINE IF EXISTS test_ambiguous_procname;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case198" value="DROP ROUTINE cp_testfunc1(int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case212" value="DROP SERVER IF EXISTS nonexistent;" db-types="PostgreSQL"/>

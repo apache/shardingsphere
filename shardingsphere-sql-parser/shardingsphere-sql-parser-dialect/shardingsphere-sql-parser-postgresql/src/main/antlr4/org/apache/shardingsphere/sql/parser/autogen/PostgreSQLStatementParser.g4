@@ -135,5 +135,6 @@ execute
     | dropPublication
     | dropOperatorClass
     | dropSubscription
+    | dropOperatorFamily
     ) SEMI_?
     ;

@@ -466,7 +466,9 @@ public enum SQLVisitorRule {
     
     DROP_TYPE("DropType", SQLStatementType.DDL),
     
-    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL);
+    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL);
     
     private final String name;
     
