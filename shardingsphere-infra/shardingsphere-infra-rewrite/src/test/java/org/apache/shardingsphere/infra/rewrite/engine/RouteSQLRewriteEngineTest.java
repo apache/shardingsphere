@@ -77,7 +77,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithGroupedParameterBuilderForBroadcast() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
+        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
                 mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
@@ -93,7 +93,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithGroupedParameterBuilderForRouteWithSameDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
+        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
                 mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
@@ -111,7 +111,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithGroupedParameterBuilderForRouteWithEmptyDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
+        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
                 mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
@@ -128,7 +128,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithGroupedParameterBuilderForRouteWithNotSameDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
+        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());

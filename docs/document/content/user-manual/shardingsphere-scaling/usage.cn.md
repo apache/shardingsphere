@@ -38,7 +38,7 @@ weight = 2
 
 **注意**：
 
-还没开启`自动建表`的数据库需要手动创建分表。
+还没开启 `自动建表` 的数据库需要手动创建分表。
 
 ### 权限要求
 #### MySQL
@@ -90,9 +90,9 @@ SHOW GRANTS 'user';
 
 #### PostgreSQL
 
-1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
+1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
 
-2. 调整 WAL 配置
+2. 调整 WAL 配置。
 
 `postgresql.conf` 示例配置：
 ```
@@ -127,7 +127,7 @@ mysql> preview select count(1) from t_order;
 
 #### 创建迁移任务
 
-1. 添加新的数据源
+1. 添加新的数据源。
 
 详情请参见 [RDL #数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
 
@@ -153,13 +153,15 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. 修改所有表的分片规则
+2. 修改待迁移表的分片规则。
+
+待迁移表可以是所有表，也可以是部分表。绑定表只能一块迁移。
 
 目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
 
 详情请参见 [RDL #数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
-`SHARDING TABLE RULE`支持 2 种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
+`SHARDING TABLE RULE` 支持 2 种类型：`TableRule` 和 `AutoTableRule`。以下是两种分片规则的对比：
 
 | 类型         | AutoTableRule（自动分片）                                      | TableRule（自定义分片）                                        |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -287,5 +289,3 @@ mysql> preview select count(1) from t_order;
 ### DistSQL 手动模式接口
 
 数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
-
-注意：目前还在开发中，功能还不完善。

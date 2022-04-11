@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -27,6 +31,9 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
@@ -36,21 +43,31 @@ public final class RuleAlteredJobTest {
     
     @BeforeClass
     public static void beforeClass() {
-        EmbedTestingServer.start();
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertExecute() {
-        new RuleAlteredJob().execute(mockShardingContext());
+        JobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        initTableData(jobConfig);
+        ShardingContext shardingContext = new ShardingContext("1", null, 2, YamlEngine.marshal(jobConfig), 0, null);
+        new RuleAlteredJob().execute(shardingContext);
         Map<String, RuleAlteredJobScheduler> jobSchedulerMap = ReflectionUtil.getStaticFieldValue(RuleAlteredJobSchedulerCenter.class, "JOB_SCHEDULER_MAP", Map.class);
         assertNotNull(jobSchedulerMap);
         assertFalse(jobSchedulerMap.isEmpty());
     }
     
-    private ShardingContext mockShardingContext() {
-        return new ShardingContext("1", null, 2, YamlEngine.marshal(JobConfigurationBuilder.createJobConfiguration()), 0, null);
+    @SneakyThrows(SQLException.class)
+    private void initTableData(final JobConfiguration jobConfig) {
+        YamlPipelineDataSourceConfiguration source = jobConfig.getPipelineConfig().getSource();
+        try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceFactory().newInstance(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
+             Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+        }
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -29,12 +30,10 @@ import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingCartesianRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -106,24 +105,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (!shardingRuleTableNames.isEmpty()) {
             return shardingRuleTableNames;
         }
-        return sqlStatementContext instanceof IndexAvailable ? getTableNamesFromMetaData(((IndexAvailable) sqlStatementContext).getIndexes()) : Collections.emptyList();
-    }
-    
-    private Collection<String> getTableNamesFromMetaData(final Collection<IndexSegment> indexes) {
-        Collection<String> result = new LinkedList<>();
-        for (IndexSegment each : indexes) {
-            findLogicTableNameFromMetaData(each.getIdentifier().getValue()).ifPresent(result::add);
-        }
-        return result;
-    }
-    
-    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : schema.getAllTableNames()) {
-            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return sqlStatementContext instanceof IndexAvailable ? IndexMetaDataUtil.getTableNamesFromMetaData(schema, ((IndexAvailable) sqlStatementContext).getIndexes()) : Collections.emptyList();
     }
     
     private Collection<RouteUnit> getBroadcastTableRouteUnits(final ShardingRule shardingRule, final String broadcastTableName) {

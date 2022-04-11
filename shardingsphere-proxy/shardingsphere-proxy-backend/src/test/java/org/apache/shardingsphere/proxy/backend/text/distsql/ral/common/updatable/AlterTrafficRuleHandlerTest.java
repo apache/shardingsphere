@@ -45,7 +45,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AlterTrafficRuleHandlerTest {
+public final class AlterTrafficRuleHandlerTest {
     
     static {
         ShardingSphereServiceLoader.register(TrafficAlgorithm.class);

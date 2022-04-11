@@ -32,4 +32,8 @@
     <comment sql-case-id="comment_on_table" >
         <table name="employee" start-index="17" stop-index="25" />
     </comment>
+    <comment sql-case-id="comment_on_constraint" />
+    <comment sql-case-id="comment_on_domain" />
+    <comment sql-case-id="comment_on_event_trigger" />
+    <comment sql-case-id="comment_on_index" />
 </sql-parser-test-cases>

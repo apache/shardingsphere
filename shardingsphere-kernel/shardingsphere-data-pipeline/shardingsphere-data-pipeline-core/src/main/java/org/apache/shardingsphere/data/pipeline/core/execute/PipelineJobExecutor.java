@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d+)/config");
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
     
     @Override
     protected void doStart() {
@@ -66,8 +66,11 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    if (PipelineSimpleLock.getInstance().tryLock(jobConfig.getWorkflowConfig().getSchemaName(), 1000)) {
+                    String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+                    if (PipelineSimpleLock.getInstance().tryLock(schemaName, 1000)) {
                         execute(jobConfigPOJO);
+                    } else {
+                        log.info("tryLock failed, schemaName={}", schemaName);
                     }
                     break;
                 default:

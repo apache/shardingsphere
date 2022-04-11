@@ -156,6 +156,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeL
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -193,6 +194,8 @@ import java.util.stream.Collectors;
 public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public SQLServerStatementSQLVisitor(final Properties props) {
     }
@@ -470,7 +473,10 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), 
+                    parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -669,6 +675,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         // TODO :Unsupported for withClause.
         SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
 
@@ -825,6 +832,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -944,6 +952,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1003,6 +1012,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1070,7 +1080,9 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (topNum instanceof NumberLiteralValue) {
             return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
         }
-        return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        ParameterMarkerSegment result = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        parameterMarkerSegments.add(result);
+        return result;
     }
     
     @Override

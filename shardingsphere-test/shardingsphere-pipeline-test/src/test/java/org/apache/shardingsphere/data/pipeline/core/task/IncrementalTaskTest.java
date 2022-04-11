@@ -41,7 +41,7 @@ public final class IncrementalTaskTest {
     
     @BeforeClass
     public static void beforeClass() {
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Before

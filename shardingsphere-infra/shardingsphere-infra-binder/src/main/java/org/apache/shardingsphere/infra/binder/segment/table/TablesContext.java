@@ -24,8 +24,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.engine.SubqueryTableContextEngine;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
@@ -54,17 +58,19 @@ public final class TablesContext {
     
     private final Collection<String> schemaNames = new HashSet<>();
     
+    private final Collection<String> databaseNames = new HashSet<>();
+    
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
-    public TablesContext(final SimpleTableSegment tableSegment) {
-        this(Collections.singletonList(tableSegment));
+    public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
+        this(Collections.singletonList(tableSegment), databaseType);
     }
     
-    public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
-        this(tableSegments, Collections.emptyMap());
+    public TablesContext(final Collection<SimpleTableSegment> tableSegments, final DatabaseType databaseType) {
+        this(tableSegments, Collections.emptyMap(), databaseType);
     }
     
-    public TablesContext(final Collection<? extends TableSegment> tableSegments, final Map<Integer, SelectStatementContext> subqueryContexts) {
+    public TablesContext(final Collection<? extends TableSegment> tableSegments, final Map<Integer, SelectStatementContext> subqueryContexts, final DatabaseType databaseType) {
         if (tableSegments.isEmpty()) {
             return;
         }
@@ -73,12 +79,19 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 tables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));    
+                simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));
+                findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
             }
         }
+    }
+    
+    private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
+        Optional<OwnerSegment> owner = databaseType instanceof PostgreSQLDatabaseType 
+                || databaseType instanceof OpenGaussDatabaseType ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
+        return owner.map(optional -> optional.getIdentifier().getValue());
     }
     
     private Map<String, Collection<SubqueryTableContext>> createSubqueryTables(final Map<Integer, SelectStatementContext> subqueryContexts, final SubqueryTableSegment subqueryTable) {
@@ -276,15 +289,21 @@ public final class TablesContext {
     }
     
     /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    public Optional<String> getDatabaseName() {
+        Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database.");
+        return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
+    }
+    
+    /**
      * Get schema name.
      *
      * @return schema name
      */
     public Optional<String> getSchemaName() {
-        Preconditions.checkState(schemaNames.size() <= 1, "Can not support multiple different schema.");
-        for (String each : schemaNames) {
-            return Optional.of(each);
-        }
-        return Optional.empty();
+        return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
     }
 }

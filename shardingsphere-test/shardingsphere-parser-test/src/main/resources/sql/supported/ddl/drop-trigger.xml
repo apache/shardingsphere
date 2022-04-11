@@ -17,5 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_trigger" value="DROP TRIGGER safety ON DATABASE" db-types="SQLServer" />
+    <sql-case id="drop_trigger" value="DROP TRIGGER safety ON DATABASE" db-types="SQLServer,PostgreSQL" />
+    <sql-case id="drop_trigger_if_exists" value="DROP TRIGGER IF EXISTS foo ON no_such_schema.bar" db-types="PostgreSQL"/>
+    <sql-case id="drop_trigger_cascade" value="DROP TRIGGER foo ON no_such_schema.bar CASCADE" db-types="PostgreSQL"/>
+    <sql-case id="drop_trigger_restrict" value="DROP TRIGGER IF EXISTS foo ON no_such_schema.bar RESTRICT" db-types="PostgreSQL"/>
 </sql-cases>

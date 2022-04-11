@@ -32,7 +32,7 @@ showAllVariables
     ;
 
 alterInstance
-    : ALTER INSTANCE instanceId SET variableName EQ variableValue
+    : ALTER INSTANCE instanceId SET variableName EQ variableValues
     ;
 
 enableInstance
@@ -139,6 +139,10 @@ exportSchemaConfiguration
     : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
     ;
 
+importSchemaConfiguration
+    : IMPORT SCHEMA (CONFIGURATION | CONFIG) FILE EQ filePath
+    ;
+
 filePath
     : STRING
     ;
@@ -165,6 +169,10 @@ sqlParserRuleDefinition
 
 variableName
     : IDENTIFIER
+    ;
+
+variableValues
+    : variableValue (COMMA variableValue)*
     ;
 
 variableValue

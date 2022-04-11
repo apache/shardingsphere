@@ -21,10 +21,25 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class GranteeTest {
+    
+    @Test
+    public void assertGetUsername() {
+        Grantee grantee = new Grantee("foo", "");
+        assertThat(grantee.getUsername(), is("foo"));
+    }
+    
+    @Test
+    public void assertGetHostname() {
+        Grantee grantee = new Grantee("name", "%");
+        Grantee grantee1 = new Grantee("name", "");
+        assertThat(grantee.getHostname(), is("%"));
+        assertThat(grantee1.getHostname(), is("%"));
+    }
     
     @Test
     public void assertEquals() {
@@ -33,10 +48,11 @@ public final class GranteeTest {
         Grantee grantee2 = new Grantee("name", "127.0.0.1");
         assertTrue(grantee.equals(grantee1));
         assertTrue(grantee.equals(grantee2));
+        assertFalse(grantee.equals(new Object()));
     }
     
     @Test
-    public void assertHashcode() {
+    public void assertHashCode() {
         Grantee grantee = new Grantee("name", "%");
         Grantee grantee1 = new Grantee("name", "");
         Grantee grantee2 = new Grantee("name", "127.0.0.1");
@@ -45,10 +61,9 @@ public final class GranteeTest {
     }
     
     @Test
-    public void assertHostname() {
-        Grantee grantee = new Grantee("name", "%");
-        Grantee grantee1 = new Grantee("name", "");
-        assertThat(grantee.getHostname(), is("%"));
-        assertThat(grantee1.getHostname(), is("%"));
+    public void assertToString() {
+        assertThat(new Grantee("name", "127.0.0.1").toString(), is("name@127.0.0.1"));
+        assertThat(new Grantee("name", "%").toString(), is("name@%"));
+        assertThat(new Grantee("name", "").toString(), is("name@"));
     }
 }

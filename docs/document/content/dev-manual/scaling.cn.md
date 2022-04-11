@@ -35,8 +35,8 @@ chapter = true
 
 | *已知实现类*                                  | *详细说明*                                            |
 | ------------------------------------------- | ---------------------------------------------------- |
-| DataMatchDataConsistencyCheckAlgorithm      | 基于数据匹配的一致性校验算法。类型名：DATA_MATCH。          |
-| CRC32MatchDataConsistencyCheckAlgorithm     | 基于数据 CRC32 匹配的一致性校验算法。类型名：CRC32_MATCH。    |
+| DataMatchDataConsistencyCheckAlgorithm      | 基于数据匹配的一致性校验算法。类型名：DATA_MATCH     |
+| CRC32MatchDataConsistencyCheckAlgorithm     | 基于数据 CRC32 匹配的一致性校验算法。类型名：CRC32_MATCH    |
 
 ## SingleTableDataCalculator
 
@@ -46,5 +46,5 @@ chapter = true
 
 | *已知实现类*                                  | *详细说明*                                                              |
 | ------------------------------------------- | ---------------------------------------------------------------------- |
-| DataMatchSingleTableDataCalculator          | 给 DATA_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于所有数据库。        |
-| CRC32MatchMySQLSingleTableDataCalculator    | 给 CRC32_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于MySQL。          |
+| DataMatchSingleTableDataCalculator          | 给 DATA_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于所有数据库        |
+| CRC32MatchMySQLSingleTableDataCalculator    | 给 CRC32_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于 MySQL          |

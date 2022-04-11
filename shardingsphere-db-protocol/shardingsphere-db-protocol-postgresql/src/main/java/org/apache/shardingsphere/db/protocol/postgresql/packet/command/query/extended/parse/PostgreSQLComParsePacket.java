@@ -45,11 +45,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
         this.payload = payload;
         payload.readInt4();
         statementId = payload.readStringNul();
-        sql = alterSQLToJDBCStyle(payload.readStringNul());
-    }
-    
-    private String alterSQLToJDBCStyle(final String sql) {
-        return sql.replaceAll("\\$[0-9]+", "?");
+        sql = payload.readStringNul();
     }
     
     /**

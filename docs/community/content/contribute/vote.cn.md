@@ -51,7 +51,7 @@ I am glad to receive your votes, and the voting result is,
 Therefore, I will send the invitation to (提名者).
 ```
 
-**4. 如果投票通过，对提名者发布邀请函并抄送@private 邮件列表给发送邀请函。**
+**4. 如果投票通过，对提名者发布邀请函并抄送 @private 邮件列表给发送邀请函。**
 
 ```
 To: (提名者邮箱)
@@ -120,9 +120,9 @@ https://shardingsphere.apache.org/community/en/contribute/committer/
 
 **8. 等待 Secretary 通知创建账户。**
 
-**9. PMC添加新 Committer 到 [roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
+**9. PMC 添加新 Committer 到 [roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
 
-**10. 新 Committer 开通 github 权限，完成 [Setup](https://gitbox.apache.org/setup/)内容。**
+**10. 新 Committer 开通 Github 权限，完成 [Setup](https://gitbox.apache.org/setup/)内容。**
 
 **11. PMC 在社区宣布并欢迎新的 Committer 加入。**
 
@@ -144,7 +144,7 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-**12. 新 Commiter 更新[提交者名单](/cn/team/)。**
+**12. 新 Committer 更新[提交者名单](/cn/team/)。**
 
 **13. 如果进行 PMC 选举，需额外增加一个步骤。由投票发起人发邮件到 board@apache.org。**
 
@@ -154,7 +154,7 @@ The vote result is available here:
 (投票详情链接)
 
 Thank you，
-（发起人）
+(发起人)
 ```
 
 

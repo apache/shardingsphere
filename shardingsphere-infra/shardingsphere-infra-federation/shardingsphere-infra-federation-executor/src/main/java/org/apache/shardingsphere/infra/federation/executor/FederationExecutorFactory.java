@@ -33,14 +33,16 @@ public final class FederationExecutorFactory {
     /**
      * Create new instance of federation executor factory.
      * 
+     * @param databaseName database name
      * @param schemaName schema name
      * @param optimizerContext filterable optimizer context 
      * @param props configuration properties
      * @param jdbcExecutor jdbc executor
      * @return new instance of federation executor
      */
-    public static FederationExecutor newInstance(final String schemaName, final OptimizerContext optimizerContext, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
+    public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext, 
+                                                 final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
         // TODO Consider about CustomizedFilterableExecutor
-        return new OriginalFilterableExecutor(schemaName, optimizerContext, props, jdbcExecutor);
+        return new OriginalFilterableExecutor(databaseName, schemaName, optimizerContext, props, jdbcExecutor);
     }
 }

@@ -31,12 +31,14 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -47,10 +49,10 @@ import org.apache.zookeeper.data.ACL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +62,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ClusterPersistRepository {
     
-    private CuratorCache curatorCache;
+    private final Map<String, CuratorCache> caches = new HashMap<>();
     
     private CuratorFramework client;
     
@@ -234,8 +236,10 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        if (!Optional.ofNullable(curatorCache).isPresent()) {
-            curatorCache = CuratorCache.build(client, "/");
+        if (!caches.containsKey(key)) {
+            CuratorCache curatorCache = CuratorCache.build(client, key);
+            start(curatorCache);
+            caches.put(key, curatorCache);
         }
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
                 .forTreeCache(client, (framework, treeCacheListener) -> {
@@ -245,8 +249,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        curatorCache.listenable().addListener(curatorCacheListener);
-        start(curatorCache);
+        caches.get(key).listenable().addListener(curatorCacheListener);
     }
     
     private void start(final CuratorCache cache) {
@@ -312,7 +315,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void close() {
-        curatorCache.close();
+        caches.values().forEach(CuratorCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }
@@ -329,6 +332,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    @Override
+    public void watchSessionConnection(final InstanceContext instanceContext) {
+        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
     }
     
     @Override

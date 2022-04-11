@@ -49,10 +49,13 @@ public final class LocalTransactionManager implements TransactionManager<Void> {
     
     @Override
     public Void commit() throws SQLException {
-        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            Collection<SQLException> exceptions = new LinkedList<>(commitConnections());
-            throwSQLExceptionIfNecessary(exceptions);
+        Collection<SQLException> exceptions = new LinkedList<>();
+        if (connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
+            exceptions.addAll(rollbackConnections());
+        } else {
+            exceptions.addAll(commitConnections());
         }
+        throwSQLExceptionIfNecessary(exceptions);
         return null;
     }
     

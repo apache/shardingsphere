@@ -21,9 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 @Getter
 @Setter
+@XmlType(name = "distsql")
 public abstract class DropRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "contains-exists-clause")

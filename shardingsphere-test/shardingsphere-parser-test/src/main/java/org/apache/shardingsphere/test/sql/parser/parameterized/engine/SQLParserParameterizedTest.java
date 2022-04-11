@@ -75,6 +75,6 @@ public abstract class SQLParserParameterizedTest {
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType, cacheOption, true).parse(sql, false));
+        return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, cacheOption).parse(sql, false));
     }
 }

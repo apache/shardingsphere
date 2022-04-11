@@ -18,7 +18,7 @@ weight = 1
 
 ## 规则配置
 
-ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间`和 `Spring Boot Starter` 这 4 种方式进行配置，开发者可根据场景选择适合的配置方式。
+ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间` 和 `Spring Boot Starter` 这 4 种方式进行配置，开发者可根据场景选择适合的配置方式。
 详情请参见[用户手册](/cn/user-manual/shardingsphere-jdbc/)。
 
 ## 创建数据源

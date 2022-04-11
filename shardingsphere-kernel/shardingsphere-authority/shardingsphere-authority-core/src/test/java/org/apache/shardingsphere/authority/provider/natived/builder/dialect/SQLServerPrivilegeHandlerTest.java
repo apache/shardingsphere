@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.provider.natived.model.privilege.Nati
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -61,14 +60,14 @@ public final class SQLServerPrivilegeHandlerTest {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("testUser2", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).diff(newUsers, dataSource));
+        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer").diff(newUsers, dataSource));
     }
     
     @Test
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).create(users, dataSource);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer").create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
     }
     
@@ -76,7 +75,7 @@ public final class SQLServerPrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).grantAll(users, dataSource);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer").grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
@@ -84,7 +83,7 @@ public final class SQLServerPrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer").load(users, dataSource));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {

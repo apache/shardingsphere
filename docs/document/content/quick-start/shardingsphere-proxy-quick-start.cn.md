@@ -6,9 +6,9 @@ weight = 2
 
 ## 规则配置
 
-编辑`%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`。
+编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`。
 
-编辑`%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`。
+编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`。
 
 > %SHARDINGSPHERE_PROXY_HOME% 为 Proxy 解压后的路径，例：/opt/shardingsphere-proxy-bin/
 

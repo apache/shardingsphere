@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -284,29 +287,98 @@ public final class ShardingRuleTest {
         createMaximumShardingRule().generateKey("table_0");
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertCreateInconsistentActualDatasourceNamesFailure() {
-        createInconsistentActualDatasourceNamesShardingRule();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
+        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertCreateInconsistentActualTableNamesFailure() {
-        createInconsistentActualTableNamesShardingRule();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..3}");
+        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertCreateInconsistentAlgorithmExpressionOnDatabaseShardingStrategyFailure() {
-        createInconsistentAlgorithmExpressionOnDatabaseShardingStrategyShardingRule();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
+        Properties shardingProps = new Properties();
+        shardingProps.setProperty("algorithm-expression", "ds_%{ds_id % 2}");
+        shardingAlgorithmDB.setProps(shardingProps);
+        shardingTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "shardingAlgorithmDB"));
+        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmDB", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmDB.getType(), shardingProps));
+        InlineShardingAlgorithm subAlgorithmDB = new InlineShardingAlgorithm();
+        Properties subProps = new Properties();
+        subProps.setProperty("algorithm-expression", "ds_%{ds_id % 3}");
+        subAlgorithmDB.setProps(subProps);
+        subTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "subAlgorithmDB"));
+        shardingRuleConfig.getShardingAlgorithms().put("subAlgorithmDB", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmDB.getType(), subProps));
+        new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertCreateInconsistentAlgorithmExpressionOnTableShardingStrategyFailure() {
-        createInconsistentAlgorithmExpressionOnTableShardingStrategyShardingRule();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties shardingProps = new Properties();
+        shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
+        shardingAlgorithmTBL.setProps(shardingProps);
+        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
+        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
+        InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties subProps = new Properties();
+        subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
+        subAlgorithmTBL.setProps(subProps);
+        subTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "subAlgorithmTBL"));
+        shardingRuleConfig.getShardingAlgorithms().put("subAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(subAlgorithmTBL.getType(), subProps));
+        new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertCreateInconsistentAlgorithmExpressionWithDefaultAndSpecifiedTableShardingStrategyFailure() {
-        createInconsistentAlgorithmExpressionWithDefaultAndSpecifiedTableShardingStrategy();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties shardingProps = new Properties();
+        shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
+        shardingAlgorithmTBL.setProps(shardingProps);
+        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
+        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
+        InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties subProps = new Properties();
+        subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
+        subAlgorithmTBL.setProps(subProps);
+        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "table_inline"));
+        shardingRuleConfig.setDefaultShardingColumn("table_id");
+        shardingRuleConfig.getShardingAlgorithms().put("table_inline", new ShardingSphereAlgorithmConfiguration("INLINE", subProps));
+        new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     @Test
@@ -392,95 +464,6 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceNames());
         assertThat(shardingRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1", "resource0", "resource1")));
-    }
-    
-    private ShardingRule createInconsistentActualDatasourceNamesShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
-        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getTables().add(subTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
-    }
-    
-    private ShardingRule createInconsistentActualTableNamesShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..3}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
-        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getTables().add(subTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
-    }
-    
-    private ShardingRule createInconsistentAlgorithmExpressionOnDatabaseShardingStrategyShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getTables().add(subTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
-        InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
-        Properties shardingProps = new Properties();
-        shardingProps.setProperty("algorithm-expression", "ds_%{ds_id % 2}");
-        shardingAlgorithmDB.setProps(shardingProps);
-        shardingTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "shardingAlgorithmDB"));
-        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmDB", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmDB.getType(), shardingProps));
-        InlineShardingAlgorithm subAlgorithmDB = new InlineShardingAlgorithm();
-        Properties subProps = new Properties();
-        subProps.setProperty("algorithm-expression", "ds_%{ds_id % 3}");
-        subAlgorithmDB.setProps(subProps);
-        subTableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "subAlgorithmDB"));
-        shardingRuleConfig.getShardingAlgorithms().put("subAlgorithmDB", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmDB.getType(), subProps));
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
-    }
-    
-    private ShardingRule createInconsistentAlgorithmExpressionOnTableShardingStrategyShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getTables().add(subTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
-        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
-        Properties shardingProps = new Properties();
-        shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
-        shardingAlgorithmTBL.setProps(shardingProps);
-        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
-        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
-        InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
-        Properties subProps = new Properties();
-        subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
-        subAlgorithmTBL.setProps(subProps);
-        subTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "subAlgorithmTBL"));
-        shardingRuleConfig.getShardingAlgorithms().put("subAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(subAlgorithmTBL.getType(), subProps));
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
-    }
-    
-    private ShardingRule createInconsistentAlgorithmExpressionWithDefaultAndSpecifiedTableShardingStrategy() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getTables().add(subTableRuleConfig);
-        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
-        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
-        Properties shardingProps = new Properties();
-        shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
-        shardingAlgorithmTBL.setProps(shardingProps);
-        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
-        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
-        InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
-        Properties subProps = new Properties();
-        subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
-        subAlgorithmTBL.setProps(subProps);
-        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "table_inline"));
-        shardingRuleConfig.setDefaultShardingColumn("table_id");
-        shardingRuleConfig.getShardingAlgorithms().put("table_inline", new ShardingSphereAlgorithmConfiguration("INLINE", subProps));
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private ShardingRule createMaximumShardingRule() {
@@ -617,7 +600,7 @@ public final class ShardingRuleTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE")))
         );
-        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap());
+        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), DatabaseTypeRegistry.getDefaultDatabaseType());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("LOGIC_TABLE")).thenReturn(Arrays.asList("user_id", "order_id"));
@@ -724,5 +707,42 @@ public final class ShardingRuleTest {
         DataNode sixthDataNode = iterator.next();
         assertThat(sixthDataNode.getDataSourceName(), is("ds_1"));
         assertThat(sixthDataNode.getTableName(), is("table_2"));
+    }
+    
+    @Test
+    public void assertGetDatabaseShardingStrategyConfiguration() {
+        ShardingRule actual = createMaximumShardingRule();
+        TableRule logicTable = actual.getTableRule("Logic_Table");
+        ShardingStrategyConfiguration databaseShardingStrategyConfiguration = actual.getDatabaseShardingStrategyConfiguration(logicTable);
+        assertThat(databaseShardingStrategyConfiguration.getShardingAlgorithmName(), is("database_inline"));
+    }
+    
+    @Test
+    public void assertGetTableShardingStrategyConfiguration() {
+        ShardingRule actual = createMaximumShardingRule();
+        TableRule logicTable = actual.getTableRule("Logic_Table");
+        ShardingStrategyConfiguration tableShardingStrategyConfiguration = actual.getTableShardingStrategyConfiguration(logicTable);
+        assertThat(tableShardingStrategyConfiguration.getShardingAlgorithmName(), is("table_inline"));
+    }
+    
+    @Test
+    public void assertIsGenerateKeyColumn() {
+        ShardingRule actual = createMaximumShardingRule();
+        assertTrue(actual.isGenerateKeyColumn("id", "logic_table"));
+    }
+    
+    @Test
+    public void assertGetShardingRuleTableNames() {
+        ShardingRule actual = createMaximumShardingRule();
+        Collection<String> shardingRuleTableNames = actual.getShardingRuleTableNames(Collections.singleton("Logic_Table"));
+        assertTrue(shardingRuleTableNames.contains("Logic_Table"));
+    }
+    
+    @Test
+    public void assertGetLogicAndActualTablesFromBindingTable() {
+        ShardingRule actual = createMaximumShardingRule();
+        Map<String, String> logicAndActualTablesFromBindingTable =
+                actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Lists.newArrayList("logic_table", "sub_logic_table"));
+        assertThat(logicAndActualTablesFromBindingTable.get("sub_logic_table"), is("sub_table_0"));
     }
 }

@@ -30,6 +30,4 @@ import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 public final class PrimaryStateChangedEvent implements GovernanceEvent {
     
     private final QualifiedSchema qualifiedSchema;
-    
-    private final String primaryDataSourceName;
 }

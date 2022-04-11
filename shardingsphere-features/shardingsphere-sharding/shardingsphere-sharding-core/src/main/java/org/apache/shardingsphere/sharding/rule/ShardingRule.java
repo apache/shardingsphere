@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -61,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -121,7 +122,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
-        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
+        Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -138,7 +139,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
-        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
+        Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
@@ -219,94 +220,70 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return result;
     }
     
-    private void checkSameBindingTables(final Collection<String> bindingTableGroups, final Map<String, BindingTableRule> bindingTableRules) {
+    private boolean isValidBindingTableConfiguration(final Collection<String> bindingTableGroups) {
         for (String each : bindingTableGroups) {
-            List<String> bindingTableList = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
-            TableRule sampleTableRule = null;
-            for (String bindingTable : bindingTableList) {
-                TableRule tableRule = bindingTableRules.get(bindingTable).getTableRules().get(bindingTable);
-                if (null == sampleTableRule) {
-                    sampleTableRule = tableRule;
-                } else {
-                    checkSameActualDatasourceNamesAndActualTableIndex(sampleTableRule, tableRule, each);
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
+            if (bindingTables.size() <= 1) {
+                continue;
+            }
+            Iterator<String> iterator = bindingTables.iterator();
+            TableRule sampleTableRule = getTableRule(iterator.next());
+            while (iterator.hasNext()) {
+                TableRule tableRule = getTableRule(iterator.next());
+                if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
+                    return false;
+                }
+                if (!isValidShardingAlgorithm(sampleTableRule, tableRule, true) 
+                        || !isValidShardingAlgorithm(sampleTableRule, tableRule, false)) {
+                    return false;
                 }
             }
         }
+        return true;
     }
     
-    private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule sampleTableRule, final TableRule tableRule, final String bindingTableGroup) {
-        if (!sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames())) {
-            throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualDatasourceNames", bindingTableGroup);
-        }
-        checkSameAlgorithmOnDatabase(sampleTableRule, tableRule, sampleTableRule.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
+    private boolean isValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
+        return sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
+    }
+    
+    private boolean isValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
         for (String each : sampleTableRule.getActualDatasourceNames()) {
-            Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
-                    .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
-            Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
-                    .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
+            Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(actualTableName 
+                -> actualTableName.replace(sampleTableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
+            Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(actualTableName 
+                -> actualTableName.replace(tableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             if (!sampleActualTableNames.equals(actualTableNames)) {
-                throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualTableNames", bindingTableGroup);
+                return false;
             }
-            checkSameAlgorithmOnTable(sampleTableRule, sampleTableRule.getActualTableNames(each).stream().findFirst().get(), tableRule,
-                    tableRule.getActualTableNames(each).stream().findFirst().get(), bindingTableGroup);
         }
+        return true;
     }
     
-    private void checkSameAlgorithmOnDatabase(final TableRule sampleTableRule, final TableRule tableRule, final String dataSourceName, final String bindingTableGroup) {
-        List<String[]> algorithmExpressions = new LinkedList<>();
-        String logicName = substring(dataSourceName)[0];
-        algorithmExpressions.add(new String[] {getAlgorithmExpression(sampleTableRule, true), logicName, getShardingColumn(sampleTableRule.getDatabaseShardingStrategyConfig())});
-        algorithmExpressions.add(new String[] {getAlgorithmExpression(tableRule, true), logicName, getShardingColumn(tableRule.getDatabaseShardingStrategyConfig())});
-        checkSameAlgorithmExpression(algorithmExpressions, "databaseShardingStrategyConfig", bindingTableGroup);
+    private boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm) {
+        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm);
+        String algorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm);
+        return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
     }
     
-    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrTable) {
-        ShardingStrategyConfiguration shardingStrategyConfig = databaseOrTable
+    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm) {
+        ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
                 ? null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig()
                 : null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName());
-        return null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
+        String originAlgorithmExpression = null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
+        String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
+        String shardingColumn = getShardingColumn(shardingStrategyConfig);
+        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "");
     }
     
-    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        String result = StringUtils.defaultString(defaultShardingColumn, "");
-        if (null == shardingStrategyConfiguration) {
-            return result;
+    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
+            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
         }
-        if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
-            result = ((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns();
+        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
+            return ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
         }
-        if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
-            result = ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
-        }
-        return StringUtils.defaultString(result, "");
-    }
-    
-    private void checkSameAlgorithmOnTable(final TableRule sampleTableRule, final String sampleTableName, final TableRule tableRule, final String tableName, final String bindingTableGroup) {
-        List<String[]> algorithmExpressions = new LinkedList<>();
-        algorithmExpressions.add(new String[] {getAlgorithmExpression(sampleTableRule, false), substring(sampleTableName)[0],
-                getShardingColumn(sampleTableRule.getTableShardingStrategyConfig())});
-        algorithmExpressions.add(new String[] {getAlgorithmExpression(tableRule, false), substring(tableName)[0],
-                getShardingColumn(tableRule.getTableShardingStrategyConfig())});
-        checkSameAlgorithmExpression(algorithmExpressions, "tableShardingStrategyConfig", bindingTableGroup);
-    }
-    
-    private void checkSameAlgorithmExpression(final Collection<String[]> algorithmExpressions, final String shardingStrategyConfig, final String bindingTableGroup) {
-        String sampleAlgorithmExpressions = "";
-        for (String[] each : algorithmExpressions) {
-            String algorithmExpression = each[0].replaceAll(each[1], "").replaceAll(each[2], "");
-            if (sampleAlgorithmExpressions.isEmpty()) {
-                sampleAlgorithmExpressions = algorithmExpression;
-            } else if (!Objects.equals(sampleAlgorithmExpressions, algorithmExpression)) {
-                throw new ShardingSphereConfigurationException("The %s of %s on bindingTableGroup `%s` are inconsistent", "algorithm-expressions", shardingStrategyConfig, bindingTableGroup);
-            }
-        }
-    }
-    
-    private String[] substring(final String str) {
-        int charAt = str.lastIndexOf("_") + 1;
-        String index = str.substring(charAt);
-        return StringUtils.isNumeric(index) ? new String[] {str.replace(index, ""), index} : new String[] {str, ""};
+        return StringUtils.defaultString(defaultShardingColumn, "");
     }
     
     @Override

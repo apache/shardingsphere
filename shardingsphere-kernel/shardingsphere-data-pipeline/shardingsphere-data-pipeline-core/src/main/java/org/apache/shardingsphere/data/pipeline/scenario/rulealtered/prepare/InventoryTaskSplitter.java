@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPos
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -50,7 +51,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -147,7 +147,7 @@ public final class InventoryTaskSplitter {
             dumperConfig.setPrimaryKey(primaryKey);
             return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
         }
-        return Collections.singletonList(new PlaceholderPosition());
+        throw new PipelineJobCreationException("Can not split by primary key range for table " + dumperConfig.getTableName());
     }
     
     private boolean isSpiltByPrimaryKeyRange(final PipelineTableMetaData tableMetaData, final String tableName) {

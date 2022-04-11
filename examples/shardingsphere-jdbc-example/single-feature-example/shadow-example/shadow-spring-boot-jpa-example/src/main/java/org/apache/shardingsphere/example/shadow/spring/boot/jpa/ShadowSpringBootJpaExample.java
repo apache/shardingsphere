@@ -35,7 +35,7 @@ public class ShadowSpringBootJpaExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShadowSpringBootJpaExample.class, args)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("shadow", ExampleService.class));
+            ExampleExecuteTemplate.run(applicationContext.getBean("shadowExample", ExampleService.class));
         }
     }
 }

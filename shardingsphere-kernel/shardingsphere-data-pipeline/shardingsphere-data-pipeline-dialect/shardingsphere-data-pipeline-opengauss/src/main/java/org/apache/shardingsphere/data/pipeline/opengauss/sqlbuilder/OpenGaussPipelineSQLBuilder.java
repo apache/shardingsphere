@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import com.google.common.collect.Collections2;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
@@ -29,12 +30,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * OpenGauss pipeline SQL builder.
+ * Pipeline SQL builder of openGauss.
  */
+@NoArgsConstructor
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    public OpenGaussPipelineSQLBuilder() {
-    }
     
     public OpenGaussPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
@@ -57,14 +56,11 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     
     @Override
     public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
-        return new ArrayList(Collections2.filter(columns, column -> !(column.isPrimaryKey()
-                || isShardingColumn(getShardingColumnsMap(), record.getTableName(), column.getName()))));
+        return new ArrayList<>(Collections2.filter(columns, column -> !(column.isPrimaryKey() || isShardingColumn(getShardingColumnsMap(), record.getTableName(), column.getName()))));
     }
     
-    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
-                                     final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName)
-                && shardingColumnsMap.get(tableName).contains(columnName);
+    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
+        return shardingColumnsMap.containsKey(tableName) && shardingColumnsMap.get(tableName).contains(columnName);
     }
     
     private String buildConflictSQL() {

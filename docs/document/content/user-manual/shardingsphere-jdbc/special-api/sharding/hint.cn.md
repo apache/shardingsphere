@@ -135,7 +135,7 @@ try (HintManager hintManager = HintManager.getInstance();
 ##### 使用规范
 
 SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。
-注释格式暂时只支持`/* */`，内容需要以`ShardingSphere hint:`开始，属性名为 `writeRouteOnly`。
+注释格式暂时只支持 `/* */`，内容需要以 `ShardingSphere hint:` 开始，属性名为 `writeRouteOnly`。
 
 ##### 完整示例
 ```sql
@@ -176,7 +176,7 @@ try (HintManager hintManager = HintManager.getInstance();
 ##### 使用规范
 
 SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`，目前只支持路由至一个数据源。
-注释格式暂时只支持`/* */`，内容需要以`ShardingSphere hint:`开始，属性名为 `dataSourceName`。
+注释格式暂时只支持 `/* */`，内容需要以 `ShardingSphere hint:` 开始，属性名为 `dataSourceName`。
 
 ##### 完整示例
 ```sql

@@ -27,7 +27,6 @@ import java.sql.NClob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
-import java.sql.Savepoint;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
@@ -56,26 +55,6 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     @Override
     public final String nativeSQL(final String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException("nativeSQL");
-    }
-    
-    @Override
-    public final Savepoint setSavepoint() throws SQLException {
-        throw new SQLFeatureNotSupportedException("setSavepoint");
-    }
-    
-    @Override
-    public final Savepoint setSavepoint(final String name) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setSavepoint name");
-    }
-    
-    @Override
-    public final void releaseSavepoint(final Savepoint savepoint) throws SQLException {
-        throw new SQLFeatureNotSupportedException("releaseSavepoint");
-    }
-    
-    @Override
-    public final void rollback(final Savepoint savepoint) throws SQLException {
-        throw new SQLFeatureNotSupportedException("rollback savepoint");
     }
     
     @Override

@@ -49,6 +49,7 @@
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -57,7 +58,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${hikari-cp.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -144,7 +144,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
                     <execution>

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -173,8 +174,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        Preconditions.checkState(sqlParserRule.isPresent());
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), sqlParserRule.get());
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
         sqlStatement = sqlParserEngine.parse(sql, true);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), sqlStatement, connection.getSchema());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
@@ -480,7 +482,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(connection.getSchema());
-        MergeEngine mergeEngine = new MergeEngine(connection.getSchema(), metaData.getResource().getDatabaseType(), metaData.getSchema(),
+        MergeEngine mergeEngine = new MergeEngine(connection.getSchema(), metaData.getResource().getDatabaseType(), metaData.getDefaultSchema(),
                 metaDataContexts.getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
@@ -578,8 +580,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void setBatchParametersForStatements() throws SQLException {
         for (Statement each : batchPreparedStatementExecutor.getStatements()) {
             List<List<Object>> parameterSet = batchPreparedStatementExecutor.getParameterSet(each);
-            for (List<Object> parameters : parameterSet) {
-                replaySetParameter((PreparedStatement) each, parameters);
+            for (List<Object> eachParameters : parameterSet) {
+                replaySetParameter((PreparedStatement) each, eachParameters);
                 ((PreparedStatement) each).addBatch();
             }
         }

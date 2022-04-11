@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,14 +41,6 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
      * @return job infos
      */
     List<JobInfo> list();
-    
-    /**
-     * Get uncompleted job ids of schema.
-     *
-     * @param schemaName schema name
-     * @return uncompleted job ids
-     */
-    List<Long> getUncompletedJobIds(String schemaName);
     
     /**
      * Start scaling job by config.
@@ -82,6 +74,14 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     void stopClusterWriteDB(String jobId);
     
     /**
+     * Stop cluster write to job source schema's underlying DB.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void stopClusterWriteDB(String schemaName, String jobId);
+    
+    /**
      * Restore cluster write to job source schema's underlying DB.
      *
      * @param jobId job id
@@ -91,9 +91,10 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     /**
      * Restore cluster write to job source schema's underlying DB.
      *
-     * @param jobConfig job configuration
+     * @param schemaName schema name
+     * @param jobId job id
      */
-    void restoreClusterWriteDB(JobConfiguration jobConfig);
+    void restoreClusterWriteDB(String schemaName, String jobId);
     
     /**
      * List all data consistency check algorithms from SPI.

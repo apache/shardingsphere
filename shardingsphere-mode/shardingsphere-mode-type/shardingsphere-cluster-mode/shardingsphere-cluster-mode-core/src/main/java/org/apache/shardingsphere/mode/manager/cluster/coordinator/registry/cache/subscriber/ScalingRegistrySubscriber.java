@@ -54,12 +54,14 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void startScaling(final SchemaVersionPreparedEvent event) {
-        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), schemaVersionPersistService.getSchemaActiveVersion(event.getSchemaName()).get())); 
+        String activeVersion = schemaVersionPersistService.getSchemaActiveVersion(event.getSchemaName()).get();
+        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), activeVersion));
         String targetDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), event.getVersion()));
-        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName(), schemaVersionPersistService.getSchemaActiveVersion(event.getSchemaName()).get()));
+        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName(), activeVersion));
         String targetRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName(), event.getVersion()));
         log.info("start scaling job, locked the schema name, event={}", event);
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetDataSource, targetRule, event.getVersion());
+        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetDataSource, targetRule,
+                Integer.parseInt(activeVersion), Integer.parseInt(event.getVersion()));
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
@@ -71,10 +73,13 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
         log.info("scalingTaskFinished, event={}", event);
+        int targetActiveVersion = event.getTargetActiveVersion();
         Optional<String> activeVersion = schemaVersionPersistService.getSchemaActiveVersion(event.getTargetSchemaName());
-        if (activeVersion.isPresent()) {
-            schemaVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetSchemaVersion());
-            schemaVersionPersistService.deleteVersion(event.getTargetSchemaName(), activeVersion.get());
+        if (activeVersion.isPresent() && targetActiveVersion == Integer.parseInt(activeVersion.get())) {
+            schemaVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetNewVersion() + "");
+            schemaVersionPersistService.deleteVersion(event.getTargetSchemaName(), targetActiveVersion + "");
+        } else {
+            log.error("targetActiveVersion does not match current activeVersion, targetActiveVersion={}, activeVersion={}", targetActiveVersion, activeVersion.orElse(null));
         }
         ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(event.getTargetSchemaName());
         ShardingSphereEventBus.getInstance().post(releaseLockEvent);

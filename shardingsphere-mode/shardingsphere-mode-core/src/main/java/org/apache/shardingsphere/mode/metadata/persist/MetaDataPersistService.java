@@ -157,6 +157,8 @@ public final class MetaDataPersistService {
         Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
         Preconditions.checkState(ruleConfig.isPresent());
         if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().clear();
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().putAll(props);
             globalRuleService.persist(ruleConfigs, isOverwrite);
         }
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
@@ -57,12 +58,13 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     private static final String PG_PREFIX = "pg_";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext) {
         return Optional.empty();
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql, final Optional<String> schemaName) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
             if (selectedTableNames.contains(PG_DATABASE)) {
@@ -75,8 +77,17 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
-        if (sqlStatement instanceof SetStatement && isSetClientEncoding((SetStatement) sqlStatement)) {
-            return Optional.of(new PostgreSQLSetCharsetExecutor((SetStatement) sqlStatement));
+        if (sqlStatement instanceof SetStatement) {
+            SetStatement setStatement = (SetStatement) sqlStatement;
+            // TODO Consider refactoring this with SPI.
+            switch (getSetConfigurationParameter(setStatement)) {
+                case "client_encoding":
+                    return Optional.of(new PostgreSQLSetCharsetExecutor(setStatement));
+                case "extra_float_digits":
+                case "application_name":
+                    return Optional.of(connectionSession -> { });
+                default:
+            }
         }
         return Optional.empty();
     }
@@ -99,9 +110,9 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                 .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private boolean isSetClientEncoding(final SetStatement setStatement) {
+    private String getSetConfigurationParameter(final SetStatement setStatement) {
         Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() && "client_encoding".equalsIgnoreCase(iterator.next().getVariable().getVariable());
+        return iterator.hasNext() ? iterator.next().getVariable().getVariable().toLowerCase() : "";
     }
     
     @Override

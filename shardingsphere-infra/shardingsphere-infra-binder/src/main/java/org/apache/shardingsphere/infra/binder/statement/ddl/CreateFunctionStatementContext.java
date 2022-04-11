@@ -42,6 +42,6 @@ public final class CreateFunctionStatementContext extends CommonSQLStatementCont
         super(sqlStatement);
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatement);
         Collection<SimpleTableSegment> tables = routineBodySegment.map(bodySegment -> new TableExtractor().extractExistTableFromRoutineBody(bodySegment)).orElse(Collections.emptyList()); 
-        tablesContext = new TablesContext(tables);
+        tablesContext = new TablesContext(tables, getDatabaseType());
     }
 }

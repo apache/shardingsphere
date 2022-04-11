@@ -141,6 +141,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/6637227?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/TeslaCN" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -148,6 +153,9 @@ chapter = true
         </td>
         <td>
             <b>Xiaoguang Ma</b>
+        </td>
+        <td>
+            <b>Weijie Wu</b>
         </td>
     </tr>
 </table>
@@ -277,11 +285,6 @@ chapter = true
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/TeslaCN" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/Lucas-307" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
@@ -311,11 +314,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/12792261?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/totalo" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Weijie Wu</b>
-        </td>
         <td>
             <b>Lu Qiu</b>
         </td>
@@ -334,13 +339,11 @@ chapter = true
         <td>
             <b>Xiao Yang</b>
         </td>
+        <td>
+            <b>Guocheng Tang</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/totalo" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/LeeGuoPing" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
@@ -363,9 +366,6 @@ chapter = true
          </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Guocheng Tang</b>
-        </td>
         <td>
             <b>Guoping Li</b>
         </td>
@@ -394,3 +394,42 @@ The ShardingSphere community follows the [Apache Community’s process](http://c
 Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
 
 You can read the [Contributor Guide](/en/contribute/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/contribute/committer/) for more details on how to become a committer.
+
+### How Can I Become a Contributor
+
+A contributor simply means that you take an interest in the project and contribute in some way, ranging from asking questions to providing new features as code patches. Contributions can be made in many ways, such as: 
+1. Help others in the issues
+  - Help solve problems with the issues
+  - Remind the authors to provide a demo if they are reporting a bug
+  - Try to reproduce the problem as described in the issues
+2. Make pull requests to fix bugs or implement new features
+3. Help with editing or translating the documents
+4. Discuss in the mailing list
+5. Join the ShardingSphere Slack community
+6. Spread the word! Tweet or engage with @ShardingSphere on Twitter
+7. Bit of a writer? Consider submitting a piece for publication on the ShardingSphere Medium page and official blog and we will feature you on all our media channels as well
+
+The first step is to get involved. Dive into the Apache ShardingSphere concept & code, and say hi to the community; offer help, improve docs, complete a newbie ticket or answer a user. You may just be surprised how welcoming and open folks are here. The more visible and engaged you are in the project, the more fun you will have and the more access you will have to advice and feedback. Contributing is fun and beneficial. 
+
+### Anyone can become a committer 
+
+Anyone who contributes to a project in any way is a contributor. If you become a valuable contributor to the project, the Project Management Committee (PMC) may invite you to become a committer. 
+
+It brings with it the privilege of write access to the project repository and resources, not just read source code files. A committer has the privilege to write and commit code and create pull requests to the default branch of the repository and in most cases, reviewers are also committers as you need to understand the code to review a PR.  
+In short, the committer is authorized to merge user contributions into the project.
+
+Notably, anyone who is supportive of the community and works in any of the CoPDoC (Community, Project, Documentation, and Code) areas is a likely candidate for committership. Being a committer does not only mean you commit code; it means you are committed to the project and are productively contributing to its success.
+
+Apart from many visible contributions of value in Apache projects (documentation, testing, coding user support, design, etc.), you will need to be a committer to carry out these activities: 
+- Assisting with project management and marketing, such as writing informational blogs, assessing and approving new committers, board reports, and Apache Project Branding, etc.
+- Speaking about Apache projects at events
+- Providing mentorship 
+
+### Why should I become a Committer?
+Committer activity is a good and useful endeavor: 
+- Being assigned to a Committer role is extremely motivating. A good open source community like Apache ShardingSphere appreciates your values and contributions, and you clearly see the results of your work in action.
+- Grow both professionally and personally very fast. 
+- Have an opportunity to connect with top professionals and also pull some cool ideas.
+- Being a Committer is good for CV building and even a greater plus for junior programmers.
+
+For more information, please read Guide for new project committers published by the Apache Software Foundation. 

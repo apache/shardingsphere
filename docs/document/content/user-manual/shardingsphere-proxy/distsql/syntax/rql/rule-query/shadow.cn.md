@@ -15,9 +15,9 @@ SHOW SHADOW ALGORITHMS [FROM schemaName]
 shadowRule: 
     RULE ruleName
 ```
-- 支持查询所有影子规则和指定表查询
-- 支持查询所有表规则
-- 支持查询所有影子算法
+- 支持查询所有影子规则和指定表查询；
+- 支持查询所有表规则；
+- 支持查询所有影子算法。
 
 ## 返回值说明
 

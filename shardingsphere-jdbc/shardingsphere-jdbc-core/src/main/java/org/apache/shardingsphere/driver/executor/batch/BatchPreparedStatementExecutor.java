@@ -92,8 +92,8 @@ public final class BatchPreparedStatementExecutor {
     
     private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
         List<BatchExecutionUnit> result = new ArrayList<>(executionUnits.size());
-        for (ExecutionUnit executionUnit : executionUnits) {
-            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(executionUnit);
+        for (ExecutionUnit each : executionUnits) {
+            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(each);
             result.add(batchExecutionUnit);
         }
         return result;

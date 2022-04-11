@@ -30,21 +30,21 @@ public class SchemaMetaDataNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(SchemaMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
+        assertThat(SchemaMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/logic_db/versions/0/rules"));
     }
     
     @Test
     public void assertGetSchemaName() {
-        Optional<String> actualSchemaName = SchemaMetaDataNode.getSchemaName("/metadata/logic_db/rules");
+        Optional<String> actualSchemaName = SchemaMetaDataNode.getSchemaName("/metadata/logic_db/logic_schema/rules");
         assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actualSchemaName.get(), is("logic_schema"));
     }
     
     @Test
     public void assertGetSchemaNameWithLine() {
-        Optional<String> actualSchemaName = SchemaMetaDataNode.getSchemaName("/metadata/logic-db-test/rules");
+        Optional<String> actualSchemaName = SchemaMetaDataNode.getSchemaName("/metadata/logic-db-test/logic-db-schema/rules");
         assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic-db-test"));
+        assertThat(actualSchemaName.get(), is("logic-db-schema"));
     }
     
     @Test
@@ -54,39 +54,59 @@ public class SchemaMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataTablesPath() {
-        assertThat(SchemaMetaDataNode.getMetaDataTablesPath("sharding_db"), is("/metadata/sharding_db/tables"));
+        assertThat(SchemaMetaDataNode.getMetaDataTablesPath("sharding_db", "sharding_db"), is("/metadata/sharding_db/sharding_db/tables"));
     }
 
     @Test
-    public void assertGetSchemaNameBySchemaPath() {
-        Optional<String> actualSchemaName = SchemaMetaDataNode.getSchemaNameBySchemaPath("/metadata/logic_db");
+    public void assertGetDatabaseNameBySchemaPath() {
+        Optional<String> actualSchemaName = SchemaMetaDataNode.getDatabaseNameBySchemaPath("/metadata/logic_db");
         assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actualSchemaName.get(), is("logic_db"));
     }
     
     @Test
     public void assertGetTableName() {
-        Optional<String> actualTableName = SchemaMetaDataNode.getTableName("/metadata/logic_db/tables/t_order");
+        Optional<String> actualTableName = SchemaMetaDataNode.getTableName("/metadata/logic_db/logic_schema/tables/t_order");
         assertTrue(actualTableName.isPresent());
         assertThat(actualTableName.get(), is("t_order"));
     }
     
     @Test
     public void assertGetVersionBySchemaPath() {
-        Optional<String> actualVersion = SchemaMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/dataSources");
+        Optional<String> actualVersion = SchemaMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/logic_schema/versions/0/dataSources");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));
     }
     
     @Test
     public void assertGetVersionByRulesPath() {
-        Optional<String> actualVersion = SchemaMetaDataNode.getVersionByRulesPath("/metadata/logic_db/versions/0/rules");
+        Optional<String> actualVersion = SchemaMetaDataNode.getVersionByRulesPath("/metadata/logic_db/logic_schema/versions/0/rules");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));
     }
     
     @Test
     public void assertGetSchemaVersionPath() {
-        assertThat(SchemaMetaDataNode.getSchemaVersionPath("logic_db", "0"), is("/metadata/logic_db/versions/0"));
+        assertThat(SchemaMetaDataNode.getSchemaVersionPath("logic_db", "0"), is("/metadata/logic_db/logic_db/versions/0"));
+    }
+
+    @Test
+    public void assertGetTableMetaDataPath() {
+        assertThat(SchemaMetaDataNode.getTableMetaDataPath("db", "schema", "table"), is("/metadata/db/schema/tables/table"));
+    }
+
+    @Test
+    public void assertGetDatabaseNamePath() {
+        assertThat(SchemaMetaDataNode.getDatabaseNamePath("db"), is("/metadata/db"));
+    }
+
+    @Test
+    public void assertGetMetaDataNodePath() {
+        assertThat(SchemaMetaDataNode.getMetaDataNodePath(), is("/metadata"));
+    }
+
+    @Test
+    public void assertGetMetaDataDataSourcePath() {
+        assertThat(SchemaMetaDataNode.getMetaDataDataSourcePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/logic_db/versions/0/dataSources"));
     }
 }

@@ -26,14 +26,14 @@ import java.util.Collections;
  * XA data source definition for MariaDB.
  */
 public final class MariaDBXADataSourceDefinition implements XADataSourceDefinition {
-
-    @Override
-    public String getDatabaseType() {
-        return "MariaDB";
-    }
-
+    
     @Override
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.mariadb.jdbc.MariaDbDataSource");
+    }
+    
+    @Override
+    public String getType() {
+        return "MariaDB";
     }
 }

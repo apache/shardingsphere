@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -43,7 +44,7 @@ public final class JobConfigurationBuilder {
      */
     public static JobConfiguration createJobConfiguration() {
         JobConfiguration result = new JobConfiguration();
-        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
+        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")), 0, 1));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
         pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(
                 new ShardingSpherePipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"))));

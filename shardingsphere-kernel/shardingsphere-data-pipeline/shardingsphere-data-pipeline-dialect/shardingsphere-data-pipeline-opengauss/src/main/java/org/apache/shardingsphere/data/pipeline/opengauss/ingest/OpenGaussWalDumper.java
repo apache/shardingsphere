@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalEventCon
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -46,7 +45,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * OpenGauss WAL dumper.
+ * WAL dumper of openGauss.
  */
 @Slf4j
 public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosition> {
@@ -81,44 +80,36 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     }
     
     private PgConnection getReplicationConn() throws SQLException {
-        return logicalReplication
-                .createPgConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig())
-                .unwrap(PgConnection.class);
+        return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
     private MppdbDecodingPlugin initReplication() {
-        MppdbDecodingPlugin plugin = null;
         try {
             DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(
                     dumperConfig.getDataSourceConfig().getType()).createPipelineDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
-            try (Connection conn = pipelineDataSource.getConnection()) {
-                slotName = OpenGaussLogicalReplication.getUniqueSlotName(conn);
-                OpenGaussLogicalReplication.createIfNotExists(conn);
-                OpenGaussTimestampUtils utils = new OpenGaussTimestampUtils(conn.unwrap(PgConnection.class).getTimestampUtils());
-                plugin = new MppdbDecodingPlugin(utils);
+            try (Connection connection = pipelineDataSource.getConnection()) {
+                slotName = OpenGaussLogicalReplication.getUniqueSlotName(connection);
+                OpenGaussLogicalReplication.createIfNotExists(connection);
+                return new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils()));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.warn("Create replication slot failed!");
         }
-        return plugin;
+        return null;
     }
     
     private void dump() {
         DecodingPlugin decodingPlugin = initReplication();
-        try (PgConnection pgConnection = getReplicationConn()) {
-            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, walPosition.getLogSequenceNumber(), slotName);
+        try (PgConnection connection = getReplicationConn()) {
+            PGReplicationStream stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), slotName);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(message,
-                        new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
+                AbstractWalEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
                 Record record = walEventConverter.convert(event);
-                if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
-                    log.debug("dump, event={}, record={}", event, record);
-                }
                 pushRecord(record);
             }
         } catch (final SQLException ex) {

@@ -43,8 +43,6 @@ public final class RuleAlteredJobSchedulerCenter {
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
-    private static final GovernanceRepositoryAPI REGISTRY_REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
-    
     static {
         JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 10, 10, TimeUnit.SECONDS);
     }
@@ -59,7 +57,7 @@ public final class RuleAlteredJobSchedulerCenter {
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
         int shardingItem = jobContext.getShardingItem();
         if (schedulerMap.containsKey(shardingItem)) {
-            log.warn("schedulerMap does not contain shardingItem {}, ignore", shardingItem);
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
@@ -97,9 +95,10 @@ public final class RuleAlteredJobSchedulerCenter {
         
         @Override
         public void run() {
+            GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
             for (Entry<String, Map<Integer, RuleAlteredJobScheduler>> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
-                    entry.getValue().forEach((shardingItem, jobScheduler) -> REGISTRY_REPOSITORY_API.persistJobProgress(jobScheduler.getJobContext()));
+                    entry.getValue().forEach((shardingItem, jobScheduler) -> repositoryAPI.persistJobProgress(jobScheduler.getJobContext()));
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.context.refresher;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -49,7 +49,7 @@ public final class MetaDataRefreshEngine {
     
     private final ShardingSphereMetaData schemaMetaData;
     
-    private final FederationSchemaMetaData federationMetaData;
+    private final FederationDatabaseMetaData federationMetaData;
     
     private final Map<String, OptimizerPlannerContext> optimizerPlanners;
     
@@ -68,7 +68,7 @@ public final class MetaDataRefreshEngine {
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName(), null);
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
             schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), sqlStatement, props);
         } else {

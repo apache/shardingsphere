@@ -45,7 +45,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(ComputeNode.getAttributesNodePath());
+        return Collections.singleton(ComputeNode.getComputeNodePath());
     }
     
     @Override

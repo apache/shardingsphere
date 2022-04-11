@@ -49,27 +49,28 @@ public final class ShardingSphereMetaData {
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     /**
      * Create ShardingSphere meta data.
      * 
-     * @param schemaName schema name
-     * @param schema schema
+     * @param databaseName database name
+     * @param schemas schemas
      * @param schemaConfig schema configuration
      * @param rules rules
+     * @param defaultDatabaseType default database type
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String schemaName, final ShardingSphereSchema schema, final SchemaConfiguration schemaConfig,
-                                                final Collection<ShardingSphereRule> rules) throws SQLException {
-        ShardingSphereResource resource = createResource(schemaConfig.getDataSources());
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final SchemaConfiguration schemaConfig, 
+                                                final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
+        ShardingSphereResource resource = createResource(schemaConfig.getDataSources(), defaultDatabaseType);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereMetaData(schemaName, resource, ruleMetaData, schema);
+        return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap, final DatabaseType defaultDatabaseType) throws SQLException {
+        DatabaseType databaseType = dataSourceMap.isEmpty() ? defaultDatabaseType : DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, dataSourceMap);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
         return new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, cachedDatabaseMetaData, databaseType);
@@ -100,5 +101,24 @@ public final class ShardingSphereMetaData {
      */
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
+    }
+    
+    /**
+     * Get default schema.
+     * 
+     * @return ShardingSphereSchema default schema
+     */
+    public ShardingSphereSchema getDefaultSchema() {
+        return schemas.get(name);
+    }
+    
+    /**
+     * Get schema by name.
+     * 
+     * @param schemaName schema name
+     * @return ShardingSphereSchema schema
+     */
+    public ShardingSphereSchema getSchemaByName(final String schemaName) {
+        return schemas.get(schemaName);
     }
 }

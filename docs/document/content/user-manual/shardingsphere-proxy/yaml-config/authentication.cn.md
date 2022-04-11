@@ -42,8 +42,8 @@ rules:
         user-schema-mappings: root@=sharding_db, root@=test_db, my_user@127.0.0.1=sharding_db
 ```
 以上配置表示：
-- root 用户从任意主机连接时，可访问 `sharding_db`
-- root 用户从任意主机连接时，可访问 `test_db` 
-- my_user 用户仅当从 127.0.0.1 连接时，可访问 `sharding_db`
+- root 用户从任意主机连接时，可访问 `sharding_db`。
+- root 用户从任意主机连接时，可访问 `test_db` 。
+- my_user 用户仅当从 127.0.0.1 连接时，可访问 `sharding_db`。
 
 权限提供者具体实现可以参考 [权限提供者](/cn/dev-manual/proxy)。

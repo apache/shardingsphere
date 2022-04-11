@@ -17,22 +17,6 @@ chapter = true
 | PostgreSQLFrontendEngine | 基于 PostgreSQL 的数据库协议实现                 |
 | OpenGaussFrontendEngine | 基于 openGauss 的数据库协议实现                 |
 
-## JDBCDriverURLRecognizer
-
-| *SPI 名称*               | *详细说明*                           |
-| ----------------------- | ------------------------------------ |
-| JDBCDriverURLRecognizer | 使用 JDBC 驱动执行 SQL                |
-
-| *已知实现类*             | *详细说明*                           |
-| ----------------------- | ----------------------------------- |
-| MySQLRecognizer         |  使用 MySQL 的 JDBC 驱动执行 SQL      |
-| PostgreSQLRecognizer    |  使用 PostgreSQL 的 JDBC 驱动执行 SQL |
-| OracleRecognizer        |  使用 Oracle 的 JDBC 驱动执行 SQL     |
-| SQLServerRecognizer     |  使用 SQLServer 的 JDBC 驱动执行 SQL  |
-| H2Recognizer            |  使用 H2 的 JDBC 驱动执行 SQL         |
-| P6SpyDriverRecognizer   |  使用 P6Spy 的 JDBC 驱动执行 SQL      |
-| OpenGaussRecognizer   |  使用 openGauss 的 JDBC 驱动执行 SQL      |
-
 ## AuthorityProvideAlgorithm
 
 | *SPI 名称*                       | *详细说明*                    |

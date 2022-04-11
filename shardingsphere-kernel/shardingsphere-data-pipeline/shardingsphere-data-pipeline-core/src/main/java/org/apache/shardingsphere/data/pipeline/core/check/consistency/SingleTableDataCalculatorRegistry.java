@@ -63,8 +63,8 @@ public final class SingleTableDataCalculatorRegistry {
         SingleTableDataCalculator calculator = calculatorMap.get(databaseType);
         Preconditions.checkNotNull(calculator, String.format("calculator not found for algorithmType '%s' databaseType '%s'", algorithmType, databaseType));
         try {
-            return calculator.getClass().newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return calculator.getClass().getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new ServiceLoaderInstantiationException(calculator.getClass(), ex);
         }
     }

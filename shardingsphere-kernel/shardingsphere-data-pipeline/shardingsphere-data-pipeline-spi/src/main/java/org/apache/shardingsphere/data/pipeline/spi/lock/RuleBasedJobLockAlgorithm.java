@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.lock;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
  * Rule based job lock algorithm, SPI.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
 }

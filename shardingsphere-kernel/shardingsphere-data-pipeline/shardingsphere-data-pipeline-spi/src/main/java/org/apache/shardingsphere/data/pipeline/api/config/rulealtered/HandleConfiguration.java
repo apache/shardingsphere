@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -80,7 +79,7 @@ public final class HandleConfiguration {
      *
      * @return logic table names
      */
-    public Collection<String> splitLogicTableNames() {
+    public List<String> splitLogicTableNames() {
         return Splitter.on(',').splitToList(logicTables);
     }
 }

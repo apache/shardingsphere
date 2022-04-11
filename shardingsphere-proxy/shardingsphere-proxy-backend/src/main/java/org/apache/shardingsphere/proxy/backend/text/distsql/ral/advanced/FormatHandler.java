@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBack
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
@@ -47,16 +47,16 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-        SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
-        ParseContext parseContext;
+        SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
+        ParseASTNode parseASTNode;
         try {
-            parseContext = parserEngine.parse(sqlStatement.getSql(), false);
+            parseASTNode = parserEngine.parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your formatted statement");
         }
         Properties props = new Properties();
         props.setProperty("parameterized", "false");
-        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
-        return Collections.singleton(Collections.singletonList(visitorEngine.visit(parseContext)));
+        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
+        return Collections.singleton(Collections.singletonList(visitorEngine.visit(parseASTNode)));
     }
 }

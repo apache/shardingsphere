@@ -83,7 +83,7 @@ DROP SCHEMA sharding_db;
 
 回答：
 
-行表达式标识符可以使用`${...}`或`$->{...}`，但前者与 Spring 本身的属性文件占位符冲突，因此在 Spring 环境中使用行表达式标识符建议使用`$->{...}`。
+行表达式标识符可以使用 `${...}` 或 `$->{...}`，但前者与 Spring 本身的属性文件占位符冲突，因此在 Spring 环境中使用行表达式标识符建议使用 `$->{...}`。
 
 ## [分片] inline 表达式返回结果为何出现浮点数？
 
@@ -116,7 +116,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略，用于保证分布式的情况下可以无中心化的生成不重复的自增序列。因此自增主键可以保证递增，但无法保证连续。
 
-而 snowflake 算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
+而 snowflake 算法的最后 4 位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后 4 位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
 在 3.1.0 版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/apache/shardingsphere/issues/1617
 
@@ -126,8 +126,8 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 需要使用 4.1.0 或更高版本。
 2. 调整以下配置项（需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表）：
-- 4.x版本：`allow.range.query.with.inline.sharding` 设置为 true 即可（默认为 false）。
-- 5.x版本：在 InlineShardingStrategy 中将 `allow-range-query-with-inline-sharding` 设置为 true 即可（默认为 false）。
+- 4.x 版本：`allow.range.query.with.inline.sharding` 设置为 true 即可（默认为 false）。
+- 5.x 版本：在 InlineShardingStrategy 中将 `allow-range-query-with-inline-sharding` 设置为 true 即可（默认为 false）。
 
 ## [分片] 为什么我实现了 `KeyGenerateAlgorithm` 接口，也配置了 Type，但是自定义的分布式主键依然不生效？
 
@@ -151,11 +151,11 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 回答：
 
-由于数据加密的 DDL 尚未开发完成，因此对于自动生成 DDL 语句的 JPA 与 数据加密一起使用时，会导致 JPA 的实体类(Entity) 无法同时满足 DDL 和 DML 的情况。
+由于数据加密的 DDL 尚未开发完成，因此对于自动生成 DDL 语句的 JPA 与 数据加密一起使用时，会导致 JPA 的实体类（Entity）无法同时满足 DDL 和 DML 的情况。
 
 解决方案如下：
 
-1. 以需要加密的逻辑列名编写 JPA 的实体类(Entity)。
+1. 以需要加密的逻辑列名编写 JPA 的实体类（Entity）。
 2. 关闭 JPA 的 auto-ddl，如 auto-ddl=none。
 3. 手动建表，建表时应使用数据加密配置的 `cipherColumn`,`plainColumn` 和 `assistedQueryColumn` 代替逻辑列。
 
@@ -165,15 +165,15 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 如需自定义 JDBC 参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
+3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
 
 ## [DistSQL] 使用 `DistSQL` 删除资源时，出现 `Resource [xxx] is still used by [SingleTableRule]`。
 
 回答：
 
-1. 被规则引用的资源将无法被删除
+1. 被规则引用的资源将无法被删除。
 
-2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除
+2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
 
 ## [DistSQL] 使用 `DistSQL` 添加资源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
 
@@ -188,13 +188,13 @@ ShardingSphere-Proxy 在部署过程中没有添加 jdbc 驱动，需要将 jdbc
 在 ShardingSphere-Proxy 以及 ShardingSphere-JDBC 1.5.0 版本之后提供了 `sql.show` 的配置，可以将解析上下文和改写后的 SQL 以及最终路由至的数据源的细节信息全部打印至 info 日志。
 `sql.show` 配置默认关闭，如果需要请通过配置开启。
 
-> 注意：5.x版本以后，`sql.show`参数调整为 `sql-show`。
+> 注意：5.x版本以后，`sql.show` 参数调整为 `sql-show`。
 
 ## [其他] 阅读源码时为什么会出现编译错误? IDEA 不索引生成的代码？
 
 回答：
 
-ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
+ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细节，请参考 [lombok官网](https://projectlombok.org/download.html)。
 
 `org.apache.shardingsphere.sql.parser.autogen` 包下的代码由 ANTLR 生成，可以执行以下命令快速生成：
 
@@ -203,7 +203,7 @@ ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细
 ```
 
 生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
-可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`
+可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`。
 
 ## [其他] 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
 
@@ -228,8 +228,10 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 回答：
 
 针对上面问题解决方式有两种：
-1.配置启动 JVM 参数 “-oracle.jdbc.J2EE13Compliant=true”
-2.通过代码在项目初始化时设置 System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
+
+1. 配置启动 JVM 参数 “-oracle.jdbc.J2EE13Compliant=true”
+
+2. 通过代码在项目初始化时设置 System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
 
 原因如下:
 
@@ -384,3 +386,30 @@ Caused by: java.lang.NullPointerException: Inline sharding algorithm expression 
 	... 
 ```
 从异常堆栈中分析可知： `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置是否存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下使用了 Binder，不规范的属性名称（如：驼峰或下划线等）会导致属性设置不生效。
+
+## [ShardingSphere-JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
+
+回答：
+
+需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下SQL查看元数据的具体情况：
+```
+SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
+```
+
+ShardingSphere 使用 `OracleTableMetaDataLoader` 对 Oracle 元数据进行加载，配置时需确保表名、字段名的大小写配置与数据库中的一致。
+
+ShardingSphere 查询元数据关键SQL:
+```
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+        StringBuilder stringBuilder = new StringBuilder(28);
+        if (versionContainsIdentityColumn(metaData)) {
+            stringBuilder.append(", IDENTITY_COLUMN");
+        }
+        if (versionContainsCollation(metaData)) {
+            stringBuilder.append(", COLLATION");
+        }
+        String collation = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+```

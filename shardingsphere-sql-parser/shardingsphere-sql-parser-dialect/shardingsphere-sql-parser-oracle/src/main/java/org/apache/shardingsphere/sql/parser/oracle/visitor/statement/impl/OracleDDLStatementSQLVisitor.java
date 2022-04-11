@@ -53,6 +53,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseLinkContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
@@ -112,9 +114,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDimensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
@@ -373,6 +377,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropDatabaseLink(final DropDatabaseLinkContext ctx) {
         return new OracleDropDatabaseLinkStatement();
     }
+
+    @Override
+    public ASTNode visitDropView(final DropViewContext ctx) {
+        return new OracleDropViewStatement();
+    }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
@@ -588,6 +597,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropDimension(final DropDimensionContext ctx) {
         return new OracleDropDimensionStatement();
+    }
+
+    @Override
+    public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
+        return new OracleDropDirectoryStatement();
     }
 
     @Override

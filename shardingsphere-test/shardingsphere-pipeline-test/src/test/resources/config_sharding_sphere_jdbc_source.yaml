@@ -23,6 +23,7 @@ dataSources:
     jdbcUrl: jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
     username: root
     password: root
+
 rules:
 - !SHARDING
   defaultDatabaseStrategy:
@@ -61,7 +62,7 @@ rules:
         type: MEMORY
         props:
           block-queue-size: 10000
-      completionDetector:
-        type: FIXTURE
+#      completionDetector:
+#        type: FIXTURE
       dataConsistencyChecker:
         type: FIXTURE

@@ -31,7 +31,7 @@ import java.sql.Statement;
 @Slf4j
 public final class EncryptExecutor extends AbstractFeatureExecutor {
     
-    private final static String ADD_RULE = "CREATE ENCRYPT RULE t_encrypt (\n" +
+    private static final String ADD_RULE = "CREATE ENCRYPT RULE t_encrypt (\n" +
             "COLUMNS(\n" +
             "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),\n" +
             "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))\n" +
@@ -42,15 +42,15 @@ public final class EncryptExecutor extends AbstractFeatureExecutor {
             "(NAME=order_id, CIPHER=order_cipher,TYPE(NAME=MD5))\n" +
             "));";
     
-    private final static String ALTER_RULE = "ALTER ENCRYPT RULE t_encrypt (\n" +
+    private static final String ALTER_RULE = "ALTER ENCRYPT RULE t_encrypt (\n" +
             "COLUMNS(\n" +
             "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),\n" +
             "(NAME=order_id,CIPHER=order_cipher,TYPE(NAME=MD5))\n" +
             "));";
     
-    private final static String DROP_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_2;";
+    private static final String DROP_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_2;";
     
-    private final static String SHOW_RULE = "show encrypt rules";
+    private static final String SHOW_RULE = "show encrypt rules";
     
     @Override
     public void init(Statement statement) {

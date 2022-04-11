@@ -26,10 +26,6 @@ import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorith
 @ToString
 public final class DefaultMetadataCheckoutLockAlgorithm implements RuleBasedJobLockAlgorithm {
     
-    @Override
-    public void init() {
-    }
-    
     // TODO impl default checkoutLockAlgorithm
     @Override
     public void lock(final String schemaName, final String jobId) {
@@ -37,10 +33,5 @@ public final class DefaultMetadataCheckoutLockAlgorithm implements RuleBasedJobL
     
     @Override
     public void releaseLock(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public String getType() {
-        return "DEFAULT";
     }
 }

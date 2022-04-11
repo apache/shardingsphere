@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.check.datasource;
 import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 
 /**
- * openGauss Data source checker.
+ * Data source checker of openGauss.
  */
 public final class OpenGaussDataSourceChecker extends PostgreSQLDataSourceChecker {
     

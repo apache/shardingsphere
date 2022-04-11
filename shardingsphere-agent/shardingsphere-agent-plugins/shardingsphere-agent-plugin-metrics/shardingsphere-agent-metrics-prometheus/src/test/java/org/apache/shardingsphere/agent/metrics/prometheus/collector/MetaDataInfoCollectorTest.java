@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import io.prometheus.client.Collector;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 
@@ -28,8 +25,6 @@ public final class MetaDataInfoCollectorTest {
     
     @Test
     public void assertCollect() {
-        MetaDataInfoCollector metaDataInfoCollector = new MetaDataInfoCollector();
-        List<Collector.MetricFamilySamples> metricFamilySamples = metaDataInfoCollector.collect();
-        assertFalse(metricFamilySamples.isEmpty());
+        assertFalse(new MetaDataInfoCollector().collect().isEmpty());
     }
 }

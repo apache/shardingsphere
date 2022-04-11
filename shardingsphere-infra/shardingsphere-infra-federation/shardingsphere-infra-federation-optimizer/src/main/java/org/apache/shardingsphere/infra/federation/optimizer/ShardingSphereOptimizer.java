@@ -55,25 +55,26 @@ public final class ShardingSphereOptimizer {
     /**
      * Optimize query execution plan.
      * 
+     * @param databaseName database name
      * @param schemaName schema name
      * @param sqlStatement SQL statement to be optimized
      * @return optimized relational node
      */
-    public RelNode optimize(final String schemaName, final SQLStatement sqlStatement) {
+    public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {
         try {
             SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
-            SqlNode validNode = context.getPlannerContexts().get(schemaName).getValidator().validate(sqlNode);
-            RelDataType resultType = context.getPlannerContexts().get(schemaName).getValidator().getValidatedNodeType(sqlNode);
-            RelNode queryPlan = context.getPlannerContexts().get(schemaName).getConverter().convertQuery(validNode, false, true).rel;
-            return optimize(schemaName, queryPlan, resultType);
+            SqlNode validNode = context.getPlannerContexts().get(databaseName).getValidators().get(schemaName).validate(sqlNode);
+            RelDataType resultType = context.getPlannerContexts().get(databaseName).getValidators().get(schemaName).getValidatedNodeType(sqlNode);
+            RelNode queryPlan = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName).convertQuery(validNode, false, true).rel;
+            return optimize(databaseName, schemaName, queryPlan, resultType);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
     
-    private RelNode optimize(final String schemaName, final RelNode queryPlan, final RelDataType resultType) {
-        RelOptPlanner planner = context.getPlannerContexts().get(schemaName).getConverter().getCluster().getPlanner();
-        RelNode node = planner.changeTraits(queryPlan, context.getPlannerContexts().get(schemaName).getConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+    private RelNode optimize(final String databaseName, final String schemaName, final RelNode queryPlan, final RelDataType resultType) {
+        RelOptPlanner planner = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster().getPlanner();
+        RelNode node = planner.changeTraits(queryPlan, context.getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
         RelRoot root = constructRoot(node, resultType);
         Program program = Programs.standard();
         return program.run(planner, root.rel, getDesireRootTraitSet(root), ImmutableList.of(), ImmutableList.of());

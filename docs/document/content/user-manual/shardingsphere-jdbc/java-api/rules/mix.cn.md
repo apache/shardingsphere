@@ -95,7 +95,7 @@ readwriteProps2.setProperty("write-data-source-name", "write_ds0");
 readwriteProps2.setProperty("read-data-source-names", "write_ds1_read0, write_ds1_read1");
 ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "Static", readwriteProps2, "roundRobin");
 
-//负载均衡算法
+// 负载均衡算法
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
 loadBalanceMaps.put("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()));
 

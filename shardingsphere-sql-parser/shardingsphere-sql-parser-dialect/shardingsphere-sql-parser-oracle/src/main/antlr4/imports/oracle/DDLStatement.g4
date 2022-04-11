@@ -43,6 +43,10 @@ dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
     ;
 
+dropView
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;
@@ -529,7 +533,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) capacityUnit?
     ;
 
 maxsizeClause
@@ -2067,6 +2071,10 @@ alterDimensionDropClause
 
 dropDimension
     : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
     ;
 
 createFunction

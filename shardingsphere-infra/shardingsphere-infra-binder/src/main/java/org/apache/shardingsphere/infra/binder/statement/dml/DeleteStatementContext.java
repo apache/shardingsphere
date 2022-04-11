@@ -48,7 +48,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
     }

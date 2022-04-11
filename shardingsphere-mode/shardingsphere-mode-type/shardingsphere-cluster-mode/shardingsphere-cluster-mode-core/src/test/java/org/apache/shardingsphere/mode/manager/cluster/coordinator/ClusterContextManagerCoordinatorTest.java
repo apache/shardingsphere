@@ -26,11 +26,13 @@ import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguratio
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -43,6 +45,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -56,10 +59,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -73,6 +78,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -85,6 +91,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -94,9 +101,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -171,7 +180,7 @@ public final class ClusterContextManagerCoordinatorTest {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getDefaultSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -185,8 +194,12 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDisableStateChanged() {
-        DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.ds_0"), true);
+        StatusContainedRule statusContainedRule = mock(StatusContainedRule.class);
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(statusContainedRule));
+        DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
+        verify(statusContainedRule, times(1)).updateStatus(argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent -> 
+                        Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedSchema()) && argumentEvent.isDisabled()));
     }
     
     @Test
@@ -229,18 +242,13 @@ public final class ClusterContextManagerCoordinatorTest {
         return result;
     }
     
-    private Collection<ShardingSphereRule> createAuthorityRule() {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
-        AuthorityRule authorityRule = new AuthorityRule(ruleConfig, contextManager.getMetaDataContexts().getMetaDataMap());
-        return Collections.singleton(authorityRule);
-    }
-    
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         when(metaData.getName()).thenReturn("schema");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(metaData.getSchema()).thenReturn(schema);
+        when(metaData.getDefaultSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         return new HashMap<>(Collections.singletonMap("schema", metaData));
@@ -248,9 +256,9 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private OptimizerContext createOptimizerContext() {
         OptimizerContext result = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
-        Map<String, FederationSchemaMetaData> schemas = new HashMap<>(1, 1);
-        schemas.put("schema", new FederationSchemaMetaData("schema", Collections.emptyMap()));
-        when(result.getFederationMetaData().getSchemas()).thenReturn(schemas);
+        Map<String, FederationDatabaseMetaData> databases = new HashMap<>(1, 1);
+        databases.put("schema", new FederationDatabaseMetaData("schema", Collections.emptyMap()));
+        when(result.getFederationMetaData().getDatabases()).thenReturn(databases);
         return result;
     }
     
@@ -263,7 +271,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereMetaData mockShardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(mockShardingSphereMetaData.getRuleMetaData()).thenReturn(mockShardingSphereRuleMetaData);
         contextManager.getMetaDataContexts().getMetaDataMap().put("schema", mockShardingSphereMetaData);
-        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedSchema("schema.test_ds"), "test_ds");
+        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.test_ds"));
         coordinator.renew(mockPrimaryStateChangedEvent);
         verify(mockStatusContainedRule).updateStatus(any());
     }
@@ -304,6 +312,13 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
+    public void assertRenewInstanceOfflineEvent() {
+        InstanceOfflineEvent mockInstanceOfflineEvent = new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition());
+        coordinator.renew(mockInstanceOfflineEvent);
+        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getUniqueSign(), is(3307));
+    }
+    
+    @Test
     public void assertRenewSchemaVersionChangedEvent() {
         when(metaDataPersistService.getDataSourceService().load("schema", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
         when(metaDataPersistService.getSchemaRuleService().load("schema", "1")).thenReturn(Collections.emptyList());
@@ -316,11 +331,30 @@ public final class ClusterContextManagerCoordinatorTest {
         assertNotNull(contextManager.getDataSourceMap("schema").get("primary_ds"));
         assertThat(DataSourcePropertiesCreator.create(getDefaultMockedDataSource()), is(DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("schema").get("primary_ds"))));
     }
+    
+    @Test
+    public void assertRenewInstanceOnlineEvent() {
+        InstanceDefinition instanceDefinition1 = new InstanceDefinition(InstanceType.PROXY, "online_instance_id@1");
+        InstanceDefinition instanceDefinition2 = new InstanceDefinition(InstanceType.PROXY, "online_instance_id@2");
+        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition1)).thenReturn(new ComputeNodeInstance(instanceDefinition1));
+        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition2)).thenReturn(new ComputeNodeInstance(instanceDefinition2));
+        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceDefinition1);
+        coordinator.renew(instanceOnlineEvent1);
+        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceDefinition(), is(instanceDefinition1));
+        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceDefinition2);
+        coordinator.renew(instanceOnlineEvent2);
+        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition2));
+        coordinator.renew(instanceOnlineEvent1);
+        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition1));
+    }
 
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
         ShardingSphereResource shardingSphereResource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
-        ShardingSphereMetaData mockShardingSphereMetaData = new ShardingSphereMetaData("schema", shardingSphereResource, mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData mockShardingSphereMetaData = new ShardingSphereMetaData("schema", shardingSphereResource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         contextManager.getMetaDataContexts().getMetaDataMap().put("schema", mockShardingSphereMetaData);
         return result;
     }

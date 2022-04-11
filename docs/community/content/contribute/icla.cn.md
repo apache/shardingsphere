@@ -13,7 +13,7 @@ Apache CLA 全称 Apache Contributor License Agreement，签署 ICLA 的目的�
 
 ![](https://shardingsphere.apache.org/blog/img/icla.png)
 
-**2. 在页面上方我们可以看到两个下载链接，选择 ICLA (个人 CLA)并下载文件。**
+**2. 在页面上方我们可以看到两个下载链接，选择 ICLA （个人 CLA）并下载文件。**
 
 ![](https://shardingsphere.apache.org/blog/img/icla2.png)
 
@@ -21,7 +21,7 @@ Apache CLA 全称 Apache Contributor License Agreement，签署 ICLA 的目的�
 
 > 注意事项: 
 > - 姓名需要填写拼音，姓与名之间空一格，首字母均为大写，名在前姓氏在后。
-> - Committer 相关的签署，则 preferred Apache id(s) 是必填项。
+> - Committer 相关的签署，则 preferred Apache id（s） 是必填项。
 
 ![](https://shardingsphere.apache.org/blog/img/icla3.png)
 

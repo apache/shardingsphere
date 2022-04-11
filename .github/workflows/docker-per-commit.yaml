@@ -20,9 +20,16 @@ on:
   push:
     branches:
       - master
+    paths:
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - '!examples/**'
+      - '!shardingsphere-distribution/**'
+      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
+      - '!shardingsphere-test/**'
+      - '!*.md'
 
 env:
-  SKIP_TEST: true
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
 
@@ -34,12 +41,13 @@ jobs:
       contents: read
       packages: write
     timeout-minutes: 90
-    env:
-      TAG: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
         with:
-          submodules: true
+          distribution: 'temurin'
+          java-version: 8
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -53,16 +61,7 @@ jobs:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Build and push docker images based on Java 8
-        env:
-          SW_OAP_BASE_IMAGE: eclipse-temurin:8-jre
-          TAG: ${{ github.sha }}-java8
-        run: ./mvnw -B -Prelease,docker-per-commit -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true clean install
-      - name: retag the images
-        run: docker tag ${{ env.PROXY }}:PER_COMMIT ${{ env.PROXY }}:${{ github.sha }}
-      - name: Build and push docker images
+      - name: Build docker image
+        run: ./mvnw -B -Prelease,docker -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
+      - name: Push docker image
         run: docker push ${{ env.PROXY }}:${{ github.sha }}

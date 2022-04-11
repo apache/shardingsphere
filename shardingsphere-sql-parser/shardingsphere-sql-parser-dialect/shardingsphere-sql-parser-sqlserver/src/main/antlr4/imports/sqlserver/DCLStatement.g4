@@ -24,27 +24,27 @@ grant
     ;
 
 grantClassPrivilegesClause
-    : grantClassPrivileges (ON grantOnClassClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)? (AS principal)?
+    : classPrivileges (ON onClassClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)? (AS principal)?
     ;
 
 grantClassTypePrivilegesClause
-    : grantClassTypePrivileges (ON grantOnClassTypeClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)?
+    : classTypePrivileges (ON onClassTypeClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)?
     ;
 
-grantClassPrivileges
+classPrivileges
     : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
 
-grantOnClassClause
+onClassClause
     : (classItem COLON_ COLON_)? securable
     ;
 
-grantClassTypePrivileges
+classTypePrivileges
     : privilegeType (COMMA_ privilegeType)*
     ;
 
-grantOnClassTypeClause
-    : (grantClassType COLON_ COLON_)? securable
+onClassTypeClause
+    : (classType COLON_ COLON_)? securable
     ;
 
 securable
@@ -60,50 +60,34 @@ revoke
     ;
 
 revokeClassPrivilegesClause
-    : grantClassPrivileges (ON grantOnClassClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)? (AS principal)?
+    : classPrivileges (ON onClassClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)? (AS principal)?
     ;
 
 revokeClassTypePrivilegesClause
-    : grantClassTypePrivileges (ON grantOnClassTypeClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)?
+    : classTypePrivileges (ON onClassTypeClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)?
     ;
 
 deny
-    : DENY (classPrivilegesClause | classTypePrivilegesClause)
+    : DENY (denyClassPrivilegesClause | denyClassTypePrivilegesClause)
     ;
 
-classPrivilegesClause
-    : classPrivileges (ON onClassClause)?
+denyClassPrivilegesClause
+    : classPrivileges (ON onClassClause)? TO principal (COMMA_ principal)* (CASCADE)? (AS principal)?
     ;
 
-classTypePrivilegesClause
-    : classTypePrivileges (ON onClassTypeClause)?
+denyClassTypePrivilegesClause
+    : classTypePrivileges (ON onClassTypeClause)? TO principal (COMMA_ principal)* (CASCADE)?
     ;
 
 optionForClause
     : GRANT OPTION FOR
     ;
 
-classPrivileges
-    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
-    ;
-
-onClassClause
-    : class_? tableName
-    ;
-
-classTypePrivileges
-    : privilegeType (COMMA_ privilegeType)*
-    ;
-
-onClassTypeClause
-    : classType? tableName
-    ;
-
 privilegeType
     : ALL PRIVILEGES?
     | assemblyPermission | asymmetricKeyPermission
     | availabilityGroupPermission | certificatePermission
-    | objectPermission
+    | objectPermission | systemObjectPermission
     | databasePermission | databasePrincipalPermission
     | databaseScopedCredentialPermission | endpointPermission
     | fullTextPermission
@@ -248,12 +232,12 @@ xmlSchemaCollectionPermission
     : ALTER | CONTROL | EXECUTE | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION
     ;
 
-class_
-    : IDENTIFIER_ COLON_ COLON_
+systemObjectPermission
+    : SELECT | EXECUTE
     ;
 
-classType
-    : (LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER) COLON_ COLON_
+class_
+    : IDENTIFIER_ COLON_ COLON_
     ;
 
 classItem
@@ -263,7 +247,7 @@ classItem
     | SELECT | EXECUTE | TYPE | XML SCHEMA COLLECTION
     ;
 
-grantClassType
+classType
     : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER
     ;
 
@@ -311,7 +295,7 @@ createUserWithoutLoginClause
 optionsList
     : DEFAULT_SCHEMA EQ_ schemaName
     | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
-    | SID EQ_ (NCHAR_TEXT | HEX_DIGIT_)
+    | SID EQ_ sid
     | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
     ;
 
@@ -367,19 +351,85 @@ setItem
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE name (AUTHORIZATION name)?
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE (IF EXISTS)? name
     ;
 
 alterRole
-    : ALTER ROLE
+    : ALTER ROLE name (ADD MEMBER principal | DROP MEMBER principal | WITH NAME EQ_ name)
     ;
 
 createLogin
-    : CREATE LOGIN
+    : CREATE LOGIN ignoredNameIdentifier (createLoginForSQLServerClause | createLoginForAzureSQLDatabaseClause | createLoginForAzureManagedInstanceClause
+    | createLoginForAzureSynapseAnalyticsClause | createLoginForAnalyticsPlatformSystemClause)
+    ;
+
+createLoginForSQLServerClause
+    : WITH createLoginForSQLServerOptionList | FROM sources
+    ;
+
+createLoginForSQLServerOptionList
+    : PASSWORD EQ_ (stringLiterals | hashedPassword HASHED) (MUST_CHANGE)? (COMMA_ createLoginForSQLServerOptionListClause (COMMA_ createLoginForSQLServerOptionListClause)*)?
+    ;
+
+createLoginForSQLServerOptionListClause
+    : SID EQ_ sid | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    | CHECK_EXPIRATION EQ_ (ON | OFF) | CHECK_POLICY EQ_ (ON | OFF) | CREDENTIAL EQ_ identifier
+    ;
+
+hashedPassword
+    : HEX_DIGIT_
+    ;
+
+sid
+    : NCHAR_TEXT | HEX_DIGIT_
+    ;
+
+sources
+    : WINDOWS (WITH windowsOptions (COMMA_ windowsOptions)*)? | CERTIFICATE identifier | ASYMMETRIC KEY identifier
+    ;
+
+windowsOptions
+    : DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    ;
+
+createLoginForAzureSQLDatabaseClause
+    : FROM EXTERNAL PROVIDER | WITH createLoginForAzureSQLDatabaseOptionList (COMMA_ createLoginForAzureSQLDatabaseOptionList)*
+    ;
+
+createLoginForAzureSQLDatabaseOptionList
+    : PASSWORD EQ_ stringLiterals (COMMA_ SID EQ_ sid)?
+    ;
+
+createLoginForAzureManagedInstanceClause
+    : (FROM EXTERNAL PROVIDER)? WITH azureManagedInstanceOptionList (COMMA_ azureManagedInstanceOptionList)*
+    ;
+
+azureManagedInstanceOptionList
+    : PASSWORD EQ_ stringLiterals | SID EQ_ sid | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier
+    ;
+
+createLoginForAzureSynapseAnalyticsClause
+    : WITH createLoginForAzureSynapseAnalyticsOptionList
+    ;
+
+createLoginForAzureSynapseAnalyticsOptionList
+    : PASSWORD EQ_ stringLiterals (COMMA_ SID EQ_ sid)?
+    ;
+
+createLoginForAnalyticsPlatformSystemClause
+    : WITH createLoginForAnalyticsPlatformSystemOptionList | FROM WINDOWS
+    ;
+
+createLoginForAnalyticsPlatformSystemOptionList
+    : PASSWORD EQ_ stringLiterals (MUST_CHANGE)? (COMMA_ createLoginForAnalyticsPlatformSystemOptionListClause (COMMA_ createLoginForAnalyticsPlatformSystemOptionListClause)*)?
+    ;
+
+createLoginForAnalyticsPlatformSystemOptionListClause
+    : CHECK_EXPIRATION EQ_ (ON | OFF) | CHECK_POLICY EQ_ (ON | OFF)
     ;
 
 dropLogin
@@ -387,5 +437,23 @@ dropLogin
     ;
 
 alterLogin
-    : ALTER LOGIN
+    : ALTER LOGIN ignoredNameIdentifier (statusOptionClause | WITH setOptionClause (COMMA_ setOptionClause)* | cryptographicCredentialsOptionClause)
+    ;
+
+statusOptionClause
+    : ENABLE | DISABLE
+    ;
+
+setOptionClause
+    : PASSWORD EQ_ (stringLiterals | hashedPassword HASHED) (OLD_PASSWORD EQ_ stringLiterals | passwordOptionClause passwordOptionClause?)?
+    | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier | NAME EQ_ ignoredNameIdentifier | CHECK_POLICY EQ_ (ON | OFF)
+    | CHECK_EXPIRATION EQ_ (ON | OFF) | CREDENTIAL EQ_ identifier | NO CREDENTIAL
+    ;
+
+passwordOptionClause
+    : MUST_CHANGE | UNLOCK
+    ;
+
+cryptographicCredentialsOptionClause
+    : ADD CREDENTIAL identifier | DROP CREDENTIAL identifier
     ;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic;
 
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -43,7 +44,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         }
         boolean containsSchemaName = false;
         if (sqlStatementContext instanceof TableAvailable) {
-            containsSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().isPresent();
+            TablesContext tablesContext = ((TableAvailable) sqlStatementContext).getTablesContext();
+            containsSchemaName = tablesContext.getDatabaseName().isPresent() || !tablesContext.getSchemaNames().isEmpty();
         }
         return containsRemoveSegment || containsSchemaName;
     }
@@ -54,7 +56,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
             result.addAll(generateRemoveAvailableSQLTokens(((RemoveAvailable) sqlStatementContext).getRemoveSegments()));
         }
-        if (sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().isPresent()) {
+        if (sqlStatementContext instanceof TableAvailable && (((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent() 
+                || !((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames().isEmpty())) {
             result.addAll(generateTableAvailableSQLTokens((TableAvailable) sqlStatementContext));
         }
         return result;
@@ -71,7 +74,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
                 continue;
             }
             OwnerSegment owner = each.getOwner().get();
-            result.add(new RemoveToken(owner.getStartIndex(), each.getTableName().getStartIndex() - 1));
+            int startIndex = owner.getOwner().isPresent() ? owner.getOwner().get().getStartIndex() : owner.getStartIndex();
+            result.add(new RemoveToken(startIndex, each.getTableName().getStartIndex() - 1));
         }
         return result;
     }

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.fixture.FixtureRule;
@@ -34,6 +36,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -52,7 +55,8 @@ public final class MetaDataContextsBuilderTest {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user),
                 new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), props);
-        builder.addSchema("logic_db", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())), props);
+        builder.addSchema("logic_db", DatabaseTypeRegistry.getDefaultDatabaseType(), 
+                new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())), props);
         MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
@@ -67,6 +71,22 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
         assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
+    }
+    
+    @Test
+    public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.emptyList(), new Properties());
+        builder.addSystemSchemas(new MySQLDatabaseType());
+        MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
+        assertThat(actual.getMetaDataMap().size(), is(4));
+        assertTrue(actual.getMetaDataMap().containsKey("information_schema"));
+        assertTrue(actual.getMetaDataMap().containsKey("performance_schema"));
+        assertTrue(actual.getMetaDataMap().containsKey("mysql"));
+        assertTrue(actual.getMetaDataMap().containsKey("sys"));
+        assertThat(actual.getMetaDataMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaDataMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
     }
     
     private void assertRules(final MetaDataContexts actual) {

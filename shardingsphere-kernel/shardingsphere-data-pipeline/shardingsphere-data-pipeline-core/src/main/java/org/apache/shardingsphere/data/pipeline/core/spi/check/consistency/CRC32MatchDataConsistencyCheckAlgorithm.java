@@ -32,13 +32,13 @@ public final class CRC32MatchDataConsistencyCheckAlgorithm extends AbstractDataC
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
-    public String getDescription() {
-        return "Match CRC32 of records.";
+    public Collection<String> getSupportedDatabaseTypes() {
+        return SUPPORTED_DATABASE_TYPES;
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return SUPPORTED_DATABASE_TYPES;
+    public String getDescription() {
+        return "Match CRC32 of records.";
     }
     
     @Override

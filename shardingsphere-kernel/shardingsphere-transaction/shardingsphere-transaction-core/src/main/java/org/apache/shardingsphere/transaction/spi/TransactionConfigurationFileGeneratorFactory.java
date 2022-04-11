@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Transaction configuration file generator factory.
@@ -39,6 +38,6 @@ public final class TransactionConfigurationFileGeneratorFactory {
      * @return new instance of transaction configuration file generator
      */
     public static Optional<TransactionConfigurationFileGenerator> newInstance(final String transactionProviderType) {
-        return null == transactionProviderType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(TransactionConfigurationFileGenerator.class, transactionProviderType, new Properties());
+        return null == transactionProviderType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(TransactionConfigurationFileGenerator.class, transactionProviderType);
     }
 }

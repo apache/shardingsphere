@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,23 +110,23 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Test
     public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException {
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
         ShardingSphereMetaData metaData = createMetaData();
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(new MySQLQueryHeaderBuilder().build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
+        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(
+                new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
         Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-            
-            private MemoryQueryResultRow memoryQueryResultRow;
             
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
                                                       final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
-                memoryQueryResultRow = mock(MemoryQueryResultRow.class);
-                return Collections.singletonList(memoryQueryResultRow);
+                return Collections.singletonList(mock(MemoryQueryResultRow.class));
             }
         });
         Exception ex = null;
@@ -142,7 +142,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
-        when(result.getSchema().get("t_logic_order")).thenReturn(
+        when(result.getDefaultSchema().get("t_logic_order")).thenReturn(
                 new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
@@ -169,7 +169,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         return new LazyInitializer<DataNodeContainedRule>() {
             
             @Override
-            protected DataNodeContainedRule initialize() throws ConcurrentException {
+            protected DataNodeContainedRule initialize() {
                 return (DataNodeContainedRule) metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().orElse(null);
             }
         };
@@ -177,8 +177,10 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Test
     public void assertAddStatementCorrectly() {
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -187,8 +189,10 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Test
     public void assertAddResultSetCorrectly() {
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -197,8 +201,10 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Test
     public void assertCloseCorrectly() throws SQLException {
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -212,8 +218,10 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Test
     public void assertCloseResultSetsWithExceptionThrown() throws SQLException {
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatementContext.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();

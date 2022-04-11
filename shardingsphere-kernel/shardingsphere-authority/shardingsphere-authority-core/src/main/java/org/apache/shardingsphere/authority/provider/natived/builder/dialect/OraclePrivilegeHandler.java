@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  * Oracle privilege handler.
  */
 public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
-
+    
     private static final String CREATE_USER_SQL = "CREATE USER %s IDENTIFIED BY %s";
-
+    
     private static final String GRANT_ALL_SQL = "GRANT ALL PRIVILEGES TO %s";
     
     private static final String SYS_PRIVILEGE_SQL = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";

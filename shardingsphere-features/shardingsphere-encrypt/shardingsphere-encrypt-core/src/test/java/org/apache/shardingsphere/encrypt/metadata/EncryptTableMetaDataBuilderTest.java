@@ -24,14 +24,13 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +72,6 @@ public final class EncryptTableMetaDataBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -348,6 +346,7 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private EncryptRule createEncryptRuleWithDataTypeConfig() {
         EncryptRule result = createEncryptRule();
+        assertTrue(result.findEncryptTable(TABLE_NAME).isPresent());
         EncryptTable encryptTable = result.findEncryptTable(TABLE_NAME).get();
         EncryptColumn encryptColumn = mock(EncryptColumn.class);
         EncryptColumnDataType encryptColumnDataType = mock(EncryptColumnDataType.class);

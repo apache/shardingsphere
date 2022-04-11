@@ -20,14 +20,12 @@ package org.apache.shardingsphere.sql.parser.api;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -41,25 +39,20 @@ public final class SQLParserEngineTest {
     @Test
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseContext.class));
+        when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", cacheOption, false);
+        SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", cacheOption);
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(sqlParserExecutorFiled, sqlParserExecutorFiled.getModifiers() & ~Modifier.FINAL);
-        Field modifiersField2 = Field.class.getDeclaredField("modifiers");
-        modifiersField2.setAccessible(true);
         Field parseTreeCacheField = sqlParserEngine.getClass().getDeclaredField("parseTreeCache");
-        modifiersField2.setInt(parseTreeCacheField, sqlParserExecutorFiled.getModifiers() & ~Modifier.FINAL);
         sqlParserExecutorFiled.setAccessible(true);
         parseTreeCacheField.setAccessible(true);
         sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
-        LoadingCache<String, ParseContext> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
-                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseContext>() {
+        LoadingCache<String, ParseASTNode> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
+                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseASTNode>() {
+                    
                     @ParametersAreNonnullByDefault
                     @Override
-                    public ParseContext load(final String sql) {
+                    public ParseASTNode load(final String sql) {
                         return sqlParserExecutor.parse(sql);
                     }
                 });

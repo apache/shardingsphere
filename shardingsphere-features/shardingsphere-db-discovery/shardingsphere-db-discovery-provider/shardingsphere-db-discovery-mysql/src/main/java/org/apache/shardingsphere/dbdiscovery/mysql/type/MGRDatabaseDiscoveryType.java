@@ -24,6 +24,9 @@ import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -151,19 +153,17 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;
         }
-        Map<String, String> dataSourceURLs = new HashMap<>(16, 1);
-        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, dataSourceURLs);
-        determineEnabledDataSource(dataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
+        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, groupName);
     }
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         List<String> result = new LinkedList<>();
-        try (Connection connection = dataSourceMap.get(getOldPrimaryDataSource()).getConnection();
+        try (Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
             while (resultSet.next()) {
@@ -178,11 +178,13 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         return result;
     }
     
-    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap, final List<String> memberDataSourceURLs,
-                                             final Map<String, String> dataSourceURLs) {
-        for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
+    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (entry.getKey().equals(getPrimaryDataSource())) {
+                continue;
+            }
             boolean disable = true;
-            String url = null;
+            String url;
             try (Connection connection = entry.getValue().getConnection()) {
                 url = connection.getMetaData().getURL();
                 for (String each : memberDataSourceURLs) {
@@ -194,39 +196,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find data source urls", ex);
             }
-            if (disable) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-            } else if (!url.isEmpty()) {
-                dataSourceURLs.put(entry.getKey(), url);
-            }
-        }
-    }
-    
-    private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final List<String> memberDataSourceURLs,
-                                            final Map<String, String> dataSourceURLs) {
-        for (String each : memberDataSourceURLs) {
-            boolean enable = true;
-            for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-                if (entry.getValue().contains(each)) {
-                    enable = false;
-                    break;
-                }
-            }
-            if (!enable) {
-                continue;
-            }
-            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-                String url;
-                try (Connection connection = entry.getValue().getConnection()) {
-                    url = connection.getMetaData().getURL();
-                    if (null != url && url.contains(each)) {
-                        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
-                        break;
-                    }
-                } catch (final SQLException ex) {
-                    log.error("An exception occurred while find enable data source urls", ex);
-                }
-            }
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
+                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
         }
     }
     

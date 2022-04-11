@@ -24,7 +24,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
@@ -37,25 +36,23 @@ public final class SQLParserExecutor {
     
     private final String databaseType;
     
-    private final boolean sqlCommentParseEnabled;
-    
     /**
      * Parse SQL.
      * 
      * @param sql SQL to be parsed
-     * @return parse context
+     * @return parse AST node
      */
-    public ParseContext parse(final String sql) {
+    public ParseASTNode parse(final String sql) {
         ParseASTNode result = twoPhaseParse(sql);
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return new ParseContext(result.getRootNode(), result.getHiddenTokens());
+        return result;
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {
         DatabaseTypedSQLParserFacade sqlParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade(databaseType);
-        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass(), sqlCommentParseEnabled);
+        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();

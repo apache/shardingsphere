@@ -28,10 +28,9 @@ public final class SummaryWrapperTest {
     
     @Test
     public void assertCreate() {
-        Summary summary = Summary.build().name("a").help("help").create();
-        SummaryWrapper summaryWrapper = new SummaryWrapper(summary);
+        SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
         summaryWrapper.observe(1);
-        summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
+        Summary summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
         assertThat(summary.collect().size(), is(1));
     }
 }

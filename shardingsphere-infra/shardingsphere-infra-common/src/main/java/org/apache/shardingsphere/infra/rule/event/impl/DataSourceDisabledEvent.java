@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rule.event.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 /**
  * Data source disabled event.
@@ -30,7 +31,9 @@ public final class DataSourceDisabledEvent implements DataSourceStatusChangedEve
     
     private final String schemaName;
     
+    private final String groupName;
+    
     private final String dataSourceName;
     
-    private final boolean isDisabled;
+    private final StorageNodeDataSource storageNodeDataSource;
 }

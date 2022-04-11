@@ -42,6 +42,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.A
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DiscardDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.PrepareDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.CreateTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DiscardDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DropTrafficRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.ImportSchemaConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.LabelInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.PrepareDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.RefreshTableMetadataHandler;
@@ -124,6 +126,7 @@ public final class RALBackendHandlerFactory {
         UPDATABLE_HANDLER_MAP.put(PrepareDistSQLStatement.class.getName(), PrepareDistSQLHandler.class);
         UPDATABLE_HANDLER_MAP.put(ApplyDistSQLStatement.class.getName(), ApplyDistSQLHandler.class);
         UPDATABLE_HANDLER_MAP.put(DiscardDistSQLStatement.class.getName(), DiscardDistSQLHandler.class);
+        UPDATABLE_HANDLER_MAP.put(ImportSchemaConfigurationStatement.class.getName(), ImportSchemaConfigurationHandler.class);
     }
     
     private static void initQueryableHandlerMap() {
@@ -172,8 +175,8 @@ public final class RALBackendHandlerFactory {
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
         try {
-            return clazz.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new UnsupportedOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
     }

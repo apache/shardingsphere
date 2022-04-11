@@ -104,7 +104,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Before
     public void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getDefaultSchema()).thenReturn(mock(ShardingSphereSchema.class));
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }

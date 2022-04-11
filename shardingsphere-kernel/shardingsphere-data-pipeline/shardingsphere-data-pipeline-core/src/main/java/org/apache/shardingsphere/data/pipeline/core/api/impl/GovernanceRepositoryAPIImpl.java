@@ -53,6 +53,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     private final ClusterPersistRepository repository;
     
     @Override
+    public boolean isExisted(final String key) {
+        return null != repository.get(key);
+    }
+    
+    @Override
     public void persistJobProgress(final RuleAlteredJobContext jobContext) {
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());

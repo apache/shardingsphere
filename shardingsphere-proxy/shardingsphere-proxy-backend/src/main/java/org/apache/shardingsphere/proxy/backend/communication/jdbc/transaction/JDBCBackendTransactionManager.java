@@ -129,6 +129,9 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 result.add(ex);
             }
         }
+        if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
+            connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
+        }
         return throwSQLExceptionIfNecessary(result);
     }
     

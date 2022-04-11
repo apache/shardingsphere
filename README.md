@@ -60,7 +60,7 @@ For guides on how to get started and setup your environment, contributor & commi
 
 <hr>
 
-We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/cn/team) for their dedication to Apache ShardingSphere.
+We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/en/team) for their dedication to Apache ShardingSphere.
 
 ##
 
@@ -128,7 +128,7 @@ They all provide functions of data scale-out, distributed transaction and distri
 
 <hr>
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 A lightweight Java framework providing extra services at the Java JDBC layer. 
 With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.

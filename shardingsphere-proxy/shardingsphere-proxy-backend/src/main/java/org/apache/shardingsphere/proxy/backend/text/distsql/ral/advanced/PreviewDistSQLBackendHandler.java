@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -101,11 +102,12 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         String schemaName = getSchemaName();
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get()).parse(sqlStatement.getSql(), false);
+        Preconditions.checkState(sqlParserRule.isPresent());
+        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), previewedStatement, schemaName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementSchemaHolder::set);
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
         if (!metaData.isComplete()) {
@@ -128,7 +130,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaDataMap());
         DatabaseType databaseType = metaDataContexts.getMetaData(getSchemaName()).getResource().getDatabaseType();
-        FederationExecutor executor = FederationExecutorFactory.newInstance(schemaName, metaDataContexts.getOptimizerContext(),
+        FederationExecutor executor = FederationExecutorFactory.newInstance(schemaName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false));
         executor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType), context);
         return context.getExecutionUnits();

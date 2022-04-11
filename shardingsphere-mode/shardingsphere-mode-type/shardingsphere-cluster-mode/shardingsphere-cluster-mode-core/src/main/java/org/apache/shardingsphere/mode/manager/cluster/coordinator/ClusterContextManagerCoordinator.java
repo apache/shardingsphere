@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
@@ -42,7 +44,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -52,6 +53,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Cluster context manager coordinator.
@@ -152,7 +154,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema.getDataSourceName(), event.isDisabled())));
+                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema, event.isDisabled())));
     }
     
     /**
@@ -167,7 +169,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema.getSchemaName(), qualifiedSchema.getDataSourceName(), event.getPrimaryDataSourceName())));
+                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema)));
     }
     
     /**
@@ -270,19 +272,17 @@ public final class ClusterContextManagerCoordinator {
     private void buildSpecialRules() {
         contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
-                disableDataSources(key, (StatusContainedRule) each);
+                disableDataSources((StatusContainedRule) each);
             } else if (each instanceof InstanceAwareRule) {
                 ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext());
             }
         }));
     }
     
-    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadStorageNodes(schemaName, StorageNodeStatus.DISABLE);
-        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
-    }
-    
-    private String getDataSourceName(final String disabledDataSource) {
-        return new QualifiedSchema(disabledDataSource).getDataSourceName();
+    private void disableDataSources(final StatusContainedRule rule) {
+        Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
+        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry ->
+                StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        disableDataSources.entrySet().stream().forEach(entry -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(entry.getKey()), true)));
     }
 }

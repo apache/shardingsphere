@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
@@ -37,12 +37,9 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
-    @Getter
     private String oldPrimaryDataSource;
     
     protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
-    
-    protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap);
     
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
@@ -56,17 +53,8 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
         }
         if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
             oldPrimaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedSchema(schemaName, groupName, newPrimaryDataSource)));
         }
-    }
-    
-    @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        determineMemberDataSourceState(schemaName, activeDataSourceMap);
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {

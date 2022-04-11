@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
-import com.zaxxer.hikari.HikariConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -44,15 +44,15 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandlerFactory;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -60,8 +60,6 @@ import java.util.Random;
  */
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
-    
-    private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
     
     private final BinlogPosition binlogPosition;
     
@@ -72,10 +70,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     private final Random random = new SecureRandom();
     
     private final PipelineChannel channel;
-    
-    static {
-        VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
-    }
     
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -93,10 +87,10 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private void dump() {
-        HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
-        log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(hikariConfig.getJdbcUrl(), null);
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
+        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
+        log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
+        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
@@ -176,11 +170,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        ValueHandler valueHandler = VALUE_HANDLER_MAP.get(columnMetaData.getDataTypeName());
-        if (null != valueHandler) {
-            return valueHandler.handle(value);
-        }
-        return value;
+        Optional<MySQLDataTypeHandler> dataTypeHandler = MySQLDataTypeHandlerFactory.newInstance(columnMetaData.getDataTypeName());
+        return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {

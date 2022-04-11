@@ -47,17 +47,16 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     @SuppressWarnings("unchecked")
     private static void parseMetricsYaml() {
-        Yaml yaml = new Yaml();
-        InputStream in = PrometheusWrapperFactory.class.getResourceAsStream("/prometheus/metrics.yaml");
-        Map<String, List<Map<String, Object>>> metricsMap = yaml.loadAs(in, LinkedHashMap.class);
+        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream("/prometheus/metrics.yaml");
+        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
         metrics = metricsMap.get("metrics");
     }
     
     /**
-     * Create the metrics wrapper.
+     * Create metrics wrapper.
      *
      * @param id id
-     * @return optional of metrics wrapper
+     * @return metrics wrapper
      */
     @Override
     public Optional<MetricsWrapper> create(final String id) {
@@ -65,45 +64,42 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     /**
-     * Create the gauge metric family.
+     * Create gauge metric family.
      *
      * @param id string
-     * @return the optional of gauge metric family
+     * @return gauge metric family
      */
     public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
-        Optional<Map<String, Object>> metricMap = findById(id);
+        Optional<Map<String, Object>> metricMap = findMetric(id);
         if (!metricMap.isPresent()) {
             return Optional.empty();
         }
         Map<String, Object> metric = metricMap.get();
-        if (null == getType(metric)) {
+        if (null == getMetricType(metric)) {
             return Optional.empty();
         }
-        if ("GAUGEMETRICFAMILY".equalsIgnoreCase(getType(metric))) {
+        if ("GAUGEMETRICFAMILY".equalsIgnoreCase(getMetricType(metric))) {
             return createGaugeMetricFamily(metric);
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
     
     private Optional<GaugeMetricFamily> createGaugeMetricFamily(final Map<String, Object> metric) {
-        if (null != getLabels(metric)) {
-            return Optional.of(new GaugeMetricFamily(getName(metric), getHelp(metric), getLabels(metric)));
-        } else {
-            return Optional.of(new GaugeMetricFamily(getName(metric), getHelp(metric), 1));
-        }
+        return Optional.of(null == getMetricLabels(metric)
+                ? new GaugeMetricFamily(getMetricName(metric), getMetricHelpMessage(metric), 1)
+                : new GaugeMetricFamily(getMetricName(metric), getMetricHelpMessage(metric), getMetricLabels(metric)));
     }
     
     private Optional<MetricsWrapper> createById(final String id) {
-        Optional<Map<String, Object>> metricMap = findById(id);
+        Optional<Map<String, Object>> metricMap = findMetric(id);
         if (!metricMap.isPresent()) {
             return Optional.empty();
         }
         Map<String, Object> metric = metricMap.get();
-        if (null == getType(metric)) {
+        if (null == getMetricType(metric)) {
             return Optional.empty();
         }
-        switch (getType(metric).toUpperCase()) {
+        switch (getMetricType(metric).toUpperCase()) {
             case "COUNTER":
                 return createCounter(metric);
             case "GAUGE":
@@ -117,145 +113,87 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
+    private Optional<Map<String, Object>> findMetric(final String id) {
+        return metrics.stream().filter(optional -> id.equals(getMetricId(optional))).findFirst();
+    }
+    
     private Optional<MetricsWrapper> createCounter(final Map<String, Object> metric) {
-        Counter.Builder builder = Counter.build()
-                .name(getName(metric))
-                .help(getHelp(metric));
-        if (null != getLabels(metric)) {
-            builder.labelNames(getLabels(metric).toArray(new String[0]));
+        Counter.Builder builder = Counter.build().name(getMetricName(metric)).help(getMetricHelpMessage(metric));
+        if (null != getMetricLabels(metric)) {
+            builder.labelNames(getMetricLabels(metric).toArray(new String[0]));
         }
-        Counter counter = builder.register();
-        CounterWrapper wrapper = new CounterWrapper(counter);
-        return Optional.of(wrapper);
+        return Optional.of(new CounterWrapper(builder.register()));
     }
     
     private Optional<MetricsWrapper> createGauge(final Map<String, Object> metric) {
-        Gauge.Builder builder = Gauge.build()
-                .name(getName(metric))
-                .help(getHelp(metric));
-        if (null != getLabels(metric)) {
-            builder.labelNames(getLabels(metric).toArray(new String[0]));
+        Gauge.Builder builder = Gauge.build().name(getMetricName(metric)).help(getMetricHelpMessage(metric));
+        if (null != getMetricLabels(metric)) {
+            builder.labelNames(getMetricLabels(metric).toArray(new String[0]));
         }
-        Gauge gauge = builder.register();
-        GaugeWrapper wrapper = new GaugeWrapper(gauge);
-        return Optional.of(wrapper);
+        return Optional.of(new GaugeWrapper(builder.register()));
     }
     
     private Optional<MetricsWrapper> createHistogram(final Map<String, Object> metric) {
-        Histogram.Builder builder = Histogram.build()
-                .name(getName(metric))
-                .help(getHelp(metric));
-        if (null != getLabels(metric)) {
-            builder.labelNames(getLabels(metric).toArray(new String[0]));
+        Histogram.Builder builder = Histogram.build().name(getMetricName(metric)).help(getMetricHelpMessage(metric));
+        if (null != getMetricLabels(metric)) {
+            builder.labelNames(getMetricLabels(metric).toArray(new String[0]));
         }
-        if (null != getProps(metric)) {
-            parserHistogramProps(builder, getProps(metric));
+        if (null != getMetricProperties(metric)) {
+            parserHistogramProperties(builder, getMetricProperties(metric));
         }
-        Histogram histogram = builder.register();
-        HistogramWrapper wrapper = new HistogramWrapper(histogram);
-        return Optional.of(wrapper);
-    }
-    
-    private Optional<MetricsWrapper> createSummary(final Map<String, Object> metric) {
-        Summary.Builder builder = Summary.build()
-                .name(getName(metric))
-                .help(getHelp(metric));
-        if (null != getLabels(metric)) {
-            builder.labelNames(getLabels(metric).toArray(new String[0]));
-        }
-        Summary summary = builder.register();
-        SummaryWrapper wrapper = new SummaryWrapper(summary);
-        return Optional.of(wrapper);
+        return Optional.of(new HistogramWrapper(builder.register()));
     }
     
     @SuppressWarnings("unchecked")
-    private void parserHistogramProps(final Histogram.Builder builder, final Map<String, Object> props) {
+    private void parserHistogramProperties(final Histogram.Builder builder, final Map<String, Object> props) {
         if (null == props.get("buckets")) {
             return;
         }
-        Map<String, Object> b = (Map<String, Object>) props.get("buckets");
-        if ("exp".equals(b.get("type"))) {
-            double start = null == b.get("start") ? 1 : Double.parseDouble(b.get("start").toString());
-            double factor = null == b.get("factor") ? 1 : Double.parseDouble(b.get("factor").toString());
-            int count = null == b.get("count") ? 1 : (int) b.get("count");
+        Map<String, Object> buckets = (Map<String, Object>) props.get("buckets");
+        if ("exp".equals(buckets.get("type"))) {
+            double start = null == buckets.get("start") ? 1 : Double.parseDouble(buckets.get("start").toString());
+            double factor = null == buckets.get("factor") ? 1 : Double.parseDouble(buckets.get("factor").toString());
+            int count = null == buckets.get("count") ? 1 : (int) buckets.get("count");
             builder.exponentialBuckets(start, factor, count);
-        } else if ("linear".equals(b.get("type"))) {
-            double start = null == b.get("start") ? 1 : Double.parseDouble(b.get("start").toString());
-            double width = null == b.get("width") ? 1 : Double.parseDouble(b.get("width").toString());
-            int count = null == b.get("count") ? 1 : (int) b.get("count");
+        } else if ("linear".equals(buckets.get("type"))) {
+            double start = null == buckets.get("start") ? 1 : Double.parseDouble(buckets.get("start").toString());
+            double width = null == buckets.get("width") ? 1 : Double.parseDouble(buckets.get("width").toString());
+            int count = null == buckets.get("count") ? 1 : (int) buckets.get("count");
             builder.linearBuckets(start, width, count);
-        }        
+        }
     }
     
-    /**
-     * Get metric represented as map.
-     *
-     * @param id metric id
-     * @return the optional of metric map
-     */
-    protected Optional<Map<String, Object>> findById(final String id) {
-        return metrics.stream().filter(m -> id.equals(getId(m))).findFirst();
+    private Optional<MetricsWrapper> createSummary(final Map<String, Object> metric) {
+        Summary.Builder builder = Summary.build().name(getMetricName(metric)).help(getMetricHelpMessage(metric));
+        if (null != getMetricLabels(metric)) {
+            builder.labelNames(getMetricLabels(metric).toArray(new String[0]));
+        }
+        return Optional.of(new SummaryWrapper(builder.register()));
     }
     
-    /**
-     * Get metric id.
-     *
-     * @param metric metric Map
-     * @return id of the metric
-     */
-    protected String getId(final Map<String, Object> metric) {
+    private String getMetricId(final Map<String, Object> metric) {
         return (String) metric.get("id");
     }
     
-    /**
-     * Get metric type.
-     *
-     * @param metric metric Map
-     * @return type of the metric
-     */
-    protected String getType(final Map<String, Object> metric) {
+    private String getMetricType(final Map<String, Object> metric) {
         return (String) metric.get("type");
     }
     
-    /**
-     * Get metric name.
-     *
-     * @param metric metric Map
-     * @return name of the metric
-     */
-    protected String getName(final Map<String, Object> metric) {
+    private String getMetricName(final Map<String, Object> metric) {
         return (String) metric.get("name");
     }
     
-    /**
-     * Get metric help message.
-     *
-     * @param metric metric Map
-     * @return help message of the metric
-     */
-    protected String getHelp(final Map<String, Object> metric) {
+    private String getMetricHelpMessage(final Map<String, Object> metric) {
         return (String) metric.get("help");
     }
     
-    /**
-     * Get metric labels.
-     *
-     * @param metric metric Map
-     * @return labels of the metric
-     */
     @SuppressWarnings("unchecked")
-    protected List<String> getLabels(final Map<String, Object> metric) {
+    private List<String> getMetricLabels(final Map<String, Object> metric) {
         return (List<String>) metric.get("labels");
     }
     
-    /**
-     * Get metric properties.
-     *
-     * @param metric metric Map
-     * @return properties of the metric
-     */
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> getProps(final Map<String, Object> metric) {
+    private Map<String, Object> getMetricProperties(final Map<String, Object> metric) {
         return (Map<String, Object>) metric.get("props");
     }
 }

@@ -267,6 +267,10 @@ EXPORT
     : E X P O R T
     ;
 
+IMPORT
+    : I M P O R T
+    ;
+
 CONFIGURATION
     : C O N F I G U R A T I O N
     ;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInven
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
- * OpenGauss scaling entry.
+ * Scaling entry of openGauss.
  */
 public final class OpenGaussScalingEntry implements ScalingEntry {
     
@@ -48,7 +48,7 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "openGauss";
     }
 }
