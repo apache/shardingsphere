@@ -133,5 +133,6 @@ execute
     | dropType
     | dropStatistics
     | dropPublication
+    | dropOperatorClass
     ) SEMI_?
     ;
