@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class CommonDistSQLException extends RuntimeException {
+    
     private static final long serialVersionUID = 4207057904023183986L;
     
     private final String variable;
