@@ -106,11 +106,11 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                     case ALTER_TABLE:
                         return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                     case CREATE_INDEX:
-                        return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     case DROP_INDEX:
-                        return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     case COMMENT_ON:
-                        return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     default:
                         return "";
                 }
@@ -137,9 +137,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                 try (Connection sourceConnection = dataSource.getConnection()) {
                     String actualTableName = dataNode.getTableName();
                     StringJoiner joiner = new StringJoiner(";");
-                    Pair<String, List<String>> pkPair = queryTablePrimaryKey(sourceConnection, actualTableName);
-                    joiner.add(queryCreateTableSql(sourceConnection, actualTableName, pkPair.getRight()));
-                    queryCreateIndexes(sourceConnection, actualTableName, pkPair.getLeft()).forEach(joiner::add);
+                    Pair<String, List<String>> primaryKeyPair = queryTablePrimaryKey(sourceConnection, actualTableName);
+                    joiner.add(queryCreateTableSql(sourceConnection, actualTableName, primaryKeyPair.getRight()));
+                    queryCreateIndexes(sourceConnection, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
                     queryCommentOnList(sourceConnection, actualTableName).forEach(joiner::add);
                     String tableDefinition = joiner.toString();
                     result.add(new ActualTableDefinition(each.getLogicTableName(), actualTableName, tableDefinition));
@@ -208,7 +208,8 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
             while (columnsResult.next()) {
                 String columnComment = commentMap.get(columnsResult.getInt(1));
                 if (columnComment != null) {
-                    result.add(String.format(COMMENT_TEMPLATE, "COLUMN", new StringJoiner(".").add(actualTableName).add(columnsResult.getString(2)), columnComment));
+                    result.add(String.format(COMMENT_TEMPLATE, "COLUMN",
+                            new StringJoiner(".").add(actualTableName).add(columnsResult.getString(2)), columnComment));
                 }
             }
         }

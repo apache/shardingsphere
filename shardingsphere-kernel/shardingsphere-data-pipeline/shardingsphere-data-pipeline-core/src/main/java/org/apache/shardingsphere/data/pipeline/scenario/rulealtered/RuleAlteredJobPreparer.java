@@ -25,11 +25,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
@@ -39,8 +39,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.Inve
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -58,6 +56,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public final class RuleAlteredJobPreparer {
+    
+    private static final String PREPARE_LOCK_KEY = "prepare-";
     
     static {
         ShardingSphereServiceLoader.register(DataSourceChecker.class);
@@ -91,21 +91,22 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(jobConfig.getWorkflowConfig().getSchemaName());
+        final PipelineSimpleLock lock = PipelineSimpleLock.getInstance();
         // TODO make sure only the first thread execute prepare
-        boolean skipPrepare = !lock.tryLock("prepareTargetTablesLock", 100);
+        boolean skipPrepare = !lock.tryLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId(), 100);
         if (skipPrepare) {
-            // TODO polling until first thread finish prepare, then just return
-            while (lock.isLocked("prepareTargetTablesLock")) {
+            while (true) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
-                    lock.releaseLock("prepareTargetTablesLock");
+                    lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
+                }
+                // TODO just return ,because the first thread finish prepared
+                if (lock.tryLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId(), 100)) {
+                    lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
+                    return;
                 }
             }
-            lock.releaseLock("prepareTargetTablesLock");
-            return;
         }
         try {
             JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
@@ -113,7 +114,7 @@ public final class RuleAlteredJobPreparer {
                     jobConfig.getPipelineConfig(), dataSourceManager);
             dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
         } finally {
-            lock.releaseLock("prepareTargetTablesLock");
+            lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
         }
     }
     
