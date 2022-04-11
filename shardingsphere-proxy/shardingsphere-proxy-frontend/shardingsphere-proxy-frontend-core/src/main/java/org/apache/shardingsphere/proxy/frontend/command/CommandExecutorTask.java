@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -69,7 +68,7 @@ public final class CommandExecutorTask implements Runnable {
     @Override
     public void run() {
         boolean isNeedFlush = false;
-        boolean sqlShowEnabled = isSQLShowEnabled();
+        boolean sqlShowEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
             if (sqlShowEnabled) {
                 fillLogMDC();
@@ -150,10 +149,5 @@ public final class CommandExecutorTask implements Runnable {
     
     private void clearLogMDC() {
         MDC.clear();
-    }
-    
-    private boolean isSQLShowEnabled() {
-        ConfigurationProperties props = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
-        return props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW);
     }
 }
