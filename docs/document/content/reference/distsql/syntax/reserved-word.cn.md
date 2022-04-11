@@ -3,7 +3,7 @@ title = "保留字"
 weight = 3
 +++
 
-### 描述
+### 资源定义
 
 ```sql
 ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL

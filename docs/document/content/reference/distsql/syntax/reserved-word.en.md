@@ -3,7 +3,7 @@ title = "Reserved word"
 weight = 3
 +++
 
-### Description
+### Resource definition
 
 ```sql
 ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL
