@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetectorFactory;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -57,8 +57,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,11 +75,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class RuleAlteredJobWorker {
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
-        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
-    }
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
         
@@ -291,10 +284,9 @@ public final class RuleAlteredJobWorker {
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
-                                                    final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, 
+                                                    final HandleConfiguration handleConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }
     
     private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
