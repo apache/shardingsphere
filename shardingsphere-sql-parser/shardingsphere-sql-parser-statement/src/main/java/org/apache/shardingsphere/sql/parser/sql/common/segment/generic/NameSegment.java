@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * Comment statement.
+ * Name segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
-public abstract class CommentStatement extends AbstractSQLStatement implements DDLStatement {
+public final class NameSegment implements SQLSegment {
     
-    private SimpleTableSegment table;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

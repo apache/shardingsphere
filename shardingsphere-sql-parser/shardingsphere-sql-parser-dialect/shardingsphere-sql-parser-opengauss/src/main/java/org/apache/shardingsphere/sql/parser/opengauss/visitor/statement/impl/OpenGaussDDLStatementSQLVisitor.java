@@ -114,6 +114,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.NameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -176,6 +178,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -747,7 +750,35 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public ASTNode visitComment(final CommentContext ctx) {
-        return new OpenGaussCommentStatement();
+        OpenGaussCommentStatement result = new OpenGaussCommentStatement();
+        if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
+            LinkedList<NameSegment> nameSegments = (LinkedList<NameSegment>) ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue();
+            findTableName(nameSegments).ifPresent(result::setTable);
+        } else if (null != ctx.commentClauses().COLUMN()) {
+            LinkedList<NameSegment> nameSegments = (LinkedList<NameSegment>) ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue();
+            nameSegments.pollLast();
+            findTableName(nameSegments).ifPresent(result::setTable);
+        }
+        return result;
+    }
+    
+    private Optional<SimpleTableSegment> findTableName(final LinkedList<NameSegment> nameSegments) {
+        NameSegment tableName = nameSegments.pollLast();
+        if (tableName == null) {
+            return Optional.empty();
+        }
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier()));
+        NameSegment schemaName = nameSegments.pollLast();
+        if (null != schemaName) {
+            OwnerSegment schemaOwner = new OwnerSegment(schemaName.getStartIndex(), schemaName.getStopIndex(), schemaName.getIdentifier());
+            tableSegment.setOwner(schemaOwner);
+            NameSegment databaseName = nameSegments.pollLast();
+            if (null != databaseName) {
+                schemaOwner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
+            }
+        }
+        return Optional.of(tableSegment);
     }
 }
