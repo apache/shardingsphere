@@ -462,7 +462,9 @@ public enum SQLVisitorRule {
     
     DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
     
-    DROP_TYPE("DropType", SQLStatementType.DDL);
+    DROP_TYPE("DropType", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL);
     
     private final String name;
     
