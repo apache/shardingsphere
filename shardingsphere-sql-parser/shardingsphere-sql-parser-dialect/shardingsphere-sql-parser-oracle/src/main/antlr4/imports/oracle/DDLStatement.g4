@@ -38,6 +38,10 @@ alterIndex
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
+    ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
