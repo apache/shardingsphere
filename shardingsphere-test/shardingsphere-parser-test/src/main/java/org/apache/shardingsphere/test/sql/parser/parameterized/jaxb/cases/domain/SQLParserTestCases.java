@@ -184,6 +184,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignDataWrapperStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorClassStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorFamilyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -1248,6 +1249,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-operator-class")
     private final List<DropOperatorClassStatementTestCase> dropOperatorClassStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-operator-family")
+    private final List<DropOperatorFamilyStatementTestCase> dropOperatorFamilyStatementTestCases = new LinkedList<>();
+
     /**
      * Get all SQL parser test cases.
      *
@@ -1559,6 +1563,7 @@ public final class SQLParserTestCases {
         putAll(dropForeignDataWrapperStatementTestCases, result);
         putAll(dropTypeStatementTestCases, result);
         putAll(dropOperatorClassStatementTestCases, result);
+        putAll(dropOperatorFamilyStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
