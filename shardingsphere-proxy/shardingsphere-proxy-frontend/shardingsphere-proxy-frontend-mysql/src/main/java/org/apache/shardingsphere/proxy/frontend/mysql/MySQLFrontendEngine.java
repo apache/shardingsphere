@@ -60,7 +60,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "MySQL";
     }
 }

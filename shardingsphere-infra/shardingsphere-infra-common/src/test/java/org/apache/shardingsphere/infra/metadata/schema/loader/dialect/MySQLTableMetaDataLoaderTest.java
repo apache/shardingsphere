@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,21 +32,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MySQLTableMetaDataLoaderTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
-    
-    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -58,7 +53,7 @@ public final class MySQLTableMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
     @Test
@@ -73,7 +68,7 @@ public final class MySQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -90,7 +85,7 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
-
+    
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, true, false);
@@ -102,7 +97,7 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
         return result;
     }
-
+    
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -110,15 +105,13 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
     }
-
-    private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        DialectTableMetaDataLoader result = DIALECT_METADATA_LOADER_MAP.get("MySQL");
-        if (null != result) {
-            return result;
-        }
-        throw new IllegalStateException("Can not find MySQLTableMetaDataLoader");
+    
+    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        assertTrue(result.isPresent());
+        return result.get();
     }
-
+    
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
         TableMetaData actualTableMetaData = actual.get("tbl");

@@ -143,7 +143,7 @@ public final class OpenGaussTableMetaDataLoader implements DialectTableMetaDataL
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "openGauss";
     }
 }

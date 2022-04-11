@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-
-import java.util.Arrays;
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * JDBC URL recognizer for SQLServer.
+ * PostgreSQL drop trigger statement.
  */
-public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
-    
-    @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
-    
-    @Override
-    public Collection<String> getURLPrefixes() {
-        return Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:");
-    }
-    
-    @Override
-    public String getDriverClassName() {
-        return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    }
+@ToString
+public final class PostgreSQLDropTriggerStatement extends DropTriggerStatement implements PostgreSQLStatement {
 }

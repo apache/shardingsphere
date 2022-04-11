@@ -43,7 +43,7 @@ public final class ReactiveOKProxyState implements OKProxyState {
         Attribute<ReactiveDatabaseProtocolFrontendEngine> attr = channel.attr(AttributeKey.valueOf(ReactiveDatabaseProtocolFrontendEngine.class.getName()));
         ReactiveDatabaseProtocolFrontendEngine result = attr.get();
         if (null == result) {
-            result = ReactiveDatabaseProtocolFrontendEngineFactory.newInstance(databaseProtocolFrontendEngine.getDatabaseType());
+            result = ReactiveDatabaseProtocolFrontendEngineFactory.newInstance(databaseProtocolFrontendEngine.getType());
             attr.setIfAbsent(result);
         }
         return result;

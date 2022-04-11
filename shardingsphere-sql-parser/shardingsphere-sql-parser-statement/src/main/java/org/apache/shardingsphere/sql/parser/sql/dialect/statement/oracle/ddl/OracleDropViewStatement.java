@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLRecognizerTest {
-    
-    private final JDBCDriverURLRecognizer recognizer = new MySQLRecognizer();
-    
-    @Test
-    public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:mysql:")));
-    }
-    
-    @Test
-    public void assertGetDriverClassName() {
-        assertThat(recognizer.getDriverClassName(), is("com.mysql.jdbc.Driver"));
-    }
+/**
+ * Oracle drop view statement.
+ */
+@ToString
+public final class OracleDropViewStatement extends DropViewStatement implements OracleStatement {
 }

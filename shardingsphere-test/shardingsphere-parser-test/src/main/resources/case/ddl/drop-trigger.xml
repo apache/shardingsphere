@@ -18,4 +18,7 @@
 
 <sql-parser-test-cases>
     <drop-trigger sql-case-id="drop_trigger" />
+    <drop-trigger sql-case-id="drop_trigger_if_exists" />
+    <drop-trigger sql-case-id="drop_trigger_cascade" />
+    <drop-trigger sql-case-id="drop_trigger_restrict" />
 </sql-parser-test-cases>

@@ -15,30 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.proxy.backend.response.header.query;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-
-import java.util.Collection;
-import java.util.Collections;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * JDBC URL recognizer for openGauss.
+ * Query header.
  */
-public final class OpenGaussRecognizer implements JDBCDriverURLRecognizer {
+@RequiredArgsConstructor
+@Getter
+public final class QueryHeader {
     
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+    private final String schema;
     
-    @Override
-    public Collection<String> getURLPrefixes() {
-        return Collections.singleton("jdbc:opengauss:");
-    }
+    private final String table;
     
-    @Override
-    public String getDriverClassName() {
-        return "org.opengauss.Driver";
-    }
+    private final String columnLabel;
+    
+    private final String columnName;
+    
+    private final int columnType;
+    
+    private final String columnTypeName;
+    
+    private final int columnLength;
+    
+    private final int decimals;
+    
+    private final boolean signed;
+    
+    private final boolean primaryKey;
+    
+    private final boolean notNull;
+    
+    private final boolean autoIncrement;
 }

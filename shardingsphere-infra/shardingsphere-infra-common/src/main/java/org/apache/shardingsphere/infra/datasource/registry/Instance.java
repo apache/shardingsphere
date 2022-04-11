@@ -21,9 +21,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-
 /**
- * instance.
+ * Instance.
  */
 @RequiredArgsConstructor
 @Getter
@@ -33,6 +32,5 @@ public final class Instance {
     private final String ip;
 
     private final Integer port;
-
 }
 

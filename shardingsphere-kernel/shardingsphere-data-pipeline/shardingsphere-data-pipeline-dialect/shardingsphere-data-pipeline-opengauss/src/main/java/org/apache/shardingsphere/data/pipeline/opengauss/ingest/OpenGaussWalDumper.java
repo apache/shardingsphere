@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalEventCon
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -111,9 +110,6 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
                 }
                 AbstractWalEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
                 Record record = walEventConverter.convert(event);
-                if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
-                    log.debug("dump, event={}, record={}", event, record);
-                }
                 pushRecord(record);
             }
         } catch (final SQLException ex) {

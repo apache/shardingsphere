@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class OracleRecognizerTest {
-    
-    private final JDBCDriverURLRecognizer recognizer = new OracleRecognizer();
-    
-    @Test
-    public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:oracle:")));
-    }
-    
-    @Test
-    public void assertGetDriverClassName() {
-        assertThat(recognizer.getDriverClassName(), is("oracle.jdbc.driver.OracleDriver"));
-    }
+/**
+ * Drop trigger statement.
+ */
+@ToString
+public abstract class DropTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

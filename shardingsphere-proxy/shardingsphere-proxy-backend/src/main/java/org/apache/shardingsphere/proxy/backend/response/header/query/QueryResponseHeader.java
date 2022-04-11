@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 
 import java.util.List;
 
