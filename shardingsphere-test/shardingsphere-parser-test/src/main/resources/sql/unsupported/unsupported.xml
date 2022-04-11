@@ -5258,17 +5258,6 @@
     <sql-case id="drop_by_postgresql_source_test_case221" value="DROP SERVER s6;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case222" value="DROP SERVER s7;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case223" value="DROP SERVER test_server_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case249" value="DROP SUBSCRIPTION IF EXISTS regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case250" value="DROP SUBSCRIPTION regress_addr_sub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case251" value="DROP SUBSCRIPTION regress_testsub3;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case252" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case253" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case254" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case255" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case256" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case257" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case258" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case259" value="DROP SUBSCRIPTION regress_testsub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case260" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case261" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS test_tsconfig_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case262" value="DROP TEXT SEARCH CONFIGURATION test_tsconfig_exists;" db-types="PostgreSQL"/>

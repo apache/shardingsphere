@@ -134,5 +134,6 @@ execute
     | dropStatistics
     | dropPublication
     | dropOperatorClass
+    | dropSubscription
     ) SEMI_?
     ;
