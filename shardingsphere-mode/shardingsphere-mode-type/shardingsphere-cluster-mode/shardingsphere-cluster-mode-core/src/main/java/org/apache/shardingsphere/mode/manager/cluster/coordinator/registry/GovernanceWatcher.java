@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
 
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import java.util.Optional;
  * 
  * @param <T> type of event
  */
+@SingletonSPI
 public interface GovernanceWatcher<T> {
     
     /**

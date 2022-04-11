@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
+package org.apache.shardingsphere.spi.annotation;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * ShardingSphere YAML tuple processor.
+ * Annotation of singleton SPI.
  */
-@SingletonSPI
-public interface ShardingSphereYamlTupleProcessor {
-    
-    /**
-     * Get tuple name.
-     *
-     * @return tuple name
-     */
-    String getTupleName();
-    
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SingletonSPI {
 }

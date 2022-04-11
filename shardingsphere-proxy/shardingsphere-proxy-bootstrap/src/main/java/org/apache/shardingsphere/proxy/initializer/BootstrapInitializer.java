@@ -76,7 +76,7 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Collection<ContextManagerLifecycleListener> listeners = ShardingSphereServiceLoader.getSingletonServiceInstances(ContextManagerLifecycleListener.class);
+        Collection<ContextManagerLifecycleListener> listeners = ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class);
         for (ContextManagerLifecycleListener each : listeners) {
             try {
                 each.onInitialized(modeConfig, contextManager);

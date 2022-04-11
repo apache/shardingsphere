@@ -41,7 +41,7 @@ public final class ExecuteProcessEngine {
     
     static {
         ShardingSphereServiceLoader.register(ExecuteProcessReporter.class);
-        HANDLERS = ShardingSphereServiceLoader.newServiceInstances(ExecuteProcessReporter.class);
+        HANDLERS = ShardingSphereServiceLoader.getServiceInstances(ExecuteProcessReporter.class);
     }
     
     /**
