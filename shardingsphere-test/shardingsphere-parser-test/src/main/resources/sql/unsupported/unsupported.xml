@@ -5223,12 +5223,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case102" value="DROP OPERATOR CLASS IF EXISTS no_such_schema.widget_ops USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case103" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case104" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case105" value="DROP OPERATOR CLASS test_int4_ops USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case106" value="DROP OPERATOR CLASS test_operator_class USING btree;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case107" value="DROP OPERATOR CLASS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case108" value="DROP OPERATOR FAMILY IF EXISTS no_such_schema.float_ops USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case109" value="DROP OPERATOR FAMILY IF EXISTS test_operator_family USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case110" value="DROP OPERATOR FAMILY IF EXISTS test_operator_family USING no_such_am;" db-types="PostgreSQL"/>
@@ -5250,30 +5244,6 @@
     <sql-case id="drop_by_postgresql_source_test_case126" value="DROP OPERATOR FAMILY alt_opf9 USING gist;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case127" value="DROP OPERATOR FAMILY test_operator_family USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case128" value="DROP OPERATOR FAMILY test_operator_family USING no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case173" value="DROP PUBLICATION addr_pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case174" value="DROP PUBLICATION addr_pub_schema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case175" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case176" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case177" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case178" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case179" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case180" value="DROP PUBLICATION testpib_ins_trunct;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case181" value="DROP PUBLICATION testpub1_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case182" value="DROP PUBLICATION testpub2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case183" value="DROP PUBLICATION testpub2_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case184" value="DROP PUBLICATION testpub3, testpub4;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case185" value="DROP PUBLICATION testpub3;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case186" value="DROP PUBLICATION testpub3_forschema, testpub4_forschema, testpub5_forschema, testpub6_forschema, testpub_fortable;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case187" value="DROP PUBLICATION testpub3_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case188" value="DROP PUBLICATION testpub_default;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case189" value="DROP PUBLICATION testpub_foralltables, testpub_fortable, testpub_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case190" value="DROP PUBLICATION testpub_foralltables;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case191" value="DROP PUBLICATION testpub_forparted, testpub_forparted1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case192" value="DROP PUBLICATION testpub_forschema_fortable;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case193" value="DROP PUBLICATION testpub_fortable_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case194" value="DROP PUBLICATION testpub_fortbl;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case195" value="DROP PUBLICATION testpubpart_forschema;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case196" value="DROP PUBLICATION testpubpart_forschema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case197" value="DROP ROUTINE IF EXISTS test_ambiguous_procname;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case198" value="DROP ROUTINE cp_testfunc1(int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case212" value="DROP SERVER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
@@ -8042,8 +8012,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case17" value="drop index;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case18" value="drop instance rule nonesuch on noplace;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case32" value="drop operator class custom_opclass using hash;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case33" value="drop operator class part_test_int4_ops2 using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case59" value="drop table;" db-types="PostgreSQL"/>
