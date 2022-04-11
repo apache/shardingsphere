@@ -276,11 +276,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         return dataConsistencyCheck(jobConfig);
     }
     
-    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
-        verifyManualMode(jobConfig);
-        verifySourceWritingStopped(jobConfig);
-    }
-    
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
@@ -300,6 +295,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
         DataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, DataConsistencyCheckAlgorithm.class);
         return dataConsistencyCheck0(jobConfig, checkAlgorithm);
+    }
+    
+    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
+        verifyManualMode(jobConfig);
+        verifySourceWritingStopped(jobConfig);
     }
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final JobConfiguration jobConfig, final DataConsistencyCheckAlgorithm checkAlgorithm) {
