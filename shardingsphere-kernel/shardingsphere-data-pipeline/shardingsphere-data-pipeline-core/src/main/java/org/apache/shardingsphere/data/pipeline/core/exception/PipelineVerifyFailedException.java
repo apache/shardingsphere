@@ -17,32 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import lombok.Getter;
-
 /**
  * Pipeline verify failed exception.
  */
-@Getter
 public final class PipelineVerifyFailedException extends RuntimeException {
     
-    private static final long serialVersionUID = 1L;
-    
-    public PipelineVerifyFailedException() {
-    }
+    private static final long serialVersionUID = 2854259384634892428L;
     
     public PipelineVerifyFailedException(final String message) {
         super(message);
-    }
-    
-    public PipelineVerifyFailedException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-    
-    public PipelineVerifyFailedException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public PipelineVerifyFailedException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -29,14 +29,12 @@ public final class PipelineJobAPIFactory {
         ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
     }
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
-    
     /**
-     * Get {@linkplain RuleAlteredJobAPI}.
+     * Create new instance of pipeline job API.
      *
-     * @return pipeline job API
+     * @return new instance of pipeline job API
      */
-    public static RuleAlteredJobAPI getRuleAlteredJobAPI() {
-        return RULE_ALTERED_JOB_API;
+    public static RuleAlteredJobAPI newInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
     }
 }

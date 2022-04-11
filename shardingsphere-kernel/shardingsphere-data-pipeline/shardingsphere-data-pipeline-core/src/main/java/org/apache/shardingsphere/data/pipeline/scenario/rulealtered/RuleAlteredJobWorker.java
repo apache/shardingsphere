@@ -176,7 +176,7 @@ public final class RuleAlteredJobWorker {
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         if (jobConfigOptional.isPresent()) {
-            PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get());
+            PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getActiveVersion(), event.getNewVersion());
@@ -292,8 +292,8 @@ public final class RuleAlteredJobWorker {
     
     private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
         boolean isUncompletedJobOfSameSchema = false;
-        for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
-            if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
+        for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
+            if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }

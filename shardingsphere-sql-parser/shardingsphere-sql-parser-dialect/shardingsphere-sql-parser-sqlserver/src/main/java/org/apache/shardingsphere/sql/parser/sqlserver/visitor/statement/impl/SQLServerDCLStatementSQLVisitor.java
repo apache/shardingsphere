@@ -332,7 +332,11 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        return new SQLServerDropLoginStatement();
+        SQLServerDropLoginStatement result = new SQLServerDropLoginStatement();
+        LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+        result.setLoginSegment(loginSegment);
+        return result;
     }
     
     @Override

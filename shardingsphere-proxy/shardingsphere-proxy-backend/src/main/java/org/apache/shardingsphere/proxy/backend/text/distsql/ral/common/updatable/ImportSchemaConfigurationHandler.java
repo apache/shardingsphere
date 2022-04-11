@@ -47,6 +47,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfig
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -74,15 +75,17 @@ import java.util.stream.Collectors;
  * Import schema configuration handler.
  */
 public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendHandler<ImportSchemaConfigurationStatement, ImportSchemaConfigurationHandler> {
-
+    
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-
+    
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
     private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
+    private final DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
+    
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-
+    
     private void alterResourcesConfig(final String schemaName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
         Map<String, DataSourceProperties> toBeUpdatedResourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> each : yamlDataSourceMap.entrySet()) {
@@ -102,7 +105,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
             throw new InvalidResourcesException(toBeUpdatedResourcePropsMap.keySet());
         }
     }
-
+    
     private void alterRulesConfig(final String schemaName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
         if (null == yamlRuleConfigurations || yamlRuleConfigurations.isEmpty()) {
             return;
@@ -122,7 +125,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
                 toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfiguration);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                // TODO check
+                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfiguration);
                 toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfiguration);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
@@ -140,13 +143,13 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getSchemaRuleService().persist(schemaName, toBeUpdatedRuleConfigs));
     }
-
+    
     private void checkSchemaName(final String schemaName) {
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
             throw new SchemaNotExistedException(schemaName);
         }
     }
-
+    
     @Override
     protected void update(final ContextManager contextManager, final ImportSchemaConfigurationStatement sqlStatement) throws DistSQLException {
         if (!sqlStatement.getFilePath().isPresent()) {

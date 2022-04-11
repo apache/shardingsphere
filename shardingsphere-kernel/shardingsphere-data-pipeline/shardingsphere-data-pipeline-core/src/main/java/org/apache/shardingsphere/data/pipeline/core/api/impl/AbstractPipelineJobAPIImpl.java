@@ -27,6 +27,9 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Abstract pipeline job API impl.
+ */
 @Slf4j
 public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
@@ -63,7 +66,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
-    protected JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
+    protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         if (null == result) {
             throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
@@ -71,13 +74,13 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         return result;
     }
     
-    protected void verifyJobNotStopped(final JobConfigurationPOJO jobConfigPOJO) {
+    protected final void verifyJobNotStopped(final JobConfigurationPOJO jobConfigPOJO) {
         if (jobConfigPOJO.isDisabled()) {
             throw new PipelineVerifyFailedException("Job is stopped, it's not necessary to do it.");
         }
     }
     
-    protected void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {
+    protected final void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {
         if (!jobConfigPOJO.isDisabled()) {
             throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP SCALING {jobId}` to stop it.");
         }

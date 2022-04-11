@@ -132,5 +132,8 @@ execute
     | dropRule
     | dropType
     | dropStatistics
+    | dropPublication
+    | dropOperatorClass
+    | dropOperatorFamily
     ) SEMI_?
     ;
