@@ -27,11 +27,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
-import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -96,25 +97,25 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        final PipelineSimpleLock lock = PipelineSimpleLock.getInstance();
-        // TODO make sure only the first thread execute prepare
+        // TODO the lock will be replaced 
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext()
+                .getOrCreateSchemaLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
         boolean skipPrepare = !lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100);
         if (skipPrepare) {
             int loopCount = 0;
             int maxLoopCount = 30;
             while (loopCount < maxLoopCount) {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
-                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
+                    return;
                 }
-                // TODO just return ,because the first thread finish prepared
-                if (lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100)) {
-                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
+                if (!lock.isLocked(getPrepareLockName(jobConfig.getHandleConfig().getJobId()))) {
                     return;
                 }
                 loopCount++;
             }
+            return;
         }
         try {
             JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
