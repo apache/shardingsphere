@@ -17,6 +17,7 @@
 
 org.apache.shardingsphere.infra.context.refresher.type.AlterIndexStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.AlterTableStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.AlterViewStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.CreateIndexStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.CreateTableStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.CreateViewStatementSchemaRefresher
