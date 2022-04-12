@@ -290,7 +290,9 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new SQLServerDropUserStatement();
+        SQLServerDropUserStatement result = new SQLServerDropUserStatement();
+        result.getUsers().add(((UserSegment) visit(ctx.userName())).getUser());
+        return result;
     }
     
     @Override

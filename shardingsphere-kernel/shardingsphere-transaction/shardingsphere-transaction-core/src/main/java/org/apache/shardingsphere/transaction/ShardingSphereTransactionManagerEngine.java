@@ -50,7 +50,7 @@ public final class ShardingSphereTransactionManagerEngine {
     }
     
     private void loadTransactionManager() {
-        for (ShardingSphereTransactionManager each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereTransactionManager.class)) {
+        for (ShardingSphereTransactionManager each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)) {
             if (transactionManagers.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction manager implementation class, use `{}` now",
                     each.getTransactionType(), transactionManagers.get(each.getTransactionType()).getClass().getName());

@@ -16,10 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="drop_trigger" value="DROP TRIGGER safety ON DATABASE" db-types="SQLServer,PostgreSQL" />
-    <sql-case id="drop_trigger_with_schemaname" value="DROP TRIGGER hr.salary_check" db-types="Oracle"/>
-    <sql-case id="drop_trigger_if_exists" value="DROP TRIGGER IF EXISTS foo ON no_such_schema.bar" db-types="PostgreSQL"/>
-    <sql-case id="drop_trigger_cascade" value="DROP TRIGGER foo ON no_such_schema.bar CASCADE" db-types="PostgreSQL"/>
-    <sql-case id="drop_trigger_restrict" value="DROP TRIGGER IF EXISTS foo ON no_such_schema.bar RESTRICT" db-types="PostgreSQL"/>
-</sql-cases>
+<sql-parser-test-cases>
+    <drop-routine sql-case-id="drop_routine_if_exists" />
+    <drop-routine sql-case-id="drop_routine" />
+    <drop-routine sql-case-id="drop_routine_f1_and_p1" />
+</sql-parser-test-cases>

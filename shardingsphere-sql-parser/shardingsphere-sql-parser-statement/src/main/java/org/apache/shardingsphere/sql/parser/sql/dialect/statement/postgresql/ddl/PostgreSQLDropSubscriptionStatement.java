@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSubscriptionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-public interface SingletonSPIFixture extends SingletonSPI, TypedSPI {
+/**
+ * PostgreSQL drop subscription statement.
+ */
+@ToString
+public final class PostgreSQLDropSubscriptionStatement extends DropSubscriptionStatement implements PostgreSQLStatement {
 }

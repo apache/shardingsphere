@@ -131,9 +131,11 @@ execute
     | dropForeignDataWrapper
     | dropRule
     | dropType
+    | dropRoutine
     | dropStatistics
     | dropPublication
     | dropOperatorClass
+    | dropSubscription
     | dropOperatorFamily
     ) SEMI_?
     ;

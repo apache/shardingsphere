@@ -15,7 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-public final class RequiredSingletonSPIFixtureImpl implements RequiredSingletonSPIFixture {
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+/**
+ * Oracle drop trigger statement.
+ */
+@ToString
+public final class OracleDropTriggerStatement extends DropTriggerStatement implements OracleStatement {
 }

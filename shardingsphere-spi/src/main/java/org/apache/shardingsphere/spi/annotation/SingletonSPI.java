@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton.fixture;
+package org.apache.shardingsphere.spi.annotation;
 
-public final class SingletonSPIFixtureImpl implements SingletonSPIFixture {
-    
-    @Override
-    public String getType() {
-        return "SINGLETON_FIXTURE";
-    }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Annotation of singleton SPI.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SingletonSPI {
 }

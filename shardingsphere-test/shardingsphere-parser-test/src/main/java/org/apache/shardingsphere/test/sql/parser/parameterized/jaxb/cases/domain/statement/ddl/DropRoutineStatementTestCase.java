@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.singleton;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Singleton SPI.
+ * Drop routine statement test case.
  */
-public interface SingletonSPI {
+public final class DropRoutineStatementTestCase extends SQLParserTestCase {
 }

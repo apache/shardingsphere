@@ -334,7 +334,7 @@ ignoredNameIdentifier
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER (IF EXISTS)? userName
     ;
 
 alterUser

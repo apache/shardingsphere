@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.required.fixture;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-public interface RequiredSingletonSPIFixture extends RequiredSPI, SingletonSPI {
+/**
+ * Drop subscription statement test case.
+ */
+public final class DropSubscriptionStatementTestCase extends SQLParserTestCase {
 }

@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * ShardingSphere YAML tuple processor.
+ * Drop subscription statement.
  */
-@SingletonSPI
-public interface ShardingSphereYamlTupleProcessor {
-    
-    /**
-     * Get tuple name.
-     *
-     * @return tuple name
-     */
-    String getTupleName();
-    
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+@ToString
+public abstract class DropSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

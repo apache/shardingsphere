@@ -15,29 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropRoutineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * ShardingSphere YAML tuple processor.
+ * PostgreSQL drop routine statement.
  */
-@SingletonSPI
-public interface ShardingSphereYamlTupleProcessor {
-    
-    /**
-     * Get tuple name.
-     *
-     * @return tuple name
-     */
-    String getTupleName();
-    
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+@ToString
+public final class PostgreSQLDropRoutineStatement extends DropRoutineStatement implements PostgreSQLStatement {
 }
