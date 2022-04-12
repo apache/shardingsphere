@@ -33,7 +33,7 @@ public final class OpenTracingPluginBootService implements PluginBootService {
         String tracerClassName = pluginConfig.getProps().getProperty("OPENTRACING_TRACER_CLASS_NAME");
         Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation in you config");
         try {
-            init((Tracer) Class.forName(tracerClassName).newInstance());
+            init((Tracer) Class.forName(tracerClassName).getDeclaredConstructor().newInstance());
         } catch (final ReflectiveOperationException ex) {
             throw new RuntimeException("Initialize opentracing tracer class failure.", ex);
         }

@@ -20,9 +20,7 @@ package org.apache.shardingsphere.scaling.core.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Map;
-import java.util.TreeMap;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Scaling entry factory.
@@ -30,13 +28,8 @@ import java.util.TreeMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingEntryFactory {
     
-    private static final Map<String, ScalingEntry> SCALING_ENTRY_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    
     static {
         ShardingSphereServiceLoader.register(ScalingEntry.class);
-        for (ScalingEntry each : ShardingSphereServiceLoader.getSingletonServiceInstances(ScalingEntry.class)) {
-            SCALING_ENTRY_MAP.put(each.getDatabaseType(), each);
-        }
     }
     
     /**
@@ -46,9 +39,6 @@ public final class ScalingEntryFactory {
      * @return instance of scaling entry
      */
     public static ScalingEntry getInstance(final String databaseType) {
-        if (SCALING_ENTRY_MAP.containsKey(databaseType)) {
-            return SCALING_ENTRY_MAP.get(databaseType);
-        }
-        throw new UnsupportedOperationException(String.format("Unsupported database type '%s'", databaseType));
+        return TypedSPIRegistry.getRegisteredService(ScalingEntry.class, databaseType);
     }
 }

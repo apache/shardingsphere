@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: views
+name: VIEWS
 columns:
   table_catalog:
     caseSensitive: false

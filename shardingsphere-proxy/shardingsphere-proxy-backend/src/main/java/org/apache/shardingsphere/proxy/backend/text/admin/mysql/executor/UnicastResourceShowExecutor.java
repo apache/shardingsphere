@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -104,7 +104,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
         LinkedList<RawQueryResultColumnMetaData> raws = ((QueryResponseHeader) responseHeader).getQueryHeaders().stream().map(QueryHeader::getColumnLabel)
-                .map(each -> new RawQueryResultColumnMetaData("", each.toString(), each.toString(), Types.VARCHAR, "VARCHAR", 100, 0))
+                .map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 100, 0))
                 .collect(Collectors.toCollection(LinkedList::new));
         return new RawQueryResultMetaData(raws);
     }
@@ -117,5 +117,4 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
     }
-    
 }

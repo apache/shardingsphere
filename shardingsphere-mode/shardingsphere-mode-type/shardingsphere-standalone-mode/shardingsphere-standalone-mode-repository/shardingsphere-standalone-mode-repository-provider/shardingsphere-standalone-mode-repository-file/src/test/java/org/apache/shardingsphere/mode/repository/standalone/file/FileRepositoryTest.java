@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.repository.standalone.file;
 
 import com.google.common.base.Joiner;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -29,40 +31,46 @@ import static org.junit.Assert.assertThat;
 
 public final class FileRepositoryTest {
     
-    private FileRepository fileRepository = new FileRepository();
+    private final FileRepository fileRepository = new FileRepository();
     
-    @Test
-    public void assertMethod() {
-        assertThat(fileRepository.getType(), is("File"));
-        assertSetProperty();
-        assertPersistAndGet();
-        assertPersistAndGetChildrenKeys();
-        assertDelete();
-    }
-    
-    private void assertSetProperty() {
+    @Before
+    public void setUp() {
         Properties props = new Properties();
         props.setProperty("path", "target");
         fileRepository.setProps(props);
     }
     
-    private void assertPersistAndGet() {
+    @Test
+    public void assertType() {
+        assertThat(fileRepository.getType(), is("File"));
+    }
+    
+    @Test
+    public void assertPersistAndGet() {
         fileRepository.persist(getFilePath(), "test1_content");
         assertThat(fileRepository.get(getFilePath()), is("test1_content"));
         fileRepository.persist(getFilePath(), "modify_content");
         assertThat(fileRepository.get(getFilePath()), is("modify_content"));
     }
     
-    private void assertPersistAndGetChildrenKeys() {
+    @Test
+    public void assertPersistAndGetChildrenKeys() {
+        fileRepository.persist(getFilePath(), "");
         assertThat(fileRepository.getChildrenKeys("testDir").get(0), is("test1"));
     }
     
-    private void assertDelete() {
+    @Test
+    public void assertDelete() {
         fileRepository.delete("testDir");
         assertFalse((new File(getFilePath())).exists());
     }
     
     private String getFilePath() {
         return Joiner.on(File.separator).join("testDir", "test1");
+    }
+    
+    @After
+    public void stop() {
+        fileRepository.close();
     }
 }

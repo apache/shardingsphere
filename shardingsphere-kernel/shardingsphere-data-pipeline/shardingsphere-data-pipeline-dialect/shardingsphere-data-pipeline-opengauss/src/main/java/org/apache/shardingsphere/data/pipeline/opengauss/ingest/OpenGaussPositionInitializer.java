@@ -37,6 +37,7 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     @Override
     public WalPosition init(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
+            // TODO createSlotIfNotExists
             return getWalPosition(connection);
         }
     }

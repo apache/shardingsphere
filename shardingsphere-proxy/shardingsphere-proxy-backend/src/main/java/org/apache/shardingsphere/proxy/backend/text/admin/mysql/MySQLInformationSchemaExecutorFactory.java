@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Construct the information schema executor's factory.
@@ -33,7 +34,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    public static final List<String> DEFAULT_EXECUTOR_TABLES = Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS");
+    public static final Collection<String> DEFAULT_EXECUTOR_TABLES = Sets.newHashSet("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS");
     
     /**
      * Create executor.
@@ -42,13 +43,13 @@ public final class MySQLInformationSchemaExecutorFactory {
      * @param sql SQL being executed
      * @return executor
      */
-    public static DatabaseAdminQueryExecutor newInstance(final SelectStatement sqlStatement, final String sql) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql) {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
-            return new SelectInformationSchemataExecutor(sqlStatement, sql);
+            return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql));
         } else if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
-            return new DefaultDatabaseMetadataExecutor(sql);
+            return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
         }
-        throw new UnsupportedOperationException(String.format("unsupported table : `%s`", tableName));
+        return Optional.empty();
     }
 }

@@ -28,11 +28,6 @@ import org.apache.shardingsphere.proxy.frontend.reactive.spi.ReactiveDatabasePro
 public final class DummyReactiveDatabaseProtocolFrontendEngine implements ReactiveDatabaseProtocolFrontendEngine {
     
     @Override
-    public String getDatabaseType() {
-        return "Dummy";
-    }
-    
-    @Override
     public ReactiveCommandExecuteEngine getReactiveCommandExecuteEngine() {
         return null;
     }
@@ -63,5 +58,10 @@ public final class DummyReactiveDatabaseProtocolFrontendEngine implements Reacti
     
     @Override
     public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
+    public String getType() {
+        return "Dummy";
     }
 }

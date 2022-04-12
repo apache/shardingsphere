@@ -63,7 +63,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     
     @Override
     public List<String> findRuleAlteredLogicTables(final YamlRuleConfiguration sourceRuleConfig, final YamlRuleConfiguration targetRuleConfig,
-                                                         final Map<String, Map<String, Object>> sourceDataSources, final Map<String, Map<String, Object>> targetDataSources) {
+                                                   final Map<String, Map<String, Object>> sourceDataSources, final Map<String, Map<String, Object>> targetDataSources) {
         if ((null == sourceRuleConfig) ^ (null == targetRuleConfig)) {
             YamlRuleConfiguration ruleConfig = null != sourceRuleConfig ? sourceRuleConfig : targetRuleConfig;
             return extractAllLogicTables((YamlShardingRuleConfiguration) ruleConfig);
@@ -111,7 +111,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         List<String> result = new ArrayList<>();
         for (Entry<String, TableRule> entry : sourceShardingRule.getTableRules().entrySet()) {
             TableRule targetTableRule = targetShardingRule.getTableRule(entry.getKey());
-            if (doesLogicTableNeedReSharding(entry.getValue(), targetTableRule)) {
+            if (isNeedReShardingForLogicTable(entry.getValue(), targetTableRule)) {
                 result.add(entry.getKey());
             }
         }
@@ -119,7 +119,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         return result;
     }
     
-    private boolean doesLogicTableNeedReSharding(final TableRule sourceTableRule, final TableRule targetTableRule) {
+    private boolean isNeedReShardingForLogicTable(final TableRule sourceTableRule, final TableRule targetTableRule) {
         List<DataNode> sourceActualDataNodes = sourceTableRule.getActualDataNodes();
         List<DataNode> targetActualDataNodes = targetTableRule.getActualDataNodes();
         if (sourceActualDataNodes.size() == targetActualDataNodes.size() && sourceActualDataNodes.equals(targetActualDataNodes)) {

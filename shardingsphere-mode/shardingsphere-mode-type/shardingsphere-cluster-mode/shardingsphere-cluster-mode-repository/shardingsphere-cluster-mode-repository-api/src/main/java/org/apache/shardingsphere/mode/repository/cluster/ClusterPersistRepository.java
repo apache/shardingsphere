@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -80,7 +80,7 @@ public interface ClusterPersistRepository extends PersistRepository {
     /**
      * Watch session connection.
      *
-     * @param instanceDefinition instance definition
+     * @param instanceContext instance context
      */
-    void watchSessionConnection(InstanceDefinition instanceDefinition);
+    void watchSessionConnection(InstanceContext instanceContext);
 }

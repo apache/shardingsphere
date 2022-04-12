@@ -19,6 +19,7 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * ShardingSphere service loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SingletonSPI
 public final class ShardingSphereServiceLoader {
     
     private static final Map<Class<?>, Collection<Object>> SERVICES = new ConcurrentHashMap<>();
@@ -54,6 +56,17 @@ public final class ShardingSphereServiceLoader {
             result.add(each);
         }
         return result;
+    }
+    
+    /**
+     * Get service instances.
+     * 
+     * @param serviceClass service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    public static <T> Collection<T> getServiceInstances(final Class<T> serviceClass) {
+        return null == ShardingSphereServiceLoader.class.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceClass) : getSingletonServiceInstances(serviceClass);
     }
     
     /**
@@ -93,8 +106,8 @@ public final class ShardingSphereServiceLoader {
     
     private static Object newServiceInstance(final Class<?> clazz) {
         try {
-            return clazz.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new ServiceLoaderInstantiationException(clazz, ex);
         }
     }

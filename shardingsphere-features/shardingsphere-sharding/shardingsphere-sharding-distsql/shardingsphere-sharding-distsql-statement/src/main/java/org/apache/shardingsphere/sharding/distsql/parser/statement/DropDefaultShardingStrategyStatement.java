@@ -20,13 +20,14 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 
 /**
  * Drop default sharding strategy statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropDefaultShardingStrategyStatement extends DropRuleStatement {
+public final class DropDefaultShardingStrategyStatement extends DropRuleStatement implements ShardingSubjectSupplier {
     
     private final String defaultType;
     

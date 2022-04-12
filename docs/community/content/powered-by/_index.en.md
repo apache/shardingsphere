@@ -206,7 +206,7 @@ Total: 175 companies.
     <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>
 </ul>
 
-### Communication
+### ICT (Information and Communications Technology)
 <ul>
     <li><a href="https://www.iflytek.com/" rel="nofollow">Iflytek</a></li>
     <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a></li>
@@ -214,7 +214,7 @@ Total: 175 companies.
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 
-### Internet of Things - IoT
+### IoT (Internet of Things)
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">Hikvision</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>

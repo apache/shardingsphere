@@ -32,7 +32,8 @@ public final class SpringBootStarterJpaExampleScenario implements FrameworkExamp
     
     @Override
     public Map<String, String> getJavaClassTemplateMap() {
-        Map<String, String> result = new HashMap<>(3, 1);
+        Map<String, String> result = new HashMap<>(4, 1);
+        result.put("java/main/SpringBootStarJpaExampleMain.ftl", "ExampleMain.java");
         result.put("java/repository/jpa/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
         result.put("java/repository/jpa/OrderRepository.ftl", "repository/OrderRepository.java");
         result.put("java/repository/jpa/AddressRepository.ftl", "repository/AddressRepository.java");

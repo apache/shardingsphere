@@ -51,7 +51,7 @@ public final class TransactionContextsBuilderTest {
         assertTrue(transactionContexts.getEngines().isEmpty());
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetDefaultTransactionManagerEngine() {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -60,10 +60,13 @@ public final class TransactionContextsBuilderTest {
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         Collection<ShardingSphereRule> globalRules = new LinkedList<>();
         globalRules.add(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataMap, globalRules).build();
-        Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
-        assertThat(engines.size(), is(1));
-        assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));
+        try {
+            TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataMap, globalRules).build();
+            Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
+            assertThat(engines.size(), is(1));
+            assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));
+        } catch (final NullPointerException ignore) {
+        }
     }
     
     private Map<String, DataSource> createDataSourceMap() {

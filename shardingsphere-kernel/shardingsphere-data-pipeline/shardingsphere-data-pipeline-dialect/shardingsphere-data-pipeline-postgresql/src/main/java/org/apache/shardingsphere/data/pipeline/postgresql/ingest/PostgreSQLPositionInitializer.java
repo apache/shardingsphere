@@ -36,6 +36,7 @@ import java.sql.SQLException;
 @Slf4j
 public final class PostgreSQLPositionInitializer implements PositionInitializer {
     
+    // TODO it should be private; _PREFIX;
     public static final String SLOT_NAME = "sharding_scaling";
     
     public static final String DECODE_PLUGIN = "test_decoding";

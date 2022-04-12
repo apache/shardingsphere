@@ -83,10 +83,22 @@ public enum SQLVisitorRule {
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
+
+    DROP_ROUTINE("DropRoutine", SQLStatementType.DDL),
+
+    DROP_RULE("DropRule", SQLStatementType.DDL),
+
+    DROP_STATISTICS("DropStatistics", SQLStatementType.DDL),
+
+    DROP_PUBLICATION("DropPublication", SQLStatementType.DDL),
+
+    DROP_SUBSCRIPTION("DropSubscription", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
+
+    DROP_CAST("DropCast", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
@@ -107,6 +119,8 @@ public enum SQLVisitorRule {
     ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
     
     DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
+
+    DROP_DIRECTORY("DropDirectory", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
     
@@ -446,7 +460,17 @@ public enum SQLVisitorRule {
     
     DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
 
-    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL);
+    DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL),
+    
+    DROP_COLLATION("DropCollation", SQLStatementType.DDL),
+    
+    DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
+    
+    DROP_TYPE("DropType", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL);
     
     private final String name;
     

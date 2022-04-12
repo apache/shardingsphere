@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -74,10 +74,10 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
                 shardingAlgorithmMap.put(each, config);
             });
             ShardingSphereServiceLoader.register(algorithmClass);
-            shardingAlgorithmMap.forEach((key, algorithmConfiguration) -> {
-                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfiguration.getType(), algorithmConfiguration.getProps());
+            shardingAlgorithmMap.forEach((key, algorithmConfig) -> {
+                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfig.getType(), algorithmConfig.getProps());
                 BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
-                builder.addPropertyValue(PROPS, algorithmConfiguration.getProps());
+                builder.addPropertyValue(PROPS, algorithmConfig.getProps());
                 registry.registerBeanDefinition(key, builder.getBeanDefinition());
             });
         }

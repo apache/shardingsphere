@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.spi;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 /**
  * Database protocol frontend engine.
  */
-public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
+public interface DatabaseProtocolFrontendEngine extends StatefulTypedSPI {
     
     /**
      * Set database version.

@@ -41,11 +41,13 @@ public final class CuratorZookeeperExceptionHandler {
      */
     public static void handleException(final Exception cause) {
         if (null == cause) {
+            log.info("cause is null");
             return;
         }
         if (isIgnoredException(cause) || null != cause.getCause() && isIgnoredException(cause.getCause())) {
             log.debug("Ignored exception for: {}", cause.getMessage());
         } else if (cause instanceof InterruptedException) {
+            log.info("InterruptedException caught");
             Thread.currentThread().interrupt();
         } else {
             throw new ClusterPersistRepositoryException(cause);

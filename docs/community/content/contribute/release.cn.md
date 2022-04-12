@@ -319,6 +319,12 @@ Your decision? 5
 
 然后进行 gpg 签名检查。
 
+Bash 可以使用以下命令检查签名：
+```bash
+for each in $(ls *.asc); do gpg --verify $each ${each%.asc}; done
+```
+
+或逐个文件检查：
 ```shell
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz

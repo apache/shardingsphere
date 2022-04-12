@@ -1,0 +1,84 @@
+#
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper-cluster
+  labels:
+    app: zk
+spec:
+  serviceName: zk-hs
+  replicas: 3
+  podManagementPolicy: "Parallel"
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      containers:
+        - name: zookeeper
+          imagePullPolicy: IfNotPresent
+          image: {{.Values.image.repository}}:{{.Values.image.tag}}
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - export ZOO_MY_ID=$(($(hostname | sed s/.*-//) + 1)) && /docker-entrypoint.sh zkServer.sh start-foreground
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: leader
+            - containerPort: 3888
+              name: leader-election
+              protocol: TCP
+   {{- if .Values.storageclass}}
+          volumeMounts:
+            - name: zookeeper-data
+              mountPath: "/data/"
+  {{- end}}
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 30
+            failureThreshold: 30
+            periodSeconds: 10
+          env:
+            - name: ZOO_STANDALONE_ENABLED
+              value: "false"
+            - name: ZOO_SERVERS
+              value: "server.1=zookeeper-cluster-0.zk-hs.{{.Release.Namespace}}.svc.cluster.local:2888:3888;2181 server.2=zookeeper-cluster-1.zk-hs.{{.Release.Namespace}}.svc.cluster.local:2888:3888;2181 server.3=zookeeper-cluster-2.zk-hs.{{.Release.Namespace}}.svc.cluster.local:2888:3888;2181"
+  {{- if .Values.storageclass}}
+  volumeClaimTemplates:
+    - metadata:
+        name: zookeeper-data
+      spec:
+        storageClassName: {{.Values.storageclass}}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.storagerequest}}
+  {{- end}}

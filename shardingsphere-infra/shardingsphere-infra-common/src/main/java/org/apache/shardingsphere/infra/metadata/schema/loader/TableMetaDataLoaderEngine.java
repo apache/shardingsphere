@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,9 +44,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class TableMetaDataLoaderEngine {
     
-    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
-    
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
     
@@ -59,7 +56,7 @@ public final class TableMetaDataLoaderEngine {
      * @throws SQLException SQL exception
      */
     public static Collection<TableMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
-        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(databaseType);
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
@@ -98,9 +95,5 @@ public final class TableMetaDataLoaderEngine {
             throw new ShardingSphereException(ex);
         }
         return result;
-    }
-
-    private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final DatabaseType databaseType) {
-        return Optional.ofNullable(DIALECT_METADATA_LOADER_MAP.get(databaseType.getName()));
     }
 }
