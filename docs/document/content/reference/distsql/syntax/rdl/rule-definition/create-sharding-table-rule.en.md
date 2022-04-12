@@ -140,4 +140,4 @@ CREATE SHARDING TABLE RULE t_order (
 
 ### Related links
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [CREATE ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-algorithm/)
+- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
