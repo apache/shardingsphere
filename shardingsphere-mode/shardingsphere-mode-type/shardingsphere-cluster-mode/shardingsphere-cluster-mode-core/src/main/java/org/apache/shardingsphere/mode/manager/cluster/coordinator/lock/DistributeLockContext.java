@@ -65,7 +65,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalLock();
+        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalSchemaLocks();
         if (allGlobalLock.isEmpty()) {
             lockRegistryService.initGlobalLockRoot();
             return;
