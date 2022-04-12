@@ -33,6 +33,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -153,5 +156,30 @@ public final class TableRuleTest {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
+    }
+
+    @Test
+    public void assertDatNodeGroups() {
+        LinkedList<String> dataSourceNames = new LinkedList<>();
+        String logicTableName = "table_0";
+        dataSourceNames.add("ds0");
+        dataSourceNames.add("ds1");
+        TableRule actual = new TableRule(dataSourceNames, logicTableName);
+        Map<String, List<DataNode>> dataNodeGroups = actual.getDataNodeGroups();
+        assertThat(dataNodeGroups.size(), is(2));
+        assertTrue(dataNodeGroups.get("ds0").contains(new DataNode("ds0", "table_0")));
+        assertTrue(dataNodeGroups.get("ds1").contains(new DataNode("ds1", "table_0")));
+    }
+
+    @Test
+    public void assertCreateAutoTableRuleWithdataSourceNames() {
+        LinkedList<String> dataSourceNames = new LinkedList<>();
+        String logicTableName = "table_0";
+        dataSourceNames.add("ds0");
+        dataSourceNames.add("ds1");
+        TableRule actual = new TableRule(dataSourceNames, logicTableName);
+        assertThat(actual.getActualDataNodes().size(), is(2));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "table_0")));
     }
 }
