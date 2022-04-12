@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
@@ -37,8 +38,10 @@ import java.util.Properties;
 /**
  * Logical replication for openGauss.
  */
+@Slf4j
 public final class OpenGaussLogicalReplication {
     
+    // TODO it should be private
     public static final String SLOT_NAME_PREFIX = "sharding_scaling";
     
     public static final String DECODE_PLUGIN = "mppdb_decoding";
@@ -90,7 +93,8 @@ public final class OpenGaussLogicalReplication {
      * @throws SQLException SQL exception
      */
     public static void createIfNotExists(final Connection connection) throws SQLException {
-        if (!isSlotNameExist(connection)) {
+        String slotName = getUniqueSlotName(connection);
+        if (!isSlotNameExist(connection, slotName)) {
             createSlotBySQL(connection);
         }
     }
@@ -102,16 +106,21 @@ public final class OpenGaussLogicalReplication {
      * @throws SQLException drop SQL with error
      */
     public static void dropSlot(final Connection connection) throws SQLException {
-        String sql = String.format("select * from pg_drop_replication_slot('%s')", getUniqueSlotName(connection));
+        String slotName = getUniqueSlotName(connection);
+        if (!isSlotNameExist(connection, slotName)) {
+            log.info("dropSlot, slot not exist, ignore, slotName={}", slotName);
+            return;
+        }
+        String sql = String.format("select * from pg_drop_replication_slot('%s')", slotName);
         try (CallableStatement callableStatement = connection.prepareCall(sql)) {
             callableStatement.execute();
         }
     }
     
-    private static boolean isSlotNameExist(final Connection connection) throws SQLException {
+    private static boolean isSlotNameExist(final Connection connection, final String slotName) throws SQLException {
         String sql = "select * from pg_replication_slots where slot_name=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, getUniqueSlotName(connection));
+            preparedStatement.setString(1, slotName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return resultSet.next();
             }
