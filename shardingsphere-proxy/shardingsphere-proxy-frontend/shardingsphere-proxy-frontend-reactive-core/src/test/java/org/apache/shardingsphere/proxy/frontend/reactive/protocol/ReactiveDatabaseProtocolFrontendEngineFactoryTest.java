@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
 
 import org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture.DummyReactiveDatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -25,11 +26,11 @@ import static org.junit.Assert.assertTrue;
 public final class ReactiveDatabaseProtocolFrontendEngineFactoryTest {
     
     @Test
-    public void assertNewInstanceWithExistType() {
+    public void assertNewInstance() {
         assertTrue(ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Dummy") instanceof DummyReactiveDatabaseProtocolFrontendEngine);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = ServiceProviderNotFoundException.class)
     public void assertNewInstanceWithUnknownType() {
         ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Unknown");
     }

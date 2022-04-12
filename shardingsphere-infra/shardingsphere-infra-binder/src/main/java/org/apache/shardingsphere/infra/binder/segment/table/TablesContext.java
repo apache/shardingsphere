@@ -297,4 +297,13 @@ public final class TablesContext {
         Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database.");
         return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
+    }
 }

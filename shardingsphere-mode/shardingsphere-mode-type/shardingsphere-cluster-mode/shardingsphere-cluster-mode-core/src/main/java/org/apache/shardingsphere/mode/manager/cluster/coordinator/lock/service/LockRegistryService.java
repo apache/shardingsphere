@@ -17,35 +17,82 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Lock registry service.
+ * Global lock registry service.
  */
 public final class LockRegistryService {
-    
-    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
-    
-    private final String instanceId;
     
     private final ClusterPersistRepository repository;
     
     public LockRegistryService(final ClusterPersistRepository repository) {
-        // TODO will be removed
-        instanceId = "";
         this.repository = repository;
-        initLockNode();
     }
     
-    private void initLockNode() {
+    /**
+     * Init global lock root patch.
+     */
+    public void initGlobalLockRoot() {
         repository.persist(LockNode.getLockRootNodePath(), "");
-        repository.persist(LockNode.getLockedAckRootNodePah(), "");
+        repository.persist(LockNode.getGlobalLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalAckNodePath(), "");
+    }
+    
+    /**
+     * Get all global locks.
+     *
+     * @return all global locks
+     */
+    public Collection<String> getAllGlobalLock() {
+        return repository.getChildrenKeys(LockNode.getGlobalLocksNodePath());
+    }
+    
+    /**
+     * Try to get lock.
+     *
+     * @param lockName lock name
+     * @return true if get the lock, false if not
+     */
+    public boolean tryGlobalLock(final String lockName) {
+        try {
+            repository.persistEphemeral(lockName, LockState.LOCKED.name());
+            return true;
+        } catch (final ClusterPersistRepositoryException ignored) {
+            return false;
+        }
+    }
+    
+    /**
+     * Release lock.
+     *
+     * @param lockName lock name
+     */
+    public void releaseGlobalLock(final String lockName) {
+        repository.delete(lockName);
+    }
+    
+    /**
+     * Ack lock.
+     *
+     * @param lockName lock name
+     * @param lockValue lock value
+     */
+    public void ackLock(final String lockName, final String lockValue) {
+        repository.persistEphemeral(lockName, lockValue);
+    }
+    
+    /**
+     * Release ack lock.
+     *
+     * @param lockName lock name
+     */
+    public void releaseAckLock(final String lockName) {
+        repository.delete(lockName);
     }
     
     /**
@@ -61,80 +108,10 @@ public final class LockRegistryService {
     
     /**
      * Release lock.
-     * 
+     *
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
         repository.releaseLock(LockNode.getLockNodePath(lockName));
-    }
-    
-    /**
-     * Ack lock.
-     * 
-     * @param lockName lock name
-     */
-    public void ackLock(final String lockName) {
-        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.name());
-    }
-    
-    /**
-     * Ack unlock.
-     * 
-     * @param lockName lock name
-     */
-    public void ackUnlock(final String lockName) {
-        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.name());
-    }
-    
-    /**
-     * Delete lock ack.
-     * 
-     * @param lockName lock name
-     */
-    public void deleteLockAck(final String lockName) {
-        repository.delete(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)));
-    }
-    
-    /**
-     * Check lock ack.
-     * 
-     * @param lockName lock name
-     * @param timeoutMilliseconds the maximum time in milliseconds to ack
-     * @return true if all instances ack lock, false if not
-     */
-    public boolean checkLockAck(final String lockName, final long timeoutMilliseconds) {
-        boolean result = checkAck(lockName, LockAck.LOCKED.name(), timeoutMilliseconds);
-        if (!result) {
-            releaseLock(lockName);
-        }
-        return result;
-    }
-    
-    private boolean checkAck(final String lockName, final String ackValue, final long timeoutMilliseconds) {
-        // TODO will be removed
-        Collection<String> onlineInstanceIds = new ArrayList<>();
-        long checkMilliseconds = timeoutMilliseconds;
-        while (checkMilliseconds > 0) {
-            long start = System.currentTimeMillis();
-            if (check(onlineInstanceIds, lockName, ackValue)) {
-                return true;
-            }
-            try {
-                Thread.sleep(CHECK_ACK_INTERVAL_SECONDS * 1000L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException ex) {
-                // CHECKSTYLE:ON
-            }
-            checkMilliseconds -= System.currentTimeMillis() - start;
-        }
-        return false;
-    }
-    
-    private boolean check(final Collection<String> instanceIds, final String lockName, final String ackValue) {
-        return instanceIds.stream().allMatch(each -> ackValue.equalsIgnoreCase(loadLockAck(each, lockName)));
-    }
-    
-    private String loadLockAck(final String instanceId, final String lockName) {
-        return Strings.nullToEmpty(repository.get(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
     }
 }

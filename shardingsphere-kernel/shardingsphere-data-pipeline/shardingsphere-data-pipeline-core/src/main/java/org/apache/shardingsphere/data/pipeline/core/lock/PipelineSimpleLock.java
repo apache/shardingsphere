@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
@@ -30,6 +31,7 @@ import java.util.Optional;
 /**
  * Pipeline simple lock.
  */
+@Slf4j
 // TODO extract interface and factory
 public final class PipelineSimpleLock {
     
@@ -76,6 +78,7 @@ public final class PipelineSimpleLock {
         if (result) {
             lockNameLockedMap.put(lockName, true);
         }
+        log.info("tryLock, lockName={}, timeoutMills={}, result={}", lockName, timeoutMills, result);
         return result;
     }
     
@@ -85,6 +88,7 @@ public final class PipelineSimpleLock {
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
+        log.info("releaseLock, lockName={}", lockName);
         if (lockNameLockedMap.getOrDefault(lockName, false)) {
             lockNameLockedMap.remove(lockName);
             lockRegistryService.releaseLock(decorateLockName(lockName));

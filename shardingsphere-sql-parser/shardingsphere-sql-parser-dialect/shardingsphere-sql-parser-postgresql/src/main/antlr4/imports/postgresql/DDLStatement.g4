@@ -155,7 +155,7 @@ alterTable
     ;
 
 alterIndex
-    : ALTER INDEX (existClause? | ALL IN TABLESPACE) indexName alterIndexDefinitionClause
+    : ALTER INDEX (existClause? | ALL IN TABLESPACE) qualifiedName alterIndexDefinitionClause
     ;
 
 dropTable
@@ -167,7 +167,7 @@ dropTableOpt
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause existClause? indexNames dropIndexOpt?
+    : DROP INDEX concurrentlyClause existClause? qualifiedNameList dropIndexOpt?
     ;
 
 dropIndexOpt
@@ -1724,7 +1724,7 @@ dropServer
     ;
 
 dropStatistics
-    : DROP STATISTICS existClause? qualifiedNameList
+    : DROP STATISTICS existClause? qualifiedNameList dropBehavior?
     ;
 
 dropSubscription

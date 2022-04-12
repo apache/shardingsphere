@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ReadwriteSplittingSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
  * Show readwrite splitting rules statement.
  */
-public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
+public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement implements ReadwriteSplittingSubjectSupplier {
     
     public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
         super(schema);

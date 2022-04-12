@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     
-    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
+    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
     
     static {
         ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);

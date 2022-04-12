@@ -20,18 +20,21 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Lock node.
+ * Global lock node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockNode {
     
-    private static final String LOCK_NODE_ROOT = "lock";
+    private static final String LOCK_ROOT = "lock";
+    
+    private static final String LOCK_SCOPE = "global";
     
     private static final String LOCKS_NODE = "locks";
     
@@ -39,51 +42,96 @@ public final class LockNode {
     
     /**
      * Get lock root node path.
-     * 
+     *
      * @return lock root node path
      */
     public static String getLockRootNodePath() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE);
+        return Joiner.on("/").join("", LOCK_ROOT, LOCKS_NODE);
     }
     
     /**
      * Get lock node path.
-     * 
+     *
      * @param lockName lock name
      * @return lock node path
      */
     public static String getLockNodePath(final String lockName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE, lockName);
+        return Joiner.on("/").join("", LOCK_ROOT, LOCKS_NODE, lockName);
     }
     
     /**
-     * Get locked ack root node path.
-     * 
-     * @return locked ack root node path
+     * Get locks node path.
+     *
+     * @return locks node path
      */
-    public static String getLockedAckRootNodePah() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE);
+    public static String getGlobalLocksNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE, LOCKS_NODE);
     }
     
     /**
-     * Get locked ack node path.
-     * 
-     * @param ackLockName ack lock name
-     * @return locked ack node path
+     * Get ack node path.
+     *
+     * @return ack node path
      */
-    public static String getLockedAckNodePath(final String ackLockName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE, ackLockName);
+    public static String getGlobalAckNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE, LOCKED_ACK_NODE);
+    }
+    
+    /**
+     * Generate schema lock name.
+     *
+     * @param schema schema
+     * @param instanceId instance id
+     * @return schema lock name
+     */
+    public static String generateSchemaLockName(final String schema, final String instanceId) {
+        return getGlobalLocksNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, instanceId);
+    }
+    
+    /**
+     * Generate schema ack lock name.
+     *
+     * @param schema schema
+     * @param lockedInstanceId locked instance id
+     * @return schema ack lock name
+     */
+    public static String generateSchemaAckLockName(final String schema, final String lockedInstanceId) {
+        return getGlobalAckNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, lockedInstanceId);
     }
     
     /**
      * Get lock name by lock node path.
-     * 
+     *
      * @param lockNodePath lock node path
      * @return lock name
      */
     public static Optional<String> getLockName(final String lockNodePath) {
         Pattern pattern = Pattern.compile(getLockRootNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(lockNodePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get locked key name by locks node path.
+     *
+     * @param locksNodePath locks node path
+     * @return schema name
+     */
+    public static Optional<String> getLockedName(final String locksNodePath) {
+        Pattern pattern = Pattern.compile(getGlobalLocksNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(locksNodePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get ack locked key name by ack node path.
+     *
+     * @param ackNodePath ack node path
+     * @return locked instance id
+     */
+    public static Optional<String> getAckLockedName(final String ackNodePath) {
+        Pattern pattern = Pattern.compile(getGlobalAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(ackNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

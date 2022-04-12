@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -89,9 +88,6 @@ public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosi
                 }
                 AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
                 Record record = walEventConverter.convert(event);
-                if (!(event instanceof PlaceholderEvent) && log.isDebugEnabled()) {
-                    log.debug("dump, event={}, record={}", event, record);
-                }
                 pushRecord(record);
             }
         } catch (final SQLException ex) {

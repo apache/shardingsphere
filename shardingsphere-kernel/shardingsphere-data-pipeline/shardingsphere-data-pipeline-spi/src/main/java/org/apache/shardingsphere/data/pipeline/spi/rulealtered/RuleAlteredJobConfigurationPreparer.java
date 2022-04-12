@@ -22,13 +22,12 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineCo
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
  * Rule altered job configuration preparer.
  */
-public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI, SingletonSPI {
+public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     
     /**
      * Create handle configuration, used to build job configuration.

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+// TODO rename
 public final class ScalingReleaseSchemaNameLockEvent {
     private final String schemaName;
 }

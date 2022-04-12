@@ -19,14 +19,14 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Properties;
 
 /**
  * Transaction configuration file generator.
  */
-public interface TransactionConfigurationFileGenerator extends TypedSPI {
+public interface TransactionConfigurationFileGenerator extends StatelessTypedSPI {
     
     /**
      * Generate transaction configuration file.

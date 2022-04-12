@@ -112,6 +112,10 @@ viewName
     : (owner DOT_)? name
     ;
 
+triggerName
+    : (owner DOT_)? name
+    ;
+
 materializedViewName
     : (owner DOT_)? name
     ;
@@ -161,6 +165,10 @@ operatorName
     ;
 
 dimensionName
+    : (owner DOT_)? name
+    ;
+
+directoryName
     : (owner DOT_)? name
     ;
 

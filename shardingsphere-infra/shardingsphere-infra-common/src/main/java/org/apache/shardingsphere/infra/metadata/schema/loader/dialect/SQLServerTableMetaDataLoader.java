@@ -129,7 +129,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "SQLServer";
     }
 }

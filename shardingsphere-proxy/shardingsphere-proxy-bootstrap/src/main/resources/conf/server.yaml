@@ -81,3 +81,4 @@
 #  sql-federation-enabled: false
 #    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
 #  proxy-backend-driver-type: JDBC
+#  data-source-aggregation-enabled: false

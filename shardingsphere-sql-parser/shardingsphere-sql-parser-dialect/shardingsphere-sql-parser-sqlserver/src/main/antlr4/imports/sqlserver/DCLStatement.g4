@@ -334,7 +334,7 @@ ignoredNameIdentifier
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER (IF EXISTS)? userName
     ;
 
 alterUser
@@ -433,9 +433,27 @@ createLoginForAnalyticsPlatformSystemOptionListClause
     ;
 
 dropLogin
-    : DROP LOGIN
+    : DROP LOGIN ignoredNameIdentifier
     ;
 
 alterLogin
-    : ALTER LOGIN
+    : ALTER LOGIN ignoredNameIdentifier (statusOptionClause | WITH setOptionClause (COMMA_ setOptionClause)* | cryptographicCredentialsOptionClause)
+    ;
+
+statusOptionClause
+    : ENABLE | DISABLE
+    ;
+
+setOptionClause
+    : PASSWORD EQ_ (stringLiterals | hashedPassword HASHED) (OLD_PASSWORD EQ_ stringLiterals | passwordOptionClause passwordOptionClause?)?
+    | DEFAULT_DATABASE EQ_ databaseName | DEFAULT_LANGUAGE EQ_ identifier | NAME EQ_ ignoredNameIdentifier | CHECK_POLICY EQ_ (ON | OFF)
+    | CHECK_EXPIRATION EQ_ (ON | OFF) | CREDENTIAL EQ_ identifier | NO CREDENTIAL
+    ;
+
+passwordOptionClause
+    : MUST_CHANGE | UNLOCK
+    ;
+
+cryptographicCredentialsOptionClause
+    : ADD CREDENTIAL identifier | DROP CREDENTIAL identifier
     ;

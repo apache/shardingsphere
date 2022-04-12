@@ -35,7 +35,7 @@ public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
     private static volatile Constructor<?> xaConnectionConstructor;
     
-    private volatile boolean initialized;
+    private static volatile boolean initialized;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {

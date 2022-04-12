@@ -62,9 +62,7 @@ public final class UnusedShardingKeyGeneratorsQueryResultSetTest {
     }
     
     private ShardingSphereAlgorithmConfiguration createSnowflakeKeyGeneratorConfiguration() {
-        Properties props = new Properties();
-        props.put("work-id", 123);
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

@@ -28,12 +28,12 @@ import java.util.Collections;
 public final class OpenGaussXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "openGauss";
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("org.opengauss.xa.PGXADataSource");
     }
     
     @Override
-    public Collection<String> getXADriverClassName() {
-        return Collections.singletonList("org.opengauss.xa.PGXADataSource");
+    public String getType() {
+        return "openGauss";
     }
 }

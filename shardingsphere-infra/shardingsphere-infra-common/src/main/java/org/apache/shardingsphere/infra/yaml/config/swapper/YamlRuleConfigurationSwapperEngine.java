@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -84,7 +84,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Class<?>> getYamlShortcuts() {
-        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
+        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
         Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1);
         for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());

@@ -38,9 +38,17 @@ alterIndex
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
+    ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
+    ;
+
+dropView
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
 truncateTable
@@ -2067,6 +2075,10 @@ alterDimensionDropClause
 
 dropDimension
     : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
     ;
 
 createFunction
