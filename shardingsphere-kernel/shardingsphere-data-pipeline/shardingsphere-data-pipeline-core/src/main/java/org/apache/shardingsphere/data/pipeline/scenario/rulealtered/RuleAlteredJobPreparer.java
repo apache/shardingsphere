@@ -99,7 +99,7 @@ public final class RuleAlteredJobPreparer {
         }
         // TODO the lock will be replaced 
         ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext()
-                .getOrCreateSchemaLock("");
+                .getOrCreateSchemaLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
         boolean skipPrepare = !lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100);
         if (skipPrepare) {
             int loopCount = 0;
