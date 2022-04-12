@@ -27,16 +27,17 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
-import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -76,9 +78,10 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
-        prepareTarget(jobContext.getJobConfig(), dataSourceManager);
-        initAndCheckDataSource(jobContext);
+        // TODO Initialize source and target data source after tasks initialization, since dumper and importer constructor might call appendJDBCQueryProperties.
+        //  But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
+        checkSourceDataSource(jobContext);
+        prepareAndCheckTargetWithLock(jobContext);
         try {
             initIncrementalTasks(jobContext);
             initInventoryTasks(jobContext);
@@ -90,61 +93,55 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
+    private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
+        JobConfiguration jobConfig = jobContext.getJobConfig();
+        // TODO the lock will be replaced
+        String lockName = "prepare-" + jobConfig.getHandleConfig().getJobId();
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getOrCreateSchemaLock(lockName);
+        if (lock.tryLock(lockName, 1)) {
+            try {
+                prepareAndCheckTarget(jobContext);
+            } finally {
+                lock.releaseLock(lockName);
+            }
+        } else {
+            waitUntilLockReleased(lock, lockName);
+        }
+    }
+    
+    private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
+        for (int loopCount = 0; loopCount < 30; loopCount++) {
+            ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
+            if (!lock.isLocked(lockName)) {
+                log.info("unlocked, lockName={}", lockName);
+                return;
+            }
+        }
+    }
+    
+    private void prepareAndCheckTarget(final RuleAlteredJobContext jobContext) {
+        prepareTarget(jobContext.getJobConfig(), jobContext.getDataSourceManager());
+        JobProgress initProgress = jobContext.getInitProgress();
+        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
+            PipelineDataSourceWrapper targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+            checkTargetDataSource(jobContext, targetDataSource);
+        }
+    }
+    
     private void prepareTarget(final JobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
         if (null == dataSourcePreparer) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        final PipelineSimpleLock lock = PipelineSimpleLock.getInstance();
-        // TODO make sure only the first thread execute prepare
-        boolean skipPrepare = !lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100);
-        if (skipPrepare) {
-            int loopCount = 0;
-            int maxLoopCount = 30;
-            while (loopCount < maxLoopCount) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
-                }
-                // TODO just return ,because the first thread finish prepared
-                if (lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100)) {
-                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
-                    return;
-                }
-                loopCount++;
-            }
-        }
-        try {
-            JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
-            PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes,
-                    jobConfig.getPipelineConfig(), dataSourceManager);
-            dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
-        } finally {
-            lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
-        }
+        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
+        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
     }
     
-    private String getPrepareLockName(final String jobId) {
-        return "prepare-" + jobId;
-    }
-    
-    private void initAndCheckDataSource(final RuleAlteredJobContext jobContext) {
-        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
-        TaskConfiguration taskConfig = jobContext.getTaskConfig();
-        PipelineDataSourceWrapper sourceDataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
-        PipelineDataSourceWrapper targetDataSource = dataSourceManager.getDataSource(taskConfig.getImporterConfig().getDataSourceConfig());
-        checkSourceDataSource(jobContext, sourceDataSource);
-        JobProgress initProgress = jobContext.getInitProgress();
-        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
-            checkTargetDataSource(jobContext, targetDataSource);
-        }
-    }
-    
-    private void checkSourceDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper sourceDataSource) {
+    private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
         DataSourceChecker dataSourceChecker = TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
-        Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(sourceDataSource);
+        Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
         dataSourceChecker.checkVariable(sourceDataSources);

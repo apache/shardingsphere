@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.junit.Test;
 
-/**
- * Oracle comment statement.
- */
-@Getter
-@Setter
-@ToString
-public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
 
-    private IndextypeSegment indextype;
+public final class RuleAlteredDetectorFactoryTest {
+    
+    @Test
+    public void assertNewInstanceWithRuleConfiguration() {
+        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
+    }
+    
+    @Test
+    public void assertNewInstanceWithYamlRuleConfiguration() {
+        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
+    }
 }

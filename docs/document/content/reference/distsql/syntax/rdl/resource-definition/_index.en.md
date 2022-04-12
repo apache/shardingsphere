@@ -1,6 +1,6 @@
 +++
 title = "Resource Definition"
-weight = 2
+weight = 1
 chapter = true
 +++
 

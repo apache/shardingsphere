@@ -114,6 +114,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.NameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -175,7 +177,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -748,6 +752,38 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
+        if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
+            return commentOnTable(ctx);
+        } else if (null != ctx.commentClauses().COLUMN()) {
+            return commentOnColumn(ctx);
+        }
         return new OpenGaussCommentStatement();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private OpenGaussCommentStatement commentOnColumn(final CommentContext ctx) {
+        OpenGaussCommentStatement result = new OpenGaussCommentStatement();
+        Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        columnName.ifPresent(name -> result.setColumn(new ColumnSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        setTableSegment(result, nameSegmentIterator);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private OpenGaussCommentStatement commentOnTable(final CommentContext ctx) {
+        OpenGaussCommentStatement result = new OpenGaussCommentStatement();
+        Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        setTableSegment(result, nameSegmentIterator);
+        return result;
+    }
+    
+    private void setTableSegment(final OpenGaussCommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
+        Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        tableName.ifPresent(name -> statement.setTable(new SimpleTableSegment(new TableNameSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
+        Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        schemaName.ifPresent(name -> statement.getTable().setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        databaseName.ifPresent(name -> statement.getTable().getOwner().ifPresent(owner -> owner.setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
     }
 }
