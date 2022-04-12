@@ -53,7 +53,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void watchGovernanceRepositoryConfiguration() {
-        RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+        RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             Optional<JobConfigurationPOJO> jobConfigPOJOOptional = getJobConfigPOJO(event);
             if (!jobConfigPOJOOptional.isPresent()) {
