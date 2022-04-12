@@ -32,7 +32,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public class OpenGaussAlterViewStatement extends AlterViewStatement implements OpenGaussStatement {
+public final class OpenGaussAlterViewStatement extends AlterViewStatement implements OpenGaussStatement {
     
     private SimpleTableSegment renameView;
     

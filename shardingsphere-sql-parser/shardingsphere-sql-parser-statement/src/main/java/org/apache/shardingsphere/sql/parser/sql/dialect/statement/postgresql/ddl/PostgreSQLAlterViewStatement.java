@@ -32,7 +32,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public class PostgreSQLAlterViewStatement extends AlterViewStatement implements PostgreSQLStatement {
+public final class PostgreSQLAlterViewStatement extends AlterViewStatement implements PostgreSQLStatement {
     
     private SimpleTableSegment renameView;
     
