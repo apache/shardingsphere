@@ -57,8 +57,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class RuleAlteredJobPreparer {
     
-    private static final String PREPARE_LOCK_KEY = "prepare-";
-    
     static {
         ShardingSphereServiceLoader.register(DataSourceChecker.class);
     }
@@ -93,19 +91,22 @@ public final class RuleAlteredJobPreparer {
         }
         final PipelineSimpleLock lock = PipelineSimpleLock.getInstance();
         // TODO make sure only the first thread execute prepare
-        boolean skipPrepare = !lock.tryLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId(), 100);
+        boolean skipPrepare = !lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100);
         if (skipPrepare) {
-            while (true) {
+            int loopCount = 0;
+            int maxLoopCount = 30;
+            while (loopCount < maxLoopCount) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
-                    lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
+                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
                 }
                 // TODO just return ,because the first thread finish prepared
-                if (lock.tryLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId(), 100)) {
-                    lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
+                if (lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100)) {
+                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
                     return;
                 }
+                loopCount++;
             }
         }
         try {
@@ -114,8 +115,12 @@ public final class RuleAlteredJobPreparer {
                     jobConfig.getPipelineConfig(), dataSourceManager);
             dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
         } finally {
-            lock.releaseLock(PREPARE_LOCK_KEY + jobConfig.getHandleConfig().getJobId());
+            lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
         }
+    }
+    
+    private String getPrepareLockName(final String jobId) {
+        return "prepare-" + jobId;
     }
     
     private void initAndCheckDataSource(final RuleAlteredJobContext jobContext) {
