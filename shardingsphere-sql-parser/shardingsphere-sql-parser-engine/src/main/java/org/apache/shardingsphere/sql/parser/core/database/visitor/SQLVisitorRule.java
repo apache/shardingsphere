@@ -91,6 +91,8 @@ public enum SQLVisitorRule {
     DROP_STATISTICS("DropStatistics", SQLStatementType.DDL),
 
     DROP_PUBLICATION("DropPublication", SQLStatementType.DDL),
+
+    DROP_SUBSCRIPTION("DropSubscription", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
