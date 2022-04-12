@@ -104,7 +104,6 @@ CREATE DEFAULT SHARDING DATABASE STRATEGY (
     TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
-
 -- create a default sharding table strategy
 CREATE DEFAULT SHARDING TABLE STRATEGY (
     TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
