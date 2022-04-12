@@ -1196,10 +1196,10 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @SuppressWarnings("unchecked")
     public ASTNode visitAnyName(final AnyNameContext ctx) {
         CollectionValue<NameSegment> result = new CollectionValue<>();
-        result.getValue().add(new NameSegment(ctx.colId().getStart().getStartIndex(), ctx.colId().getStop().getStopIndex(), new IdentifierValue(ctx.colId().getText())));
         if (null != ctx.attrs()) {
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
+        result.getValue().add(new NameSegment(ctx.colId().getStart().getStartIndex(), ctx.colId().getStop().getStopIndex(), new IdentifierValue(ctx.colId().getText())));
         return result;
     }
     
@@ -1207,10 +1207,10 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @SuppressWarnings("unchecked")
     public ASTNode visitAttrs(final AttrsContext ctx) {
         CollectionValue<NameSegment> result = new CollectionValue<>();
+        result.getValue().add(new NameSegment(ctx.attrName().getStart().getStartIndex(), ctx.attrName().getStop().getStopIndex(), new IdentifierValue(ctx.attrName().getText())));
         if (null != ctx.attrs()) {
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
-        result.getValue().add(new NameSegment(ctx.attrName().getStart().getStartIndex(), ctx.attrName().getStop().getStopIndex(), new IdentifierValue(ctx.attrName().getText())));
         return result;
     }
 }

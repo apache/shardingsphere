@@ -219,6 +219,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
@@ -887,36 +888,40 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public ASTNode visitComment(final CommentContext ctx) {
-        PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
         if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
-            LinkedList<NameSegment> nameSegments = (LinkedList<NameSegment>) ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue();
-            findTableName(nameSegments).ifPresent(result::setTable);
+            return commentOnTable(ctx);
         } else if (null != ctx.commentClauses().COLUMN()) {
-            LinkedList<NameSegment> nameSegments = (LinkedList<NameSegment>) ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue();
-            nameSegments.pollLast();
-            findTableName(nameSegments).ifPresent(result::setTable);
+            return commentOnColumn(ctx);
         }
+        return new PostgreSQLCommentStatement();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private PostgreSQLCommentStatement commentOnColumn(final CommentContext ctx) {
+        PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
+        Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        columnName.ifPresent(name -> result.setColumn(new ColumnSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        setTableSegment(result, nameSegmentIterator);
         return result;
     }
     
-    private Optional<SimpleTableSegment> findTableName(final LinkedList<NameSegment> nameSegments) {
-        NameSegment tableName = nameSegments.pollLast();
-        if (tableName == null) {
-            return Optional.empty();
-        }
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier()));
-        NameSegment schemaName = nameSegments.pollLast();
-        if (null != schemaName) {
-            OwnerSegment schemaOwner = new OwnerSegment(schemaName.getStartIndex(), schemaName.getStopIndex(), schemaName.getIdentifier());
-            tableSegment.setOwner(schemaOwner);
-            NameSegment databaseName = nameSegments.pollLast();
-            if (null != databaseName) {
-                schemaOwner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
-            }
-        }
-        return Optional.of(tableSegment);
+    @SuppressWarnings("unchecked")
+    private PostgreSQLCommentStatement commentOnTable(final CommentContext ctx) {
+        PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
+        Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        setTableSegment(result, nameSegmentIterator);
+        return result;
+    }
+    
+    private void setTableSegment(final PostgreSQLCommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
+        Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        tableName.ifPresent(name -> statement.setTable(new SimpleTableSegment(new TableNameSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
+        Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        schemaName.ifPresent(name -> statement.getTable().setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
+        databaseName.ifPresent(name -> statement.getTable().getOwner().ifPresent(owner -> owner.setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
     }
     
     @Override
