@@ -5223,8 +5223,6 @@
     <sql-case id="drop_by_postgresql_source_test_case4" value="DROP ACCESS METHOD heap2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case5" value="DROP ACCESS METHOD heap_psql;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case6" value="DROP ACCESS METHOD no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case197" value="DROP ROUTINE IF EXISTS test_ambiguous_procname;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case198" value="DROP ROUTINE cp_testfunc1(int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case212" value="DROP SERVER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case213" value="DROP SERVER IF EXISTS test_server_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case214" value="DROP SERVER nonexistent;" db-types="PostgreSQL"/>
@@ -7992,7 +7990,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case17" value="drop index;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case18" value="drop instance rule nonesuch on noplace;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case59" value="drop table;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case86" value="drop tuple rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_execute_by_postgresql_source_test_case1" value="execute p1;" db-types="PostgreSQL"/>

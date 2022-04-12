@@ -131,6 +131,7 @@ execute
     | dropForeignDataWrapper
     | dropRule
     | dropType
+    | dropRoutine
     | dropStatistics
     | dropPublication
     | dropOperatorClass

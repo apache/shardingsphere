@@ -84,6 +84,8 @@ public enum SQLVisitorRule {
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
 
+    DROP_ROUTINE("DropRoutine", SQLStatementType.DDL),
+
     DROP_RULE("DropRule", SQLStatementType.DDL),
 
     DROP_STATISTICS("DropStatistics", SQLStatementType.DDL),
