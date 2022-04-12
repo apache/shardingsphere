@@ -137,5 +137,6 @@ execute
     | dropOperatorClass
     | dropSubscription
     | dropOperatorFamily
+    | dropAccessMethod
     ) SEMI_?
     ;
