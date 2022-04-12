@@ -761,9 +761,9 @@ public final class ShardingRuleTest {
     private void assertGetDataNodes(Collection<DataNode> dataNodes, String TableNamePrefix) {
         int dataSourceNameSuffix = 0;
         int tableNameSuffix = 0;
-        Iterator<DataNode> subLogicTableDataNodeIterator = dataNodes.iterator();
-        while (subLogicTableDataNodeIterator.hasNext()) {
-            DataNode dataNode = subLogicTableDataNodeIterator.next();
+        Iterator<DataNode> dataNodeIterator = dataNodes.iterator();
+        while (dataNodeIterator.hasNext()) {
+            DataNode dataNode = dataNodeIterator.next();
             assertThat(dataNode.getDataSourceName(), is("ds_" + dataSourceNameSuffix));
             assertThat(dataNode.getTableName(), is(TableNamePrefix + tableNameSuffix));
             if (++tableNameSuffix == (dataNodes.size() / 2)) {
