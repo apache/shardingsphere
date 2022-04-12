@@ -20,22 +20,18 @@ package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Test;
 
-import java.util.Optional;
-
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
 
 public final class RuleAlteredDetectorFactoryTest {
-
+    
     @Test
     public void assertNewInstanceWithRuleConfiguration() {
-        Optional<RuleAlteredDetector> ruleAlteredDetector = RuleAlteredDetectorFactory.newInstance(new RuleConfiguration() {
-        });
-        assertFalse(ruleAlteredDetector.isPresent());
+        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
     }
-
+    
     @Test
     public void assertNewInstanceWithYamlRuleConfiguration() {
-        Optional<RuleAlteredDetector> ruleAlteredDetector = RuleAlteredDetectorFactory.newInstance(() -> null);
-        assertFalse(ruleAlteredDetector.isPresent());
+        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
     }
 }
