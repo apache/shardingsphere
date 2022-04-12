@@ -25,7 +25,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -62,7 +61,6 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
-        ShardingSphereServiceLoader.register(DataSourceNameAware.class);
     }
     
     private final Map<String, DatabaseDiscoveryType> discoveryTypes;
@@ -124,7 +122,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     private void initAware() {
-        DataSourceNameAwareFactory.getInstance().getDataSourceNameAware().ifPresent(optional -> optional.setRule(this));
+        DataSourceNameAwareFactory.newInstance().ifPresent(optional -> optional.setRule(this));
     }
     
     /**

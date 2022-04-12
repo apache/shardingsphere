@@ -56,16 +56,13 @@ public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
     
     @Override
     public String getWriteDataSource() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        if (dataSourceNameAware.isPresent()) {
-            return dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName);
-        }
-        return null;
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
+        return dataSourceNameAware.map(optional -> optional.getPrimaryDataSourceName(autoAwareDataSourceName)).orElse(null);
     }
     
     @Override
     public List<String> getReadDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         if (dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
             return new ArrayList<>(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
         }
@@ -74,7 +71,7 @@ public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
     
     @Override
     public Map<String, String> getDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         Map<String, String> result = new HashMap<>(2, 1);
         if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
             result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
@@ -88,7 +85,7 @@ public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
     public Map<String, Collection<String>> getDataSourceMapper(final String name) {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         if (dataSourceNameAware.isPresent()) {
             actualDataSourceNames.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
             actualDataSourceNames.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
