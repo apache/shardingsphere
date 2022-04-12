@@ -3,11 +3,11 @@ title = "CREATE SHARDING TABLE RULE"
 weight = 1
 +++
 
-## 描述
+## Description
 
 The `CREATE SHARDING TABLE RULE` syntax is used to add sharding table rule for the currently selected schema
 
-### 语法定义
+### Syntax
 
 ```SQL
 CreateShardingTableRule ::=
@@ -20,7 +20,7 @@ autoTableDefinition ::=
     tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )?')'
 
 strategyDefinition ::=
-  'TYPE' '=' strategyType ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition
+  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' ( 'KEY_GENERATOR' '=' algorihtmName | algorithmDefinition ) ')' 
@@ -38,7 +38,7 @@ propretyDefinition ::=
 - use standard sharding table rule
   - `DATANODES` can only use resources that have been added to the current schema, and can only use INLINE expressions to specify required resources    
   - `DATABASE_STRATEGY`, `TABLE_STRATEGY` are the database sharding strategy and the table sharding strategy, which are optional, and the default strategy is used when not configured  
-  - The attribute `TYPE` in `strategyDefinition` is used to specify the type of [sharding algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm), currently only supports `STANDARD`, `COMPLEX`
+  - The attribute `TYPE` in `strategyDefinition` is used to specify the type of [sharding algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm), currently only supports `STANDARD`, `COMPLEX`。Using `COMPLEX` requires specifying multiple sharding columns with `SHARDING_COLUMNS`.
 - use auto sharding table rule
     - `RESOURCES` can only use resources that have been added to the current schema, and the required resources can be specified by enumeration or INLINE expression
     - Only auto sharding algorithm can be used, please refer to [auto sharding algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm)    
