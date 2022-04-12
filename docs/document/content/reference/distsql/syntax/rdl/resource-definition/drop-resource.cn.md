@@ -17,8 +17,7 @@ DropResource ::=
 
 - `DROP RESOURCE` 只会移除 Proxy 中的资源，不会删除与资源对应的真实数据源
 - 无法移除已经被规则使用的资源
-- 移除的资源中包含单表时，需要添加 `IGNORE SINGLE TABLES` 忽略单表移除资源
-- `IF EXISTS` 关键字用于判断移除的资源是否存在，资源存在时才执行移除操作
+- 移除的资源中仅包含单表，且用户确认可以忽略该限制时，可添加 `IGNORE SINGLE TABLES` 关键字移除资源
 
  ### 示例
 - 移除资源
@@ -31,7 +30,7 @@ DROP RESOURCE ds_0;
 DROP RESOURCE ds_1, ds_2;
 ```
 
-- 移除包含单表的资源
+- 忽略单表移除资源
 ```SQL
 DROP RESOURCE ds_3 IGNORE SINGLE TABLES;
 ```

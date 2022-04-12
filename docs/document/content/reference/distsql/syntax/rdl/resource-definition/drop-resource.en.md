@@ -17,9 +17,7 @@ DropResource ::=
 
 - `DROP RESOURCE` will only drop resources in Proxy, the real data source corresponding to the resource will not be dropped
 - Unable to drop resources already used by rules
-- When the dropped resource contains single table, need to add the `IGNORE SINGLE TABLES` keyword to ignore the single table and drop the resource
-- When adding the `IF EXISTS` keyword, the drop operation is performed only if the resource exists
-
+- When there are only single table rule in the removed resources, and the user confirms that the restrictions of the single table rule can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the resources
 ### Example
 - Drop a resource
 ```SQL
@@ -31,7 +29,7 @@ DROP RESOURCE ds_0;
 DROP RESOURCE ds_1, ds_2;
 ```
 
-- Drop a resource containing single tables
+- Ignore single table rule remove resource
 ```SQL
 DROP RESOURCE ds_1 IGNORE SINGLE TABLES;
 ```
