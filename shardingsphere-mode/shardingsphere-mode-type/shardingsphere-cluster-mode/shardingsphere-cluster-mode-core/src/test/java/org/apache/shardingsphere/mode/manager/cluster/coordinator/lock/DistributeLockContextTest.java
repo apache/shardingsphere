@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.junit.Test;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class DistributeLockContextTest {
-    
+
     @Test
     public void assertGetOrCreateSchemaLock() {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
@@ -52,7 +53,7 @@ public final class DistributeLockContextTest {
         ShardingSphereLock schemaLock = distributeLockContext.getOrCreateSchemaLock("schema");
         assertNotNull(schemaLock);
     }
-    
+
     @Test
     public void assertGetSchemaLock() {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
@@ -64,7 +65,7 @@ public final class DistributeLockContextTest {
         assertTrue(schemaLock.isPresent());
         assertTrue(schemaLock.get() instanceof ShardingSphereDistributeGlobalLock);
     }
-    
+
     @Test
     public void assertIsLockedSchema() {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
@@ -74,7 +75,7 @@ public final class DistributeLockContextTest {
         distributeLockContext.getOrCreateSchemaLock("schema");
         assertFalse(distributeLockContext.isLockedSchema("schema"));
     }
-    
+
     @Test
     public void assertAddGlobalLock() throws IllegalAccessException, NoSuchFieldException {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
@@ -87,7 +88,7 @@ public final class DistributeLockContextTest {
         distributeLockContext.renew(new LockedEvent("schema1-127.0.0.1@3308"));
         assertTrue(distributeLockContext.getSchemaLock("schema1").isPresent());
     }
-    
+
     @Test
     public void assertRemoveGlobalLock() throws IllegalAccessException, NoSuchFieldException {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
@@ -102,5 +103,17 @@ public final class DistributeLockContextTest {
         assertTrue(distributeLockContext.getSchemaLock("schema").isPresent());
         distributeLockContext.renew(new AckLockReleasedEvent("schema-127.0.0.1@3307"));
         assertFalse(distributeLockContext.getSchemaLock("schema").isPresent());
+    }
+
+    @Test
+    public void assertRenew() throws IllegalAccessException, NoSuchFieldException {
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
+        Map<String, ShardingSphereGlobalLock> globalLocks = new ConcurrentHashMap<>();
+        globalLocks.put("schema", mock(ShardingSphereGlobalLock.class));
+        Field declaredField = DistributeLockContext.class.getDeclaredField("globalLocks");
+        declaredField.setAccessible(true);
+        declaredField.set(distributeLockContext, globalLocks);
+        AckLockedEvent event = new AckLockedEvent("schema-127.0.0.1@3307");
+        distributeLockContext.renew(event);
     }
 }
