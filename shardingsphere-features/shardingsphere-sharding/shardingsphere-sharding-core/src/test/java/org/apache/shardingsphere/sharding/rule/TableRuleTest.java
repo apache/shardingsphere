@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -160,20 +161,20 @@ public final class TableRuleTest {
 
     @Test
     public void assertDatNodeGroups() {
-        LinkedList<String> dataSourceNames = new LinkedList<>();
+        Collection<String> dataSourceNames = new LinkedList<>();
         String logicTableName = "table_0";
         dataSourceNames.add("ds0");
         dataSourceNames.add("ds1");
-        TableRule actual = new TableRule(dataSourceNames, logicTableName);
-        Map<String, List<DataNode>> dataNodeGroups = actual.getDataNodeGroups();
-        assertThat(dataNodeGroups.size(), is(2));
-        assertTrue(dataNodeGroups.get("ds0").contains(new DataNode("ds0", "table_0")));
-        assertTrue(dataNodeGroups.get("ds1").contains(new DataNode("ds1", "table_0")));
+        TableRule tableRule = new TableRule(dataSourceNames, logicTableName);
+        Map<String, List<DataNode>> actual = tableRule.getDataNodeGroups();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.get("ds0").contains(new DataNode("ds0", "table_0")));
+        assertTrue(actual.get("ds1").contains(new DataNode("ds1", "table_0")));
     }
 
     @Test
-    public void assertCreateAutoTableRuleWithdataSourceNames() {
-        LinkedList<String> dataSourceNames = new LinkedList<>();
+    public void assertCreateTableRuleWithdataSourceNames() {
+        Collection<String> dataSourceNames = new LinkedList<>();
         String logicTableName = "table_0";
         dataSourceNames.add("ds0");
         dataSourceNames.add("ds1");
