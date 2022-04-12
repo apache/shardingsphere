@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job preparer.
@@ -87,9 +89,38 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
-        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        final PipelineSimpleLock lock = PipelineSimpleLock.getInstance();
+        // TODO make sure only the first thread execute prepare
+        boolean skipPrepare = !lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100);
+        if (skipPrepare) {
+            int loopCount = 0;
+            int maxLoopCount = 30;
+            while (loopCount < maxLoopCount) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
+                }
+                // TODO just return ,because the first thread finish prepared
+                if (lock.tryLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()), 100)) {
+                    lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
+                    return;
+                }
+                loopCount++;
+            }
+        }
+        try {
+            JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
+            PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes,
+                    jobConfig.getPipelineConfig(), dataSourceManager);
+            dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        } finally {
+            lock.releaseLock(getPrepareLockName(jobConfig.getHandleConfig().getJobId()));
+        }
+    }
+    
+    private String getPrepareLockName(final String jobId) {
+        return "prepare-" + jobId;
     }
     
     private void initAndCheckDataSource(final RuleAlteredJobContext jobContext) {
