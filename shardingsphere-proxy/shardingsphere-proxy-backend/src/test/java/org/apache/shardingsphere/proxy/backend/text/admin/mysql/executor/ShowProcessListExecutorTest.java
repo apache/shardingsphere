@@ -40,12 +40,12 @@ public final class ShowProcessListExecutorTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcessListExecutor = new ShowProcessListExecutor();
-        setupProcessPackages();
+        setupBatchProcessContexts();
     }
     
-    private void setupProcessPackages() throws NoSuchFieldException, IllegalAccessException {
-        Field processPackagesField = showProcessListExecutor.getClass().getDeclaredField("processPackages");
-        processPackagesField.setAccessible(true);
+    private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {
+        Field batchProcessContextsField = showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts");
+        batchProcessContextsField.setAccessible(true);
         String executionNodeValue = "contexts:\n"
             + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
             + "  sql: alter table t_order add column a varchar(64) after order_id\n"
@@ -58,7 +58,7 @@ public final class ShowProcessListExecutorTest {
             + "    unitID: unitID1\n"
             + "  - status: EXECUTE_STATUS_DONE\n"
             + "    unitID: unitID2\n";
-        processPackagesField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
+        batchProcessContextsField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
     
     @Test

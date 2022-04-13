@@ -29,5 +29,5 @@ import java.util.Collection;
 @Getter
 public final class ShowProcessListResponseEvent {
     
-    private final Collection<String> processPackages;
+    private final Collection<String> batchProcessContexts;
 }

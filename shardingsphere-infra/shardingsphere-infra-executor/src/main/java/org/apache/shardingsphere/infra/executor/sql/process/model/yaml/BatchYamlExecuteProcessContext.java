@@ -24,16 +24,16 @@ import lombok.Setter;
 import java.util.Collection;
 
 /**
- * Execute process context package for YAML.
+ * Batch execute process context for YAML.
  */
 @NoArgsConstructor
 @Getter
 @Setter
-public final class YamlExecuteProcessContextPackage {
+public final class BatchYamlExecuteProcessContext {
     
     private Collection<YamlExecuteProcessContext> contexts;
     
-    public YamlExecuteProcessContextPackage(final Collection<YamlExecuteProcessContext> contexts) {
+    public BatchYamlExecuteProcessContext(final Collection<YamlExecuteProcessContext> contexts) {
         this.contexts = contexts;
     }
 }

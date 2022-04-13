@@ -108,11 +108,11 @@ public final class ProcessRegistrySubscriber {
     
     private void sendShowProcessList(final String showProcessListId) {
         List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getShowProcessListIdPath(showProcessListId));
-        Collection<String> processPackages = new LinkedList<>();
+        Collection<String> batchProcessContexts = new LinkedList<>();
         for (String each : childrenKeys) {
-            processPackages.add(repository.get(ProcessNode.getShowProcessListInstancePath(showProcessListId, each)));
+            batchProcessContexts.add(repository.get(ProcessNode.getShowProcessListInstancePath(showProcessListId, each)));
         }
-        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processPackages));
+        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(batchProcessContexts));
     }
     
     /**
