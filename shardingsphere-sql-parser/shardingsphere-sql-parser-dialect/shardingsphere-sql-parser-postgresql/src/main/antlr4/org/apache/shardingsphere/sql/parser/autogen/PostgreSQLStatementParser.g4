@@ -137,7 +137,9 @@ execute
     | dropPublication
     | dropOperatorClass
     | dropSubscription
+    | dropTextSearch
     | dropOperatorFamily
     | dropAccessMethod
+    | dropServer
     ) SEMI_?
     ;

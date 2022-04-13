@@ -104,6 +104,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropSubscriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTextSearchContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropViewContext;
@@ -123,6 +124,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -219,11 +221,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSubscriptionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropServerStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -767,6 +771,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
         return new PostgreSQLDropTablespaceStatement();
     }
+
+    @Override
+    public ASTNode visitDropTextSearch(final DropTextSearchContext ctx) {
+        return new PostgreSQLDropTextSearchStatement();
+    }
     
     @Override
     public ASTNode visitDropDomain(final DropDomainContext ctx) {
@@ -968,5 +977,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropAccessMethod(final DropAccessMethodContext ctx) {
         return new PostgreSQLDropAccessMethodStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropServer(final DropServerContext ctx) {
+        return new PostgreSQLDropServerStatement();
     }
 }
