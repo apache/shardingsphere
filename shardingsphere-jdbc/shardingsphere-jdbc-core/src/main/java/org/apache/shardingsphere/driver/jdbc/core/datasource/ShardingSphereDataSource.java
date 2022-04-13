@@ -48,33 +48,33 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingSphereDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final ContextManager contextManager;
     
-    public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
-        this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties());
+    public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
+        this.databaseName = databaseName;
+        contextManager = createContextManager(databaseName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties());
     }
     
-    public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+    public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        checkRuleConfiguration(schemaName, ruleConfigs);
-        this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
+        checkRuleConfiguration(databaseName, ruleConfigs);
+        this.databaseName = databaseName;
+        contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
     }
     
     @SuppressWarnings("unchecked")
-    private void checkRuleConfiguration(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(optional -> optional.check(schemaName, each)));
+    private void checkRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
+        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(optional -> optional.check(databaseName, each)));
     }
     
-    private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
+    private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
                 .modeConfig(modeConfig)
-                .databaseConfigs(Collections.singletonMap(schemaName, new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs)))
+                .databaseConfigs(Collections.singletonMap(databaseName, new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs)))
                 .globalRuleConfigs(globalRuleConfigs)
                 .props(props)
                 .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
@@ -83,7 +83,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public Connection getConnection() {
-        return DriverStateContext.getConnection(schemaName, contextManager);
+        return DriverStateContext.getConnection(databaseName, contextManager);
     }
     
     @Override
@@ -98,7 +98,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
         for (String each : dataSourceNames) {
             close(dataSourceMap.get(each));
         }
@@ -113,18 +113,18 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void close() throws Exception {
-        close(contextManager.getDataSourceMap(schemaName).keySet());
+        close(contextManager.getDataSourceMap(databaseName).keySet());
     }
     
     @Override
     public int getLoginTimeout() throws SQLException {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(schemaName);
+        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
         return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
-        for (DataSource each : contextManager.getDataSourceMap(schemaName).values()) {
+        for (DataSource each : contextManager.getDataSourceMap(databaseName).values()) {
             each.setLoginTimeout(seconds);
         }
     }
