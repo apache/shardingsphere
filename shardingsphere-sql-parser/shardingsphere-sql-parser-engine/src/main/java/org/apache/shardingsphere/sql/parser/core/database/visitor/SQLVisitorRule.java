@@ -84,9 +84,15 @@ public enum SQLVisitorRule {
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
 
+    DROP_ROUTINE("DropRoutine", SQLStatementType.DDL),
+
     DROP_RULE("DropRule", SQLStatementType.DDL),
 
     DROP_STATISTICS("DropStatistics", SQLStatementType.DDL),
+
+    DROP_PUBLICATION("DropPublication", SQLStatementType.DDL),
+
+    DROP_SUBSCRIPTION("DropSubscription", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
@@ -175,6 +181,8 @@ public enum SQLVisitorRule {
     ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
     
     DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
+
+    DROP_TEXT_SEARCH("DropTextSearch", SQLStatementType.DDL),
     
     ASSOCIATE_STATISTICS("AssociateStatistics", SQLStatementType.DDL),
     
@@ -460,7 +468,13 @@ public enum SQLVisitorRule {
     
     DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
     
-    DROP_TYPE("DropType", SQLStatementType.DDL);
+    DROP_TYPE("DropType", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL),
+    
+    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL);
     
     private final String name;
     

@@ -38,7 +38,7 @@ public final class GovernanceWatcherFactory {
      * Watch listeners.
      */
     public void watchListeners() {
-        for (GovernanceWatcher<?> each : ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceWatcher.class)) {
+        for (GovernanceWatcher<?> each : ShardingSphereServiceLoader.getServiceInstances(GovernanceWatcher.class)) {
             watch(each);
         }
     }

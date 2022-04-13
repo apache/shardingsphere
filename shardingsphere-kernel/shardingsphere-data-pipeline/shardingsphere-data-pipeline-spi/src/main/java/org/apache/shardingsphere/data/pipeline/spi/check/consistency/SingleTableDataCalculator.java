@@ -24,6 +24,7 @@ import java.util.Properties;
 
 /**
  * Single table data calculator interface, SPI.
+ * 
  * <p>
  * SPI implementation will be initialized as new instance every time.
  * </p>

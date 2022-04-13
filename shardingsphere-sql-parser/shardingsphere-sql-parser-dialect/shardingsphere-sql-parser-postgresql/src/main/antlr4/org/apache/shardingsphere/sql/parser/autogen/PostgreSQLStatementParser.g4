@@ -70,6 +70,7 @@ execute
     | alterProcedure
     | alterServer
     | alterSequence
+    | alterView
     | comment
     | createDatabase
     | createFunction
@@ -131,6 +132,14 @@ execute
     | dropForeignDataWrapper
     | dropRule
     | dropType
+    | dropRoutine
     | dropStatistics
+    | dropPublication
+    | dropOperatorClass
+    | dropSubscription
+    | dropTextSearch
+    | dropOperatorFamily
+    | dropAccessMethod
+    | dropServer
     ) SEMI_?
     ;

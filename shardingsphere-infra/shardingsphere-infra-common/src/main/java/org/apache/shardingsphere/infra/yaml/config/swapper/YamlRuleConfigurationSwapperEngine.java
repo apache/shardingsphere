@@ -84,7 +84,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Class<?>> getYamlShortcuts() {
-        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
+        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
         Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1);
         for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());

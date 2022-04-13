@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
  * YAML rule configuration swapper.
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
  * @param <Y> type of YAML rule configuration
  * @param <T> type of rule configuration
  */
+@SingletonSPI
 public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T extends RuleConfiguration> extends YamlConfigurationSwapper<Y, T>, OrderedSPI<T> {
     
     /**

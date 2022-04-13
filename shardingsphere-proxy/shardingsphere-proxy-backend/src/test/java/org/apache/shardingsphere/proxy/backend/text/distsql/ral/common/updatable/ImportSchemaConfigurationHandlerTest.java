@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
@@ -32,8 +31,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,9 +64,13 @@ public final class ImportSchemaConfigurationHandlerTest {
     
     private final String readwriteSplittingFilePath = "/conf/import/config-readwrite-splitting.yaml";
     
+    private final String dbDiscoveryFilePath = "/conf/import/config-database-discovery.yaml";
+    
     private final String sharding = "sharding_db";
     
     private final String readwriteSplitting = "readwrite_splitting_db";
+    
+    private final String databaseDiscovery = "database_discovery_db";
     
     @Mock
     private DataSourcePropertiesValidator validator;
@@ -76,6 +81,9 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Mock
     private ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker;
     
+    @Mock
+    private DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker;
+    
     private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
     
     private final Map<String, String> featureMap = new HashMap<>();
@@ -84,6 +92,7 @@ public final class ImportSchemaConfigurationHandlerTest {
     public void setup() {
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readwriteSplitting, readwriteSplittingFilePath);
+        featureMap.put(databaseDiscovery, dbDiscoveryFilePath);
     }
     
     private void init(final String feature) throws Exception {
@@ -103,9 +112,9 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Test
     public void assertImportSchemaExecutorForSharding() throws Exception {
         init(sharding);
-        Field importCheckerForShardingRuleConfigurationField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
-        importCheckerForShardingRuleConfigurationField.setAccessible(true);
-        importCheckerForShardingRuleConfigurationField.set(importSchemaConfigurationHandler, shardingRuleConfigurationImportChecker);
+        Field shardingRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
+        shardingRuleConfigurationImportCheckerField.setAccessible(true);
+        shardingRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, shardingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations();
@@ -117,9 +126,9 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Test
     public void assertImportSchemaExecutorForReadwriteSplitting() throws Exception {
         init(readwriteSplitting);
-        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
-        shardingRuleConfigurationCheckerField.setAccessible(true);
-        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
+        Field readwriteSplittingRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
+        readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
+        readwriteSplittingRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations();
@@ -128,19 +137,29 @@ public final class ImportSchemaConfigurationHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
+    @Test
+    public void assertImportSchemaExecutorForDatabaseDiscovery() throws Exception {
+        init(databaseDiscovery);
+        Field databaseDiscoveryRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
+        databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
+        databaseDiscoveryRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
+        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery);
+        assertNotNull(dataSourceMap);
+        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseDiscovery).getRuleMetaData().getConfigurations();
+        assertNotNull(ruleConfigurations);
+        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSource("demo_ds_0"));
-        result.put("ds_1", createDataSource("demo_ds_1"));
+        result.put("ds_0", createDataSource());
+        result.put("ds_1", createDataSource());
         return result;
     }
     
-    private DataSource createDataSource(final String dbName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", dbName));
-        result.setUsername("root");
-        result.setPassword("");
-        return result;
+    private DataSource createDataSource() {
+        return new MockedDataSource();
     }
     
     private Map<String, TableMetaData> createTableMap() {

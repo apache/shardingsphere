@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWrit
  */
 public final class StopScalingSourceWritingUpdater implements RALUpdater<StopScalingSourceWritingStatement> {
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.newInstance();
     
     @Override
     public void executeUpdate(final StopScalingSourceWritingStatement sqlStatement) {

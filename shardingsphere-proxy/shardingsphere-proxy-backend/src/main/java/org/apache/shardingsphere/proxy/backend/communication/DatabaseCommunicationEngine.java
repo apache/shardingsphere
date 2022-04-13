@@ -225,9 +225,6 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private boolean isLockedSchema(final String schemaName) {
-        if (null == schemaName) {
-            return false;
-        }
         return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName);
     }
     

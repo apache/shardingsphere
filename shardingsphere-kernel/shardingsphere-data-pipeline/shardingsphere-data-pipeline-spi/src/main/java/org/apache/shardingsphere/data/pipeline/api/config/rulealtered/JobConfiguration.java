@@ -28,9 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 
 import java.util.Collections;
 
@@ -44,10 +42,6 @@ import java.util.Collections;
 @Slf4j
 // TODO share for totally new scenario
 public final class JobConfiguration {
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
-    }
     
     private WorkflowConfiguration workflowConfig;
     
@@ -67,8 +61,7 @@ public final class JobConfiguration {
         PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfiguration(pipelineConfig, getWorkflowConfig());
+            handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(pipelineConfig, getWorkflowConfig());
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {

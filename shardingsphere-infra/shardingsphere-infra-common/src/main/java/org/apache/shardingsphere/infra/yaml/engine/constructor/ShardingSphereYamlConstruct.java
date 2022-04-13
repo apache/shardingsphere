@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.constructor.Construct;
 
 /**
  * ShardingSphere YAML construct.
  */
+@SingletonSPI
 public interface ShardingSphereYamlConstruct extends Construct {
     
     /**

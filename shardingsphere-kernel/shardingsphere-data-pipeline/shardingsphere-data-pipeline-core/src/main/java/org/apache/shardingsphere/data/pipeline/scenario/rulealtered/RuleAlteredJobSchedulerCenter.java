@@ -73,13 +73,15 @@ public final class RuleAlteredJobSchedulerCenter {
      */
     public static void stop(final String jobId) {
         log.info("remove and stop {}", jobId);
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
         if (null == schedulerMap) {
+            log.info("schedulerMap is null, ignore");
             return;
         }
         for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
             entry.getValue().stop();
         }
+        JOB_SCHEDULER_MAP.remove(jobId);
     }
     
     /**

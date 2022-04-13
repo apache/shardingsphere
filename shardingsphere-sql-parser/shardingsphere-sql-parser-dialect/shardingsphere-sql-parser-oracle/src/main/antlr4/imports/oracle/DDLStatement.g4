@@ -38,6 +38,10 @@ alterIndex
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
+    ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
@@ -1028,6 +1032,17 @@ allowDisallowClustering
 
 alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
+    ;
+
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
     ;
 
 deallocateUnusedClause
