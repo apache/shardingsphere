@@ -19,16 +19,12 @@ package org.apache.shardingsphere.infra.aware;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class DataSourceNameAwareFactoryTest {
-
+    
     @Test
     public void assertGetInstance() {
-        DataSourceNameAwareFactory instance = DataSourceNameAwareFactory.getInstance();
-        assertNotNull(instance);
-        assertThat(DataSourceNameAwareFactory.getInstance(), is(instance));
+        assertFalse(DataSourceNameAwareFactory.newInstance().isPresent());
     }
 }

@@ -33,13 +33,13 @@ public final class GlobalAckChangedWatcherTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/schema/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> add = new GlobalAckChangedWatcher().createGovernanceEvent(addDataChangedEvent);
         assertTrue(add.isPresent());
         GovernanceEvent addEvent = add.get();
         assertTrue(addEvent instanceof AckLockedEvent);
         assertThat(((AckLockedEvent) addEvent).getLockName(), is("schema-127.0.0.1@3307"));
-        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/schema/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> delete = new GlobalAckChangedWatcher().createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(delete.isPresent());
         GovernanceEvent deleteEvent = delete.get();

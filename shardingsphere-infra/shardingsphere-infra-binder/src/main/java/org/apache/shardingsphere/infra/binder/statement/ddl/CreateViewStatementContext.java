@@ -22,10 +22,6 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateViewStatementHandler;
-
-import java.util.Optional;
 
 /**
  * Create view statement context.
@@ -37,9 +33,8 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext<
     
     public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
         super(sqlStatement);
-        Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatement);
         TableExtractor extractor = new TableExtractor();
-        selectStatement.ifPresent(extractor::extractTablesFromSelect);
+        sqlStatement.getSelect().ifPresent(extractor::extractTablesFromSelect);
         tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType());
     }
 }

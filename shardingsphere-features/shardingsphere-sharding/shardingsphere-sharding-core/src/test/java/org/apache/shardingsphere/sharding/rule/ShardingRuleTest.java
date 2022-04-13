@@ -745,4 +745,52 @@ public final class ShardingRuleTest {
                 actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Lists.newArrayList("logic_table", "sub_logic_table"));
         assertThat(logicAndActualTablesFromBindingTable.get("sub_logic_table"), is("sub_table_0"));
     }
+    
+    @Test
+    public void assertGetAllDataNodes() {
+        ShardingRule actual = createMaximumShardingRule();
+        Map<String, Collection<DataNode>> allDataNodes = actual.getAllDataNodes();
+        assertTrue(allDataNodes.containsKey("logic_table"));
+        assertTrue(allDataNodes.containsKey("sub_logic_table"));
+        Collection<DataNode> logicTableDataNodes = allDataNodes.get("logic_table");
+        assertGetDataNodes(logicTableDataNodes, "table_");
+        Collection<DataNode> subLogicTableDataNodes = allDataNodes.get("sub_logic_table");
+        assertGetDataNodes(subLogicTableDataNodes, "sub_table_");
+    }
+    
+    private void assertGetDataNodes(final Collection<DataNode> dataNodes, final String tableNamePrefix) {
+        int dataSourceNameSuffix = 0;
+        int tableNameSuffix = 0;
+        Iterator<DataNode> dataNodeIterator = dataNodes.iterator();
+        while (dataNodeIterator.hasNext()) {
+            DataNode dataNode = dataNodeIterator.next();
+            assertThat(dataNode.getDataSourceName(), is("ds_" + dataSourceNameSuffix));
+            assertThat(dataNode.getTableName(), is(tableNamePrefix + tableNameSuffix));
+            if (++tableNameSuffix == (dataNodes.size() / 2)) {
+                tableNameSuffix = 0;
+                dataSourceNameSuffix++;
+            }
+        }
+    }
+    
+    @Test
+    public void assertFindFirstActualTable() {
+        ShardingRule actual = createMaximumShardingRule();
+        Optional<String> logicTable = actual.findFirstActualTable("logic_table");
+        assertThat(logicTable.orElse(""), is("table_0"));
+    }
+    
+    @Test
+    public void assertIsNeedAccumulate() {
+        ShardingRule actual = createMaximumShardingRule();
+        assertTrue(actual.isNeedAccumulate(Collections.singletonList("table_0")));
+        assertFalse(actual.isNeedAccumulate(Collections.singletonList("BROADCAST_TABLE")));
+    }
+    
+    @Test
+    public void assertFindActualTableByCatalog() {
+        ShardingRule actual = createMaximumShardingRule();
+        Optional<String> actualTableByCatalog = actual.findActualTableByCatalog("ds_0", "logic_table");
+        assertThat(actualTableByCatalog.orElse(""), is("table_0"));
+    }
 }
