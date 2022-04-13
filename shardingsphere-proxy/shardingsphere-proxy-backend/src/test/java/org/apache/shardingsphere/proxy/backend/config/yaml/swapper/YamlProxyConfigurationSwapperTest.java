@@ -56,7 +56,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get("foo_db");
         assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
@@ -71,7 +71,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
         assertThat(ruleConfigs.size(), is(1));

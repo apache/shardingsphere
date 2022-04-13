@@ -67,7 +67,7 @@ public final class BootstrapInitializer {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
                 .modeConfig(modeConfig)
-                .schemaConfigs(proxyConfig.getSchemaConfigurations())
+                .databaseConfigs(proxyConfig.getDatabaseConfigurations())
                 .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
                 .props(proxyConfig.getGlobalConfiguration().getProperties())
                 .labels(proxyConfig.getGlobalConfiguration().getLabels())

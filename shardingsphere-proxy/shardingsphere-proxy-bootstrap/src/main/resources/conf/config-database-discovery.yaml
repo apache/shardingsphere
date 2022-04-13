@@ -22,7 +22,7 @@
 #
 ######################################################################################################
 #
-#schemaName: database_discovery_db
+#databaseName: database_discovery_db
 #
 #dataSources:
 #  ds_0:
@@ -79,7 +79,7 @@
 #
 ######################################################################################################
 
-#schemaName: database_discovery_db
+#databaseName: database_discovery_db
 #
 #dataSources:
 #  ds_0:

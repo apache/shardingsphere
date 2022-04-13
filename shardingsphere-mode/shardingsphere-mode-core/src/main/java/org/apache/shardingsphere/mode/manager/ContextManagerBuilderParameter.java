@@ -37,7 +37,7 @@ public final class ContextManagerBuilderParameter {
     
     private final ModeConfiguration modeConfig;
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
+    private final Map<String, ? extends SchemaConfiguration> databaseConfigs;
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
@@ -54,6 +54,6 @@ public final class ContextManagerBuilderParameter {
      */
     public boolean isEmpty() {
         return props.isEmpty() && globalRuleConfigs.isEmpty()
-                && schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+                && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
     }
 }
