@@ -46,12 +46,12 @@ public final class SchemaMetaDataNode {
     /**
      * Get meta data data source path.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version data source version                  
      * @return data source path
      */
-    public static String getMetaDataDataSourcePath(final String schemaName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version, DATA_SOURCE_NODE);
+    public static String getMetaDataDataSourcePath(final String databaseName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
     }
     
     /**
@@ -117,8 +117,8 @@ public final class SchemaMetaDataNode {
         return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
     }
     
-    private static String getFullMetaDataPath(final String schemaName, final String node) {
-        return String.join("/", "", ROOT_NODE, schemaName, schemaName, node);
+    private static String getFullMetaDataPath(final String databaseName, final String node) {
+        return String.join("/", "", ROOT_NODE, databaseName, databaseName, node);
     }
     
     /**
@@ -160,11 +160,11 @@ public final class SchemaMetaDataNode {
     /**
      * Get active version path.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return active version path
      */
-    public static String getActiveVersionPath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, ACTIVE_VERSION);
+    public static String getActiveVersionPath(final String databaseName) {
+        return getFullMetaDataPath(databaseName, ACTIVE_VERSION);
     }
     
     /**

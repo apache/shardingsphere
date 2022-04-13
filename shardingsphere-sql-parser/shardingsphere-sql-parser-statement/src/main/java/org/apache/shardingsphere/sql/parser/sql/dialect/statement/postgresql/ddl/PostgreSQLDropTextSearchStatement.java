@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schema;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Schema configuration.
+ * PostgreSQL drop text search statement.
  */
-public interface SchemaConfiguration {
-    
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
-    
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
+@ToString
+public final class PostgreSQLDropTextSearchStatement extends DropTextSearchStatement implements PostgreSQLStatement {
 }

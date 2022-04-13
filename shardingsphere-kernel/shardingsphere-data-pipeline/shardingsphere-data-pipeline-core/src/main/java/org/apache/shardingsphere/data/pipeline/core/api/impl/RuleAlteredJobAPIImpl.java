@@ -356,6 +356,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getActiveVersion(), workflowConfig.getNewVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        // TODO rewrite job status update after job progress structure refactor
+        RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
@@ -372,7 +374,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         try {
             new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobConfigPOJO));
         } catch (final SQLException ex) {
-            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
+            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId, ex);
         }
     }
     

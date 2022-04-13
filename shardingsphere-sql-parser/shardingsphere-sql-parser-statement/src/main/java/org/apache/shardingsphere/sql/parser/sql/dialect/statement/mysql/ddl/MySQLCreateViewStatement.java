@@ -17,29 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Optional;
 
 /**
  * MySQL create view statement.
  */
-@Setter
 @ToString
 public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
-    
-    private SelectStatement select;
-    
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
-    }
 }

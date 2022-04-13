@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: encrypt_db
+databaseName: encrypt_db
 
 dataSources:
   ds_0:

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: swapper_test
+databaseName: swapper_test
 
 dataSources:
   foo_db:
