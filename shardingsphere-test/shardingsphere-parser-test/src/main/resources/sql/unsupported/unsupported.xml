@@ -42,7 +42,6 @@
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
-    <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
     <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
@@ -50,7 +49,6 @@
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
-    <sql-case id="alter_view_set" value="alter view my_locks set (autovacuum_enabled = false)" db-types="PostgreSQL" />
     <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
     <sql-case id="create_by_mysql_source_test_case1" value="CREATE  VIEW v1 AS SELECT GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a) FROM t1 AS `߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789` GROUP BY a WITH ROLLUP" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case2" value="CREATE DEFINER = u1@192.129.12.11 VIEW v3 as SELECT * FROM t1" db-types="MySQL"/>
@@ -4225,18 +4223,6 @@
     <sql-case id="alter_by_postgresql_source_test_case458" value="ALTER TYPE test_typex DROP ATTRIBUTE a CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case461" value="ALTER VIEW attmp_view_new RENAME TO fail;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case462" value="ALTER VIEW gtest1v ALTER COLUMN b SET DEFAULT 100;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case463" value="ALTER VIEW my_property_normal SET (security_barrier=true);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case464" value="ALTER VIEW my_property_secure SET (security_barrier=false);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case465" value="ALTER VIEW rls_view OWNER TO regress_rls_bob;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case466" value="ALTER VIEW rw_view1 ALTER COLUMN bb SET DEFAULT &apos;View default&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case467" value="ALTER VIEW rw_view1 SET (check_option=here);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case468" value="ALTER VIEW rw_view1 SET (check_option=local);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case469" value="ALTER VIEW rw_view1 SET (security_barrier = true);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case470" value="ALTER VIEW rw_view15 ALTER COLUMN upper SET DEFAULT &apos;NOT SET&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case471" value="ALTER VIEW rw_view2 RESET (check_option);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case472" value="ALTER VIEW rw_view2 SET (check_option=cascaded);" db-types="PostgreSQL"/>
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL"/>
     <sql-case id="call_by_postgresql_source_test_case1" value="CALL ptest10(a =&gt; null, b =&gt; 8, c =&gt; 2);" db-types="PostgreSQL"/>
     <sql-case id="call_by_postgresql_source_test_case2" value="CALL ptest10(b =&gt; 8, c =&gt; 2, a =&gt; 0);" db-types="PostgreSQL"/>
@@ -7363,12 +7349,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case108" value="alter view my_locks reset (autovacuum_enabled);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case109" value="alter view my_locks reset (security_barrier);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case110" value="alter view my_locks set (autovacuum_enabled = false);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case111" value="alter view my_locks set (security_barrier=off);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case112" value="alter view uv_iocu_view alter column bb set default &apos;view default&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case113" value="alter view v1 rename column a to x;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case1" value="cluster clstr_4 using cluster_sort;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case2" value="cluster clstr_temp using clstr_temp_pkey;" db-types="PostgreSQL"/>
     <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL"/>
