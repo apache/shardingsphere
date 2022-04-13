@@ -181,6 +181,8 @@ public enum SQLVisitorRule {
     ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
     
     DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
+
+    DROP_TEXT_SEARCH("DropTextSearch", SQLStatementType.DDL),
     
     ASSOCIATE_STATISTICS("AssociateStatistics", SQLStatementType.DDL),
     

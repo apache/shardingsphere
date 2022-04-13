@@ -136,6 +136,7 @@ execute
     | dropPublication
     | dropOperatorClass
     | dropSubscription
+    | dropTextSearch
     | dropOperatorFamily
     | dropAccessMethod
     ) SEMI_?

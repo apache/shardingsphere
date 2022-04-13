@@ -5229,20 +5229,6 @@
     <sql-case id="drop_by_postgresql_source_test_case221" value="DROP SERVER s6;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case222" value="DROP SERVER s7;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case223" value="DROP SERVER test_server_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case260" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case261" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case262" value="DROP TEXT SEARCH CONFIGURATION test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case263" value="DROP TEXT SEARCH CONFIGURATION test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case264" value="DROP TEXT SEARCH DICTIONARY IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case265" value="DROP TEXT SEARCH DICTIONARY IF EXISTS test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case266" value="DROP TEXT SEARCH DICTIONARY test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case267" value="DROP TEXT SEARCH DICTIONARY test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case268" value="DROP TEXT SEARCH PARSER IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case269" value="DROP TEXT SEARCH PARSER IF EXISTS test_tsparser_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case270" value="DROP TEXT SEARCH PARSER test_tsparser_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case271" value="DROP TEXT SEARCH TEMPLATE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case272" value="DROP TEXT SEARCH TEMPLATE IF EXISTS test_tstemplate_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case273" value="DROP TEXT SEARCH TEMPLATE test_tstemplate_exists;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case1" value="EXECUTE cprep;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case2" value="EXECUTE foo;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case3" value="EXECUTE foo;" db-types="PostgreSQL"/>
