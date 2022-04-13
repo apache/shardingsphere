@@ -117,14 +117,14 @@ public final class MetaDataPersistService {
     /**
      * Get effective data sources.
      * 
-     * @param databaseName schema name
-     * @param schemaConfigs schema configurations
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
      * @return effective data sources
      */
-    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> schemaConfigs) {
+    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
-        return schemaConfigs.containsKey(databaseName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(databaseName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+        return databaseConfigs.containsKey(databaseName)
+                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(
