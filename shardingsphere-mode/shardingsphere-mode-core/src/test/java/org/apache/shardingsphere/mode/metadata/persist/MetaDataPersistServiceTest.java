@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -102,7 +102,7 @@ public final class MetaDataPersistServiceTest {
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
         metaDataPersistService.persistConfigurations(
-                Collections.singletonMap("foo_db", new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, false);
+                Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", createDataSourcePropertiesMap(dataSourceMap), false);
         verify(schemaRuleService).persist("foo_db", ruleConfigs, false);
         verify(globalRuleService).persist(globalRuleConfigs, false);
@@ -160,7 +160,7 @@ public final class MetaDataPersistServiceTest {
     public void assertGetEffectiveDataSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
-        Map<String, SchemaConfiguration> schemaConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs));
+        Map<String, DatabaseConfiguration> schemaConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", schemaConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }

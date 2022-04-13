@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.config.function.DistributedRuleConfigurat
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.InvalidDataSourcePropertiesException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -56,27 +56,27 @@ public final class SchemaRulesBuilder {
     /**
      * Build rules.
      *
-     * @param schemaName schema name
-     * @param schemaConfig schema configuration
+     * @param databaseName database name
+     * @param databaseConfig schema configuration
      * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props) {
+    public static Collection<ShardingSphereRule> buildRules(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         boolean isDataSourceAggregation = props.getProps().containsKey("data-source-aggregation-enabled") ? props.getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED) : false;
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(schemaConfig).entrySet()) {
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
             if (isDataSourceAggregation) {
-                DataSourceGeneratedSchemaConfiguration configuration = (DataSourceGeneratedSchemaConfiguration) schemaConfig;
+                DataSourceGeneratedDatabaseConfiguration configuration = (DataSourceGeneratedDatabaseConfiguration) databaseConfig;
                 checkDataSourceAggregations(configuration.getDataSourceProperties());
             }
-            result.add(entry.getValue().build(entry.getKey(), schemaName, schemaConfig.getDataSources(), result, props));
+            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, props));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaConfiguration schemaConfig) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration schemaConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
         result.putAll(getDistributedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
         result.putAll(getEnhancedRuleBuilderMap(schemaConfig.getRuleConfigurations()));

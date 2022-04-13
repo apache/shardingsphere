@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schema;
+package org.apache.shardingsphere.infra.config.database;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Schema configuration.
+ * Database configuration.
  */
-public interface SchemaConfiguration {
+public interface DatabaseConfiguration {
     
     /**
      * Get data sources.

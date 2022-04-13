@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schema.impl;
+package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Data source provided schema configuration.
+ * Data source provided database configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceProvidedSchemaConfiguration implements SchemaConfiguration {
+public final class DataSourceProvidedDatabaseConfiguration implements DatabaseConfiguration {
     
     private final Map<String, DataSource> dataSources;
     
