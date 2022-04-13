@@ -30,7 +30,7 @@ import java.util.Map;
 @Getter
 public final class ProxyConfiguration {
     
-    private final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations;
+    private final Map<String, DataSourceGeneratedSchemaConfiguration> databaseConfigurations;
     
     private final ProxyGlobalConfiguration globalConfiguration;
 }

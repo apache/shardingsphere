@@ -37,6 +37,6 @@ public final class OptionalSPIRegistry {
      * @return registered service
      */
     public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
-        return ShardingSphereServiceLoader.newServiceInstances(spiClass).stream().findFirst();
+        return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().findFirst();
     }
 }

@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+
+import java.util.Optional;
 
 /**
  * Create view statement.
@@ -30,4 +33,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 public abstract class CreateViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment view;
+    
+    private SelectStatement select;
+    
+    /**
+     * Get select statement.
+     *
+     * @return select statement
+     */
+    public Optional<SelectStatement> getSelect() {
+        return Optional.ofNullable(select);
+    }
 }

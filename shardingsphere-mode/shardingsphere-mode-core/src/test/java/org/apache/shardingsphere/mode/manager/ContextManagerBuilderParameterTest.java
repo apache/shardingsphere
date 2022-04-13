@@ -43,7 +43,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertTrue(contextManagerBuilderParameter.isEmpty());
     }
@@ -53,7 +53,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .schemaConfigs(Collections.emptyMap())
+                .databaseConfigs(Collections.emptyMap())
                 .build();
         assertTrue(contextManagerBuilderParameter.isEmpty());
     }
@@ -69,7 +69,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(mockGlobalRuleConfigs)
                 .props(mockProperties)
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -81,7 +81,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(mockProperties)
-                .schemaConfigs(Collections.emptyMap())
+                .databaseConfigs(Collections.emptyMap())
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -94,7 +94,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(mockGlobalRuleConfigs)
                 .props(new Properties())
-                .schemaConfigs(Collections.emptyMap())
+                .databaseConfigs(Collections.emptyMap())
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -105,7 +105,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -116,7 +116,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -127,7 +127,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -141,7 +141,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(mockGlobalRuleConfigs)
                 .props(new Properties())
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -154,7 +154,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(mockProperties)
-                .schemaConfigs(mockSchemaConfigs)
+                .databaseConfigs(mockSchemaConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
@@ -169,7 +169,7 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(mockGlobalRuleConfigs)
                 .props(mockProperties)
-                .schemaConfigs(Collections.emptyMap())
+                .databaseConfigs(Collections.emptyMap())
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }

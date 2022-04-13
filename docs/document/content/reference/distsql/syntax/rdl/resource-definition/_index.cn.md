@@ -1,6 +1,6 @@
 +++
 title = "资源定义"
-weight = 2
+weight = 1
 chapter = true
 +++
 

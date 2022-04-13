@@ -33,13 +33,13 @@ public final class GlobalLocksChangedWatcherTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/locks/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/schema/locks/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> add = new GlobalLocksChangedWatcher().createGovernanceEvent(addDataChangedEvent);
         assertTrue(add.isPresent());
         GovernanceEvent addEvent = add.get();
         assertTrue(addEvent instanceof LockedEvent);
         assertThat(((LockedEvent) addEvent).getLockName(), is("schema-127.0.0.1@3307"));
-        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/locks/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/schema/locks/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> delete = new GlobalLocksChangedWatcher().createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(delete.isPresent());
         GovernanceEvent deleteEvent = delete.get();

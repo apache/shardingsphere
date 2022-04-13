@@ -334,7 +334,7 @@ ignoredNameIdentifier
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER (IF EXISTS)? userName
     ;
 
 alterUser
@@ -433,7 +433,7 @@ createLoginForAnalyticsPlatformSystemOptionListClause
     ;
 
 dropLogin
-    : DROP LOGIN
+    : DROP LOGIN ignoredNameIdentifier
     ;
 
 alterLogin

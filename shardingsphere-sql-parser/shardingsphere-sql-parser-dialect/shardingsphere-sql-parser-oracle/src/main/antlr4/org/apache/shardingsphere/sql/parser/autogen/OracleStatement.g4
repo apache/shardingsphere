@@ -70,5 +70,7 @@ execute
     | dropDatabaseLink
     | dropDirectory
     | dropView
+    | dropTrigger
+    | alterView
     ) SEMI_?
     ;

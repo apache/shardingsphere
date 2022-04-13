@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.File;
@@ -59,9 +59,9 @@ public final class ProxyConfigurationLoader {
     public static YamlProxyConfiguration load(final String path) throws IOException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
-        Collection<YamlProxySchemaConfiguration> schemaConfigs = loadSchemaConfigurations(configPath);
-        return new YamlProxyConfiguration(serverConfig, schemaConfigs.stream().collect(Collectors.toMap(
-                YamlProxySchemaConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
+        return new YamlProxyConfiguration(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
+                YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     @SneakyThrows(URISyntaxException.class)
@@ -80,25 +80,28 @@ public final class ProxyConfigurationLoader {
         return result;
     }
     
-    private static Collection<YamlProxySchemaConfiguration> loadSchemaConfigurations(final File configPath) throws IOException {
-        Collection<String> loadedSchemaNames = new HashSet<>();
-        Collection<YamlProxySchemaConfiguration> result = new LinkedList<>();
+    private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
+        Collection<String> loadedDatabaseNames = new HashSet<>();
+        Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
-            loadSchemaConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
+            loadDatabaseConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
                 Preconditions.checkState(
-                        loadedSchemaNames.add(yamlProxyRuleConfig.getSchemaName()), "Schema name `%s` must unique at all schema configurations.", yamlProxyRuleConfig.getSchemaName());
+                        loadedDatabaseNames.add(yamlProxyRuleConfig.getDatabaseName()), "Database name `%s` must unique at all database configurations.", yamlProxyRuleConfig.getDatabaseName());
                 result.add(yamlProxyRuleConfig);
             });
         }
         return result;
     }
     
-    private static Optional<YamlProxySchemaConfiguration> loadSchemaConfiguration(final File yamlFile) throws IOException {
-        YamlProxySchemaConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxySchemaConfiguration.class);
+    private static Optional<YamlProxyDatabaseConfiguration> loadDatabaseConfiguration(final File yamlFile) throws IOException {
+        YamlProxyDatabaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
         if (null == result) {
             return Optional.empty();
         }
-        Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
+        if (null == result.getDatabaseName()) {
+            result.setDatabaseName(result.getSchemaName());
+        }
+        Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
         Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
         return Optional.of(result);
     }

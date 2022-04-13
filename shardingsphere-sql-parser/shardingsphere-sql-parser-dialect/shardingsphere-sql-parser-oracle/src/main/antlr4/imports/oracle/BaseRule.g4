@@ -112,6 +112,10 @@ viewName
     : (owner DOT_)? name
     ;
 
+triggerName
+    : (owner DOT_)? name
+    ;
+
 materializedViewName
     : (owner DOT_)? name
     ;

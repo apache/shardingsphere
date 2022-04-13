@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**
  * ShardingSphere YAML tuple processor.
  */
+@SingletonSPI
 public interface ShardingSphereYamlTupleProcessor {
     
     /**
