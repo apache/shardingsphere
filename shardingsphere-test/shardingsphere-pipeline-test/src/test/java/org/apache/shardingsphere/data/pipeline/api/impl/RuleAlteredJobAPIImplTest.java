@@ -26,13 +26,18 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,11 +48,13 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -179,6 +186,39 @@ public final class RuleAlteredJobAPIImplTest {
         checkResult.setRecordsContentMatched(true);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
+    }
+    
+    @Test(expected = PipelineVerifyFailedException.class)
+    public void assertSwitchClusterConfigurationAlreadyFinished() {
+        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        assertTrue(jobId.isPresent());
+        final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        jobContext.setInitProgress(new JobProgress());
+        repositoryAPI.persistJobProgress(jobContext);
+        repositoryAPI.persistJobCheckResult(jobId.get(), true);
+        repositoryAPI.updateShardingJobStatus(jobId.get(), 0, JobStatus.FINISHED);
+        ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
+    }
+    
+    @Test
+    public void assertSwitchClusterConfigurationSucceed() {
+        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        jobConfiguration.getHandleConfig().setJobShardingItem(0);
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        assertTrue(jobId.isPresent());
+        final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        jobContext.setInitProgress(new JobProgress());
+        repositoryAPI.persistJobProgress(jobContext);
+        repositoryAPI.persistJobCheckResult(jobId.get(), true);
+        repositoryAPI.updateShardingJobStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
+        ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
+        final Map<Integer, JobProgress> progress = ruleAlteredJobAPI.getProgress(jobId.get());
+        for (Entry<Integer, JobProgress> entry : progress.entrySet()) {
+            assertSame(entry.getValue().getStatus(), JobStatus.FINISHED);
+        }
     }
     
     @Test
