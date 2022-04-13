@@ -42,7 +42,9 @@ public final class PacketCodec extends ByteToMessageCodec<DatabasePacket<?>> {
         if (!databasePacketCodecEngine.isValidHeader(readableBytes)) {
             return;
         }
-        log.debug("Read from client {} :\n{}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(in));
+        if (log.isDebugEnabled()) {
+            log.debug("Read from client {} :\n{}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(in));
+        }
         databasePacketCodecEngine.decode(context, in, out);
     }
     
@@ -50,6 +52,8 @@ public final class PacketCodec extends ByteToMessageCodec<DatabasePacket<?>> {
     @Override
     protected void encode(final ChannelHandlerContext context, final DatabasePacket<?> message, final ByteBuf out) {
         databasePacketCodecEngine.encode(context, message, out);
-        log.debug("Write to client {} :\n{}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));
+        if (log.isDebugEnabled()) {
+            log.debug("Write to client {} :\n{}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));
+        }
     }
 }
