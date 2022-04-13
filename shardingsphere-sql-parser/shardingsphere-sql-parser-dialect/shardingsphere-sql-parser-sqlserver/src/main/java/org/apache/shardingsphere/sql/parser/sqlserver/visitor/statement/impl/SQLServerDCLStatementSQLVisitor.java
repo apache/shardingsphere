@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Gra
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IgnoredNameIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeClassPrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeClassTypePrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
@@ -67,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerSetUserStatement;
 
@@ -351,6 +353,12 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
             userSegment.setStopIndex(ctx.stringLiterals().stop.getStopIndex());
             result.setUser(userSegment); 
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRevert(final RevertContext ctx) {
+        SQLServerRevertStatement result = new SQLServerRevertStatement();
         return result;
     }
 }
