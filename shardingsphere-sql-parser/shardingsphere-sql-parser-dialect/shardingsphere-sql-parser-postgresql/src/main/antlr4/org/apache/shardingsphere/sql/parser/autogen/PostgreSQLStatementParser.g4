@@ -140,5 +140,6 @@ execute
     | dropTextSearch
     | dropOperatorFamily
     | dropAccessMethod
+    | dropServer
     ) SEMI_?
     ;
