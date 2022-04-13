@@ -46,8 +46,8 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
     
     @Override
-    public void setDatabaseVersion(final String databaseVersion) {
-        MySQLServerInfo.setServerVersion(databaseVersion);
+    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(schemaName, databaseVersion);
     }
     
     @Override
