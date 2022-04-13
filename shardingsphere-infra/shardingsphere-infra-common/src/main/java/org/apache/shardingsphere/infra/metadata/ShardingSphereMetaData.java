@@ -56,16 +56,16 @@ public final class ShardingSphereMetaData {
      * 
      * @param databaseName database name
      * @param schemas schemas
-     * @param schemaConfig schema configuration
+     * @param databaseConfig database configuration
      * @param rules rules
      * @param defaultDatabaseType default database type
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration schemaConfig, 
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig, 
                                                 final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
-        ShardingSphereResource resource = createResource(schemaConfig.getDataSources(), defaultDatabaseType);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
+        ShardingSphereResource resource = createResource(databaseConfig.getDataSources(), defaultDatabaseType);
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
         return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
     }
     

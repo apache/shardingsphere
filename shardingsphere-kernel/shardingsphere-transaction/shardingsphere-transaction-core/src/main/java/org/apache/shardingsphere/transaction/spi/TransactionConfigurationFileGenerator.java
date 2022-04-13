@@ -40,9 +40,9 @@ public interface TransactionConfigurationFileGenerator extends StatelessTypedSPI
      * Get transaction rule props.
      *
      * @param originTransactionProps origin transaction properties
-     * @param schemaConfiguration schema configuration
+     * @param databaseConfiguration database configuration
      * @param modeType mode type
      * @return transaction rule props
      */
-    Properties getTransactionProps(Properties originTransactionProps, DatabaseConfiguration schemaConfiguration, String modeType);
+    Properties getTransactionProps(Properties originTransactionProps, DatabaseConfiguration databaseConfiguration, String modeType);
 }

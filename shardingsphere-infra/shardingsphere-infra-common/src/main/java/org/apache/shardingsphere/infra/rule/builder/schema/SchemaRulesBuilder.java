@@ -76,10 +76,10 @@ public final class SchemaRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration schemaConfig) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration databaseConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
-        result.putAll(getEnhancedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
+        result.putAll(getDistributedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }
