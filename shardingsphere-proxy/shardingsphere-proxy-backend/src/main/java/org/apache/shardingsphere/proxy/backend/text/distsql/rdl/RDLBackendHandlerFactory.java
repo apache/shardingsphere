@@ -55,10 +55,10 @@ public final class RDLBackendHandlerFactory {
     
     private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, connectionSession);
+            return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof AlterResourceStatement) {
-            return new AlterResourceBackendHandler(databaseType, (AlterResourceStatement) sqlStatement, connectionSession);
+            return new AlterResourceBackendHandler((AlterResourceStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, connectionSession);
