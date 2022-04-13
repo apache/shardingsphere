@@ -102,7 +102,9 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             String sqlState = payload.readStringFix(5);
             throw new RuntimeException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
         } else if (0 != statusCode) {
-            log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
+            if (log.isDebugEnabled()) {
+                log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
+            }
         }
     }
     
