@@ -28,11 +28,13 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * YAML schema configuration for ShardingSphere-Proxy.
+ * YAML database configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxySchemaConfiguration implements YamlConfiguration {
+public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
+    
+    private String databaseName;
     
     private String schemaName;
     
