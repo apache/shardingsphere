@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event;
+package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 
 /**
- * Show process list response event.
+ * Batch execute process context for YAML.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
-public final class ShowProcessListResponseEvent {
+@Setter
+public final class BatchYamlExecuteProcessContext {
     
-    private final Collection<String> batchProcessContexts;
+    private Collection<YamlExecuteProcessContext> contexts;
+    
+    public BatchYamlExecuteProcessContext(final Collection<YamlExecuteProcessContext> contexts) {
+        this.contexts = contexts;
+    }
 }
