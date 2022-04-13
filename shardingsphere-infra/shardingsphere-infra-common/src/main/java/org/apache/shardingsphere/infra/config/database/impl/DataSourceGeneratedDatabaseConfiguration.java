@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schema.impl;
+package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Data source generated schema configuration.
+ * Data source generated database configuration.
  */
 @Getter
-public final class DataSourceGeneratedSchemaConfiguration implements SchemaConfiguration {
+public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseConfiguration {
     
     private final Map<String, DataSource> dataSources;
     
@@ -44,7 +44,7 @@ public final class DataSourceGeneratedSchemaConfiguration implements SchemaConfi
 
     private final Map<String, DataSourceProperties> dataSourceProperties;
     
-    public DataSourceGeneratedSchemaConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
+    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
         this.dataSources = DataSourcePoolCreator.create(createDataSourcePropertiesMap(dataSources));
         this.ruleConfigurations = ruleConfigurations;
         dataSourceProperties = createDataSourcePropertiesMap(dataSources);
