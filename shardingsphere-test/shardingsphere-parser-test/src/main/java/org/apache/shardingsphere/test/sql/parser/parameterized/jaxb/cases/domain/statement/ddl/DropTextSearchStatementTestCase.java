@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config.yaml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * YAML schema configuration for ShardingSphere-Proxy.
+ * Drop text search statement test case.
  */
-@Getter
-@Setter
-public final class YamlProxySchemaConfiguration implements YamlConfiguration {
-    
-    private String schemaName;
-    
-    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
-    
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+public final class DropTextSearchStatementTestCase extends SQLParserTestCase {
 }

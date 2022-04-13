@@ -43,7 +43,7 @@ public final class StandaloneContextManagerBuilderTextTest {
     @Test
     public void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
-            .schemaConfigs(Collections.singletonMap("foo_schema", 
+            .databaseConfigs(Collections.singletonMap("foo_schema", 
                     new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
             .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
             .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());

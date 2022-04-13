@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.schema;
+package org.apache.shardingsphere.proxy.backend.config.yaml;
 
-import org.junit.Test;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.mock.env.MockEnvironment;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
-public final class SchemaNameSetterTest {
+/**
+ * YAML database configuration for ShardingSphere-Proxy.
+ */
+@Getter
+@Setter
+public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
     
-    @Test
-    public void assertSchemaName() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.schema.name", "jdbc_db");
-        StandardEnvironment standardEnvironment = new StandardEnvironment();
-        standardEnvironment.merge(mockEnvironment);
-        String schemaName = SchemaNameSetter.getSchemaName(standardEnvironment);
-        assertThat(schemaName, is("jdbc_db"));
-    }
+    private String databaseName;
+    
+    private String schemaName;
+    
+    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
+    
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

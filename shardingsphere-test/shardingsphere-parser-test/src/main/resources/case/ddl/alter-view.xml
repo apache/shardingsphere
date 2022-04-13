@@ -17,6 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-server sql-case-id="drop_server" />
-    <drop-server sql-case-id="drop_server_if_exists" />
+    <alter-view sql-case-id="alter_view" />
 </sql-parser-test-cases>

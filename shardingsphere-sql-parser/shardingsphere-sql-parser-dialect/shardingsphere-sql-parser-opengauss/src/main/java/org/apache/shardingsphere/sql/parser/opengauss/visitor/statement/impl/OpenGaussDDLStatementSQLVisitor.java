@@ -29,10 +29,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterExtensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterForeignTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterLanguageContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRenameViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
@@ -43,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionClauseContext;
@@ -62,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConversionContext;
@@ -83,6 +89,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ind
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexParamsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RenameTableSpecificationContext;
@@ -91,12 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterForeignTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ValidateConstraintSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterGroupContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterMaterializedViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -556,19 +558,32 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         return new OpenGaussDropFunctionStatement();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        return new OpenGaussDropViewStatement();
+        OpenGaussDropViewStatement result = new OpenGaussDropViewStatement();
+        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
+        return result;
     }
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        return new OpenGaussCreateViewStatement();
+        OpenGaussCreateViewStatement result = new OpenGaussCreateViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
     }
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        return new OpenGaussAlterViewStatement();
+        OpenGaussAlterViewStatement result = new OpenGaussAlterViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
+        if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
+            NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
+            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),
+                    nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext.identifier()))));
+        }
+        return result;
     }
     
     @Override

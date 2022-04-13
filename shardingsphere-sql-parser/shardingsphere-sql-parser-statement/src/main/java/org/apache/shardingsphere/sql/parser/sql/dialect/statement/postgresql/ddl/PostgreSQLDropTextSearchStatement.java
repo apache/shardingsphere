@@ -15,33 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * OpenGauss alter view statement.
+ * PostgreSQL drop text search statement.
  */
-@Getter
-@Setter
 @ToString
-public final class OpenGaussAlterViewStatement extends AlterViewStatement implements OpenGaussStatement {
-    
-    private SimpleTableSegment renameView;
-    
-    /**
-     * Get rename view.
-     *
-     * @return rename view
-     */
-    public Optional<SimpleTableSegment> getRenameView() {
-        return Optional.ofNullable(renameView);
-    }
+public final class PostgreSQLDropTextSearchStatement extends DropTextSearchStatement implements PostgreSQLStatement {
 }

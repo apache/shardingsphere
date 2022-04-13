@@ -42,7 +42,6 @@
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
-    <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
     <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
@@ -50,7 +49,6 @@
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
-    <sql-case id="alter_view_set" value="alter view my_locks set (autovacuum_enabled = false)" db-types="PostgreSQL" />
     <sql-case id="create_publication" value="create publication pub1 for table alter1.t1, all tables in schema alter2" db-types="PostgreSQL" />
     <sql-case id="create_by_mysql_source_test_case1" value="CREATE  VIEW v1 AS SELECT GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a) FROM t1 AS `߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789` GROUP BY a WITH ROLLUP" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case2" value="CREATE DEFINER = u1@192.129.12.11 VIEW v3 as SELECT * FROM t1" db-types="MySQL"/>
@@ -4225,18 +4223,6 @@
     <sql-case id="alter_by_postgresql_source_test_case458" value="ALTER TYPE test_typex DROP ATTRIBUTE a CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case461" value="ALTER VIEW attmp_view_new RENAME TO fail;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case462" value="ALTER VIEW gtest1v ALTER COLUMN b SET DEFAULT 100;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case463" value="ALTER VIEW my_property_normal SET (security_barrier=true);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case464" value="ALTER VIEW my_property_secure SET (security_barrier=false);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case465" value="ALTER VIEW rls_view OWNER TO regress_rls_bob;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case466" value="ALTER VIEW rw_view1 ALTER COLUMN bb SET DEFAULT &apos;View default&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case467" value="ALTER VIEW rw_view1 SET (check_option=here);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case468" value="ALTER VIEW rw_view1 SET (check_option=local);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case469" value="ALTER VIEW rw_view1 SET (security_barrier = true);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case470" value="ALTER VIEW rw_view15 ALTER COLUMN upper SET DEFAULT &apos;NOT SET&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case471" value="ALTER VIEW rw_view2 RESET (check_option);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case472" value="ALTER VIEW rw_view2 SET (check_option=cascaded);" db-types="PostgreSQL"/>
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL"/>
     <sql-case id="call_by_postgresql_source_test_case1" value="CALL ptest10(a =&gt; null, b =&gt; 8, c =&gt; 2);" db-types="PostgreSQL"/>
     <sql-case id="call_by_postgresql_source_test_case2" value="CALL ptest10(b =&gt; 8, c =&gt; 2, a =&gt; 0);" db-types="PostgreSQL"/>
@@ -5217,32 +5203,6 @@
     <sql-case id="do_by_postgresql_source_test_case17" value="DO $x$ DECLARE 	r record; 	r2 record; 	cond text; 	idx_ctids tid[]; 	ss_ctids tid[]; 	count int; 	plan_ok bool; 	plan_line text; BEGIN 	FOR r IN SELECT colname, oper, typ, value[ordinality], matches[ordinality] FROM brinopers_bloom, unnest(op) WITH ORDINALITY AS oper LOOP 		IF r.value IS NULL THEN 			cond := format(&apos;%I %s %L&apos;, r.colname, r.oper, r.value); 		ELSE 			cond := format(&apos;%I %s %L::%s&apos;, r.colname, r.oper, r.value, r.typ); 		END IF; 		SET enable_seqscan = 0; 		SET enable_bitmapscan = 1; 		plan_ok := false; 		FOR plan_line IN EXECUTE format($y$EXPLAIN SELECT array_agg(ctid) FROM brintest_bloom WHERE %s $y$, cond) LOOP 			IF plan_line LIKE &apos;%Bitmap Heap Scan on brintest_bloom%&apos; THEN 				plan_ok := true; 			END IF; 		END LOOP; 		IF NOT plan_ok THEN 			RAISE WARNING &apos;did not get bitmap indexscan plan for %&apos;, r; 		END IF; 		EXECUTE format($y$SELECT array_agg(ctid) FROM brintest_bloom WHERE %s $y$, cond) 			INTO idx_ctids; 		SET enable_seqscan = 1; 		SET enable_bitmapscan = 0; 		plan_ok := false; 		FOR plan_line IN EXECUTE format($y$EXPLAIN SELECT array_agg(ctid) FROM brintest_bloom WHERE %s $y$, cond) LOOP 			IF plan_line LIKE &apos;%Seq Scan on brintest_bloom%&apos; THEN 				plan_ok := true; 			END IF; 		END LOOP; 		IF NOT plan_ok THEN 			RAISE WARNING &apos;did not get seqscan plan for %&apos;, r; 		END IF; 		EXECUTE format($y$SELECT array_agg(ctid) FROM brintest_bloom WHERE %s $y$, cond) 			INTO ss_ctids; 		count := array_length(idx_ctids, 1); 		IF NOT (count = array_length(ss_ctids, 1) AND 				idx_ctids @&gt; ss_ctids AND 				idx_ctids &lt;@ ss_ctids) THEN 			RAISE WARNING &apos;something not right in %: count %&apos;, r, count; 			SET enable_seqscan = 1; 			SET enable_bitmapscan = 0; 			FOR r2 IN EXECUTE &apos;SELECT &apos; || r.colname || &apos; FROM brintest_bloom WHERE &apos; || cond LOOP 				RAISE NOTICE &apos;seqscan: %&apos;, r2; 			END LOOP; 			SET enable_seqscan = 0; 			SET enable_bitmapscan = 1; 			FOR r2 IN EXECUTE &apos;SELECT &apos; || r.colname || &apos; FROM brintest_bloom WHERE &apos; || cond LOOP 				RAISE NOTICE &apos;bitmapscan: %&apos;, r2; 			END LOOP; 		END IF; 		IF count != r.matches THEN RAISE WARNING &apos;unexpected number of results % for %&apos;, count, r; END IF; 	END LOOP; END; $x$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case18" value="DO $x$ DECLARE 	r record; 	r2 record; 	cond text; 	idx_ctids tid[]; 	ss_ctids tid[]; 	count int; 	plan_ok bool; 	plan_line text; BEGIN 	FOR r IN SELECT colname, oper, typ, value[ordinality], matches[ordinality] FROM brinopers_multi, unnest(op) WITH ORDINALITY AS oper LOOP 		IF r.value IS NULL THEN 			cond := format(&apos;%I %s %L&apos;, r.colname, r.oper, r.value); 		ELSE 			cond := format(&apos;%I %s %L::%s&apos;, r.colname, r.oper, r.value, r.typ); 		END IF; 		SET enable_seqscan = 0; 		SET enable_bitmapscan = 1; 		plan_ok := false; 		FOR plan_line IN EXECUTE format($y$EXPLAIN SELECT array_agg(ctid) FROM brintest_multi WHERE %s $y$, cond) LOOP 			IF plan_line LIKE &apos;%Bitmap Heap Scan on brintest_multi%&apos; THEN 				plan_ok := true; 			END IF; 		END LOOP; 		IF NOT plan_ok THEN 			RAISE WARNING &apos;did not get bitmap indexscan plan for %&apos;, r; 		END IF; 		EXECUTE format($y$SELECT array_agg(ctid) FROM brintest_multi WHERE %s $y$, cond) 			INTO idx_ctids; 		SET enable_seqscan = 1; 		SET enable_bitmapscan = 0; 		plan_ok := false; 		FOR plan_line IN EXECUTE format($y$EXPLAIN SELECT array_agg(ctid) FROM brintest_multi WHERE %s $y$, cond) LOOP 			IF plan_line LIKE &apos;%Seq Scan on brintest_multi%&apos; THEN 				plan_ok := true; 			END IF; 		END LOOP; 		IF NOT plan_ok THEN 			RAISE WARNING &apos;did not get seqscan plan for %&apos;, r; 		END IF; 		EXECUTE format($y$SELECT array_agg(ctid) FROM brintest_multi WHERE %s $y$, cond) 			INTO ss_ctids; 		count := array_length(idx_ctids, 1); 		IF NOT (count = array_length(ss_ctids, 1) AND 				idx_ctids @&gt; ss_ctids AND 				idx_ctids &lt;@ ss_ctids) THEN 			RAISE WARNING &apos;something not right in %: count %&apos;, r, count; 			SET enable_seqscan = 1; 			SET enable_bitmapscan = 0; 			FOR r2 IN EXECUTE &apos;SELECT &apos; || r.colname || &apos; FROM brintest_multi WHERE &apos; || cond LOOP 				RAISE NOTICE &apos;seqscan: %&apos;, r2; 			END LOOP; 			SET enable_seqscan = 0; 			SET enable_bitmapscan = 1; 			FOR r2 IN EXECUTE &apos;SELECT &apos; || r.colname || &apos; FROM brintest_multi WHERE &apos; || cond LOOP 				RAISE NOTICE &apos;bitmapscan: %&apos;, r2; 			END LOOP; 		END IF; 		IF count != r.matches THEN RAISE WARNING &apos;unexpected number of results % for %&apos;, count, r; END IF; 	END LOOP; END; $x$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case19" value="DO LANGUAGE plpgsql $$begin return 1; end$$;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case212" value="DROP SERVER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case213" value="DROP SERVER IF EXISTS test_server_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case214" value="DROP SERVER nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case215" value="DROP SERVER s0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case216" value="DROP SERVER s1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case217" value="DROP SERVER s2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case218" value="DROP SERVER s2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case219" value="DROP SERVER s3;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case220" value="DROP SERVER s4;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case221" value="DROP SERVER s6;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case222" value="DROP SERVER s7;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case223" value="DROP SERVER test_server_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case260" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case261" value="DROP TEXT SEARCH CONFIGURATION IF EXISTS test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case262" value="DROP TEXT SEARCH CONFIGURATION test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case263" value="DROP TEXT SEARCH CONFIGURATION test_tsconfig_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case264" value="DROP TEXT SEARCH DICTIONARY IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case265" value="DROP TEXT SEARCH DICTIONARY IF EXISTS test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case266" value="DROP TEXT SEARCH DICTIONARY test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case267" value="DROP TEXT SEARCH DICTIONARY test_tsdict_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case268" value="DROP TEXT SEARCH PARSER IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case269" value="DROP TEXT SEARCH PARSER IF EXISTS test_tsparser_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case270" value="DROP TEXT SEARCH PARSER test_tsparser_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case271" value="DROP TEXT SEARCH TEMPLATE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case272" value="DROP TEXT SEARCH TEMPLATE IF EXISTS test_tstemplate_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case273" value="DROP TEXT SEARCH TEMPLATE test_tstemplate_exists;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case1" value="EXECUTE cprep;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case2" value="EXECUTE foo;" db-types="PostgreSQL"/>
     <sql-case id="execute_by_postgresql_source_test_case3" value="EXECUTE foo;" db-types="PostgreSQL"/>
@@ -7363,12 +7323,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case108" value="alter view my_locks reset (autovacuum_enabled);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case109" value="alter view my_locks reset (security_barrier);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case110" value="alter view my_locks set (autovacuum_enabled = false);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case111" value="alter view my_locks set (security_barrier=off);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case112" value="alter view uv_iocu_view alter column bb set default &apos;view default&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case113" value="alter view v1 rename column a to x;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case1" value="cluster clstr_4 using cluster_sort;" db-types="PostgreSQL"/>
     <sql-case id="low_cluster_by_postgresql_source_test_case2" value="cluster clstr_temp using clstr_temp_pkey;" db-types="PostgreSQL"/>
     <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL"/>

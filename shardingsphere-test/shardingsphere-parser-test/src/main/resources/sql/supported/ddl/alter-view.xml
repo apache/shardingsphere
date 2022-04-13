@@ -16,7 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-server sql-case-id="drop_server" />
-    <drop-server sql-case-id="drop_server_if_exists" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_view" value="ALTER VIEW customer_ro COMPILE;" db-types="Oracle" />
+</sql-cases>

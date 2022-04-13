@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * MySQL create view statement.
+ * Alter view statement test case.
  */
-@ToString
-public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
+public final class AlterViewStatementTestCase extends SQLParserTestCase {
 }

@@ -17,6 +17,12 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-server sql-case-id="drop_server" />
-    <drop-server sql-case-id="drop_server_if_exists" />
+    <drop-text-search sql-case-id="drop_text_search_configuration_if_exists" />
+    <drop-text-search sql-case-id="drop_text_search_configuration" />
+    <drop-text-search sql-case-id="drop_text_search_dictionary_if_exists" />
+    <drop-text-search sql-case-id="drop_text_search_dictionary" />
+    <drop-text-search sql-case-id="drop_text_search_parser_if_exists" />
+    <drop-text-search sql-case-id="drop_text_search_parser" />
+    <drop-text-search sql-case-id="drop_text_search_template_if_exists" />
+    <drop-text-search sql-case-id="drop_text_search_template" />
 </sql-parser-test-cases>
