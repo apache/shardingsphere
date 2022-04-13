@@ -1034,6 +1034,17 @@ alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
     ;
 
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
 deallocateUnusedClause
     : DEALLOCATE UNUSED (KEEP sizeClause)?
     ;

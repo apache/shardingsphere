@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -39,7 +40,7 @@ public final class PacketCodecTest {
     @Mock
     private DatabasePacketCodecEngine databasePacketCodecEngine;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
     
     @Mock
@@ -55,6 +56,7 @@ public final class PacketCodecTest {
     @Test
     public void assertDecodeWithValidHeader() {
         when(byteBuf.readableBytes()).thenReturn(1);
+        when(byteBuf.capacity()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(true);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
         verify(databasePacketCodecEngine).decode(context, byteBuf, Collections.emptyList());

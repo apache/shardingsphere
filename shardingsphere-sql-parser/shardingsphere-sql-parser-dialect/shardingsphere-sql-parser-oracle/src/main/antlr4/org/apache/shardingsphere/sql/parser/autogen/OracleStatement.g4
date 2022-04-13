@@ -71,5 +71,6 @@ execute
     | dropDirectory
     | dropView
     | dropTrigger
+    | alterView
     ) SEMI_?
     ;
