@@ -43,7 +43,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
@@ -144,9 +144,9 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         metaDataPersistService.ifPresent(op -> op.getSchemaRuleService().persist(schemaName, toBeUpdatedRuleConfigs));
     }
     
-    private void checkSchemaName(final String schemaName) {
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+    private void checkDatabaseName(final String databaseName) {
+        if (!ProxyContext.getInstance().getAllSchemaNames().contains(databaseName)) {
+            throw new SchemaNotExistedException(databaseName);
         }
     }
     
@@ -156,20 +156,20 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
             return;
         }
         File yamlFile = new File(sqlStatement.getFilePath().get());
-        YamlProxySchemaConfiguration yamlConfig;
+        YamlProxyDatabaseConfiguration yamlConfig;
         try {
-            yamlConfig = YamlEngine.unmarshal(yamlFile, YamlProxySchemaConfiguration.class);
+            yamlConfig = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
             if (null == yamlConfig) {
                 return;
             }
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        String schemaName = yamlConfig.getSchemaName();
-        DistSQLException.predictionThrow(!Strings.isNullOrEmpty(schemaName), () -> new ImportSchemaNotExistedException(yamlFile.getName()));
-        checkSchemaName(schemaName);
+        String databaseName = yamlConfig.getDatabaseName();
+        DistSQLException.predictionThrow(!Strings.isNullOrEmpty(databaseName), () -> new ImportSchemaNotExistedException(yamlFile.getName()));
+        checkDatabaseName(databaseName);
         DistSQLException.predictionThrow(null != yamlConfig.getDataSources() && !yamlConfig.getDataSources().isEmpty(), () -> new ImportResourceNotExistedException(yamlFile.getName()));
-        alterResourcesConfig(schemaName, yamlConfig.getDataSources());
-        alterRulesConfig(schemaName, yamlConfig.getRules());
+        alterResourcesConfig(databaseName, yamlConfig.getDataSources());
+        alterRulesConfig(databaseName, yamlConfig.getRules());
     }
 }

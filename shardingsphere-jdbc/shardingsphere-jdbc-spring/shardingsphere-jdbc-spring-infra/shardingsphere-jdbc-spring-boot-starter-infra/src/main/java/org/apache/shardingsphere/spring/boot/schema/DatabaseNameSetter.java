@@ -25,24 +25,28 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
- * Schema name setter.
+ * Database name setter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNameSetter {
+public final class DatabaseNameSetter {
     
-    private static final String PREFIX = "spring.shardingsphere.schema.";
+    private static final String DATABASE_NAME_KEY = "spring.shardingsphere.database.name";
     
-    private static final String SCHEMA_NAME = "name";
+    private static final String SCHEMA_NAME_KEY = "spring.shardingsphere.schema.name";
     
     /**
-     * Get schema name.
+     * Get database name.
      *
      * @param environment spring boot environment
      * @return schema name
      */
-    public static String getSchemaName(final Environment environment) {
+    public static String getDatabaseName(final Environment environment) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
-        return Strings.isNullOrEmpty(standardEnv.getProperty(PREFIX + SCHEMA_NAME)) ? DefaultSchema.LOGIC_NAME
-                : standardEnv.getProperty(PREFIX + SCHEMA_NAME);
+        String databaseName = standardEnv.getProperty(DATABASE_NAME_KEY);
+        if (!Strings.isNullOrEmpty(databaseName)) {
+            return databaseName;
+        }
+        String schemaName = standardEnv.getProperty(SCHEMA_NAME_KEY);
+        return Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
     }
 }

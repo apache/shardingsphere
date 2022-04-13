@@ -247,9 +247,9 @@ public final class RuleAlteredJobWorker {
     }
     
     @SuppressWarnings("unchecked")
-    private YamlRootConfiguration getYamlRootConfiguration(final String schemaName, final String dataSources, final String rules) {
+    private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final String dataSources, final String rules) {
         YamlRootConfiguration result = new YamlRootConfiguration();
-        result.setSchemaName(schemaName);
+        result.setDatabaseName(databaseName);
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
         disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
