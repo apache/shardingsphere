@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.impl;
+package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
