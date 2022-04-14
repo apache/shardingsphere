@@ -52,11 +52,14 @@ public final class IntervalShardingAlgorithmTest {
     
     private IntervalShardingAlgorithm shardingAlgorithmByDay;
     
+    private IntervalShardingAlgorithm shardingAlgorithmByDayWithMillisecond;
+    
     @Before
     public void setup() {
         initShardStrategyByMonth();
         initShardStrategyByQuarter();
         initShardingStrategyByDay();
+        initShardStrategyByDayWithMillisecond();
     }
     
     private void initShardStrategyByQuarter() {
@@ -100,6 +103,23 @@ public final class IntervalShardingAlgorithmTest {
         int stepAmount = 2;
         shardingAlgorithmByDay.getProps().setProperty("datetime-interval-amount", Integer.toString(stepAmount));
         shardingAlgorithmByDay.init();
+        for (int j = 6; j <= 7; j++) {
+            for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
+                availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
+            }
+        }
+    }
+
+    private void initShardStrategyByDayWithMillisecond() {
+        shardingAlgorithmByDayWithMillisecond = new IntervalShardingAlgorithm();
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00.000");
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00.000");
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
+        int stepAmount = 2;
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-interval-amount", Integer.toString(stepAmount));
+        shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-interval-unit", "DAYS");
+        shardingAlgorithmByDayWithMillisecond.init();
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -195,15 +215,7 @@ public final class IntervalShardingAlgorithmTest {
 
     @Test
     public void assertLocalDateTimeWithZeroMillisecond() {
-        IntervalShardingAlgorithm intervalShardingAlgorithm = new IntervalShardingAlgorithm();
-        intervalShardingAlgorithm.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00.000");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00.000");
-        intervalShardingAlgorithm.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-amount", "1");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-unit", "DAYS");
-        intervalShardingAlgorithm.init();
-        Collection<String> actual = intervalShardingAlgorithm.doSharding(availableTablesForDayDataSources,
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27),
                                 LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
@@ -213,16 +225,8 @@ public final class IntervalShardingAlgorithmTest {
     @Test
     @SneakyThrows(ParseException.class)
     public void assertDateWithZeroMillisecond()  {
-        IntervalShardingAlgorithm intervalShardingAlgorithm = new IntervalShardingAlgorithm();
-        intervalShardingAlgorithm.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00.000");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00.000");
-        intervalShardingAlgorithm.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-amount", "1");
-        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-unit", "DAYS");
-        intervalShardingAlgorithm.init();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Collection<String> actual = intervalShardingAlgorithm.doSharding(availableTablesForDayDataSources,
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"),
                                 simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
