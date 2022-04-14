@@ -6,7 +6,7 @@ weight = 3
 
 ### 描述
 
-`SHOW SHARDING TABLE RULE` 语法用于查询指定逻辑库中已经添加的资源。
+`SHOW SHARDING TABLE RULE` 语法用于查询指定逻辑库中的分片规则。
 
 ### 语法
 ```

@@ -6,7 +6,7 @@ weight = 3
 
 ### Description
 
-The `SHOW SHARDING TABLE RULE` syntax is used to query the resources that have been added in the specified schema.
+The `SHOW SHARDING TABLE RULE` syntax is used to query the sharding table rule in the specified schema.
 
 ### Syntax
 ```
