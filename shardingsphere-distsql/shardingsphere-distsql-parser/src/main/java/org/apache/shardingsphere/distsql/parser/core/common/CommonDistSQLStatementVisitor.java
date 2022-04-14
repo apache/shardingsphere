@@ -498,7 +498,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitImportSchemaConfiguration(final ImportSchemaConfigurationContext ctx) {
-        return new ImportSchemaConfigurationStatement(Optional.ofNullable(getIdentifierValue(ctx.filePath())));
+        return new ImportSchemaConfigurationStatement(getIdentifierValue(ctx.filePath()));
     }
     
     private String getIdentifierValue(final ParseTree context) {

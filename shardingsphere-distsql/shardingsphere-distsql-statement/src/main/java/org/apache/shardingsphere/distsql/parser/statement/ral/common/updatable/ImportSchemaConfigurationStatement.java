@@ -30,5 +30,14 @@ import java.util.Optional;
 @Getter
 public final class ImportSchemaConfigurationStatement extends UpdatableRALStatement {
     
-    private final Optional<String> filePath;
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     * 
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
 }
