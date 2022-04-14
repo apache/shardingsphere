@@ -34,7 +34,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-    
+
 /**
  * Interval sharding algorithm.
  */
