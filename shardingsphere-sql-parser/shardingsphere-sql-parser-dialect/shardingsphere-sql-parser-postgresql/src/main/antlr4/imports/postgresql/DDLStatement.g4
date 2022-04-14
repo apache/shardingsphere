@@ -1183,10 +1183,10 @@ alterView
     ;
 
 alterViewClauses
-    : alterTableCmds
-    | RENAME TO name
-    | RENAME COLUMN? name TO name
-    | SET SCHEMA name
+    : alterTableCmds #alterViewCmds
+    | RENAME TO name #alterRenameView
+    | RENAME COLUMN? name TO name #alterRenameColumn
+    | SET SCHEMA name #alterSetSchema
     ;
 
 close
@@ -1756,7 +1756,7 @@ dropUserMapping
     ;
 
 dropView
-    : DROP VIEW existClause? nameList dropBehavior?
+    : DROP VIEW existClause? qualifiedNameList dropBehavior?
     ;
 
 importForeignSchema

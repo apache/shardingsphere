@@ -64,7 +64,8 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
         ShardingSphereMetaData metaData = null == connectionSession.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
-        DatabaseType databaseType = null == metaData ? null : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType();
+        DatabaseType databaseType = null == metaData ? connectionSession.getDatabaseType() 
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
         LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {

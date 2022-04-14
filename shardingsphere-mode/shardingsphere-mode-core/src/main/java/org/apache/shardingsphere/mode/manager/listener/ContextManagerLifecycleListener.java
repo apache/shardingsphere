@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.listener;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
  * Context manager lifecycle listener.
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
  * </p>
  */
+@SingletonSPI
 public interface ContextManagerLifecycleListener {
     
     /**

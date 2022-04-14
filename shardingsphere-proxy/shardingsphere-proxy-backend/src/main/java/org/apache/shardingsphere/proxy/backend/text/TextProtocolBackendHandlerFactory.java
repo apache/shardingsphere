@@ -132,7 +132,7 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
-        for (ExtraTextProtocolBackendHandler each : ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class)) {
+        for (ExtraTextProtocolBackendHandler each : ShardingSphereServiceLoader.getServiceInstances(ExtraTextProtocolBackendHandler.class)) {
             if (each.accept(sqlStatement)) {
                 return Optional.of(each);
             }

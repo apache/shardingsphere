@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.newServiceInstances(SQLExecutionHook.class);
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
     
     static {
         ShardingSphereServiceLoader.register(SQLExecutionHook.class);

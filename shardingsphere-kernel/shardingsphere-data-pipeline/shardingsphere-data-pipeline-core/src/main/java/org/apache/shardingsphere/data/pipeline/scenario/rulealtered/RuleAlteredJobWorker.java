@@ -176,11 +176,12 @@ public final class RuleAlteredJobWorker {
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         if (jobConfigOptional.isPresent()) {
-            PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get());
+            PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getActiveVersion(), event.getNewVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+            ShardingSphereEventBus.getInstance().post(new ScalingReleaseSchemaNameLockEvent(event.getSchemaName()));
         }
     }
     
@@ -246,9 +247,9 @@ public final class RuleAlteredJobWorker {
     }
     
     @SuppressWarnings("unchecked")
-    private YamlRootConfiguration getYamlRootConfiguration(final String schemaName, final String dataSources, final String rules) {
+    private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final String dataSources, final String rules) {
         YamlRootConfiguration result = new YamlRootConfiguration();
-        result.setSchemaName(schemaName);
+        result.setDatabaseName(databaseName);
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
         disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
@@ -291,8 +292,8 @@ public final class RuleAlteredJobWorker {
     
     private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
         boolean isUncompletedJobOfSameSchema = false;
-        for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
-            if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
+        for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
+            if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }

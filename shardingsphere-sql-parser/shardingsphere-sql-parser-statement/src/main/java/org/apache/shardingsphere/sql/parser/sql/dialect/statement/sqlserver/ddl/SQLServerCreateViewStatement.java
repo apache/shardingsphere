@@ -17,29 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-
-import java.util.Optional;
 
 /**
  * SQLServer create table statement.
  */
-@Setter
 @ToString
 public final class SQLServerCreateViewStatement extends CreateViewStatement implements SQLServerStatement {
-
-    private SelectStatement select;
-
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
-    }
 }

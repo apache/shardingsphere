@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
@@ -49,15 +53,25 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void watchGovernanceRepositoryConfiguration() {
+        RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             Optional<JobConfigurationPOJO> jobConfigPOJOOptional = getJobConfigPOJO(event);
             if (!jobConfigPOJOOptional.isPresent()) {
                 return;
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
-            if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
+            boolean deleted = DataChangedEvent.Type.DELETED == event.getType();
+            boolean disabled = jobConfigPOJO.isDisabled();
+            if (deleted || disabled) {
+                log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), deleted, disabled);
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                if (deleted) {
+                    new RuleAlteredJobPreparer().cleanup(jobConfig);
+                } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getHandleConfig().getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
+                    log.info("isJobSuccessful=true");
+                    new RuleAlteredJobPreparer().cleanup(jobConfig);
+                }
                 ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;

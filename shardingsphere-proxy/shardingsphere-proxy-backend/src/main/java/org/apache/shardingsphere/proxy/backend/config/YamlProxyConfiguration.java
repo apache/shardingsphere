@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
 import java.util.Map;
@@ -33,5 +33,5 @@ public final class YamlProxyConfiguration {
     
     private final YamlProxyServerConfiguration serverConfiguration;
     
-    private final Map<String, YamlProxySchemaConfiguration> schemaConfigurations;
+    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
 }

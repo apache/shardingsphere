@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
@@ -54,13 +55,7 @@ public final class PostgreSQLSetCharsetExecutor implements DatabaseSetCharsetExe
     
     private Charset parseCharset(final String value) {
         String result = value.toLowerCase(Locale.ROOT);
-        switch (result) {
-            case "default":
-            case "unicode":
-                return StandardCharsets.UTF_8;
-            default:
-                return Charset.forName(value);
-        }
+        return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.findCharacterSet(result);
     }
     
     @Override
