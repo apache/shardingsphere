@@ -8,7 +8,7 @@ chapter = true
 
 **1. Confirm release notes**
 
-The release note should be provided in Chinese / English， confirm whether the Chinese description is clear and whether the English translation is accurate, 
+The release note should be provided in Chinese / English, confirm whether the Chinese description is clear and whether the English translation is accurate, 
 and shall be classified according to the following labels:
 
 1. New Feature

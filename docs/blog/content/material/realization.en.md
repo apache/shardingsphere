@@ -141,7 +141,7 @@ All local transactions will use default isolation level to lock resources, recor
 
 <!-- 开启XA全局事务后，所有子事务会按照本地默认的隔离级别锁定资源，并记录undo和redo日志，然后由TM发起prepare投票，询问所有的子事务是否可以进行提交：当所有子事务反馈的结果为“yes”时，TM再发起commit；若其中任何一个子事务反馈的结果为“no”，TM则发起rollback；如果在prepare阶段的反馈结果为yes，而commit的过程中出现宕机等异常时，则在节点服务重启后，可根据XA recover再次进行commit补偿，以保证数据的一致性。 -->
 
-On 2PC model, the prepare stage needs to wait all involved RMs response and that may lead resource locked for a long time，so it's not suitable for high concurrency and time-consumed sub transaction scenario.
+On 2PC model, the prepare stage needs to wait all involved RMs response and that may lead resource locked for a long time, so it's not suitable for high concurrency and time-consumed sub transaction scenario.
 
 <!-- 2PC模型中，在prepare阶段需要等待所有参与子事务的反馈，因此可能造成数据库资源锁定时间过长，不适合并发高以及子事务生命周长较长的业务场景。 -->
 

@@ -37,7 +37,7 @@ SCTL is made of the below commands：
 | sctl:hint addDatabaseShardingValue xx=yy    |  For the current connection. Add database sharding value yy to the logical table xx.|
 | sctl:hint addTableShardingValue xx=yy   | For the current connection. Add table sharding value yy to the logical table xx.|
 | sctl:hint clear    | For the current connection only. Clear all hint setting.|
-| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false，sharding_type:databases_only/databases_tables`|
+| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false, sharding_type:databases_only/databases_tables`|
 | sctl:hint show table status    | For the current connection only. Query hint database sharding value of the logical table.|
 
 ## Why Integrate SCTL Now?
@@ -189,7 +189,7 @@ Input command
 
 Output
 
-a. If sucessful，show "Query OK, 0 rows affected"；
+a. If sucessful, show "Query OK, 0 rows affected"；
 b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write；
 c. Execute `preview select * from t_order`and see the queried SQL will go to the master database.
 
@@ -290,7 +290,7 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected"；
 b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`；
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_5_codes.png)
@@ -305,7 +305,7 @@ Enter the add command again to add an even value.
 
 Output：
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected"；
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values` = '5,10'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_7_codes.png)
@@ -324,7 +324,7 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected"；
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values`  as '5,10' while `table_sharding_values` is '0'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_9_codes.png)
@@ -360,7 +360,7 @@ Set hint value and then execute the command;
 
 Output
 
-a. If successful，show "Query OK, 0 rows affected";
+a. If successful, show "Query OK, 0 rows affected";
 b. Get readwrite_splitting hint default and sharding hint default; use `show readwrite_splitting hint status ;` or `show sharding hint status;` command to see the result.
 
 **Note: Please remember: if you need to use DistSQL Hint, you need to enable the configuration`proxy-hint-enabled`of ShardingSphere-Proxy. For more information, please read:**

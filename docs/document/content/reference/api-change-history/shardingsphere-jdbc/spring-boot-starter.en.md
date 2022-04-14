@@ -298,11 +298,11 @@ spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
 
-spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES  
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #Type of encryptor, use user-defined ones or built-in ones, e.g. MD5/AES  
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= #Plain column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipherColumn= #Cipher column name 
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #AssistedColumns for query, when use ShardingQueryAssistedEncryptor, it can help query encrypted data
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= #Encryptor name
 ```
 
