@@ -39,7 +39,7 @@ OpenTelemetry 在 2019 年由 OpenTracing 和 OpenCencus 合并而来。
 
 Metrics 则用于收集和展示整个集群的统计指标。Apache ShardingSphere 默认提供了对 Prometheus 的支持。
 
-![概述](https://shardingsphere.apache.org/document/current/img/apm/overview.png)
+![概述](https://shardingsphere.apache.org/document/current/img/apm/overview_v2.png)
 
 ## 挑战
 
