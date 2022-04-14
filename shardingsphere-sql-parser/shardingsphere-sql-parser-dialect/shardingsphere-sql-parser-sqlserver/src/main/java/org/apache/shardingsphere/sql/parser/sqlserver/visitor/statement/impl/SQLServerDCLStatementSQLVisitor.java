@@ -358,7 +358,6 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitRevert(final RevertContext ctx) {
-        SQLServerRevertStatement result = new SQLServerRevertStatement();
-        return result;
+        return new SQLServerRevertStatement();
     }
 }
