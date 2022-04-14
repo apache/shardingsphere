@@ -179,7 +179,7 @@ Output
 - `set readwrite_splitting hint source`
 
 >For the current connection only. Set read-write splitting hint strategy (AUTO or WRITE).
-Supported source types include：AUTO and WRITE（case insensitive）.
+Supported source types include：AUTO and WRITE (case insensitive) .
 > - AUTO： automated readwrite splitting hint
 > - WRITE：compulsory hint at the master library
 
@@ -310,7 +310,7 @@ b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_7_codes.png)
 
-c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1：（ Because the hint values include both odd and even number so it contains all target data sources）
+c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1： ( Because the hint values include both odd and even number so it contains all target data sources) 
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_8_codes.png)
 
