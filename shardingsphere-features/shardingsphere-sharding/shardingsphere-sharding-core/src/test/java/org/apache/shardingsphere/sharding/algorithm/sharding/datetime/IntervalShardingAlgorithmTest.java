@@ -46,6 +46,8 @@ public final class IntervalShardingAlgorithmTest {
     
     private final Collection<String> availableTablesForDayDataSources = new LinkedList<>();
     
+    private final Collection<String> availableTablesForDayWithMillisecondDataSources = new LinkedList<>();
+    
     private IntervalShardingAlgorithm shardingAlgorithmByQuarter;
     
     private IntervalShardingAlgorithm shardingAlgorithmByMonth;
@@ -122,7 +124,7 @@ public final class IntervalShardingAlgorithmTest {
         shardingAlgorithmByDayWithMillisecond.init();
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
-                availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
+                availableTablesForDayWithMillisecondDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
             }
         }
     }
@@ -215,10 +217,9 @@ public final class IntervalShardingAlgorithmTest {
 
     @Test
     public void assertLocalDateTimeWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayDataSources,
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27),
-                                LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
+                        Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27), LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
         assertThat(actual.size(), is(24));
     }
 
@@ -226,10 +227,9 @@ public final class IntervalShardingAlgorithmTest {
     @SneakyThrows(ParseException.class)
     public void assertDateWithZeroMillisecond() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayDataSources,
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"),
-                                simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
+                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
         assertThat(actual.size(), is(24));
     }
 }
