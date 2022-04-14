@@ -13,7 +13,7 @@ This theme defines the following partials :
 - *header*: the header of the content page (contains the breadcrumbs). _Not meant to be overwritten_
 - *custom-header*: custom headers in page. Meant to be overwritten when adding CSS imports. Don't forget to include `style` HTML tag directive in your file
 - *footer*: the footer of the content page (contains the arrows). _Not meant to be overwritten_
-- *custom-footer*:  custom footer in page. Meant to be overwritten when adding Javascript. Don't forget to include `javascript` HTML tag directive in your file
+- *custom-footer*:  custom footer in page. Meant to be overwritten when adding Javacript. Don't forget to include `javascript` HTML tag directive in your file
 - *favicon*: the favicon
 - *logo*: the logo, on top left hand corner.
 - *meta*: HTML meta tags, if you want to change default behavior
@@ -33,7 +33,7 @@ The size of the logo will adapt automatically
 
 ## Change the favicon
 
-If your favicon is a png, just drop off your image in your local `static/images/` folder and names it `favicon.png`
+If your favicon is a png, just drop off your image in your local `static/images/` folder and name it `favicon.png`
 
 If you need to change this default behavior, create a new file in `layouts/partials/` named `favicon.html`. Then write something like this:
 
@@ -53,7 +53,7 @@ If you need to change this default behavior, create a new file in `layouts/parti
   themeVariant = "red"
 ```
 
-![Red variant](/basics/style-customization/images/red-variant.png?width=60pc)
+![Red variant](/en/basics/style-customization/images/red-variant.png?width=60pc)
 
 ### Blue variant
 
@@ -63,7 +63,7 @@ If you need to change this default behavior, create a new file in `layouts/parti
   themeVariant = "blue"
 ```
 
-![Blue variant](/basics/style-customization/images/blue-variant.png?width=60pc)
+![Blue variant](/en/basics/style-customization/images/blue-variant.png?width=60pc)
 
 ### Green variant
 
@@ -73,7 +73,7 @@ If you need to change this default behavior, create a new file in `layouts/parti
   themeVariant = "green"
 ```
 
-![Green variant](/basics/style-customization/images/green-variant.png?width=60pc)
+![Green variant](/en/basics/style-customization/images/green-variant.png?width=60pc)
 
 ### 'Yours‘ variant
 

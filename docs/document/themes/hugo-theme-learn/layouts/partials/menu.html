@@ -10,11 +10,20 @@
         {{ partial "search.html" . }}
     {{end}}
   </div>
+  <!-- {{if not .Site.Params.disableLandingPageButton }}
+    <section id="homelinks">
+      <ul>
+        <li>
+            <a class="padding" href='{{ (cond (and (ne .Site.Params.landingPageURL nil) (.Site.IsMultiLingual)) .Site.Params.landingPageURL "/") }}'>{{ safeHTML (cond (ne .Site.Params.landingPageName nil) .Site.Params.landingPageName "<i class='fas fa-home'></i> Home") }}</a>
+        </li>
+      </ul>
+    </section>
+  {{end}} -->
 
     <div class="highlightable">
     <ul class="topics">
 
-        {{if eq .Site.Params.ordersectionsby "title"}}  
+        {{if eq .Site.Params.ordersectionsby "title"}}
           {{range .Site.Home.Sections.ByTitle}}
           {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "showvisitedlinks" $showvisitedlinks}}
           {{end}}
@@ -22,7 +31,7 @@
           {{range .Site.Home.Sections.ByWeight}}
           {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "showvisitedlinks" $showvisitedlinks}}
           {{end}}
-        {{end}} 
+        {{end}}
     </ul>
 
     {{ $disableShortcutsTitle := .Site.Params.DisableShortcutsTitle}}
@@ -31,7 +40,7 @@
         <h3>{{ if not $disableShortcutsTitle}}{{ T "Shortcuts-Title"}}{{ end }}</h3>
         <ul>
           {{ range sort . "Weight"}}
-              <li> 
+              <li>
                   {{.Pre}}<a class="padding" href="{{.URL | absLangURL }}">{{safeHTML .Name}}</a>{{.Post}}
               </li>
           {{end}}
@@ -39,9 +48,52 @@
       </section>
     {{end}}
 
-    <!-- {{ partial "language.html" . }} -->
+    <!-- {{ if or .Site.IsMultiLingual $showvisitedlinks }}
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      {{ if and .Site.IsMultiLingual (not .Site.Params.DisableLanguageSwitchingButton)}}
+        <li>
+          <a class="padding">
+            <i class="fas fa-language fa-fw"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          {{ $siteLanguages := .Site.Languages}}
+          {{ $pageLang := .Page.Lang}}
+          {{ range .Page.AllTranslations }}
+              {{ $translation := .}}
+              {{ range $siteLanguages }}
+                  {{ if eq $translation.Lang .Lang }}
+                    {{ $selected := false }}
+                    {{ if eq $pageLang .Lang}}
+                      <option id="{{ $translation.Language }}" value="{{ $translation.Permalink }}" selected>{{ .LanguageName }}</option>
+                    {{ else }}
+                      <option id="{{ $translation.Language }}" value="{{ $translation.Permalink }}">{{ .LanguageName }}</option>
+                    {{ end }}
+                  {{ end }}
+              {{ end }}
+          {{ end }}
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+      {{end}}
 
-    <!-- download button -->
+      {{ if $showvisitedlinks}}
+        <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fas fa-history fa-fw"></i> {{T "Clear-History"}}</a></li>
+      {{ end }}
+      </ul>
+    </section>
+    {{ end }} -->
+     <!-- download button -->
     <!-- <hr /> -->
     {{ if eq .Lang "en"}}
       <a class="padding" href="{{"https://shardingsphere.apache.org/pdf/shardingsphere_docs_en.pdf" | absURL}}">
@@ -51,7 +103,7 @@
         <!-- class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;-->下载PDF文档<!--&nbsp;&nbsp; &nbsp; is a placeholder -->
     {{end}}
     </a>
-    
+
     <section id="footer">
       {{ partial "menu-footer.html" . }}
     </section>
@@ -62,38 +114,23 @@
 {{ define "section-tree-nav" }}
 {{ $showvisitedlinks := .showvisitedlinks }}
 {{ $currentNode := .currentnode }}
+{{ $currentFileUniqueID := "" }}
+{{ with $currentNode.File }}{{ $currentFileUniqueID = .UniqueID }}{{ end }}
  {{with .sect}}
-  {{if .IsSection}}
+  {{if and .IsSection (or (not .Params.hidden) $.showhidden)}}
     {{safeHTML .Params.head}}
-    <li data-nav-id="{{.URL}}" title="{{.Title}}" class="dd-item 
+    <li data-nav-id="{{.RelPermalink}}" title="{{.Title}}" class="dd-item
         {{if .IsAncestor $currentNode }}parent{{end}}
-        {{if eq .UniqueID $currentNode.UniqueID}}active{{end}}
+        {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}
         {{if .Params.alwaysopen}}parent{{end}}
         ">
-      {{ $numberOfPages := (add (len .Pages) (len .Sections)) }}      
       <a href="{{.RelPermalink}}">
-         <i class="collapse" style="display:inline; font-family:'courier';">
-         {{ if ne $numberOfPages 0 }}
-             <svg  class="icon icon-down" 
-              style="display: {{if .IsAncestor $currentNode }}inline-block;{{else}}none;{{end}}"
-              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
-              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
-            </svg>
-            <svg  class="icon icon-right" 
-              style="display: {{if .IsAncestor $currentNode }}none;{{else}}inline-block;{{end}}"
-              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
-              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
-            </svg>
-          {{else}}
-            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
-          {{end}}
-          </i>
           {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
           {{ if $showvisitedlinks}}
-            <i class="fa fa-check read-icon"></i>
+            <i class="fas fa-check read-icon"></i>
           {{ end }}
       </a>
-      
+      {{ $numberOfPages := (add (len ( where .Pages "Params.hidden" "ne" true )) (len ( where .Sections "Params.hidden" "ne" true ))) }}
       {{ if ne $numberOfPages 0 }}
         <ul>
           {{ $currentNode.Scratch.Set "pages" .Pages }}
@@ -101,36 +138,34 @@
             {{ $currentNode.Scratch.Set "pages" (.Pages | union .Sections) }}
           {{end}}
           {{ $pages := ($currentNode.Scratch.Get "pages") }}
-          
-        {{if eq .Site.Params.ordersectionsby "title"}}  
+
+        {{if eq .Site.Params.ordersectionsby "title"}}
           {{ range $pages.ByTitle }}
-            {{ if and .Params.hidden (not $.showhidden) }} 
+            {{ if and .Params.hidden (not $.showhidden) }}
             {{else}}
             {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "showvisitedlinks" $showvisitedlinks }}
             {{end}}
           {{ end }}
         {{else}}
           {{ range $pages.ByWeight }}
-            {{ if and .Params.hidden (not $.showhidden) }} 
+            {{ if and .Params.hidden (not $.showhidden) }}
             {{else}}
             {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "showvisitedlinks" $showvisitedlinks }}
             {{end}}
           {{ end }}
         {{end}}
         </ul>
-      {{ end }}        
+      {{ end }}
     </li>
   {{else}}
     {{ if not .Params.Hidden }}
-      <li data-nav-id="{{.URL}}" title="{{.Title}}" class="dd-item {{if eq .UniqueID $currentNode.UniqueID}}active{{end}}">
+      <li data-nav-id="{{.RelPermalink}}" title="{{.Title}}" class="dd-item {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}">
         <a href="{{ .RelPermalink}}">
-          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
         {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
-        {{ if $showvisitedlinks}}<i class="fa fa-check read-icon"></i>{{end}}
+        {{ if $showvisitedlinks}}<i class="fas fa-check read-icon"></i>{{end}}
         </a>
     </li>
      {{ end }}
   {{end}}
  {{ end }}
 {{ end }}
-

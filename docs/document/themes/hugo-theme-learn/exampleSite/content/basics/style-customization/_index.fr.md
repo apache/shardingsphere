@@ -25,7 +25,7 @@ Ce thème définit les *partials* suivant :
 ## Changer le logo
 
 Créez un nouveau fichier dans `layouts/partials/`, nommé `logo.html`. Puis, écrivez le code HTML voulu.
-Vous pourriez utiliser une balise HTML `img` et référencer une image créée dans le dossier *static*, voire même y coller un cod SVG !
+Vous pourriez utiliser une balise HTML `img` et référencer une image créée dans le dossier *static*, voire même y coller un code SVG !
 
 {{% notice note %}}
 La taille du logo va s'adapter automatiquement
@@ -53,7 +53,7 @@ Si vous avez besoin de changer ce comportement par défaut, créer un nouveau fi
   themeVariant = "red"
 ```
 
-![Variante rouge](/basics/style-customization/images/red-variant.png?width=60pc)
+![Variante rouge](/en/basics/style-customization/images/red-variant.png?width=60pc)
 
 ### Variante bleue
 
@@ -63,7 +63,7 @@ Si vous avez besoin de changer ce comportement par défaut, créer un nouveau fi
   themeVariant = "blue"
 ```
 
-![Variante bleue](/basics/style-customization/images/blue-variant.png?width=60pc)
+![Variante bleue](/en/basics/style-customization/images/blue-variant.png?width=60pc)
 
 ### Variante verte
 
@@ -73,7 +73,7 @@ Si vous avez besoin de changer ce comportement par défaut, créer un nouveau fi
   themeVariant = "green"
 ```
 
-![Variante verte](/basics/style-customization/images/green-variant.png?width=60pc)
+![Variante verte](/en/basics/style-customization/images/green-variant.png?width=60pc)
 
 ### Votre variante
 

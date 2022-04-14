@@ -7,10 +7,10 @@ Le shortcode *button* est simplement un bouton cliquable avec une icône optionn
 
 ```
 {{%/* button href="https://getgrav.org/" */%}}Téléchargez Grav{{%/* /button */%}}
-{{%/* button href="https://getgrav.org/" icon="fa fa-download" */%}}Téléchargez Grav avec icône{{%/* /button */%}}
-{{%/* button href="https://getgrav.org/" icon="fa fa-download" icon-position="right" */%}}Téléchargez Grav avec icône à droite{{%/* /button */%}}
+{{%/* button href="https://getgrav.org/" icon="fas fa-download" */%}}Téléchargez Grav avec icône{{%/* /button */%}}
+{{%/* button href="https://getgrav.org/" icon="fas fa-download" icon-position="right" */%}}Téléchargez Grav avec icône à droite{{%/* /button */%}}
 ```
 
 {{% button href="https://getgrav.org/" %}}Téléchargez Grav{{% /button %}}
-{{% button href="https://getgrav.org/" icon="fa fa-download" %}}Téléchargez Grav avec icône{{% /button %}}
-{{% button href="https://getgrav.org/" icon="fa fa-download" icon-position="right" %}}Téléchargez Grav avec icône à droite{{% /button %}}
+{{% button href="https://getgrav.org/" icon="fas fa-download" %}}Téléchargez Grav avec icône{{% /button %}}
+{{% button href="https://getgrav.org/" icon="fas fa-download" icon-position="right" %}}Téléchargez Grav avec icône à droite{{% /button %}}

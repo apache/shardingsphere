@@ -13,24 +13,24 @@ Edit the website configuration `config.toml` and add a `[[menu.shortcuts]]` entr
 Example from the current website:
 
     [[menu.shortcuts]] 
-    name = "<i class='fa fa-github'></i> Github repo"
+    name = "<i class='fab fa-github'></i> Github repo"
     identifier = "ds"
     url = "https://github.com/matcornic/hugo-theme-learn"
     weight = 10
 
     [[menu.shortcuts]]
-    name = "<i class='fa fa-camera'></i> Showcases"
+    name = "<i class='fas fa-camera'></i> Showcases"
     url = "/showcase"
     weight = 11
 
     [[menu.shortcuts]]
-    name = "<i class='fa fa-bookmark'></i> Hugo Documentation"
+    name = "<i class='fas fa-bookmark'></i> Hugo Documentation"
     identifier = "hugodoc"
     url = "https://gohugo.io/"
     weight = 20
 
     [[menu.shortcuts]]
-    name = "<i class='fa fa-bullhorn'></i> Credits"
+    name = "<i class='fas fa-bullhorn'></i> Credits"
     url = "/credits"
     weight = 30
 
@@ -58,24 +58,24 @@ Example from the current website:
     languageName = "English"
 
     [[Languages.en.menu.shortcuts]] 
-    name = "<i class='fa fa-github'></i> Github repo"
+    name = "<i class='fab fa-github'></i> Github repo"
     identifier = "ds"
     url = "https://github.com/matcornic/hugo-theme-learn"
     weight = 10
 
     [[Languages.en.menu.shortcuts]]
-    name = "<i class='fa fa-camera'></i> Showcases"
+    name = "<i class='fas fa-camera'></i> Showcases"
     url = "/showcase"
     weight = 11
 
     [[Languages.en.menu.shortcuts]]
-    name = "<i class='fa fa-bookmark'></i> Hugo Documentation"
+    name = "<i class='fas fa-bookmark'></i> Hugo Documentation"
     identifier = "hugodoc"
     url = "https://gohugo.io/"
     weight = 20
 
     [[Languages.en.menu.shortcuts]]
-    name = "<i class='fa fa-bullhorn'></i> Credits"
+    name = "<i class='fas fa-bullhorn'></i> Credits"
     url = "/credits"
     weight = 30
 
@@ -85,24 +85,24 @@ Example from the current website:
     languageName = "Français"
 
     [[Languages.fr.menu.shortcuts]]
-    name = "<i class='fa fa-github'></i> Repo Github"
+    name = "<i class='fab fa-github'></i> Repo Github"
     identifier = "ds"
     url = "https://github.com/matcornic/hugo-theme-learn"
     weight = 10
 
     [[Languages.fr.menu.shortcuts]]
-    name = "<i class='fa fa-camera'></i> Vitrine"
+    name = "<i class='fas fa-camera'></i> Vitrine"
     url = "/showcase"
     weight = 11
 
     [[Languages.fr.menu.shortcuts]]
-    name = "<i class='fa fa-bookmark'></i> Documentation Hugo"
+    name = "<i class='fas fa-bookmark'></i> Documentation Hugo"
     identifier = "hugodoc"
     url = "https://gohugo.io/"
     weight = 20
 
     [[Languages.fr.menu.shortcuts]]
-    name = "<i class='fa fa-bullhorn'></i> Crédits"
+    name = "<i class='fas fa-bullhorn'></i> Crédits"
     url = "/credits"
     weight = 30
 

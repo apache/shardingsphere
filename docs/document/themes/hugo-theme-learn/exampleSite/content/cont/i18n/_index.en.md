@@ -12,7 +12,7 @@ It provides:
 - Automatic menu generation from multilingual content
 - In-browser language switching
 
-![I18n menu](/cont/i18n/images/i18n-menu.gif)
+![I18n menu](/en/cont/i18n/images/i18n-menu.gif)
 
 ## Basic configuration
 
@@ -75,4 +75,4 @@ Just set `disableLanguageSwitchingButton=true` in your `config.toml`
   disableLanguageSwitchingButton = true
 ```
 
-![I18n menu](/cont/i18n/images/i18n-menu.gif)
+![I18n menu](/en/cont/i18n/images/i18n-menu.gif)

@@ -2,26 +2,31 @@
 <html lang="{{ .Page.Language | default "en" }}" class="js csstransforms3d">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    {{ .Hugo.Generator }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ hugo.Generator }}
     {{ partial "meta.html" . }}
     {{ partial "favicon.html" . }}
-    <title>{{ .Title }} :: {{ .Site.Title }}</title>
-    
+    <title>{{ .Title }} {{ default "::" .Site.Params.titleSeparator }} {{ .Site.Title }}</title>
+
     {{ $assetBusting := not .Site.Params.disableAssetsBusting }}
     <link href="{{"css/nucleus.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
-    <link href="{{"css/font-awesome.min.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
+    <link href="{{"css/fontawesome-all.min.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/hybrid.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/featherlight.min.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/perfect-scrollbar.min.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/auto-complete.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
+    <link href="{{"css/atom-one-dark-reasonable.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/theme.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
+    <link href="{{"css/tabs.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     <link href="{{"css/hugo-theme.css" | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     {{with .Site.Params.themeVariant}}
-      <link href="{{(printf "css/theme-%s.css" .) | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
+    <link href="{{(printf "css/theme-%s.css" .) | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
     {{end}}
+    {{ range .Site.Params.custom_css -}}
+    <link href="{{(printf "%s" .) | relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" rel="stylesheet">
+    {{- end }}
 
-    <script src="{{"js/jquery-2.x.min.js"| relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}"></script>
+    <script src="{{"js/jquery-3.3.1.min.js"| relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}"></script>
     <!-- baidu Analytics -->
     <script>
       var _hmt = _hmt || [];
@@ -42,45 +47,13 @@
       gtag('config', 'G-HETCF66YL0');
     </script>
 
-    <style type="text/css">
-      :root #header + #content > #left > #rlblock_left{ 
+    <style>
+      :root #header + #content > #left > #rlblock_left{
           display:none !important;
       }
       {{ if .Site.Params.disableInlineCopyToClipBoard }}
         :not(pre) > code + span.copy-to-clipboard {
             display: none;
-        }
-      {{ end }}
-      
-      {{ if .Params.extracss }}
-        #TableOfContents {
-          display: none;
-        }
-        h2, #latest-releases {
-          color:#272822; 
-          padding:0.3rem; 
-          padding-left: 0px; 
-          border-radius:2px; 
-          letter-spacing:-1px; 
-          font-size:1.3rem; 
-          margin: 2rem 0 1rem 0; 
-          font-weight:bold;
-        }
-        #latest-releases {
-          margin: 0rem 0 1rem 0;
-        }
-        h5 {
-          border: 0px solid #405871; 
-          background-color: rgba(110, 141, 173, 0.87); 
-          color:rgba(255, 255, 255, 0.99); 
-          padding:0.3rem; 
-          padding-left: 12px; 
-          border-radius:5px; 
-          font-size: 14.5px;
-          letter-spacing:0.1px;
-        }
-        pre {
-          margin: 1rem 0 1rem 0;
         }
       {{ end }}
     </style>
@@ -109,7 +82,7 @@
                   {{with $File.Path }}
                   <div id="top-github-link">
                     <a class="github-link" title='{{T "Edit-this-page"}}' href="{{ $Site.Params.editURL }}{{ replace $File.Dir "\\" "/" }}{{ $File.LogicalName }}" target="blank">
-                      <i class="fa fa-code-fork"></i>
+                      <i class="fas fa-code-branch"></i>
                       <span id="top-github-link-text">{{T "Edit-this-page"}}</span>
                     </a>
                   </div>
@@ -119,14 +92,19 @@
                 <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
                     <span id="sidebar-toggle-span">
                         <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
-                          <i class="fa fa-bars"></i>
+                          <i class="fas fa-bars"></i>
                         </a>
                     </span>
                   {{ if $toc }}
-                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
                   {{ end }}
                   <span class="links">
-                    {{ template "breadcrumb" dict "page" . "value" .Title }}   
+                 {{$showBreadcrumb := (and (not .Params.disableBreadcrumb) (not .Site.Params.disableBreadcrumb))}}
+                 {{if $showBreadcrumb}}
+                    {{ template "breadcrumb" dict "page" . "value" .Title }}
+                 {{ else }}
+                   {{ .Title }}
+                 {{ end }}
                   </span>
                 </div>
                 {{ if $toc }}
@@ -135,20 +113,27 @@
               </div>
             </div>
             {{ end }}
-
+        <div id="head-tags">
+        {{ partial "tags.html" . }}
+        </div>
         {{ if .Params.chapter }}
           <div id="chapter">
         {{ end }}
         <div id="body-inner">
           {{if and (not .IsHome) (not .Params.chapter) }}
-            <h1>{{.Title}}</h1>
+            <h1>
+              {{ if or (eq .Kind "taxonomy") (eq .Kind "term") }}
+                {{.Data.Singular}} ::
+              {{ end }}
+              {{.Title}}
+            </h1>
           {{end}}
 
         {{define "breadcrumb"}}
           {{$parent := .page.Parent }}
           {{ if $parent }}
-            {{ $value := (printf "<a href='%s'>%s</a> > %s" $parent.URL $parent.Title .value) }}
-            {{ template "breadcrumb" dict "page" $parent "value" $value }} 
+            {{ $value := (printf "<a href='%s'>%s</a> > %s" $parent.RelPermalink $parent.Title .value) }}
+            {{ template "breadcrumb" dict "page" $parent "value" $value }}
           {{else}}
             {{.value|safeHTML}}
           {{end}}

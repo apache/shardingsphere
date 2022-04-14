@@ -39,23 +39,23 @@ C'est tout !
 |:--|:--|:--|
 | title | "Pièces jointes" | Titre de la liste  |
 | style | "" | Choisir entre "orange", "grey", "blue" et "green" pour un style plus sympa |
-| pattern | ".*" | Une expression régulière, utilisée pour filtrer les pièces jointes par leur nom de fichier. <br/><br/>Le paramètre **pattern** doit être une [expression régulière](https://en.wikipedia.org/wiki/Regular_expression).
+| pattern | ".*" | Une expression régulière, utilisée pour filtrer les pièces jointes par leur nom de fichier. Le paramètre **pattern** doit être une [expression régulière](https://en.wikipedia.org/wiki/Regular_expression). |
 
 Par exemple:
 
-* Pour trouver les fichiers avec le suffixe 'jpg', utilisez **.*jpg** (pas *.jpg).
-* Pour trouver les fichiers avec les suffixe 'jpg' ou 'png', utilisez **.*(jpg|png)**
+* Pour trouver les fichiers avec le suffixe '.jpg', utilisez `.*\.jpg$` (pas `*.jpg`).
+* Pour trouver les fichiers avec les suffixe '.jpg' ou '.png', utilisez `.*\.(jpg|png)$`.
 
 ### Exemples
 
 #### Lister les pièces jointes de type pdf ou mp4
 
 
-    {{%/*attachments title="Fichiers associés" pattern=".*(pdf|mp4)"/*/%}}
+    {{%/*attachments title="Fichiers associés" pattern=".*\.(pdf|mp4)$"/*/%}}
 
 s'affiche comme
 
-{{%attachments title="Fichiers associés" pattern=".*(pdf|mp4)"/%}}
+{{%attachments title="Fichiers associés" pattern=".*\.(pdf|mp4)$"/%}}
 
 #### Modifier le style
 
