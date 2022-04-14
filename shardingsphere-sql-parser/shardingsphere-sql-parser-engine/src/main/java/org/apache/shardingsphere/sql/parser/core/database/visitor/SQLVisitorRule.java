@@ -290,6 +290,8 @@ public enum SQLVisitorRule {
     
     SET_PASSWORD("SetPassword", SQLStatementType.DCL),
     
+    REVERT("Revert", SQLStatementType.DCL),
+    
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),

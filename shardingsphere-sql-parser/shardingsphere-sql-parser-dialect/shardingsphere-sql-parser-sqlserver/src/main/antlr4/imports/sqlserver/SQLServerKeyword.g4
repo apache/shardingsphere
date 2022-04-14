@@ -1842,3 +1842,11 @@ WINDOWS
 UNLOCK
     : U N L O C K
     ;
+
+REVERT
+    : R E V E R T
+    ;
+
+COOKIE
+    : C O O K I E
+    ;
