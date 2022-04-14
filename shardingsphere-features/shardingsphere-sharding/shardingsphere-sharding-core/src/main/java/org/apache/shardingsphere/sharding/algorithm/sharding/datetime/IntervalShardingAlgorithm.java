@@ -150,17 +150,15 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private LocalDateTime getLocalDateTime(Comparable<?> endpoint) {
-        LocalDateTime localDateTime;
-        SimpleDateFormat simpleDateFormat;
+        String timeString;
         if (endpoint instanceof LocalDateTime) {
-            localDateTime = parseDateTime(((LocalDateTime) endpoint).format(dateTimeFormatter));
+            timeString = ((LocalDateTime) endpoint).format(dateTimeFormatter);
         } else if (endpoint instanceof Date) {
-            simpleDateFormat = new SimpleDateFormat(getDateTimePattern());
-            localDateTime = parseDateTime(simpleDateFormat.format(endpoint));
+            timeString = new SimpleDateFormat(getDateTimePattern()).format(endpoint);
         } else {
-            localDateTime = parseDateTime(endpoint.toString());
+            timeString = endpoint.toString();
         }
-        return localDateTime;
+        return parseDateTime(timeString);
     }
     
     private LocalDateTime parseDateTime(final String value) {
