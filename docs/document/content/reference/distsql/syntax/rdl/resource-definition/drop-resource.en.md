@@ -16,8 +16,8 @@ DropResource ::=
 ### Supplement
 
 - `DROP RESOURCE` will only drop resources in Proxy, the real data source corresponding to the resource will not be dropped
-- Unable to drop resources already used by rules. `Resources are still in used.` exception when removing resources used by rules
-- When there are only single table rule in the removed resources, and the user confirms that the restrictions of the single table rule can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the resources
+- Unable to drop resources already used by rules. `Resources are still in used.` will prompt when removing resources used by rules
+- The resource need to be removed only contains `SINGLE TABLE RULE`, and when the user confirms that this restriction can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the resource
 ### Example
 - Drop a resource
 ```SQL
