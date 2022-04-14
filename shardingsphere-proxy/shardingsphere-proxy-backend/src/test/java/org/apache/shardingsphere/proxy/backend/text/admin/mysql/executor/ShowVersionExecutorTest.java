@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowVersionExecutorTest {
@@ -37,7 +38,9 @@ public final class ShowVersionExecutorTest {
         String schemaName = "test";
         MySQLServerInfo.setServerVersion(schemaName, "8.0.26");
         ShowVersionExecutor executor = new ShowVersionExecutor();
-        executor.execute(mock(ConnectionSession.class));
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getSchemaName()).thenReturn(schemaName);
+        executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion(schemaName)));
