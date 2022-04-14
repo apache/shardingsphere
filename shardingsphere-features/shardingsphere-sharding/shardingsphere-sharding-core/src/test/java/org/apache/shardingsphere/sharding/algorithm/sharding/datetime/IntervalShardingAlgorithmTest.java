@@ -111,7 +111,7 @@ public final class IntervalShardingAlgorithmTest {
             }
         }
     }
-
+    
     private void initShardStrategyByDayWithMillisecond() {
         shardingAlgorithmByDayWithMillisecond = new IntervalShardingAlgorithm();
         shardingAlgorithmByDayWithMillisecond.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
