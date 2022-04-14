@@ -48,7 +48,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
     
     public MySQLFrontendEngine() {
-        MySQLServerInfo.setDefualtServerVersion(ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+        MySQLServerInfo.setDefualtMysqlVersion(ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getProps().<String>getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
     }
     

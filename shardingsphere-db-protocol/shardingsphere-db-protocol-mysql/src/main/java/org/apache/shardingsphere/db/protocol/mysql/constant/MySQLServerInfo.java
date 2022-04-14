@@ -68,12 +68,12 @@ public final class MySQLServerInfo {
     }
     
     /**
-     * Set default server version.
+     * Set default mysql version.
      * 
-     * @param defaultServerVersion default server version
+     * @param defaultMysqlVersion default mysql version
      */
-    public static void setDefualtServerVersion(final String defaultServerVersion) {
-        defaultMysqlVersion = String.format(SERVER_VERSION_PATTERN, defaultServerVersion, CommonConstants.PROXY_VERSION.get());
+    public static void setDefualtMysqlVersion(final String defaultMysqlVersion) {
+        MySQLServerInfo.defaultMysqlVersion = defaultMysqlVersion;
     }
     
     /**
@@ -82,6 +82,6 @@ public final class MySQLServerInfo {
      * @return server version
      */
     public static String getDefaultServerVersion() {
-        return defaultMysqlVersion;
+        return String.format(SERVER_VERSION_PATTERN, defaultMysqlVersion, CommonConstants.PROXY_VERSION.get());
     }
 }
