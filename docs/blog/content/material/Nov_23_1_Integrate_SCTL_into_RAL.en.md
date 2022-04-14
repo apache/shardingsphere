@@ -12,7 +12,7 @@ Recently, the ShardingSphere community has redesigned the SCTL grammar and the e
 
 ## Review: What's RAL?
 
-RAL is a subtype of DistSQL. DistSQL contains three types:  RDL、RQL and RAL.
+RAL is a subtype of DistSQL. DistSQL contains three types:  RDL, RQL and RAL.
 
 - Resource & Rule Definition Language (RDL)：to create, modify or delete resources and rules.
 

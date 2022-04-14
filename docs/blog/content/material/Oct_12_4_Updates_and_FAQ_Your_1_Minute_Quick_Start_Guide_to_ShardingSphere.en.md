@@ -214,7 +214,7 @@ There are many modules in the project shardingsphere-example. But for now, we on
 cd shardingsphere
 mvn clean install -Prelease
 
-3. Import the shardingsphere-example project to your IDE;、
+3. Import the shardingsphere-example project to your IDE;
 
 4. Prepare a manageable database environment, such as local MySQL examples;
 
