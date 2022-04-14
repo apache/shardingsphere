@@ -63,12 +63,6 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
         return result.toString();
     }
     
-    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
-                                     final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName)
-                && shardingColumnsMap.get(tableName).contains(columnName);
-    }
-    
     /**
      * Build CRC32 SQL.
      *

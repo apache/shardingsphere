@@ -59,10 +59,6 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
         return new ArrayList<>(Collections2.filter(columns, column -> !(column.isPrimaryKey() || isShardingColumn(getShardingColumnsMap(), record.getTableName(), column.getName()))));
     }
     
-    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName) && shardingColumnsMap.get(tableName).contains(columnName);
-    }
-    
     private String buildConflictSQL() {
         // there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
         return "";
