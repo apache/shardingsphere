@@ -279,7 +279,7 @@ encryptRule:
         <logic-column-name>:
           plainColumn: # Plaintext column name
           cipherColumn: # Ciphertext column name
-          assistedQueryColumn: # AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+          assistedQueryColumn: # AssistedColumns for query, when use ShardingQueryAssistedEncryptor, it can help query encrypted data
           encryptor: # Encrypt name
 ```
 

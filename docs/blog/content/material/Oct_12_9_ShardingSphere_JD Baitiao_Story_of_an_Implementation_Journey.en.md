@@ -8,7 +8,7 @@ chapter = true
 
 >JD Baitiao, an internet credit products provider launched in 2014, has always been challenged by data explosion. Every shopping festival is like a technical test for us, but every time the technical staff professionals take proactive strategic initiatives in data architecture development to ensure everything goes smoothly. 
 
-> --Dongfang Zhang，JD Batiao R&D Director 
+> --Dongfang Zhang, JD Batiao R&D Director 
 
 ## The Baitiao Data Architecture Evolution
 

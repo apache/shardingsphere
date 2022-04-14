@@ -7,7 +7,7 @@ weight = 2
 
 ### Environment
 
-JAVA，JDK 1.8+.
+JAVA, JDK 1.8+.
 
 The migration scene we support:
 

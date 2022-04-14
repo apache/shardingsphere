@@ -7,7 +7,7 @@ chapter = true
 
 ## Background
 
-DistSQL（Distributed SQL）is Apache ShardingSphere specific SQL, which provide added-on operation capability beside standard SQL.
+DistSQL (Distributed SQL) is Apache ShardingSphere specific SQL, which provide added-on operation capability beside standard SQL.
 
 ## Challenges
 
