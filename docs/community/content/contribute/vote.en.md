@@ -152,6 +152,7 @@ The Apache ShardingSphere project proposes to invite (nominee) to join the PMC.
 The vote result is available here:
 (vote link here)
 
-Thank you, （initiator)
+Thank you,
+(initiator)
 ```
 
