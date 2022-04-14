@@ -38,9 +38,9 @@ public final class LockRegistryService {
      * Init global lock root patch.
      */
     public void initGlobalLockRoot() {
-        repository.persist(LockNode.getLockRootNodePath(), "");
-        repository.persist(LockNode.getGlobalLocksNodePath(), "");
-        repository.persist(LockNode.getGlobalAckNodePath(), "");
+        repository.persist(LockNode.getStandardLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalSchemaLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalSchemaLockedAckNodePath(), "");
     }
     
     /**
@@ -48,8 +48,8 @@ public final class LockRegistryService {
      *
      * @return all global locks
      */
-    public Collection<String> getAllGlobalLock() {
-        return repository.getChildrenKeys(LockNode.getGlobalLocksNodePath());
+    public Collection<String> getAllGlobalSchemaLocks() {
+        return repository.getChildrenKeys(LockNode.getGlobalSchemaLocksNodePath());
     }
     
     /**
@@ -103,7 +103,7 @@ public final class LockRegistryService {
      * @return true if get the lock, false if not
      */
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return repository.tryLock(LockNode.getLockNodePath(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        return repository.tryLock(LockNode.generateStandardLockName(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -112,6 +112,6 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
-        repository.releaseLock(LockNode.getLockNodePath(lockName));
+        repository.releaseLock(LockNode.generateStandardLockName(lockName));
     }
 }

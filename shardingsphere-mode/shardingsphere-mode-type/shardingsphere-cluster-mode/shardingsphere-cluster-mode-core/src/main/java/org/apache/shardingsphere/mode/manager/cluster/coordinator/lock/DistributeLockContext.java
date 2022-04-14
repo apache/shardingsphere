@@ -65,7 +65,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalLock();
+        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalSchemaLocks();
         if (allGlobalLock.isEmpty()) {
             lockRegistryService.initGlobalLockRoot();
             return;
@@ -107,7 +107,14 @@ public final class DistributeLockContext implements LockContext {
     @Override
     public boolean isLockedSchema(final String schemaName) {
         Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
-        return getGlobalLock(schemaName).map(shardingSphereGlobalLock -> shardingSphereGlobalLock.isLocked(schemaName)).orElse(false);
+        if (globalLocks.isEmpty()) {
+            return false;
+        }
+        ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schemaName);
+        if (null != shardingSphereGlobalLock) {
+            return shardingSphereGlobalLock.isLocked(schemaName);
+        }
+        return false;
     }
     
     private Optional<ShardingSphereGlobalLock> getGlobalLock(final String schemaName) {

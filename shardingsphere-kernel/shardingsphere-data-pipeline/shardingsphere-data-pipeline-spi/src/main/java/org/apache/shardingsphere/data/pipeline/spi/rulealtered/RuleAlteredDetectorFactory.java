@@ -42,7 +42,7 @@ public final class RuleAlteredDetectorFactory {
      * @return new instance of rule altered detector
      */
     public static Optional<RuleAlteredDetector> newInstance(final RuleConfiguration ruleConfig) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+        return ShardingSphereServiceLoader.getServiceInstances(RuleAlteredDetector.class).stream()
                 .filter(each -> each.getRuleConfigClassName().equals(ruleConfig.getClass().getName())).findFirst();
     }
     
@@ -53,7 +53,7 @@ public final class RuleAlteredDetectorFactory {
      * @return new instance of rule altered detector
      */
     public static Optional<RuleAlteredDetector> newInstance(final YamlRuleConfiguration yamlRuleConfig) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
+        return ShardingSphereServiceLoader.getServiceInstances(RuleAlteredDetector.class).stream()
                 .filter(each -> each.getYamlRuleConfigClassName().equals(yamlRuleConfig.getClass().getName())).findFirst();
     }
 }

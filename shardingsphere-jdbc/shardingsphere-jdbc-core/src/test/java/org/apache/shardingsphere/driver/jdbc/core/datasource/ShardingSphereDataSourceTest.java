@@ -53,7 +53,7 @@ public final class ShardingSphereDataSourceTest {
     @Test
     public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
-        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getDatabaseName(), is(DefaultSchema.LOGIC_NAME));
         assertNotNull(actual.getContextManager());
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
@@ -66,7 +66,7 @@ public final class ShardingSphereDataSourceTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
-        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getDatabaseName(), is(DefaultSchema.LOGIC_NAME));
         assertNotNull(actual.getContextManager());
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));

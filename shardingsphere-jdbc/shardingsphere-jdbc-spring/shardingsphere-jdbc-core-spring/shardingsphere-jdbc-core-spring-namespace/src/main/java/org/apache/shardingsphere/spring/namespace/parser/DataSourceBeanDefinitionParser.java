@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
@@ -47,7 +48,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
-        factory.addConstructorArgValue(parseSchemaName(element));
+        factory.addConstructorArgValue(parseDatabaseName(element));
         factory.addConstructorArgValue(parseModeConfiguration(element));
         if (!StringUtils.isEmpty(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_ATTRIBUTE))) {
             factory.addConstructorArgValue(parseDataSources(element));
@@ -58,8 +59,9 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         return factory.getBeanDefinition();
     }
     
-    private String parseSchemaName(final Element element) {
-        return element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_ATTRIBUTE);
+    private String parseDatabaseName(final Element element) {
+        String databaseName = element.getAttribute(DataSourceBeanDefinitionTag.DATABASE_NAME_ATTRIBUTE);
+        return Strings.isNullOrEmpty(databaseName) ? element.getAttribute(DataSourceBeanDefinitionTag.SCHEMA_NAME_ATTRIBUTE) : databaseName;
     }
     
     // TODO parse mode

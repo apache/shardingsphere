@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     
-    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
+    private final Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
     
     static {
         ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
@@ -100,7 +100,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     }
     
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
-        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = collection.stream()
+        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = swappers.stream()
                 .filter(swapper -> swapper instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
                 .map(swapper -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) swapper)
                 .findFirst();

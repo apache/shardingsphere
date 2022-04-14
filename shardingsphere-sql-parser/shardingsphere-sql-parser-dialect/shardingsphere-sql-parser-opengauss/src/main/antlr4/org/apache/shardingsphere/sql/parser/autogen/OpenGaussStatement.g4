@@ -64,6 +64,7 @@ execute
     | alterProcedure
     | alterServer
     | alterSequence
+    | alterView
     | comment
     | createDatabase
     | createFunction

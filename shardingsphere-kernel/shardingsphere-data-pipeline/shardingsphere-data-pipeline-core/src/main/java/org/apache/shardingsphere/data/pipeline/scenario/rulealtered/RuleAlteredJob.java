@@ -52,7 +52,7 @@ public final class RuleAlteredJob implements SimpleJob {
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
+            log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem(), ex);
             RuleAlteredJobSchedulerCenter.stop(shardingContext.getJobName());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
