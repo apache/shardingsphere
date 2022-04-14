@@ -39,7 +39,7 @@ Apache ShardingSphere team has realized `ShardingSphere` automatic monitor probe
 Metrics used to collect and display statistical indicator of cluster.
 Apache ShardingSphere supports Prometheus by default.
 
-![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v2.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
 ## Challenges
 
