@@ -37,7 +37,7 @@
     <sql-case id="create_index_with_double_quota_and_uescape" value="CREATE INDEX U&amp;&quot;order_index!0061t!+000061&quot; UESCAPE '!' ON u&amp;&quot;t_order&quot; (u&amp;&quot;order_id&quot;)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_concurrently" value="CREATE INDEX CONCURRENTLY order_index ON t_order (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_if_not_exists" value="CREATE INDEX IF NOT EXISTS order_index ON t_order (order_id)" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_index_using_btree" value="CREATE INDEX order_index ON t_order (order_id) USING BTREE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_index_using_btree" value="CREATE INDEX order_index ON t_order USING BTREE (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_index_with_unique" value="CREATE UNIQUE INDEX order_index ON t_order (order_id)" db-types="Oracle" />
     <sql-case id="create_index_with_usable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) USABLE" db-types="Oracle" />
     <sql-case id="create_index_with_unusable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) UNUSABLE" db-types="Oracle" />
