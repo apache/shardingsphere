@@ -224,7 +224,7 @@ public final class IntervalShardingAlgorithmTest {
 
     @Test
     @SneakyThrows(ParseException.class)
-    public void assertDateWithZeroMillisecond()  {
+    public void assertDateWithZeroMillisecond() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,

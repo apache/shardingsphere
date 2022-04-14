@@ -153,7 +153,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private LocalDateTime getLocalDateTime(Comparable<?> endpoint) {
+    private LocalDateTime getLocalDateTime(final Comparable<?> endpoint) {
         String timeString;
         if (endpoint instanceof LocalDateTime) {
             timeString = ((LocalDateTime) endpoint).format(dateTimeFormatter);
