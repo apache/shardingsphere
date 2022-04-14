@@ -43,7 +43,7 @@ schemaName ::=
 | key_generator_props               | Sharding key generator properties                         |
 
  ### Example
-- Query the sharding rules of the specified logical schema
+- Query the sharding table rule of the specified logical schema
 ```sql
 SHOW SHARDING TABLE RULES FROM example_db;
 ```
@@ -57,7 +57,7 @@ SHOW SHARDING TABLE RULES FROM example_db;
 2 rows in set (0.01 sec)
 ```
 
-- Query the sharding rules of the current logic schema
+- Query the sharding table rule of the current logic schema
 ```sql
 SHOW SHARDING TABLE RULES;
 ```
@@ -70,7 +70,7 @@ SHOW SHARDING TABLE RULES;
 +--------------+----------------------------+---------------------+------------------------+--------------------------+----------------------------------+----------------------------------------+---------------------+-----------------------+-------------------------------+-----------------------------------------+---------------------+--------------------+---------------------+
 2 rows in set (0.01 sec)
 ```
-- Query the specified sharding rule
+- Query the specified sharding table rule
 ```sql
 SHOW SHARDING TABLE RULE t_order;
 ```
