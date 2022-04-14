@@ -168,7 +168,7 @@ public final class ShardingTableRuleStatementConverter {
         return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
     }
     
-    private static String getKeyGeneratorName(final String tableName, final String columnName) {
-        return String.format("%s_%s", tableName, columnName);
+    private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
+        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
     }
 }
