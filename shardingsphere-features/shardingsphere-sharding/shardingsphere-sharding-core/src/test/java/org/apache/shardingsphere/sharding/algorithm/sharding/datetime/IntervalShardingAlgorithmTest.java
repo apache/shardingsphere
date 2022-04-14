@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -204,6 +207,25 @@ public final class IntervalShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27),
                                 LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
+        assertThat(actual.size(), is(24));
+    }
+
+    @Test
+    @SneakyThrows(ParseException.class)
+    public void assertDateWithZeroMillisecond()  {
+        IntervalShardingAlgorithm intervalShardingAlgorithm = new IntervalShardingAlgorithm();
+        intervalShardingAlgorithm.getProps().setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-lower", "2021-06-01 00:00:00.000");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-upper", "2021-07-31 00:00:00.000");
+        intervalShardingAlgorithm.getProps().setProperty("sharding-suffix-pattern", "yyyyMMdd");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-amount", "1");
+        intervalShardingAlgorithm.getProps().setProperty("datetime-interval-unit", "DAYS");
+        intervalShardingAlgorithm.init();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Collection<String> actual = intervalShardingAlgorithm.doSharding(availableTablesForDayDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"),
+                                simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
         assertThat(actual.size(), is(24));
     }
 }
