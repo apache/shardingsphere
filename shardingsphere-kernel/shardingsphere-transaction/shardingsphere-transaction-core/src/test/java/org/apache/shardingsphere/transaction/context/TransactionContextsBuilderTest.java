@@ -47,8 +47,7 @@ public final class TransactionContextsBuilderTest {
     
     @Test
     public void assertNewInstanceWithEmptyEngines() {
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.emptyMap(), Collections.emptyList()).build();
-        assertTrue(transactionContexts.getEngines().isEmpty());
+        assertTrue(new TransactionContextsBuilder(Collections.emptyMap(), Collections.emptyList()).build().getEngines().isEmpty());
     }
     
     @Test

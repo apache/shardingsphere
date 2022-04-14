@@ -150,7 +150,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
-        Collection<String> tableNames = ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet());
+        Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
         return new ShowTableMetadataStatement(tableNames, null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
@@ -330,13 +330,6 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         return new ShowVariableStatement();
     }
     
-    private String getIdentifierValue(final ParseTree context) {
-        if (null == context) {
-            return null;
-        }
-        return new IdentifierValue(context.getText()).getValue();
-    }
-    
     @Override
     public ASTNode visitClearHint(final ClearHintContext ctx) {
         return new ClearHintStatement();
@@ -369,7 +362,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
         DropTrafficRuleStatement result = new DropTrafficRuleStatement();
         if (null != ctx.ruleName()) {
-            result.setRuleNames(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet()));
+            result.setRuleNames(ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
         }
         result.setContainsIfExistClause(null != ctx.ifExists());
         return result;
@@ -485,8 +478,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitShowRulesUsedResource(final ShowRulesUsedResourceContext ctx) {
         return new ShowRulesUsedResourceStatement(
-                null == ctx.resourceName() ? Optional.empty() : Optional.of(getIdentifierValue(ctx.resourceName())),
-                null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+                null == ctx.resourceName() ? null : getIdentifierValue(ctx.resourceName()), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -509,5 +501,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         ImportSchemaConfigurationStatement result = new ImportSchemaConfigurationStatement();
         result.setFilePath(Optional.ofNullable(getIdentifierValue(ctx.filePath())));
         return result;
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
 }
