@@ -38,11 +38,11 @@ public final class MySQLServerInfo {
     
     public static final MySQLCharacterSet DEFAULT_CHARSET = MySQLCharacterSet.UTF8MB4_GENERAL_CI;
     
-    private static final String DEFAULT_MYSQL_VERSION = "5.6.23";
+    private static String defaultMysqlVersion = "5.7.22";
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
-    private static Map<String, String> serverVersions = new ConcurrentHashMap<>();
+    private static final Map<String, String> SERVER_VERSIONS = new ConcurrentHashMap<>();
     
     /**
      * Set server version.
@@ -51,16 +51,7 @@ public final class MySQLServerInfo {
      * @param serverVersion server version
      */
     public static void setServerVersion(final String schemaName, final String serverVersion) {
-        serverVersions.put(schemaName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
-    }
-    
-    /**
-     * Get default server version.
-     *
-     * @return server version
-     */
-    public static String getDefaultServerVersion() {
-        return String.format(SERVER_VERSION_PATTERN, DEFAULT_MYSQL_VERSION, CommonConstants.PROXY_VERSION.get());
+        SERVER_VERSIONS.put(schemaName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
     }
     
     /**
@@ -70,6 +61,27 @@ public final class MySQLServerInfo {
      * @return server version
      */
     public static String getServerVersion(final String schemaName) {
-        return serverVersions.getOrDefault(schemaName, getDefaultServerVersion());
+        if (schemaName == null) {
+            return getDefaultServerVersion();
+        }
+        return SERVER_VERSIONS.getOrDefault(schemaName, getDefaultServerVersion());
+    }
+    
+    /**
+     * Set default server version.
+     * 
+     * @param defaultServerVersion default server version
+     */
+    public static void setDefualtServerVersion(final String defaultServerVersion) {
+        defaultMysqlVersion = String.format(SERVER_VERSION_PATTERN, defaultServerVersion, CommonConstants.PROXY_VERSION.get());
+    }
+    
+    /**
+     * Get default server version.
+     *
+     * @return server version
+     */
+    public static String getDefaultServerVersion() {
+        return defaultMysqlVersion;
     }
 }

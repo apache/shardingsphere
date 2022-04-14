@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -44,6 +46,11 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final CommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
+    
+    public MySQLFrontendEngine() {
+        MySQLServerInfo.setDefualtServerVersion(ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+                .getProps().<String>getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
+    }
     
     @Override
     public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
