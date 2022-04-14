@@ -94,8 +94,7 @@ Input command
 
 Output
 
-a. If successful, display "Query OK, 0 rows affected"；
-
+a. If successful, display "Query OK, 0 rows affected";
 b. Execute `show variable transaction_type` again and the type is XA now.
 
 - `show variable cached_connection`
@@ -189,9 +188,7 @@ Input command
 
 Output
 
-a. If sucessful, show "Query OK, 0 rows affected"；
-b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write；
-c. Execute `preview select * from t_order`and see the queried SQL will go to the master database.
+a. If sucessful, show "Query OK, 0 rows affected";b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write;c. Execute `preview select * from t_order`and see the queried SQL will go to the master database.
 
     mysql> preview select * from t_order;
     +-----------------+----------------------------------------------+
@@ -269,8 +266,7 @@ Input command
     
 Output
 
-a. If successful, show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; show  `t_order_item`'s `database_sharding_values` as 1. Update `sharding_type value` as `databases_only`.
+a. If successful, show "Query OK, 0 rows affected";b. Execute `show sharding hint status`; show  `t_order_item`'s `database_sharding_values` as 1. Update `sharding_type value` as `databases_only`.
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_3_codes.png)
 
@@ -290,9 +286,7 @@ Input command
     
 Output
 
-a. If successful, show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`；
-
+a. If successful, show "Query OK, 0 rows affected";b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`;
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_5_codes.png)
 
 c. Execute `preview select * from t_order_item`; SQL commands are all hinted to ds_1：
@@ -305,8 +299,7 @@ Enter the add command again to add an even value.
 
 Output：
 
-a. If successful, show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values` = '5,10'：
+a. If successful, show "Query OK, 0 rows affected";b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values` = '5,10'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_7_codes.png)
 
@@ -324,8 +317,7 @@ Input command
     
 Output
 
-a. If successful, show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values`  as '5,10' while `table_sharding_values` is '0'：
+a. If successful, show "Query OK, 0 rows affected";b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values`  as '5,10' while `table_sharding_values` is '0'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_9_codes.png)
 
