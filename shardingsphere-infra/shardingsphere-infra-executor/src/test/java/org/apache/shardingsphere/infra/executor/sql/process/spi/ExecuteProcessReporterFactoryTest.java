@@ -31,5 +31,6 @@ public final class ExecuteProcessReporterFactoryTest {
         Optional<ExecuteProcessReporter> executeProcessReporter = ExecuteProcessReporterFactory.newInstance();
         assertTrue(executeProcessReporter.isPresent());
         assertTrue(executeProcessReporter.get() instanceof ExecuteProcessReporterFixture);
+        
     }
 }
