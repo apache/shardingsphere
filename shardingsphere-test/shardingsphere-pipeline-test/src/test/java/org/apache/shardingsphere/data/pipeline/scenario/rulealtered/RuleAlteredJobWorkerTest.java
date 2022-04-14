@@ -23,11 +23,20 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowCo
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.Assert;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public final class RuleAlteredJobWorkerTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingRuleAlteredDetector.class);
+    }
     
     @BeforeClass
     public static void beforeClass() {
@@ -44,7 +53,14 @@ public final class RuleAlteredJobWorkerTest {
     @Test
     public void assertCreateRuleAlteredContextSuccess() {
         JobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        final RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        Assert.assertNotNull(ruleAlteredContext.getOnRuleAlteredActionConfig());
+        RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        assertNotNull(ruleAlteredContext.getOnRuleAlteredActionConfig());
+    }
+    
+    @Test
+    public void assertRuleAlteredActionEnabled() {
+        ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
+        ruleConfiguration.setScalingName("default_scaling");
+        assertTrue(RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(ruleConfiguration));
     }
 }
