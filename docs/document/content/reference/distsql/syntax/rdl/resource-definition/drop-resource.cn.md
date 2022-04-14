@@ -16,8 +16,8 @@ DropResource ::=
  ### 补充说明
 
 - `DROP RESOURCE` 只会移除 Proxy 中的资源，不会删除与资源对应的真实数据源
-- 无法移除已经被规则使用的资源
-- 移除的资源中仅包含单表，且用户确认可以忽略该限制时，可添加 `IGNORE SINGLE TABLES` 关键字移除资源
+- 无法移除已经被规则使用的资源。移除被规则使用的资源时会出现 `Resources are still in used.` 的异常
+- 移除的资源中仅包含 `SINGLE TABLE RULE`，且用户确认可以忽略该限制时，可添加 `IGNORE SINGLE TABLES` 关键字移除资源
 
  ### 示例
 - 移除资源
