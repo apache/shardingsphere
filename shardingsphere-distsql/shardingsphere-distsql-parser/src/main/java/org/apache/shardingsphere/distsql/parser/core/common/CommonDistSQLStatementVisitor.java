@@ -336,10 +336,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshTableMetadata(final RefreshTableMetadataContext ctx) {
-        RefreshTableMetadataStatement result = new RefreshTableMetadataStatement();
-        result.setTableName(null == ctx.refreshScope() ? Optional.empty() : Optional.ofNullable(getIdentifierValue(ctx.refreshScope().tableName())));
-        result.setResourceName(null == ctx.refreshScope() ? Optional.empty() : Optional.ofNullable(getIdentifierValue(ctx.refreshScope().resourceName())));
-        return result;
+        return null == ctx.refreshScope() ? new RefreshTableMetadataStatement()
+                : new RefreshTableMetadataStatement(getIdentifierValue(ctx.refreshScope().tableName()), getIdentifierValue(ctx.refreshScope().resourceName()));
     }
     
     @Override
