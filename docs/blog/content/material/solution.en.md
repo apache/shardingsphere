@@ -115,7 +115,7 @@ Provides APIs for users and SPIs for developers.
 
 The parent module of two-phases commit transaction. Currently only the sharding-transaction-xa module provides XA protocol support. In the future, more types of transactions based on two-phase commit will be introduced, such as `percolator`, see:
 
-[https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf]。
+[https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf].
 
 - sharding-transaction-base:
 

@@ -62,7 +62,7 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # Key generate algorithm properties
 ```
 
-Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
+Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen).
 
 ### Readwrite-splitting
 

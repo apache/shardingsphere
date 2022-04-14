@@ -581,7 +581,7 @@ Remove the previous release from the [**Release Area**](https://dist.apache.org/
 svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.org/repos/dist/release/shardingsphere/${PREVIOUS.RELEASE.VERSION}
 ```
 
-Previous releases will be archived automatically in [Archive repository](https://archive.apache.org/dist/shardingsphere/)。
+Previous releases will be archived automatically in [Archive repository](https://archive.apache.org/dist/shardingsphere/).
 
 Incubating stage versions will be archived automatically in [Incubator Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
