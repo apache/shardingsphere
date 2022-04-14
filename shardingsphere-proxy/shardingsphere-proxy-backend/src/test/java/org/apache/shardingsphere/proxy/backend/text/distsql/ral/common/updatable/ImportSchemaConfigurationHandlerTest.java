@@ -171,9 +171,7 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     private ImportSchemaConfigurationStatement createSqlStatement(final String importFilePath) {
-        ImportSchemaConfigurationStatement result = new ImportSchemaConfigurationStatement();
-        result.setFilePath(Optional.of(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath()));
-        return result;
+        return new ImportSchemaConfigurationStatement(Optional.of(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath()));
     }
     
     private ConnectionSession mockConnectionSession() {
