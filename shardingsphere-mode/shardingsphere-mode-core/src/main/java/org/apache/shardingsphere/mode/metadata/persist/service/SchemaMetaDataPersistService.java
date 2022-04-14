@@ -165,9 +165,9 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
-     * Load all schema names.
+     * Load all database names.
      *
-     * @return all schema names
+     * @return all database names
      */
     public Collection<String> loadAllNames() {
         return repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataNodePath());

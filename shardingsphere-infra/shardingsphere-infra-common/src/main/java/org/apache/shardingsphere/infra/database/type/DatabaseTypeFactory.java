@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -38,16 +38,16 @@ public final class DatabaseTypeFactory {
     /**
      * Get database type.
      * 
-     * @param schemaConfigs schema configs
+     * @param databaseConfigs database configs
      * @param props props
      * @return database type
      */
-    public static DatabaseType getDatabaseType(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final ConfigurationProperties props) {
+    public static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> dataSources = schemaConfigs.values().stream()
+        Collection<DataSource> dataSources = databaseConfigs.values().stream()
                 .filter(DatabaseTypeFactory::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return DatabaseTypeRecognizer.getDatabaseType(dataSources);
     }
@@ -57,7 +57,7 @@ public final class DatabaseTypeFactory {
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
     }
     
-    private static boolean isComplete(final SchemaConfiguration schemaConfig) {
-        return !schemaConfig.getRuleConfigurations().isEmpty() && !schemaConfig.getDataSources().isEmpty();
+    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
+        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
     }
 }

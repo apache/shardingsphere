@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,9 +39,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -74,7 +74,8 @@ public final class AddResourceBackendHandlerTest {
     
     @Before
     public void setUp() throws Exception {
-        addResourceBackendHandler = new AddResourceBackendHandler(new MySQLDatabaseType(), addResourceStatement, connectionSession);
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        addResourceBackendHandler = new AddResourceBackendHandler(addResourceStatement, connectionSession);
         Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
         field.set(addResourceBackendHandler, validator);
@@ -110,7 +111,7 @@ public final class AddResourceBackendHandlerTest {
     }
     
     private AddResourceStatement createAlterResourceStatementWithDuplicateResourceNames() {
-        List<DataSourceSegment> result = new LinkedList<>();
+        Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_0", null, null, null, "root", "", new Properties()));
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", null, null, null, "root", "", new Properties()));
         return new AddResourceStatement(result);

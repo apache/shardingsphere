@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.schema;
+package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Schema configuration.
+ * Batch execute process context for YAML.
  */
-public interface SchemaConfiguration {
+@NoArgsConstructor
+@Getter
+@Setter
+public final class BatchYamlExecuteProcessContext {
     
-    /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
+    private Collection<YamlExecuteProcessContext> contexts;
     
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    Collection<RuleConfiguration> getRuleConfigurations();
+    public BatchYamlExecuteProcessContext(final Collection<YamlExecuteProcessContext> contexts) {
+        this.contexts = contexts;
+    }
 }
