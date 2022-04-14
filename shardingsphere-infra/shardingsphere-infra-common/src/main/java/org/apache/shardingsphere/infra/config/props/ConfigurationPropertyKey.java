@@ -122,7 +122,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable data source aggregation, default false.
      */
-    DATA_SOURCE_AGGREGATION_ENABLED("data-source-aggregation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    DATA_SOURCE_AGGREGATION_ENABLED("data-source-aggregation-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Proxy mysql default version, default 5.7.22.
+     */
+    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class);
     
     private final String key;
     

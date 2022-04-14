@@ -5,7 +5,7 @@ weight = 1
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
 
 \<shardingsphere:mode />
 
