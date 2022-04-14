@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * Transaction isolation level enum.
+ * SQLServer revert statement.
  */
-@RequiredArgsConstructor
-@Getter
-public enum TransactionIsolationLevel {
-
-    NONE("NONE"),
-    READ_UNCOMMITTED("READ-UNCOMMITTED"),
-    READ_COMMITTED("READ-COMMITTED"),
-    REPEATABLE_READ("REPEATABLE-READ"),
-    SNAPSHOT("SNAPSHOT"),
-    SERIALIZABLE("SERIALIZABLE");
-
-    private final String isolationLevel;
+@ToString
+public final class SQLServerRevertStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Transaction isolation level enum.
+ * Revert statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public enum TransactionIsolationLevel {
-
-    NONE("NONE"),
-    READ_UNCOMMITTED("READ-UNCOMMITTED"),
-    READ_COMMITTED("READ-COMMITTED"),
-    REPEATABLE_READ("REPEATABLE-READ"),
-    SNAPSHOT("SNAPSHOT"),
-    SERIALIZABLE("SERIALIZABLE");
-
-    private final String isolationLevel;
+public final class RevertStatementTestCase extends SQLParserTestCase {
 }

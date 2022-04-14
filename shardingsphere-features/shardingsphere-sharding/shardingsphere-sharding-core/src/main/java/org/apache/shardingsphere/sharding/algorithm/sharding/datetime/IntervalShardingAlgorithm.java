@@ -27,11 +27,13 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -143,16 +145,26 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range) {
-        LocalDateTime lower = range.hasLowerBound() ? parseDateTime(range.lowerEndpoint().toString()) : dateTimeLower;
-        LocalDateTime upper = range.hasUpperBound() ? parseDateTime(range.upperEndpoint().toString()) : dateTimeUpper;
+        LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
+        LocalDateTime upper = range.hasUpperBound() ? parseLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
         BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
         Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private LocalDateTime parseDateTime(final String value) {
-        return LocalDateTime.parse(value.substring(0, dateTimePatternLength), dateTimeFormatter);
+    private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
+        return LocalDateTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    }
+    
+    private String getDateTimeText(final Comparable<?> endpoint) {
+        if (endpoint instanceof LocalDateTime) {
+            return ((LocalDateTime) endpoint).format(dateTimeFormatter);
+        }
+        if (endpoint instanceof Date) {
+            return new SimpleDateFormat(getDateTimePattern()).format(endpoint);
+        }
+        return endpoint.toString();
     }
     
     private Collection<String> getMatchedTables(final LocalDateTime dateTime, final Collection<String> availableTargetNames) {
