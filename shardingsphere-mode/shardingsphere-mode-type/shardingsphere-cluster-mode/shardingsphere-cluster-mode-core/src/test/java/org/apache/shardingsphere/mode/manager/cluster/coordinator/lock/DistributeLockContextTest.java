@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class DistributeLockContextTest {
-
+    
     @Test
     public void assertGetOrCreateSchemaLock() {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
