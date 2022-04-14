@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -68,8 +68,9 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     }
     
     @Override
-    public Map<String, DataSourceProperties> load(final String schemaName) {
-        return isExisted(schemaName) ? getDataSourceProperties(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)))) : new LinkedHashMap<>();
+    public Map<String, DataSourceProperties> load(final String databaseName) {
+        return isExisted(databaseName) ? getDataSourceProperties(repository.get(
+                SchemaMetaDataNode.getMetaDataDataSourcePath(databaseName, getSchemaActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
     @Override
@@ -90,9 +91,9 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     }
     
     @Override
-    public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, 
-                getSchemaActiveVersion(schemaName))));
+    public boolean isExisted(final String databaseName) {
+        return !Strings.isNullOrEmpty(getSchemaActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(databaseName, 
+                getSchemaActiveVersion(databaseName))));
     }
     
     /**
@@ -121,7 +122,7 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
         persist(schemaName, dataSourcePropsMap);
     }
     
-    private String getSchemaActiveVersion(final String schemaName) {
-        return repository.get(SchemaMetaDataNode.getActiveVersionPath(schemaName));
+    private String getSchemaActiveVersion(final String databaseName) {
+        return repository.get(SchemaMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

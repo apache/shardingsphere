@@ -457,3 +457,7 @@ passwordOptionClause
 cryptographicCredentialsOptionClause
     : ADD CREDENTIAL identifier | DROP CREDENTIAL identifier
     ;
+
+revert
+    : REVERT (WITH COOKIE EQ_ variableName)?
+    ;

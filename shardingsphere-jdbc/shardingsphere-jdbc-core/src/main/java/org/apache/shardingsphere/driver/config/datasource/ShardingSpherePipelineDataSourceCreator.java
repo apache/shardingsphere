@@ -40,7 +40,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
         ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
+        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), 
                 Collections.singletonList(shardingRuleConfig), null);
     }
     

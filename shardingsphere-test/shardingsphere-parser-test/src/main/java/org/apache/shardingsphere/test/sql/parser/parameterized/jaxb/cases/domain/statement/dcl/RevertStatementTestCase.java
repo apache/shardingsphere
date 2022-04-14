@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.schema;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
 
-import org.junit.Test;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.mock.env.MockEnvironment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class SchemaNameSetterTest {
-    
-    @Test
-    public void assertSchemaName() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.schema.name", "jdbc_db");
-        StandardEnvironment standardEnvironment = new StandardEnvironment();
-        standardEnvironment.merge(mockEnvironment);
-        String schemaName = SchemaNameSetter.getSchemaName(standardEnvironment);
-        assertThat(schemaName, is("jdbc_db"));
-    }
+/**
+ * Revert statement test case.
+ */
+public final class RevertStatementTestCase extends SQLParserTestCase {
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
@@ -40,9 +40,9 @@ public interface TransactionConfigurationFileGenerator extends StatelessTypedSPI
      * Get transaction rule props.
      *
      * @param originTransactionProps origin transaction properties
-     * @param schemaConfiguration schema configuration
+     * @param databaseConfiguration database configuration
      * @param modeType mode type
      * @return transaction rule props
      */
-    Properties getTransactionProps(Properties originTransactionProps, SchemaConfiguration schemaConfiguration, String modeType);
+    Properties getTransactionProps(Properties originTransactionProps, DatabaseConfiguration databaseConfiguration, String modeType);
 }

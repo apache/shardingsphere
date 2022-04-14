@@ -21,11 +21,14 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.optional.OptionalSPI;
 
 /**
  * Execute process report.
  */
-public interface ExecuteProcessReporter {
+@SingletonSPI
+public interface ExecuteProcessReporter extends OptionalSPI {
     
     /**
      * Report the summary of this task.
@@ -49,4 +52,11 @@ public interface ExecuteProcessReporter {
      * @param constants constants
      */
     void report(String executionID, ExecuteProcessConstants constants);
+    
+    /**
+     * Report clean the task.
+     * 
+     * @param executionID execution ID
+     */
+    void reportClean(String executionID);
 }
