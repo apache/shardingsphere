@@ -171,7 +171,7 @@ public final class RuleAlteredJobWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
-            log.warn("There is an outstanding job with the same schema name");
+            log.warn("There is uncompleted job with the same schema name, please handle it first, current job will be ignored");
             return;
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);

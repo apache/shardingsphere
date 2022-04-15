@@ -18,6 +18,5 @@
 
 <sql-cases>
     <sql-case id="end" value="END" db-types="PostgreSQL,openGauss" />
-    <sql-case id="end_prepare" value="END PREPARED 'transaction1'" db-types="PostgreSQL,openGauss" />
-    <sql-case id="end_in_pg" value="END TRANSACTION AND NO CHAIN" db-types="PostgreSQL,openGauss" />
+    <sql-case id="end_transaction" value="END TRANSACTION AND NO CHAIN" db-types="PostgreSQL,openGauss" />
 </sql-cases>

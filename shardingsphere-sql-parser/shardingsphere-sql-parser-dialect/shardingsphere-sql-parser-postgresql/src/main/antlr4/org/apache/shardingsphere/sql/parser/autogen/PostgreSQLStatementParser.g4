@@ -40,7 +40,9 @@ execute
     | startTransaction
     | end
     | commit
+    | commitPrepared
     | rollback
+    | rollbackPrepared
     | abort
     | savepoint
     | releaseSavepoint
@@ -141,5 +143,5 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
-    ) SEMI_?
+    ) SEMI_? EOF
     ;

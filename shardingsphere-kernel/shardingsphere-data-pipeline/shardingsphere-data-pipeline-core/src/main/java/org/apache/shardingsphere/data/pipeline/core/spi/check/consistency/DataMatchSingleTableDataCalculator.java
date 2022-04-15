@@ -148,6 +148,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
+                    log.info("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
                     return false;
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
@@ -159,6 +160,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
+                        log.info("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
                         return false;
                     }
                 }

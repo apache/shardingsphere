@@ -36,7 +36,9 @@ execute
     | startTransaction
     | end
     | commit
+    | commitPrepared
     | rollback
+    | rollbackPrepared
     | abort
     | savepoint
     | releaseSavepoint
@@ -112,5 +114,6 @@ execute
     | createExtension
     | alterExtension
     | dropExtension
-    ) SEMI_?
+    | dropTextSearch
+    ) SEMI_? EOF
     ;

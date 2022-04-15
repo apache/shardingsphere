@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
@@ -27,10 +28,8 @@ import java.util.Set;
 /**
  * MySQL pipeline SQL builder.
  */
+@NoArgsConstructor
 public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    public MySQLPipelineSQLBuilder() {
-    }
     
     public MySQLPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
@@ -62,12 +61,6 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
         }
         result.setLength(result.length() - 1);
         return result.toString();
-    }
-    
-    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
-                                     final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName)
-                && shardingColumnsMap.get(tableName).contains(columnName);
     }
     
     /**

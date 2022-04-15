@@ -246,6 +246,10 @@ public enum SQLVisitorRule {
     
     UNLOCK("Unlock", SQLStatementType.TCL),
     
+    COMMIT_PREPARED("CommitPrepared", SQLStatementType.TCL),
+    
+    ROLLBACK_PREPARED("RollbackPrepared", SQLStatementType.TCL),
+    
     GRANT("Grant", SQLStatementType.DCL),
     
     GRANT_ROLE_OR_PRIVILEGE_TO("GrantRoleOrPrivilegeTo", SQLStatementType.DCL),

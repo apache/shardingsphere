@@ -27,6 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Import schema configuration statement assert.
@@ -47,7 +48,7 @@ public final class ImportSchemaConfigurationStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertNotNull(actual.getFilePath().get());
+            assertTrue(actual.getFilePath().isPresent());
             assertNotNull(expected.getFilePath());
             assertThat(actual.getFilePath().get(), is(expected.getFilePath()));
         }
