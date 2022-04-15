@@ -34,6 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 public final class MySQLResetPersistStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private boolean containsExistClause;
-
+    
     private IdentifierValue identifier;
 }

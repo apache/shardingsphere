@@ -35,7 +35,7 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WhereExtractUtil {
-
+    
     /**
      * Get join where segment from SelectStatement.
      *
@@ -65,7 +65,7 @@ public final class WhereExtractUtil {
         ExpressionSegment expressionSegment = joinTableSegment.getCondition();
         return new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
     }
-
+    
     /**
      * Get subquery where segment from SelectStatement.
      *
