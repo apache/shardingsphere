@@ -55,7 +55,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     @Override
     public void init() {
-        Properties algorithmProps = getAlgorithmProps();
+        Properties algorithmProps = getProps();
         String chunkSizeValue = algorithmProps.getProperty(CHUNK_SIZE_KEY);
         if (!Strings.isNullOrEmpty(chunkSizeValue)) {
             int chunkSize = Integer.parseInt(chunkSizeValue);

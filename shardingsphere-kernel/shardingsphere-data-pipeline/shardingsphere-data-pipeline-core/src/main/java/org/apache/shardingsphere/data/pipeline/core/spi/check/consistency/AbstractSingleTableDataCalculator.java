@@ -30,7 +30,7 @@ import java.util.Properties;
 @Setter
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
-    private Properties algorithmProps;
+    private Properties props;
     
     @Override
     public void init() {
