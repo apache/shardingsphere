@@ -47,6 +47,9 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        System.out.println("===============================");
+        System.out.println("ack event " + event.getKey());
+        System.out.println("===============================");
         Optional<String> ackLockedName = LockNode.parseGlobalSchemaLockedAckNodePath(event.getKey());
         if (ackLockedName.isPresent()) {
             return handleGlobalAckEvent(event.getType(), ackLockedName.get());
