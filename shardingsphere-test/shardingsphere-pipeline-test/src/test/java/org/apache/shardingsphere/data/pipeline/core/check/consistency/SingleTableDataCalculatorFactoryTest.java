@@ -22,20 +22,20 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Test;
 
-public final class SingleTableDataCalculatorRegistryTest {
+public final class SingleTableDataCalculatorFactoryTest {
     
     @Test
     public void assertNewServiceInstanceSuccess() {
-        SingleTableDataCalculatorRegistry.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new H2DatabaseType().getName());
+        SingleTableDataCalculatorFactory.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new H2DatabaseType().getName());
     }
     
     @Test(expected = NullPointerException.class)
     public void assertNewServiceInstanceFailedNoAlgorithmType() {
-        SingleTableDataCalculatorRegistry.newServiceInstance("not-exists-alg", new H2DatabaseType().getName());
+        SingleTableDataCalculatorFactory.newServiceInstance("not-exists-alg", new H2DatabaseType().getName());
     }
     
     @Test(expected = NullPointerException.class)
     public void assertNewServiceInstanceFailedNoDatabaseType() {
-        SingleTableDataCalculatorRegistry.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new MySQLDatabaseType().getName());
+        SingleTableDataCalculatorFactory.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new MySQLDatabaseType().getName());
     }
 }

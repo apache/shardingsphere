@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Single table data calculator registry.
+ * Single table data calculator factory.
  */
 @Slf4j
-public final class SingleTableDataCalculatorRegistry {
+public final class SingleTableDataCalculatorFactory {
     
     private static final Map<String, Map<String, SingleTableDataCalculator>> ALGORITHM_DATABASE_CALCULATOR_MAP = new HashMap<>();
     
@@ -58,6 +58,9 @@ public final class SingleTableDataCalculatorRegistry {
      * @throws ServiceLoaderInstantiationException if new instance by reflection failed
      */
     public static SingleTableDataCalculator newServiceInstance(final String algorithmType, final String databaseType) {
+        
+        
+        
         Map<String, SingleTableDataCalculator> calculatorMap = ALGORITHM_DATABASE_CALCULATOR_MAP.get(algorithmType);
         Preconditions.checkNotNull(calculatorMap, String.format("calculator not found for algorithmType '%s'", algorithmType));
         SingleTableDataCalculator calculator = calculatorMap.get(databaseType);

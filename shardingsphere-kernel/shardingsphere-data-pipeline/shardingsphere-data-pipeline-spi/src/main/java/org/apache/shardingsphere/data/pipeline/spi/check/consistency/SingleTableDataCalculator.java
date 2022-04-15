@@ -28,18 +28,9 @@ import java.util.Properties;
 public interface SingleTableDataCalculator {
     
     /**
-     * Get algorithm type.
-     *
-     * @return algorithm type
+     * Initialize create data calculator.
      */
-    String getAlgorithmType();
-    
-    /**
-     * Get database types.
-     *
-     * @return database types
-     */
-    Collection<String> getDatabaseTypes();
+    void init();
     
     /**
      * Get algorithm properties.
@@ -57,15 +48,24 @@ public interface SingleTableDataCalculator {
     void setAlgorithmProps(Properties algorithmProps);
     
     /**
-     * Initialize create data calculator.
-     */
-    void init();
-    
-    /**
      * Calculate table data content, return checksum typically.
      *
      * @param dataCalculateParameter data calculate parameter
-     * @return calculated result, it will be used to check equality.
+     * @return calculated result, it will be used to check equality
      */
     Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
+    
+    /**
+     * Get algorithm type.
+     *
+     * @return algorithm type
+     */
+    String getAlgorithmType();
+    
+    /**
+     * Get database types.
+     *
+     * @return database types
+     */
+    Collection<String> getDatabaseTypes();
 }
