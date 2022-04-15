@@ -47,9 +47,6 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        System.out.println("===============================");
-        System.out.println("locks event " + event.getKey());
-        System.out.println("===============================");
         Optional<String> lockedName = LockNode.parseGlobalSchemaLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
             return handleGlobalLocksEvent(event.getType(), lockedName.get());
