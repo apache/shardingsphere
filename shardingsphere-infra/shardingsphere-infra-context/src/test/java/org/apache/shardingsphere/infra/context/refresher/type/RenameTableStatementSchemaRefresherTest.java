@@ -122,30 +122,22 @@ public final class RenameTableStatementSchemaRefresherTest {
             renameTableDefinitionSegment.setRenameTable(newSimpleTableSegment);
             renameTables.add(renameTableDefinitionSegment);
         }
-
         when(sqlStatement.getRenameTables()).thenReturn(renameTables);
-
         when(schemaMetaData.getName()).thenReturn(schemaMetaDataName);
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>());
         when(schemaMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(schemaMetaData.getResource()).thenReturn(shardingSphereResource);
         when(schemaMetaData.getDefaultSchema()).thenReturn(shardingSphereSchema);
         doNothing().when(shardingSphereSchema).remove(anyString());
-
         Map<String, DataSource> dataSources = new HashMap<>();
         when(shardingSphereResource.getDataSources()).thenReturn(dataSources);
         when(shardingSphereResource.getDatabaseType()).thenReturn(new SQL92DatabaseType());
-
         when(database.getName()).thenReturn(databaseName);
-
         logicDataSourceNames = new LinkedList<>();
         logicDataSourceNames.add(logicDataSourceName);
-
         RenameTableLister listener = new RenameTableLister(renameStatementCount);
         ShardingSphereEventBus.getInstance().register(listener);
-
         renameTableStatementSchemaRefresher.refresh(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
-
         assertThat(listener.actualCount, is(listener.renameCount));
         ShardingSphereEventBus.getInstance().unregister(listener);
     }
