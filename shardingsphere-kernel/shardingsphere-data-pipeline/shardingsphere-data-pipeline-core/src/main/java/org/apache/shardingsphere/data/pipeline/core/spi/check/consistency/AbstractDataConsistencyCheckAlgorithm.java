@@ -40,8 +40,8 @@ public abstract class AbstractDataConsistencyCheckAlgorithm implements DataConsi
     
     @Override
     public final SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        SingleTableDataCalculator result = SingleTableDataCalculatorFactory.newServiceInstance(getType(), supportedDatabaseType);
-        result.setAlgorithmProps(props);
+        SingleTableDataCalculator result = SingleTableDataCalculatorFactory.newInstance(getType());
+        result.setProps(props);
         result.init();
         return result;
     }

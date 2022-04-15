@@ -36,7 +36,7 @@ public final class CRC32MatchDataConsistencyCheckAlgorithmTest {
         assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetSingleTableDataCalculator() {
         CRC32MatchDataConsistencyCheckAlgorithm checkAlgorithm = new CRC32MatchDataConsistencyCheckAlgorithm();
         checkAlgorithm.getSupportedDatabaseTypes().forEach(checkAlgorithm::getSingleTableDataCalculator);

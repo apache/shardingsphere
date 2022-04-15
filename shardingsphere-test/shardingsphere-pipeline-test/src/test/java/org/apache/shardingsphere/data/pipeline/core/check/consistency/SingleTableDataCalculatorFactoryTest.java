@@ -17,25 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Test;
 
 public final class SingleTableDataCalculatorFactoryTest {
     
     @Test
-    public void assertNewServiceInstanceSuccess() {
-        SingleTableDataCalculatorFactory.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new H2DatabaseType().getName());
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void assertNewServiceInstanceFailedNoAlgorithmType() {
-        SingleTableDataCalculatorFactory.newServiceInstance("not-exists-alg", new H2DatabaseType().getName());
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void assertNewServiceInstanceFailedNoDatabaseType() {
-        SingleTableDataCalculatorFactory.newServiceInstance(FixtureDataConsistencyCheckAlgorithm.TYPE, new MySQLDatabaseType().getName());
+    public void assertNewInstanceSuccess() {
+        SingleTableDataCalculatorFactory.newInstance("FIXTURE");
     }
 }
