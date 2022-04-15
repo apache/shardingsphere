@@ -71,7 +71,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
         Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(TypedSPIConfiguration::getType)
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
-        currentRuleConfig.getDataSources().stream().forEach(each -> {
+        currentRuleConfig.getDataSources().forEach(each -> {
             if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {
                 invalidInput.add(each.getDiscoveryTypeName());
             }
