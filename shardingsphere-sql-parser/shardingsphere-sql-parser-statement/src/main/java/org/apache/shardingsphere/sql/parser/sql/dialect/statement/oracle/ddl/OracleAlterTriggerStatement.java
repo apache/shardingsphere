@@ -15,31 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * SQLServer select statement.
+ * Oracle alter trigger statement.
  */
-@Setter
 @ToString
-public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
-    
-    private LimitSegment limit;
-    
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
-    public Optional<LimitSegment> getLimit() {
-        return Optional.ofNullable(limit);
-    }
+public final class OracleAlterTriggerStatement extends AlterTriggerStatement implements OracleStatement {
 }

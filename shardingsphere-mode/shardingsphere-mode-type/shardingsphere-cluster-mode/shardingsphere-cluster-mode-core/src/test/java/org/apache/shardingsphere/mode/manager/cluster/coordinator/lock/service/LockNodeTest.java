@@ -64,7 +64,7 @@ public final class LockNodeTest {
     
     @Test
     public void assertParseGlobalSchemaLocksNodePath() {
-        String nodePath = "/lock/global/schema/locks/schema-127.0.0.1@3307";
+        String nodePath = "/lock/global/schema/locks/schema-127.0.0.1@3307/leases/c_l_00000000";
         Optional<String> globalSchemaLocksNodePath = LockNode.parseGlobalSchemaLocksNodePath(nodePath);
         assertTrue(globalSchemaLocksNodePath.isPresent());
         assertThat(globalSchemaLocksNodePath.get(), is("schema-127.0.0.1@3307"));

@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 176 companies.
+Total: 177 companies.
 
 ### Infra Software
 <ul>
@@ -60,6 +60,7 @@ Total: 176 companies.
     <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">Poizon</a></li>
+    <li><a href="http://game.163.com/" rel="nofollow">Game 163</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>

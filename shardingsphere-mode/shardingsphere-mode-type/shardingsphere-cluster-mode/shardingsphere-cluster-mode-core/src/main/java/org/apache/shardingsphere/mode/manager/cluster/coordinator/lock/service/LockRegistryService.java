@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -56,15 +55,11 @@ public final class LockRegistryService {
      * Try to get lock.
      *
      * @param lockName lock name
+     * @param timeoutMilliseconds the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryGlobalLock(final String lockName) {
-        try {
-            repository.persistEphemeral(lockName, LockState.LOCKED.name());
-            return true;
-        } catch (final ClusterPersistRepositoryException ignored) {
-            return false;
-        }
+    public boolean tryGlobalLock(final String lockName, final long timeoutMilliseconds) {
+        return repository.tryLock(lockName, timeoutMilliseconds, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -73,7 +68,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void releaseGlobalLock(final String lockName) {
-        repository.delete(lockName);
+        repository.releaseLock(lockName);
     }
     
     /**

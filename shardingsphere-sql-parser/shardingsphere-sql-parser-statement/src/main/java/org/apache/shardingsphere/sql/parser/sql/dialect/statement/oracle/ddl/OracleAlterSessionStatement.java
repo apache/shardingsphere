@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  * Oracle alter session statement.
  */
 @ToString
-public class OracleAlterSessionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleAlterSessionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

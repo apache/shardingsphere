@@ -31,11 +31,11 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public final class TransactionAutoCommitHandler implements TextProtocolBackendHandler {
-
+    
     private final SetAutoCommitStatement sqlStatement;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public ResponseHeader execute() throws SQLException {
         connectionSession.setAutoCommit(sqlStatement.isAutoCommit());

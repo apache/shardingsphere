@@ -931,6 +931,10 @@ REUSE
     : R E U S E
     ;
 
+SETTINGS
+    : S E T T I N G S
+    ;
+
 STORAGE
     : S T O R A G E
     ;
