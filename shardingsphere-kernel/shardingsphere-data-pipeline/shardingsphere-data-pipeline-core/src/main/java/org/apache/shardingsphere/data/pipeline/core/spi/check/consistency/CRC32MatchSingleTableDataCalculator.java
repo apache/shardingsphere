@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
-import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
-import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import javax.sql.DataSource;
@@ -32,40 +30,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * CRC32 match MySQL implementation of single table data calculator.
+ * CRC32 match single table data calculator.
  */
-public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class CRC32MatchSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
     private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
-    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
-    
-    @Override
-    public String getAlgorithmType() {
-        return CRC32MatchDataConsistencyCheckAlgorithm.TYPE;
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypes() {
-        return DATABASE_TYPES;
-    }
-    
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
-        String logicTableName = dataCalculateParameter.getLogicTableName();
-        List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
-            String sql = SQL_BUILDER.buildCRC32SQL(logicTableName, each);
-            try {
-                return calculateCRC32(dataCalculateParameter.getDataSource(), sql);
-            } catch (final SQLException ex) {
-                throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
-            }
-        }).collect(Collectors.toList());
-        return Collections.unmodifiableList(result);
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
+        return Collections.unmodifiableList(dataCalculateParameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, dataCalculateParameter, each)).collect(Collectors.toList()));
+    }
+    
+    private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataCalculateParameter dataCalculateParameter, final String columnName) {
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(dataCalculateParameter.getLogicTableName(), columnName);
+        if (!sql.isPresent()) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Unsupported CRC32MatchSingleTableDataCalculator with database type `%s`", dataCalculateParameter.getDatabaseType()));
+        }
+        try {
+            return calculateCRC32(dataCalculateParameter.getDataSource(), sql.get());
+        } catch (final SQLException ex) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", dataCalculateParameter.getLogicTableName()), ex);
+        }
     }
     
     private long calculateCRC32(final DataSource dataSource, final String sql) throws SQLException {
@@ -75,5 +65,15 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
             resultSet.next();
             return resultSet.getLong(1);
         }
+    }
+    
+    @Override
+    public String getAlgorithmType() {
+        return CRC32MatchDataConsistencyCheckAlgorithm.TYPE;
+    }
+    
+    @Override
+    public Collection<String> getDatabaseTypes() {
+        return DATABASE_TYPES;
     }
 }
