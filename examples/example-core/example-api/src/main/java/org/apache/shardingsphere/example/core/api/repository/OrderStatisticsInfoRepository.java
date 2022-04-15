@@ -15,39 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.type;
+package org.apache.shardingsphere.example.core.api.repository;
 
-public enum ShardingType {
-    
-    SHARDING_DATABASES,
-    
-    SHARDING_TABLES,
-    
-    SHARDING_DATABASES_AND_TABLES,
-    
-    SHARDING_SHADOW_DATABASES,
-    
-    ENCRYPT_SHADOW,
-    
-    READWRITE_SPLITTING,
-    
-    READWRITE_SPLITTING_SHADOW,
-    
-    SHARDING_READWRITE_SPLITTING,
-    
-    ENCRYPT,
-    
-    SHADOW,
-    
-    SHADOW_DEFAULT_ALGORITHM,
-    
-    SHARDING_AUTO_TABLES,
-    
-    SHARDING_HINT_DATABASES_ONLY,
-    
-    SHARDING_HINT_DATABASES_TABLES,
-    
-    READWRITE_SPLITTING_HINT,
-    
-    SHARDING_DATABASES_INTERVAL
+import org.apache.shardingsphere.example.core.api.entity.OrderStatisticsInfo;
+
+public interface OrderStatisticsInfoRepository extends CommonRepository<OrderStatisticsInfo, Long> {
 }
