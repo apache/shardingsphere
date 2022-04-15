@@ -145,28 +145,26 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range) {
-        LocalDateTime lower = range.hasLowerBound() ? getLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
-        LocalDateTime upper = range.hasUpperBound() ? getLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
+        LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
+        LocalDateTime upper = range.hasUpperBound() ? parseLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
         BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
         Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
     
-    private LocalDateTime getLocalDateTime(final Comparable<?> endpoint) {
-        String timeString;
-        if (endpoint instanceof LocalDateTime) {
-            timeString = ((LocalDateTime) endpoint).format(dateTimeFormatter);
-        } else if (endpoint instanceof Date) {
-            timeString = new SimpleDateFormat(getDateTimePattern()).format(endpoint);
-        } else {
-            timeString = endpoint.toString();
-        }
-        return parseDateTime(timeString);
+    private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
+        return LocalDateTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
     
-    private LocalDateTime parseDateTime(final String value) {
-        return LocalDateTime.parse(value.substring(0, dateTimePatternLength), dateTimeFormatter);
+    private String getDateTimeText(final Comparable<?> endpoint) {
+        if (endpoint instanceof LocalDateTime) {
+            return ((LocalDateTime) endpoint).format(dateTimeFormatter);
+        }
+        if (endpoint instanceof Date) {
+            return new SimpleDateFormat(getDateTimePattern()).format(endpoint);
+        }
+        return endpoint.toString();
     }
     
     private Collection<String> getMatchedTables(final LocalDateTime dateTime, final Collection<String> availableTargetNames) {

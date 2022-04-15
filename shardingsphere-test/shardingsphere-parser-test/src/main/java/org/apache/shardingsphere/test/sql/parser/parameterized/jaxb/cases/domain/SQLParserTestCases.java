@@ -84,6 +84,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RenameUserStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
@@ -1272,6 +1273,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-access-method")
     private final List<DropAccessMethodStatementTestCase> dropAccessMethodStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "revert")
+    private final List<RevertStatementTestCase> revertStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1589,6 +1593,7 @@ public final class SQLParserTestCases {
         putAll(dropOperatorClassStatementTestCases, result);
         putAll(dropOperatorFamilyStatementTestCases, result);
         putAll(dropAccessMethodStatementTestCases, result);
+        putAll(revertStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

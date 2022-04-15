@@ -14,7 +14,7 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 | Column                      | Description                          |
 | --------------------------- | ------------------------------------ |
 | name                        | Rule name                            |
-| auto_aware_data_source_name | Auto-Aware discovery data source name（Display configuration dynamic readwrite splitting rules）|
+| auto_aware_data_source_name | Auto-Aware discovery data source name (Display configuration dynamic readwrite splitting rules) |
 | write_data_source_name      | Write data source name                |
 | read_data_source_names      | Read data source name list            |
 | load_balancer_type          | Load balance algorithm type           |

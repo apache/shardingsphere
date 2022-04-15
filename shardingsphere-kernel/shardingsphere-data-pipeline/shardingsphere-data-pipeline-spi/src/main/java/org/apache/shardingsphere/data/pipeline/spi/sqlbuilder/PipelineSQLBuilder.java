@@ -28,6 +28,7 @@ import java.util.List;
  * Pipeline SQL builder.
  * It's singleton when it's used as SPI, else not.
  */
+// TODO refactor to stateless for SPI usage, it's confusing now
 public interface PipelineSQLBuilder extends StatelessTypedSPI {
     
     /**

@@ -86,7 +86,7 @@ ADD RESOURCE ds_2 (
 
 ### Reserved word
 
-    ADD、RESOURCE、HOST、PORT、DB、USER、PASSWORD、PROPERTIES、URL
+    ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL
 
  ### Related links
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)

@@ -18,46 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.PostgreSQLPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLImporterTest {
     
-    @Mock
-    private ImporterConfiguration importerConfig;
-    
-    @Mock
-    private PipelineDataSourceManager dataSourceManager;
-    
-    @Mock
-    private PipelineChannel channel;
-    
     @Test
     public void assertCreateSQLBuilder() {
-        String insertSQL = new PostgreSQLImporter(importerConfig, dataSourceManager, channel).createSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
-        assertThat(insertSQL, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
-    }
-    
-    private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
-        result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
-        return result;
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
+        PipelineSQLBuilder actual = new PostgreSQLImporter(importerConfig, null, null).createSQLBuilder(Collections.emptyMap());
+        assertTrue(actual instanceof PostgreSQLPipelineSQLBuilder);
     }
 }
