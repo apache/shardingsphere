@@ -80,6 +80,6 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String getType() {
-        return "Fixture";
+        return "FIXTURE";
     }
 }

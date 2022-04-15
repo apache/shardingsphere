@@ -65,7 +65,7 @@ public final class CRC32MatchSingleTableDataCalculatorTest {
         when(dataCalculateParameter.getLogicTableName()).thenReturn("tableName");
         when(dataCalculateParameter.getColumnNames()).thenReturn(columnNames);
         when(dataCalculateParameter.getDataSource()).thenReturn(pipelineDataSource);
-        when(dataCalculateParameter.getDatabaseType()).thenReturn("Fixture");
+        when(dataCalculateParameter.getDatabaseType()).thenReturn("FIXTURE");
     }
     
     @Test

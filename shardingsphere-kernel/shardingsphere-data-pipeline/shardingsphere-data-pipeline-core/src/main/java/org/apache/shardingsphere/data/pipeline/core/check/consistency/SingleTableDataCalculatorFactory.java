@@ -17,55 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Single table data calculator factory.
  */
-@Slf4j
 public final class SingleTableDataCalculatorFactory {
-    
-    private static final Map<String, Map<String, SingleTableDataCalculator>> ALGORITHM_DATABASE_CALCULATOR_MAP = new HashMap<>();
     
     static {
         ShardingSphereServiceLoader.register(SingleTableDataCalculator.class);
-        for (SingleTableDataCalculator each : ShardingSphereServiceLoader.getSingletonServiceInstances(SingleTableDataCalculator.class)) {
-            Map<String, SingleTableDataCalculator> dataCalculatorMap = ALGORITHM_DATABASE_CALCULATOR_MAP.computeIfAbsent(each.getAlgorithmType(), algorithmType -> new HashMap<>());
-            for (String databaseType : each.getDatabaseTypes()) {
-                SingleTableDataCalculator replaced = dataCalculatorMap.put(databaseType, each);
-                if (null != replaced) {
-                    log.warn("element replaced, algorithmType={}, databaseTypes={}, current={}, replaced={}",
-                            each.getAlgorithmType(), each.getDatabaseTypes(), each.getClass().getName(), replaced.getClass().getName());
-                }
-            }
-        }
     }
     
     /**
-     * New service instance.
+     * Create new instance of single table data calculator.
      *
      * @param algorithmType algorithm type
-     * @param databaseType database type
-     * @return single table data calculator
-     * @throws NullPointerException if calculator not found
-     * @throws ServiceLoaderInstantiationException if new instance by reflection failed
+     * @return new instance of single table data calculator
      */
-    public static SingleTableDataCalculator newServiceInstance(final String algorithmType, final String databaseType) {
-        Map<String, SingleTableDataCalculator> calculatorMap = ALGORITHM_DATABASE_CALCULATOR_MAP.get(algorithmType);
-        Preconditions.checkNotNull(calculatorMap, String.format("calculator not found for algorithmType '%s'", algorithmType));
-        SingleTableDataCalculator calculator = calculatorMap.get(databaseType);
-        Preconditions.checkNotNull(calculator, String.format("calculator not found for algorithmType '%s' databaseType '%s'", algorithmType, databaseType));
-        try {
-            return calculator.getClass().getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ServiceLoaderInstantiationException(calculator.getClass(), ex);
-        }
+    public static SingleTableDataCalculator newInstance(final String algorithmType) {
+        return TypedSPIRegistry.getRegisteredService(SingleTableDataCalculator.class, algorithmType, new Properties());
     }
 }

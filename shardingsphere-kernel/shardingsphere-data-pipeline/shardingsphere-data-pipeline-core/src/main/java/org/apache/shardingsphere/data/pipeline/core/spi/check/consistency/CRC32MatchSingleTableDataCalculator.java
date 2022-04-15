@@ -21,14 +21,12 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalcula
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,8 +35,6 @@ import java.util.stream.Collectors;
  * CRC32 match single table data calculator.
  */
 public final class CRC32MatchSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
-    
-    private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
@@ -68,12 +64,7 @@ public final class CRC32MatchSingleTableDataCalculator extends AbstractSingleTab
     }
     
     @Override
-    public String getAlgorithmType() {
-        return CRC32MatchDataConsistencyCheckAlgorithm.TYPE;
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypes() {
-        return DATABASE_TYPES;
+    public String getType() {
+        return "CRC32_MATCH";
     }
 }

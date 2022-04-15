@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
-import java.util.Collection;
 import java.util.Properties;
 
 /**
  * Single table data calculator.
  */
-public interface SingleTableDataCalculator {
+public interface SingleTableDataCalculator extends StatefulTypedSPI {
     
     /**
      * Initialize create data calculator.
@@ -54,18 +54,4 @@ public interface SingleTableDataCalculator {
      * @return calculated result, it will be used to check equality
      */
     Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
-    
-    /**
-     * Get algorithm type.
-     *
-     * @return algorithm type
-     */
-    String getAlgorithmType();
-    
-    /**
-     * Get database types.
-     *
-     * @return database types
-     */
-    Collection<String> getDatabaseTypes();
 }
