@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /**
  * Example configuration validator.
@@ -51,7 +51,7 @@ public final class YamlExampleConfigurationValidator {
         configurationMap.forEach((configItem, configValues) -> {
             YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
-            configValues.stream().forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
+            configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
         });
     }
 
