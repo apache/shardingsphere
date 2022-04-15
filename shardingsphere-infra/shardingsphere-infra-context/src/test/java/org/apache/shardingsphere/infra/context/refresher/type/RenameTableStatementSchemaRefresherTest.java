@@ -148,7 +148,6 @@ public final class RenameTableStatementSchemaRefresherTest {
 
         assertThat(listener.actualCount, is(listener.renameCount));
         ShardingSphereEventBus.getInstance().unregister(listener);
-
     }
 
     @RequiredArgsConstructor
