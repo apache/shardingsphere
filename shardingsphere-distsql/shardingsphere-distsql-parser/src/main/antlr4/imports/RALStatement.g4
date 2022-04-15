@@ -184,7 +184,7 @@ instanceDefination
     ;
 
 instanceId
-    : ip AT port | IDENTIFIER | STRING
+    : ip AT port
     ;
 
 refreshScope

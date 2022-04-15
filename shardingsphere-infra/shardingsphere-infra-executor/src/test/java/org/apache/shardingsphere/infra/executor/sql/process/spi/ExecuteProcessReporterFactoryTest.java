@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
+package org.apache.shardingsphere.infra.executor.sql.process.spi;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
-import org.opengauss.replication.LogSequenceNumber;
+import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProcessReporterFixture;
+import org.junit.Test;
 
-/**
- * Log sequence number of openGauss.
- */
-@RequiredArgsConstructor
-@ToString
-public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
+import java.util.Optional;
+
+import static org.junit.Assert.assertTrue;
+
+public final class ExecuteProcessReporterFactoryTest {
     
-    private final LogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
-    }
-    
-    @Override
-    public Object get() {
-        return logSequenceNumber;
+    @Test
+    public void assertNewInstance() {
+        Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.newInstance();
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get() instanceof ExecuteProcessReporterFixture);
     }
 }

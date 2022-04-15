@@ -79,7 +79,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final String resourceName, final List<Collection<Object>> result) {
-        ruleConfigurations.stream().forEach(each -> {
+        ruleConfigurations.forEach(each -> {
             getRulesConfigForSharding(each, result);
             getRulesConfigForReadwriteSplitting(each, resourceName, result);
             getRulesConfigForDBDiscovery(each, resourceName, result);

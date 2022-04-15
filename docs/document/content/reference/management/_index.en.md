@@ -54,7 +54,7 @@ namespace
 
 ### /rules
 
-global rule configurations， including configure the username and password for ShardingSphere-Proxy.
+global rule configurations, including configure the username and password for ShardingSphere-Proxy.
 
 ```yaml
 - !AUTHORITY

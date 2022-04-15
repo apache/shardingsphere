@@ -33,14 +33,16 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = PipelineSQLBuilderFactory.getSQLBuilder("PostgreSQL").buildInsertSQL(mockDataRecord());
-        assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
+        assertThat(actual, is("INSERT INTO \"t_order\"(\"order_id\",\"user_id\",\"status\") VALUES(?,?,?) ON CONFLICT (order_id)"
+                + " DO UPDATE SET \"user_id\"=EXCLUDED.\"user_id\",\"status\"=EXCLUDED.\"status\""));
     }
     
     private DataRecord mockDataRecord() {
         DataRecord result = new DataRecord(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
         result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
+        result.addColumn(new Column("order_id", 1, true, true));
+        result.addColumn(new Column("user_id", 2, true, false));
+        result.addColumn(new Column("status", "ok", true, false));
         return result;
     }
 }
