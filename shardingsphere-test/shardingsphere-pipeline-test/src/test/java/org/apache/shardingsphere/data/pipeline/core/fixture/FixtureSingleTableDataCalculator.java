@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.Abstra
 
 import java.util.Collections;
 
-public final class FixtureH2SingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class FixtureSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
