@@ -601,7 +601,13 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
 
-**9. 邮件通知版本发布完成**
+**9. 官网首页增加发布版本文档入口**
+
+参考以下代码：
+- [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
+- [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
+
+**10. 邮件通知版本发布完成**
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
