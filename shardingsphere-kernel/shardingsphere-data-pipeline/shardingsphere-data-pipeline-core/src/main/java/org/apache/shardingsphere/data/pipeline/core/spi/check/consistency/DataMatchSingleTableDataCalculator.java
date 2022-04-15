@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Data match implementation of single table data calculator.
@@ -55,12 +54,11 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     @Override
     public void init() {
-        Properties algorithmProps = getProps();
-        String chunkSizeValue = algorithmProps.getProperty(CHUNK_SIZE_KEY);
+        String chunkSizeValue = getProps().getProperty(CHUNK_SIZE_KEY);
         if (!Strings.isNullOrEmpty(chunkSizeValue)) {
             int chunkSize = Integer.parseInt(chunkSizeValue);
             if (chunkSize <= 0) {
-                log.warn("invalid chunkSize={}, use default value", chunkSize);
+                log.warn("Invalid chunkSize={}, use default value", chunkSize);
             }
             this.chunkSize = chunkSize;
         }
