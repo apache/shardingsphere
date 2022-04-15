@@ -49,17 +49,22 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
-    private static final String DEFAULT_CHUNK_SIZE = "1000";
+    private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    private volatile int chunkSize = 1000;
+    private int chunkSize;
     
     @Override
     public void init() {
-        int chunkSize = Integer.parseInt(getProps().getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE));
-        if (chunkSize <= 0) {
-            log.warn("Invalid chunkSize={}, use default value", chunkSize);
+        chunkSize = getChunkSize();
+    }
+    
+    private int getChunkSize() {
+        int result = Integer.parseInt(getProps().getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        if (result <= 0) {
+            log.warn("Invalid result={}, use default value", result);
+            return DEFAULT_CHUNK_SIZE;
         }
-        this.chunkSize = chunkSize;
+        return result;
     }
     
     @Override
