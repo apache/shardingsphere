@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -37,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,16 +48,16 @@ public final class ShardingRuleAlteredDetectorTest {
         ShardingRuleAlteredDetector shardingRuleAlteredDetector = new ShardingRuleAlteredDetector();
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Optional<OnRuleAlteredActionConfiguration> config = shardingRuleAlteredDetector.getOnRuleAlteredActionConfig(result);
-        Assert.assertFalse(config.isPresent());
+        assertFalse(config.isPresent());
     }
     
     @Test
     public void assertFindRuleAlteredLogicTablesSucceed() throws IOException {
         URL sourceUrl = getClass().getClassLoader().getResource("scaling/detector/source_rule_config.yaml");
-        Assert.assertNotNull(sourceUrl);
+        assertNotNull(sourceUrl);
         YamlRuleConfiguration sourceRuleConfig = YamlEngine.unmarshal(new File(sourceUrl.getFile()), YamlShardingRuleConfiguration.class);
         URL targetUrl = getClass().getClassLoader().getResource("scaling/detector/target_rule_config.yaml");
-        Assert.assertNotNull(targetUrl);
+        assertNotNull(targetUrl);
         YamlRuleConfiguration targetRuleConfig = YamlEngine.unmarshal(new File(targetUrl.getFile()), YamlShardingRuleConfiguration.class);
         Map<String, Map<String, Object>> sameDatasource = new HashMap<>(5, 1);
         for (int i = 0; i < 5; i++) {
@@ -73,7 +74,7 @@ public final class ShardingRuleAlteredDetectorTest {
     @Test
     public void assertNoFindRuleAlteredLogicTables() throws IOException {
         URL sourceUrl = getClass().getClassLoader().getResource("scaling/detector/source_rule_config.yaml");
-        Assert.assertNotNull(sourceUrl);
+        assertNotNull(sourceUrl);
         YamlRuleConfiguration sourceRuleConfig = YamlEngine.unmarshal(new File(sourceUrl.getFile()), YamlShardingRuleConfiguration.class);
         // target = source
         List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(sourceRuleConfig, sourceRuleConfig, null, null);
@@ -83,7 +84,7 @@ public final class ShardingRuleAlteredDetectorTest {
     @Test
     public void assertExtractAllLogicTables() throws IOException {
         URL sourceUrl = getClass().getClassLoader().getResource("scaling/detector/source_rule_config.yaml");
-        Assert.assertNotNull(sourceUrl);
+        assertNotNull(sourceUrl);
         YamlRuleConfiguration sourceRuleConfig = YamlEngine.unmarshal(new File(sourceUrl.getFile()), YamlShardingRuleConfiguration.class);
         List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(sourceRuleConfig, null, null, null);
         assertThat(ruleAlteredLogicTables.get(0), Matchers.is("t_order"));

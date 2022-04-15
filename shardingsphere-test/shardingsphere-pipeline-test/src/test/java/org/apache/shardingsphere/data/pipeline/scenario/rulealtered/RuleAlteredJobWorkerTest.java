@@ -18,16 +18,22 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -62,5 +68,19 @@ public final class RuleAlteredJobWorkerTest {
         ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
         ruleConfiguration.setScalingName("default_scaling");
         assertTrue(RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(ruleConfiguration));
+    }
+    
+    @Test
+    public void assertRuleAlteredActionDisabled() throws IOException {
+        URL dataSourceUrl = getClass().getClassLoader().getResource("scaling/detector/datasource_config.yaml");
+        assertNotNull(dataSourceUrl);
+        URL sourceRuleUrl = getClass().getClassLoader().getResource("scaling/rule_alter/source_rules_config.yaml");
+        assertNotNull(sourceRuleUrl);
+        URL targetRuleUrl = getClass().getClassLoader().getResource("scaling/rule_alter/target_rules_config.yaml");
+        assertNotNull(targetRuleUrl);
+        StartScalingEvent startScalingEvent = new StartScalingEvent("logic_db", FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
+                FileUtils.readFileToString(new File(sourceRuleUrl.getFile())), FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
+                FileUtils.readFileToString(new File(targetRuleUrl.getFile())), 0, 1);
+        new RuleAlteredJobWorker().start(startScalingEvent);
     }
 }
