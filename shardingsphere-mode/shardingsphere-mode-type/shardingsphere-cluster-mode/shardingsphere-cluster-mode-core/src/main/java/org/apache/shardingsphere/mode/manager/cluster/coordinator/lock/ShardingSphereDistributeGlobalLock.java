@@ -88,7 +88,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     private synchronized boolean innerTryLock(final String lockName, final long timeout) {
         if (LockState.LOCKED == synchronizedLockState.get()) {
-            log.info("innerTryLock, already locked, lockName={}", lockName);
+            log.debug("innerTryLock, already locked, lockName={}", lockName);
             return false;
         }
         long count = 0;
@@ -100,7 +100,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
                 lockedInstances.add(currentInstanceId);
                 if (isAckOK(timeout - count)) {
                     boolean result = synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKED);
-                    log.info("innerTryLock, result={}, lockName={}, lockState={}, globalLock.hashCode={}", result, lockName, synchronizedLockState.get(), hashCode());
+                    log.debug("innerTryLock, result={}, lockName={}, lockState={}, globalLock.hashCode={}", result, lockName, synchronizedLockState.get(), hashCode());
                     ownerInstanceId.set(currentInstanceId);
                     return result;
                 } else {
@@ -109,7 +109,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
                 }
             }
         } while (timeout > count);
-        log.info("innerTryLock timeout, lockName={}", lockName);
+        log.debug("innerTryLock timeout, lockName={}", lockName);
         return false;
     }
     
@@ -122,7 +122,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             sleepInterval();
             count += CHECK_ACK_INTERVAL_MILLISECONDS;
         } while (timeout > count);
-        log.info("isAckOK timeout");
+        log.debug("isAckOK timeout");
         return false;
     }
     
@@ -135,9 +135,9 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public void releaseLock(final String lockName) {
-        log.info("releaseLock, lockName={}", lockName);
+        log.debug("releaseLock, lockName={}", lockName);
         if (LockState.LOCKED != synchronizedLockState.get()) {
-            log.info("releaseLock, state is not locked, ignore, lockName={}", lockName);
+            log.debug("releaseLock, state is not locked, ignore, lockName={}", lockName);
             return;
         }
         lockService.releaseGlobalLock(LockNode.generateGlobalSchemaLocksName(lockName, ownerInstanceId.get()));

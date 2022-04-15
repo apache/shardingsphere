@@ -72,7 +72,7 @@ public final class DistributeLockContext implements LockContext {
             return;
         }
         for (String each : allGlobalLock) {
-            Optional<String> schemaLock = LockNode.parseGlobalSchemaLockedAckNodePath(each);
+            Optional<String> schemaLock = LockNode.parseGlobalSchemaLocksNodePath(each);
             if (schemaLock.isPresent()) {
                 String[] schemaInstanceId = LockNodeUtil.parseSchemaLockName(schemaLock.get());
                 globalLocks.put(schemaInstanceId[0], crateGlobalLock(schemaInstanceId[1]));
