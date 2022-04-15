@@ -63,9 +63,7 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test
     public void assertCreateRuleAlteredContextSuccess() {
-        JobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        assertNotNull(ruleAlteredContext.getOnRuleAlteredActionConfig());
+        assertNotNull(RuleAlteredJobWorker.createRuleAlteredContext(JobConfigurationBuilder.createJobConfiguration()).getOnRuleAlteredActionConfig());
     }
     
     @Test
@@ -98,7 +96,7 @@ public final class RuleAlteredJobWorkerTest {
         repositoryAPI.persistJobProgress(jobContext);
         URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
         assertNotNull(jobConfigUrl);
-        repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath("0130317c30317c3054317c6c6f6769635f6462"), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
+        repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "isUncompletedJobOfSameSchemaInJobList", new Class[]{String.class},
                 new String[]{jobConfiguration.getWorkflowConfig().getSchemaName()});
         assertFalse((Boolean) result);
