@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -48,7 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -93,7 +93,6 @@ public final class RenameTableStatementSchemaRefresherTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         renameTableStatementSchemaRefresher = new RenameTableStatementSchemaRefresher();
     }
 
@@ -142,27 +141,28 @@ public final class RenameTableStatementSchemaRefresherTest {
         logicDataSourceNames = new LinkedList<>();
         logicDataSourceNames.add(logicDataSourceName);
 
-        RenameTableLister lister = new RenameTableLister(renameStatementCount);
-        ShardingSphereEventBus.getInstance().register(lister);
+        RenameTableLister listener = new RenameTableLister(renameStatementCount);
+        ShardingSphereEventBus.getInstance().register(listener);
 
         renameTableStatementSchemaRefresher.refresh(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
 
-        assertEquals(lister.actualCount, lister.renameCount);
-        ShardingSphereEventBus.getInstance().unregister(lister);
+        assertThat(listener.actualCount, is(listener.renameCount));
+        ShardingSphereEventBus.getInstance().unregister(listener);
 
     }
 
     @RequiredArgsConstructor
     private final class RenameTableLister {
+
         private final int renameCount;
 
         private int actualCount = -1;
 
         @Subscribe
-        public void func(final Object msg) {
-            if (msg instanceof SchemaAlteredEvent) {
-                SchemaAlteredEvent msgNew = (SchemaAlteredEvent) msg;
-                actualCount = msgNew.getAlteredTables().size();
+        public void process(final Object message) {
+            if (message instanceof SchemaAlteredEvent) {
+                SchemaAlteredEvent newMessage = (SchemaAlteredEvent) message;
+                actualCount = newMessage.getAlteredTables().size();
             }
         }
     }
