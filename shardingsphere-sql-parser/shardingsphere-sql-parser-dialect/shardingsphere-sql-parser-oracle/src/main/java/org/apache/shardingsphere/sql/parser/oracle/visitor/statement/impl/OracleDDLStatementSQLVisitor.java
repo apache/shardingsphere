@@ -57,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterV
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
@@ -123,6 +124,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
@@ -395,6 +397,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
         return new OracleDropTriggerStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
+        return new OracleAlterTriggerStatement();
     }
     
     @Override
