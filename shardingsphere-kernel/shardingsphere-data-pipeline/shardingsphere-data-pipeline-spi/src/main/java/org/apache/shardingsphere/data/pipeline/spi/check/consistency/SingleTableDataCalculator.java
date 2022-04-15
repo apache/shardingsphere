@@ -28,7 +28,8 @@ public interface SingleTableDataCalculator extends StatefulTypedSPI {
     /**
      * Initialize create data calculator.
      */
-    void init();
+    default void init() {
+    }
     
     /**
      * Calculate table data content.

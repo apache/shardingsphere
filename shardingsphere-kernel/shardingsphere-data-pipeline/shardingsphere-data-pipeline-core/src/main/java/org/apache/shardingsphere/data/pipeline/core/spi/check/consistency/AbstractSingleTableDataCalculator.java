@@ -31,8 +31,4 @@ import java.util.Properties;
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
     private Properties props;
-    
-    @Override
-    public void init() {
-    }
 }
