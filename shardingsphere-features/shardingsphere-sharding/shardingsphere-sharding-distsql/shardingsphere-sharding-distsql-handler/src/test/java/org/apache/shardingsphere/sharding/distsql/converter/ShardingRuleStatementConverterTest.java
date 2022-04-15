@@ -70,7 +70,7 @@ public final class ShardingRuleStatementConverterTest {
         autoTableRule = autoTableConfigIterator.next();
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake_algorithm"));
         assertThat(config.getShardingAlgorithms().size(), is(3));
-        assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("MOD"));
+        assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("mod"));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getProps().get("sharding_count"), is("2"));
         assertThat(config.getKeyGenerators().size(), is(1));
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getType(), is("snowflake"));
