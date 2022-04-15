@@ -38,7 +38,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     private final int stopIndex;
     
     private final String text;
-
+    
     private final ExpressionSegment expr;
     
     @Setter
@@ -50,7 +50,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         this.expr = null;
     }
-
+    
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text, final ExpressionSegment expr) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;

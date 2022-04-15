@@ -120,7 +120,7 @@ public final class SQLUtil {
     public static String getExactlyValue(final String value) {
         return null == value ? null : CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value);
     }
-
+    
     /**
      * Get exactly value for SQL expression.
      *

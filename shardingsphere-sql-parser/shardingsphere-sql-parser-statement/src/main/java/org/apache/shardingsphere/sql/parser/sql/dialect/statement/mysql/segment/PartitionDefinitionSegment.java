@@ -38,5 +38,5 @@ public final class PartitionDefinitionSegment implements SQLSegment {
     
     private final SimpleTableSegment table;
     
-    private Collection<PartitionSegment> partitions = new LinkedList<>();
+    private final Collection<PartitionSegment> partitions = new LinkedList<>();
 }
