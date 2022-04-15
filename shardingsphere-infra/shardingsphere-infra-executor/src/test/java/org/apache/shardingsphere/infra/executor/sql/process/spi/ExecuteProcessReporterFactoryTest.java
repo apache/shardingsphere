@@ -25,11 +25,11 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 
 public final class ExecuteProcessReporterFactoryTest {
-
+    
     @Test
     public void assertNewInstance() {
-        Optional<ExecuteProcessReporter> executeProcessReporter = ExecuteProcessReporterFactory.newInstance();
-        assertTrue(executeProcessReporter.isPresent());
-        assertTrue(executeProcessReporter.get() instanceof ExecuteProcessReporterFixture);
+        Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.newInstance();
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get() instanceof ExecuteProcessReporterFixture);
     }
 }
