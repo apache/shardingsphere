@@ -45,9 +45,8 @@ public final class ShardingRuleAlteredDetectorTest {
     
     @Test
     public void assertGetOnRuleAlteredActionConfigSuccess() {
-        ShardingRuleAlteredDetector shardingRuleAlteredDetector = new ShardingRuleAlteredDetector();
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Optional<OnRuleAlteredActionConfiguration> config = shardingRuleAlteredDetector.getOnRuleAlteredActionConfig(result);
+        Optional<OnRuleAlteredActionConfiguration> config = new ShardingRuleAlteredDetector().getOnRuleAlteredActionConfig(result);
         assertFalse(config.isPresent());
     }
     

@@ -21,6 +21,10 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
@@ -81,6 +85,23 @@ public final class RuleAlteredJobWorkerTest {
         StartScalingEvent startScalingEvent = new StartScalingEvent("logic_db", FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
                 FileUtils.readFileToString(new File(sourceRuleUrl.getFile())), FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
                 FileUtils.readFileToString(new File(targetRuleUrl.getFile())), 0, 1);
+        new RuleAlteredJobWorker().start(startScalingEvent);
+    }
+    
+    @Test
+    public void assertHasUncompletedJob() throws IOException {
+        StartScalingEvent startScalingEvent = new StartScalingEvent("sharding_db", null, null, null, null, 0, 1);
+        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        jobConfiguration.getWorkflowConfig().setSchemaName("logic_db");
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        JobProgress finishProcess = new JobProgress();
+        finishProcess.setStatus(JobStatus.FINISHED);
+        jobContext.setInitProgress(finishProcess);
+        repositoryAPI.persistJobProgress(jobContext);
+        URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
+        assertNotNull(jobConfigUrl);
+        repositoryAPI.persist("/scaling/0130317c30317c3054317c6c6f6769635f6462/config", FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         new RuleAlteredJobWorker().start(startScalingEvent);
     }
 }

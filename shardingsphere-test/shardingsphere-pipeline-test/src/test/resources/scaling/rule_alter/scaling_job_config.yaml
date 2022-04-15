@@ -1,0 +1,324 @@
+disabled: false
+failover: false
+jobName: 0130317c30317c3054317c6c6f6769635f6462
+jobParameter: |
+  handleConfig:
+    concurrency: 3
+    jobId: 0130317c30317c3054317c6c6f6769635f6462
+    jobShardingDataNodes:
+    - t_order:ds_0.t_order_0,ds_0.t_order_1
+    jobShardingItem: 0
+    logicTables: t_order
+    retryTimes: 3
+    shardingSize: 10000000
+    sourceDatabaseType: MySQL
+    tablesFirstDataNodes: t_order:ds_0.t_order_0
+    targetDatabaseType: MySQL
+  pipelineConfig:
+    source:
+      parameter: |
+        dataSources:
+          ds_0:
+            initializationFailTimeout: 1
+            validationTimeout: 5000
+            connectionTimeoutMilliseconds: 30000
+            readOnly: false
+            registerMbeans: false
+            idleTimeoutMilliseconds: 60000
+            isolateInternalQueries: false
+            url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+            leakDetectionThreshold: 0
+            password: root
+            minPoolSize: 1
+            allowPoolSuspension: false
+            dataSourceProperties:
+              cacheServerConfiguration: 'true'
+              elideSetAutoCommits: 'true'
+              useServerPrepStmts: 'true'
+              cachePrepStmts: 'true'
+              rewriteBatchedStatements: 'true'
+              cacheResultSetMetadata: 'false'
+              useLocalSessionState: 'true'
+              maintainTimeStats: 'false'
+              prepStmtCacheSize: '200000'
+              tinyInt1isBit: 'false'
+              prepStmtCacheSqlLimit: '2048'
+              netTimeoutForStreamingResults: '0'
+              zeroDateTimeBehavior: round
+            maxLifetimeMilliseconds: 1800000
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            autoCommit: true
+            maxPoolSize: 5
+            username: root
+          ds_1:
+            initializationFailTimeout: 1
+            validationTimeout: 5000
+            connectionTimeoutMilliseconds: 30000
+            readOnly: false
+            registerMbeans: false
+            idleTimeoutMilliseconds: 60000
+            isolateInternalQueries: false
+            url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+            leakDetectionThreshold: 0
+            password: root
+            minPoolSize: 1
+            allowPoolSuspension: false
+            dataSourceProperties:
+              cacheServerConfiguration: 'true'
+              elideSetAutoCommits: 'true'
+              useServerPrepStmts: 'true'
+              cachePrepStmts: 'true'
+              rewriteBatchedStatements: 'true'
+              cacheResultSetMetadata: 'false'
+              useLocalSessionState: 'true'
+              maintainTimeStats: 'false'
+              prepStmtCacheSize: '200000'
+              tinyInt1isBit: 'false'
+              prepStmtCacheSqlLimit: '2048'
+              netTimeoutForStreamingResults: '0'
+              zeroDateTimeBehavior: round
+            maxLifetimeMilliseconds: 1800000
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            autoCommit: true
+            maxPoolSize: 5
+            username: root
+          ds_2:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_2?serverTimezone=UTC&useSSL=false
+            username: root
+          ds_3:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_3?serverTimezone=UTC&useSSL=false
+            username: root
+          ds_4:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_4?serverTimezone=UTC&useSSL=false
+            username: root
+        rules:
+        - !SHARDING
+          defaultDatabaseStrategy:
+            standard:
+              shardingAlgorithmName: database_inline
+              shardingColumn: user_id
+          defaultTableStrategy:
+            none: ''
+          keyGenerators:
+            snowflake:
+              type: SNOWFLAKE
+          scaling:
+            default_scaling:
+              completionDetector:
+                props:
+                  incremental-task-idle-minute-threshold: 30
+                type: IDLE
+              dataConsistencyChecker:
+                props:
+                  chunk-size: 1000
+                type: DATA_MATCH
+              input:
+                batchSize: 1000
+                workerThread: 4
+              output:
+                batchSize: 1000
+                workerThread: 4
+              streamChannel:
+                props:
+                  block-queue-size: 10000
+                type: MEMORY
+          scalingName: default_scaling
+          shardingAlgorithms:
+            database_inline:
+              props:
+                algorithm-expression: ds_${user_id % 2}
+              type: INLINE
+            t_order_inline:
+              props:
+                algorithm-expression: t_order_${order_id % 2}
+              type: INLINE
+          tables:
+            t_order:
+              actualDataNodes: ds_${0..1}.t_order_${0..1}
+              keyGenerateStrategy:
+                column: order_id
+                keyGeneratorName: snowflake
+              logicTable: t_order
+              tableStrategy:
+                standard:
+                  shardingAlgorithmName: t_order_inline
+                  shardingColumn: order_id
+        schemaName: sharding_db
+      type: ShardingSphereJDBC
+    target:
+      parameter: |
+        dataSources:
+          ds_0:
+            initializationFailTimeout: 1
+            validationTimeout: 5000
+            connectionTimeoutMilliseconds: 30000
+            readOnly: false
+            registerMbeans: false
+            idleTimeoutMilliseconds: 60000
+            isolateInternalQueries: false
+            url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+            leakDetectionThreshold: 0
+            password: root
+            minPoolSize: 1
+            allowPoolSuspension: false
+            dataSourceProperties:
+              cacheServerConfiguration: 'true'
+              elideSetAutoCommits: 'true'
+              useServerPrepStmts: 'true'
+              cachePrepStmts: 'true'
+              rewriteBatchedStatements: 'true'
+              cacheResultSetMetadata: 'false'
+              useLocalSessionState: 'true'
+              maintainTimeStats: 'false'
+              prepStmtCacheSize: '200000'
+              tinyInt1isBit: 'false'
+              prepStmtCacheSqlLimit: '2048'
+              netTimeoutForStreamingResults: '0'
+              zeroDateTimeBehavior: round
+            maxLifetimeMilliseconds: 1800000
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            autoCommit: true
+            maxPoolSize: 5
+            username: root
+          ds_1:
+            initializationFailTimeout: 1
+            validationTimeout: 5000
+            connectionTimeoutMilliseconds: 30000
+            readOnly: false
+            registerMbeans: false
+            idleTimeoutMilliseconds: 60000
+            isolateInternalQueries: false
+            url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+            leakDetectionThreshold: 0
+            password: root
+            minPoolSize: 1
+            allowPoolSuspension: false
+            dataSourceProperties:
+              cacheServerConfiguration: 'true'
+              elideSetAutoCommits: 'true'
+              useServerPrepStmts: 'true'
+              cachePrepStmts: 'true'
+              rewriteBatchedStatements: 'true'
+              cacheResultSetMetadata: 'false'
+              useLocalSessionState: 'true'
+              maintainTimeStats: 'false'
+              prepStmtCacheSize: '200000'
+              tinyInt1isBit: 'false'
+              prepStmtCacheSqlLimit: '2048'
+              netTimeoutForStreamingResults: '0'
+              zeroDateTimeBehavior: round
+            maxLifetimeMilliseconds: 1800000
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            autoCommit: true
+            maxPoolSize: 5
+            username: root
+          ds_2:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_2?serverTimezone=UTC&useSSL=false
+            username: root
+          ds_3:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_3?serverTimezone=UTC&useSSL=false
+            username: root
+          ds_4:
+            password: root
+            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+            idleTimeoutMilliseconds: '30000'
+            maxPoolSize: '10'
+            url: jdbc:mysql://127.0.0.1:3306/ds_4?serverTimezone=UTC&useSSL=false
+            username: root
+        rules:
+        - !SHARDING
+          autoTables:
+            t_order:
+              actualDataSources: ds_2,ds_3,ds_4
+              keyGenerateStrategy:
+                column: order_id
+                keyGeneratorName: t_order_snowflake
+              logicTable: t_order
+              shardingStrategy:
+                standard:
+                  shardingAlgorithmName: t_order_hash_mod
+                  shardingColumn: order_id
+          defaultDatabaseStrategy:
+            standard:
+              shardingAlgorithmName: database_inline
+              shardingColumn: user_id
+          defaultTableStrategy:
+            none: ''
+          keyGenerators:
+            snowflake:
+              type: SNOWFLAKE
+            t_order_snowflake:
+              type: snowflake
+          scaling:
+            default_scaling:
+              completionDetector:
+                props:
+                  incremental-task-idle-minute-threshold: 30
+                type: IDLE
+              dataConsistencyChecker:
+                props:
+                  chunk-size: 1000
+                type: DATA_MATCH
+              input:
+                batchSize: 1000
+                workerThread: 4
+              output:
+                batchSize: 1000
+                workerThread: 4
+              streamChannel:
+                props:
+                  block-queue-size: 10000
+                type: MEMORY
+          scalingName: default_scaling
+          shardingAlgorithms:
+            database_inline:
+              props:
+                algorithm-expression: ds_${user_id % 2}
+              type: INLINE
+            t_order_inline:
+              props:
+                algorithm-expression: t_order_${order_id % 2}
+              type: INLINE
+            t_order_hash_mod:
+              props:
+                sharding-count: '6'
+              type: hash_mod
+        schemaName: sharding_db
+      type: ShardingSphereJDBC
+  workflowConfig:
+    activeVersion: 0
+    allowDelayMilliseconds: 60000
+    alteredRuleYamlClassNameTablesMap:
+      org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration:
+      - t_order
+    newVersion: 1
+    schemaName: sharding_db
+maxTimeDiffSeconds: -1
+misfire: false
+monitorExecution: false
+overwrite: false
+props:
+  create_time: '2022-04-15 11:28:50'
+reconcileIntervalMinutes: 0
+shardingTotalCount: 1
+staticSharding: false
