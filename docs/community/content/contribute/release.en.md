@@ -610,7 +610,13 @@ The list of files to be uploaded is as follows:
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
 
-**9. Announce release completed by email**
+**9. Add entrance of documents of the new release into home page**
+
+Refer to:
+- [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
+- [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
+
+**10. Announce release completed by email**
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
