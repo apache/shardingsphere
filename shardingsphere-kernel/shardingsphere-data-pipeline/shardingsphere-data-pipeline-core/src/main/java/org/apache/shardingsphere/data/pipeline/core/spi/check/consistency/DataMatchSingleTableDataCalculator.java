@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -40,10 +41,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data match single table data calculator.
  */
+@Getter
+@Setter
 @Slf4j
 public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
     
@@ -53,13 +57,15 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     private int chunkSize;
     
+    private Properties props;
+    
     @Override
     public void init() {
         chunkSize = getChunkSize();
     }
     
     private int getChunkSize() {
-        int result = Integer.parseInt(getProps().getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        int result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
         if (result <= 0) {
             log.warn("Invalid result={}, use default value", result);
             return DEFAULT_CHUNK_SIZE;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * CRC32 match single table data calculator.
  */
-public final class CRC32MatchSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public final class CRC32MatchSingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
