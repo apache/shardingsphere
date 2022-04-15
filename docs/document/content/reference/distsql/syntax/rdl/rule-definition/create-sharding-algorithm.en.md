@@ -28,7 +28,7 @@ algorithmType ::=
 
 ### Supplement
 
-- `algorithmType` is the sharding algorithm type, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
 
 ### Example
 
@@ -40,7 +40,7 @@ CREATE SHARDING ALGORITHM inline_algorithm (
     TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 );
 
--- create a sharding algorithm of type auto_interval
+-- create a sharding algorithm of type AUTO_INTERVAL
 CREATE SHARDING ALGORITHM interval_algorithm (
     TYPE(NAME=auto_interval, PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
 );

@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`CREATE SHARDING ALGORITHM` 语法用于为当前所选逻辑库添加分片算法
+`CREATE SHARDING ALGORITHM` 语法用于为当前所选的逻辑库添加分片算法
 
 ### 语法定义
 
@@ -28,7 +28,7 @@ algorithmType ::=
 
 ### 补充说明
 
-- `algorithmType` 为分片算法类型，分片算法类型请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
 
 ### 示例
 
