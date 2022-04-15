@@ -15,23 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public final class RuleAlteredJobPreparerTest {
+import java.util.StringJoiner;
+
+/**
+ * Scaling meta data node.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PipelineMetaDataNode {
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    public static final String ROOT_NODE = "scaling";
+    
+    /**
+     * Get job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getJobConfigPath(final String jobId) {
+        StringJoiner joiner = new StringJoiner("/");
+        return joiner.add(getScalingRootPath()).add(jobId).add("config").toString();
     }
     
-    @Test(expected = PipelineJobCreationException.class)
-    public void assertPrepareFailedOfNoPrimaryKey() {
-        new RuleAlteredJobPreparer().prepare(new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()));
+    /**
+     * get scaling root path.
+     *
+     * @return root path
+     */
+    public static String getScalingRootPath() {
+        return "/" + ROOT_NODE;
     }
 }

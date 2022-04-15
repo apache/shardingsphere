@@ -123,10 +123,10 @@ public final class ReflectionUtil {
      * @throws InvocationTargetException invocation target exception
      * @throws IllegalAccessException illegal access exception
      */
-    public static void invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
+    public static Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
         method.setAccessible(true);
-        method.invoke(target, parameterValues);
+        return method.invoke(target, parameterValues);
     }
 }

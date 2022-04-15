@@ -26,8 +26,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
@@ -37,7 +39,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +79,7 @@ public final class RuleAlteredJobWorkerTest {
     }
     
     @Test
-    public void assertRuleAlteredActionDisabled() throws IOException {
+    public void assertRuleAlteredActionDisabled() throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         URL dataSourceUrl = getClass().getClassLoader().getResource("scaling/detector/datasource_config.yaml");
         assertNotNull(dataSourceUrl);
         URL sourceRuleUrl = getClass().getClassLoader().getResource("scaling/rule_alter/source_rules_config.yaml");
@@ -85,23 +89,25 @@ public final class RuleAlteredJobWorkerTest {
         StartScalingEvent startScalingEvent = new StartScalingEvent("logic_db", FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
                 FileUtils.readFileToString(new File(sourceRuleUrl.getFile())), FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
                 FileUtils.readFileToString(new File(targetRuleUrl.getFile())), 0, 1);
-        new RuleAlteredJobWorker().start(startScalingEvent);
+        RuleAlteredJobWorker ruleAlteredJobWorker = new RuleAlteredJobWorker();
+        Object result = ReflectionUtil.invokeMethod(ruleAlteredJobWorker, "createJobConfig", new Class[]{StartScalingEvent.class}, new Object[]{startScalingEvent});
+        assertTrue(((Optional<?>) result).isPresent());
     }
     
     @Test
-    public void assertHasUncompletedJob() throws IOException {
-        StartScalingEvent startScalingEvent = new StartScalingEvent("sharding_db", null, null, null, null, 0, 1);
+    public void assertHasUncompletedJob() throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        jobConfiguration.getWorkflowConfig().setSchemaName("logic_db");
-        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
         JobProgress finishProcess = new JobProgress();
         finishProcess.setStatus(JobStatus.FINISHED);
         jobContext.setInitProgress(finishProcess);
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         repositoryAPI.persistJobProgress(jobContext);
         URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
         assertNotNull(jobConfigUrl);
-        repositoryAPI.persist("/scaling/0130317c30317c3054317c6c6f6769635f6462/config", FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
-        new RuleAlteredJobWorker().start(startScalingEvent);
+        repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath("0130317c30317c3054317c6c6f6769635f6462"), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
+        Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "isUncompletedJobOfSameSchemaInJobList", new Class[]{String.class},
+                new String[]{jobConfiguration.getWorkflowConfig().getSchemaName()});
+        assertTrue((Boolean) result);
     }
 }
