@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
 import java.util.Properties;
@@ -24,19 +26,11 @@ import java.util.Properties;
 /**
  * Abstract single table data calculator.
  */
+@Getter
+@Setter
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
     private Properties algorithmProps;
-    
-    @Override
-    public Properties getAlgorithmProps() {
-        return algorithmProps;
-    }
-    
-    @Override
-    public void setAlgorithmProps(final Properties algorithmProps) {
-        this.algorithmProps = algorithmProps;
-    }
     
     @Override
     public void init() {
