@@ -31,10 +31,10 @@ public interface SingleTableDataCalculator extends StatefulTypedSPI {
     void init();
     
     /**
-     * Calculate table data content, return checksum typically.
+     * Calculate table data content.
      *
      * @param dataCalculateParameter data calculate parameter
-     * @return calculated result, it will be used to check equality
+     * @return calculated result for checking equality
      */
     Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
 }
