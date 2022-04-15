@@ -19,90 +19,20 @@ jobParameter: |
       parameter: |
         dataSources:
           ds_0:
-            initializationFailTimeout: 1
-            validationTimeout: 5000
-            connectionTimeoutMilliseconds: 30000
-            readOnly: false
-            registerMbeans: false
-            idleTimeoutMilliseconds: 60000
-            isolateInternalQueries: false
-            url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
-            leakDetectionThreshold: 0
-            password: root
-            minPoolSize: 1
-            allowPoolSuspension: false
-            dataSourceProperties:
-              cacheServerConfiguration: 'true'
-              elideSetAutoCommits: 'true'
-              useServerPrepStmts: 'true'
-              cachePrepStmts: 'true'
-              rewriteBatchedStatements: 'true'
-              cacheResultSetMetadata: 'false'
-              useLocalSessionState: 'true'
-              maintainTimeStats: 'false'
-              prepStmtCacheSize: '200000'
-              tinyInt1isBit: 'false'
-              prepStmtCacheSqlLimit: '2048'
-              netTimeoutForStreamingResults: '0'
-              zeroDateTimeBehavior: round
-            maxLifetimeMilliseconds: 1800000
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            autoCommit: true
-            maxPoolSize: 5
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_1:
-            initializationFailTimeout: 1
-            validationTimeout: 5000
-            connectionTimeoutMilliseconds: 30000
-            readOnly: false
-            registerMbeans: false
-            idleTimeoutMilliseconds: 60000
-            isolateInternalQueries: false
-            url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
-            leakDetectionThreshold: 0
-            password: root
-            minPoolSize: 1
-            allowPoolSuspension: false
-            dataSourceProperties:
-              cacheServerConfiguration: 'true'
-              elideSetAutoCommits: 'true'
-              useServerPrepStmts: 'true'
-              cachePrepStmts: 'true'
-              rewriteBatchedStatements: 'true'
-              cacheResultSetMetadata: 'false'
-              useLocalSessionState: 'true'
-              maintainTimeStats: 'false'
-              prepStmtCacheSize: '200000'
-              tinyInt1isBit: 'false'
-              prepStmtCacheSqlLimit: '2048'
-              netTimeoutForStreamingResults: '0'
-              zeroDateTimeBehavior: round
-            maxLifetimeMilliseconds: 1800000
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            autoCommit: true
-            maxPoolSize: 5
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_2:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_2?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_3:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_3?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_3;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_4:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_4?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_4;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
         rules:
         - !SHARDING
           defaultDatabaseStrategy:
@@ -161,90 +91,20 @@ jobParameter: |
       parameter: |
         dataSources:
           ds_0:
-            initializationFailTimeout: 1
-            validationTimeout: 5000
-            connectionTimeoutMilliseconds: 30000
-            readOnly: false
-            registerMbeans: false
-            idleTimeoutMilliseconds: 60000
-            isolateInternalQueries: false
-            url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
-            leakDetectionThreshold: 0
-            password: root
-            minPoolSize: 1
-            allowPoolSuspension: false
-            dataSourceProperties:
-              cacheServerConfiguration: 'true'
-              elideSetAutoCommits: 'true'
-              useServerPrepStmts: 'true'
-              cachePrepStmts: 'true'
-              rewriteBatchedStatements: 'true'
-              cacheResultSetMetadata: 'false'
-              useLocalSessionState: 'true'
-              maintainTimeStats: 'false'
-              prepStmtCacheSize: '200000'
-              tinyInt1isBit: 'false'
-              prepStmtCacheSqlLimit: '2048'
-              netTimeoutForStreamingResults: '0'
-              zeroDateTimeBehavior: round
-            maxLifetimeMilliseconds: 1800000
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            autoCommit: true
-            maxPoolSize: 5
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_1:
-            initializationFailTimeout: 1
-            validationTimeout: 5000
-            connectionTimeoutMilliseconds: 30000
-            readOnly: false
-            registerMbeans: false
-            idleTimeoutMilliseconds: 60000
-            isolateInternalQueries: false
-            url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
-            leakDetectionThreshold: 0
-            password: root
-            minPoolSize: 1
-            allowPoolSuspension: false
-            dataSourceProperties:
-              cacheServerConfiguration: 'true'
-              elideSetAutoCommits: 'true'
-              useServerPrepStmts: 'true'
-              cachePrepStmts: 'true'
-              rewriteBatchedStatements: 'true'
-              cacheResultSetMetadata: 'false'
-              useLocalSessionState: 'true'
-              maintainTimeStats: 'false'
-              prepStmtCacheSize: '200000'
-              tinyInt1isBit: 'false'
-              prepStmtCacheSqlLimit: '2048'
-              netTimeoutForStreamingResults: '0'
-              zeroDateTimeBehavior: round
-            maxLifetimeMilliseconds: 1800000
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            autoCommit: true
-            maxPoolSize: 5
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_2:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_2?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_3:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_3?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_3;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
           ds_4:
-            password: root
-            dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-            idleTimeoutMilliseconds: '30000'
-            maxPoolSize: '10'
-            url: jdbc:mysql://127.0.0.1:3306/ds_4?serverTimezone=UTC&useSSL=false
-            username: root
+            dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+            url: jdbc:h2:mem:test_ds_4;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
         rules:
         - !SHARDING
           autoTables:

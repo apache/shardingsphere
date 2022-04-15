@@ -25,15 +25,15 @@ import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Answers;
 
 import java.util.Optional;
 
-import static org.mockito.Answers.RETURNS_SMART_NULLS;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RuleAlteredJobPreparerTest {
+public final class RuleAlteredJobPreparerTest {
     
     @BeforeClass
     public static void beforeClass() {
@@ -49,7 +49,7 @@ public class RuleAlteredJobPreparerTest {
     public void assertPrepareSuccess() {
         JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
         RuleAlteredJobContext mockJobContext = new RuleAlteredJobContext(jobConfiguration);
-        JobProgress jobProgress = mock(JobProgress.class, RETURNS_SMART_NULLS);
+        JobProgress jobProgress = mock(JobProgress.class, Answers.RETURNS_SMART_NULLS);
         when(jobProgress.getIncrementalPosition(anyString())).thenReturn(Optional.of(new PlaceholderPosition()));
         mockJobContext.setInitProgress(jobProgress);
         new RuleAlteredJobPreparer().prepare(mockJobContext);
