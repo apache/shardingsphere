@@ -17,21 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public final class RuleAlteredJobPreparerTest {
-    
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
-    }
-    
-    @Test(expected = PipelineJobCreationException.class)
-    public void assertPrepareFailedOfNoPrimaryKey() {
-        new RuleAlteredJobPreparer().prepare(new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()));
-    }
+    //TODO simple unit test can't cover prepare() method, it's a combination method
 }

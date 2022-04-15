@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.StringJoiner;
 
 /**
  * Scaling meta data node.
@@ -37,12 +36,11 @@ public final class PipelineMetaDataNode {
      * @return job config path.
      */
     public static String getJobConfigPath(final String jobId) {
-        StringJoiner joiner = new StringJoiner("/");
-        return joiner.add(getScalingRootPath()).add(jobId).add("config").toString();
+        return Joiner.on("/").join(getScalingRootPath(), jobId, "config");
     }
     
     /**
-     * get scaling root path.
+     * Get scaling root path.
      *
      * @return root path
      */

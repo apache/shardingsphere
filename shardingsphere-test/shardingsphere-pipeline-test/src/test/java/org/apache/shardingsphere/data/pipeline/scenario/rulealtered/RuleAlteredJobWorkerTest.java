@@ -21,19 +21,19 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,14 +43,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public final class RuleAlteredJobWorkerTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingRuleAlteredDetector.class);
-    }
     
     @BeforeClass
     public static void beforeClass() {
@@ -79,28 +76,24 @@ public final class RuleAlteredJobWorkerTest {
     }
     
     @Test
-    public void assertRuleAlteredActionDisabled() throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        URL dataSourceUrl = getClass().getClassLoader().getResource("scaling/detector/datasource_config.yaml");
-        assertNotNull(dataSourceUrl);
-        URL sourceRuleUrl = getClass().getClassLoader().getResource("scaling/rule_alter/source_rules_config.yaml");
-        assertNotNull(sourceRuleUrl);
-        URL targetRuleUrl = getClass().getClassLoader().getResource("scaling/rule_alter/target_rules_config.yaml");
-        assertNotNull(targetRuleUrl);
-        StartScalingEvent startScalingEvent = new StartScalingEvent("logic_db", FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
-                FileUtils.readFileToString(new File(sourceRuleUrl.getFile())), FileUtils.readFileToString(new File(dataSourceUrl.getFile())),
-                FileUtils.readFileToString(new File(targetRuleUrl.getFile())), 0, 1);
+    public void assertRuleAlteredActionDisabled() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
+                ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataTargetConfig = new ShardingSpherePipelineDataSourceConfiguration(
+                ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_target.yaml"));
+        StartScalingEvent startScalingEvent = new StartScalingEvent("logic_db", YamlEngine.marshal(pipelineDataSourceConfig.getRootConfig().getDataSources()),
+                YamlEngine.marshal(pipelineDataSourceConfig.getRootConfig().getRules()), YamlEngine.marshal(pipelineDataTargetConfig.getRootConfig().getDataSources()),
+                YamlEngine.marshal(pipelineDataTargetConfig.getRootConfig().getRules()), 0, 1);
         RuleAlteredJobWorker ruleAlteredJobWorker = new RuleAlteredJobWorker();
         Object result = ReflectionUtil.invokeMethod(ruleAlteredJobWorker, "createJobConfig", new Class[]{StartScalingEvent.class}, new Object[]{startScalingEvent});
         assertTrue(((Optional<?>) result).isPresent());
     }
     
     @Test
-    public void assertHasUncompletedJob() throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public void assertHasUncompletedJob() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
-        JobProgress finishProcess = new JobProgress();
-        finishProcess.setStatus(JobStatus.FINISHED);
-        jobContext.setInitProgress(finishProcess);
+        jobContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         repositoryAPI.persistJobProgress(jobContext);
         URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
@@ -108,6 +101,6 @@ public final class RuleAlteredJobWorkerTest {
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath("0130317c30317c3054317c6c6f6769635f6462"), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "isUncompletedJobOfSameSchemaInJobList", new Class[]{String.class},
                 new String[]{jobConfiguration.getWorkflowConfig().getSchemaName()});
-        assertTrue((Boolean) result);
+        assertFalse((Boolean) result);
     }
 }
