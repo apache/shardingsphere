@@ -28,12 +28,12 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Properties;
 
 /**
@@ -66,7 +66,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
             return null;
         }
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8));
-        return DatatypeConverter.printBase64Binary(result);
+        return Base64.getEncoder().encodeToString(result);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
@@ -75,7 +75,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(DatatypeConverter.parseBase64Binary(cipherValue));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue));
         return new String(result, StandardCharsets.UTF_8);
     }
     
