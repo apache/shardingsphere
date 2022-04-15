@@ -24,7 +24,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | 语句                                                 | 说明                                                           | 示例                                            |
 |:--------------------------------------------------- |:------------------------------------------------------------- |:----------------------------------------------- |
 | SHOW SCALING LIST                                   | 查询运行列表                                                    | SHOW SCALING LIST                               |
-| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING LIST 1234                        |
+| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING STATUS 1234                        |
 | START SCALING jobId                                    | 开始运行任务，xx：任务 id                                         | START SCALING 1234                              |
 | STOP SCALING jobId                                     | 停止运行任务，xx：任务 id                                         | STOP SCALING 12345                              |
 | DROP SCALING jobId                                     | 移除任务，xx：任务 id                                            | DROP SCALING 1234                               |
