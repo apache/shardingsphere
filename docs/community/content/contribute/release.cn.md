@@ -520,34 +520,29 @@ git branch -d ${RELEASE.VERSION}-release
 
 本地安装 Docker，并启动服务。
 
-5.2 编译 Docker 镜像
-
+（如果使用 Docker Desktop，可以跳过该步骤）配置 QEMU：
 ```shell
-git checkout ${RELEASE.VERSION}
-cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
-mvn clean package -Prelease,docker
+docker run --privileged --rm tonistiigi/binfmt --install all
 ```
 
-5.3 给本地 Docker 镜像打标记
+参考文档：[Docker Buildx: Build multi-platform images](https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images)
 
-通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687。
-
-```shell
-docker tag e9ea51023687 apache/shardingsphere-proxy:latest
-docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
-```
-
-5.4 发布 Docker 镜像
+5.2 登录 Docker Registry
 
 ```shell
 docker login
-docker push apache/shardingsphere-proxy:latest
-docker push apache/shardingsphere-proxy:${RELEASE.VERSION}
 ```
 
-5.5 确认发布成功
+5.3 构建并推送 ShardingSphere-Proxy Docker image
 
-登录 [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) 查看是否有发布的镜像。
+```shell
+git checkout ${RELEASE.VERSION}
+./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true clean package
+```
+
+5.4 确认发布成功
+
+查看 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
 
 **6. GitHub版本发布**
 
