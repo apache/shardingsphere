@@ -198,7 +198,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(statusContainedRule));
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
-        verify(statusContainedRule, times(1)).updateStatus(argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent -> 
+        verify(statusContainedRule, times(1)).updateStatus(argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent ->
                         Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedSchema()) && argumentEvent.isDisabled()));
     }
     
@@ -350,7 +350,7 @@ public final class ClusterContextManagerCoordinatorTest {
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
         assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition1));
     }
-
+    
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
         ShardingSphereResource shardingSphereResource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
@@ -358,7 +358,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager.getMetaDataContexts().getMetaDataMap().put("schema", mockShardingSphereMetaData);
         return result;
     }
-
+    
     private Map<String, DataSource> getDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
         result.put("ds_0", getDefaultMockedDataSource());
@@ -366,7 +366,7 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("schema", getDefaultMockedDataSource());
         return result;
     }
-
+    
     private Map<String, DataSourceProperties> getVersionChangedDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
         result.put("primary_ds", DataSourcePropertiesCreator.create(getDefaultMockedDataSource()));
@@ -374,15 +374,15 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("ds_1", DataSourcePropertiesCreator.create(getChangeMockedDataSource()));
         return result;
     }
-
+    
     private MockedDataSource getDefaultMockedDataSource() {
         return new MockedDataSource();
     }
-
+    
     private MockedDataSource getChangeMockedDataSource() {
         MockedDataSource result = new MockedDataSource();
         result.setMaxPoolSize(5);
         result.setUsername("username");
         return result;
     }
-} 
+}

@@ -15,4 +15,12 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.postgresql.check.consistency.CRC32MatchPostgreSQLSingleTableDataCalculator
+jobName: 0130317c30317c3054317c6c6f6769635f6462
+jobParameter: |
+  handleConfig:
+    jobId: 0130317c30317c3054317c6c6f6769635f6462
+    jobShardingDataNodes:
+    - t_order:ds_0.t_order_0,ds_0.t_order_1
+  workflowConfig:
+    schemaName: logic_db
+shardingTotalCount: 1

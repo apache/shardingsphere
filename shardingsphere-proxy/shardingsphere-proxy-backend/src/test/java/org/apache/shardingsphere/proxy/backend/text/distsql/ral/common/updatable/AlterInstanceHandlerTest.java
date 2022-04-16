@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlterInstanceHandlerTest {
-
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertUpdateWithNotSupportedKey() throws SQLException {
         String instanceId = "instance_id";
@@ -40,7 +40,7 @@ public final class AlterInstanceHandlerTest {
         String value = "value_1";
         new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
-
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertCheckWithNoPersistenceConfigurationFound() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -51,7 +51,7 @@ public final class AlterInstanceHandlerTest {
         String value = "value_1";
         new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
-
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertCheckWithNotExistInstanceId() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -63,7 +63,7 @@ public final class AlterInstanceHandlerTest {
         String value = "value_1";
         new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
-
+    
     private AlterInstanceStatement getSQLStatement(final String instanceId, final String key, final String value) {
         return new AlterInstanceStatement(instanceId, key, value);
     }

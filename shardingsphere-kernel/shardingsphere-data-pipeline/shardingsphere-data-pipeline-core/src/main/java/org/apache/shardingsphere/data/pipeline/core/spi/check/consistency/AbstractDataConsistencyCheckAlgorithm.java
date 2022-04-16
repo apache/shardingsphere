@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorRegistry;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
@@ -40,8 +40,8 @@ public abstract class AbstractDataConsistencyCheckAlgorithm implements DataConsi
     
     @Override
     public final SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        SingleTableDataCalculator result = SingleTableDataCalculatorRegistry.newServiceInstance(getType(), supportedDatabaseType);
-        result.setAlgorithmProps(props);
+        SingleTableDataCalculator result = SingleTableDataCalculatorFactory.newInstance(getType());
+        result.setProps(props);
         result.init();
         return result;
     }

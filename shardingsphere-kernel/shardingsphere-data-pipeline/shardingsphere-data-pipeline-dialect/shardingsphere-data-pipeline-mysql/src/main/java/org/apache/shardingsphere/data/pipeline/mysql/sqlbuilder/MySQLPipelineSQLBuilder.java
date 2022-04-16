@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -63,15 +64,9 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
         return result.toString();
     }
     
-    /**
-     * Build CRC32 SQL.
-     *
-     * @param tableName table Name
-     * @param column column
-     * @return select CRC32 SQL
-     */
-    public String buildCRC32SQL(final String tableName, final String column) {
-        return String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum FROM %s", quote(column), quote(tableName));
+    @Override
+    public Optional<String> buildCRC32SQL(final String tableName, final String column) {
+        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum FROM %s", quote(column), quote(tableName)));
     }
     
     @Override

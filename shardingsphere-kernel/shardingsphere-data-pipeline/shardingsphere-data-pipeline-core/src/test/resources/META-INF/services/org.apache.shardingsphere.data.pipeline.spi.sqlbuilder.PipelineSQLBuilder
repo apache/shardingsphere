@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.check.consistency.CRC32MatchMySQLSingleTableDataCalculator
+org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.fixture.FixturePipelineSQLBuilder

@@ -39,32 +39,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DropTableStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLDropTableStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLDropTableStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleDropTableStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerDropTableStatement.class));
     }
-
+    
     @Test
     public void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92DropTableStatement.class));
     }
-
+    
     private void assertNewInstance(final DropTableStatement dropTableStatement) {
         DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement);
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));

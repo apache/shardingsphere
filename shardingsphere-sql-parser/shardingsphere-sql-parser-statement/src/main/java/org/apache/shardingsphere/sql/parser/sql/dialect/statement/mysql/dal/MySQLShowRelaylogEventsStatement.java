@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Getter
 @Setter
 public final class MySQLShowRelaylogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private String logName;
     
     private LimitSegment limit;

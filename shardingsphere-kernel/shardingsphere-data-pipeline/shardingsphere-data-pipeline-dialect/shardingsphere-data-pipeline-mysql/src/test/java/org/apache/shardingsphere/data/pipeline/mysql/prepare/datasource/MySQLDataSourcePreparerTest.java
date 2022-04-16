@@ -84,7 +84,7 @@ public final class MySQLDataSourcePreparerTest {
         when(pipelineConfig.getTarget().getParameter()).thenReturn("target");
         when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
-    } 
+    }
     
     @Test
     public void assertGetConnection() throws SQLException {

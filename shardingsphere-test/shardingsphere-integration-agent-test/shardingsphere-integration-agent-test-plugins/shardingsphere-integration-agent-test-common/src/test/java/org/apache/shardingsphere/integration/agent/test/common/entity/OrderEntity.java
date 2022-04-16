@@ -25,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 public final class OrderEntity {
     
     private final long orderId;
-
+    
     private final int userId;
-
+    
     private final String status;
 }

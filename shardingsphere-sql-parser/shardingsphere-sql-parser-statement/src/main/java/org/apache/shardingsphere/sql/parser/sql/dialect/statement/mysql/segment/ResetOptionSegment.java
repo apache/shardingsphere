@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 @Getter
 @Setter
 public abstract class ResetOptionSegment implements SQLSegment {
-
+    
     private int startIndex;
-
+    
     private int stopIndex;
 }
