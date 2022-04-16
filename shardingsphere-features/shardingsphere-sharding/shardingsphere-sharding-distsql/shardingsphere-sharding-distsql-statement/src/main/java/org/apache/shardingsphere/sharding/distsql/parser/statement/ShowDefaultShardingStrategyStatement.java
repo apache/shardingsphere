@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
  * Show default sharding strategy statement.
  */
-public final class ShowDefaultShardingStrategyStatement extends ShowRulesStatement {
+public final class ShowDefaultShardingStrategyStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
     
     public ShowDefaultShardingStrategyStatement(final SchemaSegment schema) {
         super(schema);

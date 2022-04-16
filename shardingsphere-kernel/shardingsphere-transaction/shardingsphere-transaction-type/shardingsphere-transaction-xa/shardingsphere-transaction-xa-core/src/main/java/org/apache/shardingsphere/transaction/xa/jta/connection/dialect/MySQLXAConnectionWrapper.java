@@ -35,7 +35,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
     private static volatile Method xaConnectionCreatorMethod;
     
-    private volatile boolean initialized;
+    private static volatile boolean initialized;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {

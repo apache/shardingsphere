@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorRegistry;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -40,8 +40,8 @@ public final class FixtureDataConsistencyCheckAlgorithm implements DataConsisten
     }
     
     @Override
-    public String getDescription() {
-        return "Fixture empty implementation";
+    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
+        return SingleTableDataCalculatorFactory.newInstance(TYPE);
     }
     
     @Override
@@ -50,13 +50,8 @@ public final class FixtureDataConsistencyCheckAlgorithm implements DataConsisten
     }
     
     @Override
-    public String getProvider() {
-        return "ShardingSphere";
-    }
-    
-    @Override
-    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
-        return SingleTableDataCalculatorRegistry.newServiceInstance(TYPE, supportedDatabaseType);
+    public String getDescription() {
+        return "Fixture empty implementation";
     }
     
     @Override

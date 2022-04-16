@@ -37,17 +37,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
-
+    
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
-
+    
     private JDBCExecutorCallbackAdvice advice;
-
+    
     @Before
     public void setup() {
         advice = new JDBCExecutorCallbackAdvice();
     }
-
+    
     @Test
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
@@ -64,7 +64,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_INSTANCE)), is("mock.db"));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is("select 1"));
     }
-
+    
     @Test
     public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());

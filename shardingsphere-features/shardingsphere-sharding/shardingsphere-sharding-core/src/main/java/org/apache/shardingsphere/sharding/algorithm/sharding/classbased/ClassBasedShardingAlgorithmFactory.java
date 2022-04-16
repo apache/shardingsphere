@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 import java.util.Properties;
 
@@ -41,20 +41,20 @@ public final class ClassBasedShardingAlgorithmFactory {
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
         Class<?> result = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
-        T instance = (T) result.newInstance();
+        T instance = (T) result.getDeclaredConstructor().newInstance();
         setProperties(instance, props);
         instance.init();
         return instance;
     }
     
-    private static <T extends TypedSPI> void setProperties(final T instance, final Properties props) {
+    private static <T extends StatefulTypedSPI> void setProperties(final T instance, final Properties props) {
         if (null == props) {
             return;
         }

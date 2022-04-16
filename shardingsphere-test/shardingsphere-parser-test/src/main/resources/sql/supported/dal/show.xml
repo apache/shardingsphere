@@ -141,4 +141,5 @@
     <sql-case id="show_charset" value="SHOW CHARSET" db-types="MySQL" />
     <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL" />
     <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL" />
+    <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

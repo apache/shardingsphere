@@ -46,7 +46,7 @@ public final class FixtureScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "H2";
     }
 }

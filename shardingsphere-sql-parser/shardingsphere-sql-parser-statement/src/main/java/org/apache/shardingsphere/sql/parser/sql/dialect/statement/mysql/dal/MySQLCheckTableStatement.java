@@ -35,6 +35,6 @@ import java.util.LinkedList;
 @Setter
 @ToString
 public final class MySQLCheckTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

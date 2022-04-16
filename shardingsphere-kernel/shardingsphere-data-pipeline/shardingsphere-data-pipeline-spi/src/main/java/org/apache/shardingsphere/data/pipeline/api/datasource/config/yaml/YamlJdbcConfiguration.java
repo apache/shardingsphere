@@ -32,4 +32,13 @@ public final class YamlJdbcConfiguration {
     private String username;
     
     private String password;
+    
+    /**
+     * Set URL. Compatible with <code>jdbcUrl</code> alias.
+     *
+     * @param url JDBC URL
+     */
+    public void setUrl(final String url) {
+        this.jdbcUrl = url;
+    }
 }

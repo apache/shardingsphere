@@ -20,9 +20,11 @@ package org.apache.shardingsphere.proxy.frontend.protocol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Properties;
 
 /**
  * Database protocol frontend engine factory.
@@ -41,11 +43,6 @@ public final class DatabaseProtocolFrontendEngineFactory {
      * @return new instance of database protocol frontend engine
      */
     public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
-        for (DatabaseProtocolFrontendEngine each : ShardingSphereServiceLoader.newServiceInstances(DatabaseProtocolFrontendEngine.class)) {
-            if (DatabaseTypeRegistry.getActualDatabaseType(each.getDatabaseType()).getName().equals(databaseType.getName())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+        return TypedSPIRegistry.getRegisteredService(DatabaseProtocolFrontendEngine.class, databaseType.getName(), new Properties());
     }
 }

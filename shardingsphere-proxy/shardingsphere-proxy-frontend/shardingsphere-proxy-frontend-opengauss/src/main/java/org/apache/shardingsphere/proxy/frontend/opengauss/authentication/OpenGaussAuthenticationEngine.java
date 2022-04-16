@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
@@ -42,7 +43,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.except
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 
-import java.nio.charset.Charset;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -102,7 +102,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         startupMessageReceived = true;
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
         clientEncoding = comStartupPacket.getClientEncoding();
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(Charset.forName(clientEncoding));
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String user = comStartupPacket.getUser();
         if (Strings.isNullOrEmpty(user)) {
             throw new InvalidAuthorizationSpecificationException("no PostgreSQL user name specified in startup packet");

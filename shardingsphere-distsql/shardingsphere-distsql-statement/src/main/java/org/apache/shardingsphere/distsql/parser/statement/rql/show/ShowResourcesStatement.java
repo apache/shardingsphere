@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
@@ -28,7 +29,7 @@ import java.util.Optional;
  * Show resources statement.
  */
 @RequiredArgsConstructor
-public final class ShowResourcesStatement extends RQLStatement implements FromSchemaAvailable {
+public final class ShowResourcesStatement extends RQLStatement implements FromSchemaAvailable, ResourceSubjectSupplier {
     
     private final SchemaSegment schema;
     

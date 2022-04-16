@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShadowSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleS
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement {
+public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement implements ShadowSubjectSupplier {
 
     private final String algorithmName;
 }

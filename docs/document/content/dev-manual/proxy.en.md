@@ -17,22 +17,6 @@ chapter = true
 | PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
 | OpenGaussFrontendEngine | Base on openGauss database protocol                                            |
 
-## JDBCDriverURLRecognizer
-
-| *SPI Name*              | *Description*                              |
-| ----------------------- | ------------------------------------------ |
-| JDBCDriverURLRecognizer | Use JDBC driver to execute SQL             |
-
-| *Implementation Class*  | *Description*                              |
-| ----------------------- | ------------------------------------------ |
-| MySQLRecognizer         |  Use MySQL JDBC driver to execute SQL      |
-| PostgreSQLRecognizer    |  Use PostgreSQL JDBC driver to execute SQL |
-| OracleRecognizer        |  Use Oracle JDBC driver to execute SQL     |
-| SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
-| H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
-| P6SpyDriverRecognizer   |  Use P6Spy JDBC driver to execute SQL      |
-| OpenGaussRecognizer   |  Use openGauss JDBC driver to execute SQL      |
-
 ## AuthorityProvideAlgorithm
 
 | *SPI Name*                       | *Description*                 |

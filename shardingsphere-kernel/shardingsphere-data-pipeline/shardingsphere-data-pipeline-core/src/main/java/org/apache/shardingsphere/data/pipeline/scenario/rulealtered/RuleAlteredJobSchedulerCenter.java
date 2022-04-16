@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -57,7 +58,7 @@ public final class RuleAlteredJobSchedulerCenter {
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> Maps.newConcurrentMap());
         int shardingItem = jobContext.getShardingItem();
         if (schedulerMap.containsKey(shardingItem)) {
-            log.warn("schedulerMap does not contain shardingItem {}, ignore", shardingItem);
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
@@ -73,13 +74,15 @@ public final class RuleAlteredJobSchedulerCenter {
      */
     public static void stop(final String jobId) {
         log.info("remove and stop {}", jobId);
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
         if (null == schedulerMap) {
+            log.info("schedulerMap is null, ignore");
             return;
         }
         for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
             entry.getValue().stop();
         }
+        JOB_SCHEDULER_MAP.remove(jobId);
     }
     
     /**
@@ -89,6 +92,23 @@ public final class RuleAlteredJobSchedulerCenter {
      */
     public static boolean existJob(final String jobId) {
         return JOB_SCHEDULER_MAP.containsKey(jobId);
+    }
+    
+    /**
+     * Update job status for all job sharding.
+     *
+     * @param jobId job id
+     * @param jobStatus job status
+     */
+    public static void updateJobStatus(final String jobId, final JobStatus jobStatus) {
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
+        if (null == schedulerMap) {
+            log.info("updateJobStatus, schedulerMap is null, ignore");
+            return;
+        }
+        for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
+            entry.getValue().getJobContext().setStatus(jobStatus);
+        }
     }
     
     private static final class PersistJobContextRunnable implements Runnable {

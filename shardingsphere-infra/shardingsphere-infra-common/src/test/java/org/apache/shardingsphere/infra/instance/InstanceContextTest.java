@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.fixture.WorkerIdGeneratorFixture;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
@@ -39,14 +40,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
-
+    
     private final ModeConfiguration modeConfiguration = new ModeConfiguration("Memory", null, false);
-
+    
+    private final LockContext lockContext = mock(LockContext.class);
+    
     @Test
     public void assertUpdateInstanceStatus() {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
         when(instanceDefinition.getInstanceId()).thenReturn(new InstanceId("127.0.0.1@3307"));
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
         context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Lists.newArrayList(StateType.CIRCUIT_BREAK.name()));
@@ -56,10 +59,10 @@ public final class InstanceContextTest {
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
     }
-
+    
     @Test
     public void assertUpdateWorkerId() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         long actual = context.getWorkerId();
         assertThat(actual, is(Long.MIN_VALUE));
         Random random = new Random();
@@ -68,44 +71,44 @@ public final class InstanceContextTest {
         actual = context.getWorkerId();
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertUpdateLabel() {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
         when(instanceDefinition.getInstanceId()).thenReturn(new InstanceId("127.0.0.1@3307"));
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
         context.updateLabel("127.0.0.1@3307", expected);
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGetInstance() {
         ComputeNodeInstance expected = new ComputeNodeInstance(mock(InstanceDefinition.class));
-        InstanceContext context = new InstanceContext(expected, new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(expected, new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         ComputeNodeInstance actual = context.getInstance();
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGetState() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         StateContext actual = context.getInstance().getState();
         assertNotNull(actual);
     }
-
+    
     @Test
     public void assertGetWorkerIdGenerator() {
         WorkerIdGeneratorFixture expected = new WorkerIdGeneratorFixture(Long.MIN_VALUE);
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), expected, modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), expected, modeConfiguration, lockContext);
         WorkerIdGeneratorFixture actual = (WorkerIdGeneratorFixture) context.getWorkerIdGenerator();
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertGetModeConfiguration() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         ModeConfiguration actual = context.getModeConfiguration();
         assertThat(actual, is(modeConfiguration));
     }

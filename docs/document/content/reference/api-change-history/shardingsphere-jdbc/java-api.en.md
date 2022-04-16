@@ -436,7 +436,7 @@ Property configuration items, can be of the following properties.
 
 | *Name*                | *DataType*                   | *Explanation*                       |
 | :-------------------- | :--------------------------- | :---------------------------------- |
-| instanceConfigurationMap	| Map<String, CenterConfiguration>	| config map of config-center&registry-center，the key is center’s name，the value is the config-center/registry-center |
+| instanceConfigurationMap	| Map<String, CenterConfiguration>	| config map of config-center&registry-center, the key is center’s name, the value is the config-center/registry-center |
 
 #### CenterConfiguration
 

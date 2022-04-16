@@ -5,7 +5,7 @@ weight = 5
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.1.xsd)
 
 \<shadow:rule />
 

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
@@ -28,5 +29,10 @@ public final class CountSchemaRulesStatement extends ShowRulesStatement {
     
     public CountSchemaRulesStatement(final SchemaSegment schema) {
         super(schema);
+    }
+    
+    @Override
+    public DistSQLSubjectTypeEnum getSubjectType() {
+        return DistSQLSubjectTypeEnum.DEFAULT;
     }
 }

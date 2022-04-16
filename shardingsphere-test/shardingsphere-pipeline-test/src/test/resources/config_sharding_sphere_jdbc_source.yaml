@@ -62,7 +62,7 @@ rules:
         type: MEMORY
         props:
           block-queue-size: 10000
-      completionDetector:
-        type: FIXTURE
+#      completionDetector:
+#        type: FIXTURE
       dataConsistencyChecker:
         type: FIXTURE

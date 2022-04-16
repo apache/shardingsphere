@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.aware;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.optional.OptionalSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.optional.OptionalSPI;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import java.util.Optional;
 /**
  * Data source name aware.
  */
+@SingletonSPI
 public interface DataSourceNameAware extends OptionalSPI {
     
     /**

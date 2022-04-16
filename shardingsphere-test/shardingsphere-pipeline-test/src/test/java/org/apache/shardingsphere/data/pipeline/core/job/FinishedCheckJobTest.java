@@ -59,9 +59,9 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = PipelineJobAPIFactory.newInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.newInstance().list();
         jobInfos.forEach(each -> each.setActive(false));
         when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
@@ -69,9 +69,9 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = PipelineJobAPIFactory.newInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.newInstance().list();
         jobInfos.forEach(each -> each.setActive(true));
         when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);

@@ -103,6 +103,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
     }
     
+    // TODO seems sharding column could be updated for insert statement on conflict by kernel now
+    protected final boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
+        return shardingColumnsMap.containsKey(tableName) && shardingColumnsMap.get(tableName).contains(columnName);
+    }
+    
     @Override
     public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
@@ -172,6 +177,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
-        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? limit ?) t", quote(primaryKey), quote(primaryKey), quote(tableName), quote(primaryKey));
+        String quotedKey = quote(primaryKey).toString();
+        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, quote(tableName), quotedKey, quotedKey);
     }
 }

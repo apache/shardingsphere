@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -54,9 +53,9 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     
     private final DataSourcePropertiesValidator validator;
     
-    public AlterResourceBackendHandler(final DatabaseType databaseType, final AlterResourceStatement sqlStatement, final ConnectionSession connectionSession) {
+    public AlterResourceBackendHandler(final AlterResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
-        this.databaseType = databaseType;
+        databaseType = connectionSession.getDatabaseType();
         validator = new DataSourcePropertiesValidator();
     }
     
@@ -85,7 +84,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     
     private void checkDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
-        Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
+        Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
     }
@@ -94,23 +93,19 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return sqlStatement.getDataSources().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> resourceNames) throws DuplicateResourceException {
+    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> resourceNames) throws DistSQLException {
         Collection<String> duplicateResourceNames = getDuplicateResourceNames(resourceNames);
-        if (!duplicateResourceNames.isEmpty()) {
-            throw new DuplicateResourceException(duplicateResourceNames);
-        }
+        DistSQLException.predictionThrow(duplicateResourceNames.isEmpty(), () -> new DuplicateResourceException(duplicateResourceNames));
     }
     
     private Collection<String> getDuplicateResourceNames(final Collection<String> resourceNames) {
         return resourceNames.stream().filter(each -> resourceNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
     
-    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws RequiredResourceMissedException {
+    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        if (!notExistedResourceNames.isEmpty()) {
-            throw new RequiredResourceMissedException(schemaName, notExistedResourceNames);
-        }
+        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResourceNames));
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {

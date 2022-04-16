@@ -14,6 +14,7 @@ chapter = true
 | *Implementation Class*        | *Description*                             |
 | ----------------------------- | ----------------------------------------- |
 | FileRepository                | File persistence                          |
+| H2Repository                  | H2 persistence                            |
 
 ## ClusterPersistRepository
 
@@ -34,9 +35,10 @@ chapter = true
 
 | *Implementation Class*           | *Description*                     |
 | -------------------------------- | --------------------------------- |
-| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
 | ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
-| PropertiesChangedWatcher         | Properties changed watcher        |
-| PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
+| GlobalAckChangedWatcher          | Global ack changed watcher        |
+| GlobalLocksChangedWatcher        | Global locks changed watcher      |
 | GlobalRuleChangedWatcher         | Global rule changed watcher       |
 | MetaDataChangedWatcher           | Meta data changed watcher         |
+| PropertiesChangedWatcher         | Properties changed watcher        |
+| StorageNodeStateChangedWatcher   | Storage node changed watcher      |

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -48,8 +49,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBC
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderFactory;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
@@ -87,7 +87,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         this.backendConnection = backendConnection;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = backendConnection.getConnectionSession().getSchemaName();
-        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaNames().stream().findFirst().orElse(databaseName);
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(databaseName);
         federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
@@ -122,8 +122,10 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
                 logicSQL, getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         // TODO move federation route logic to binder
-        if (executionContext.getRouteContext().isFederated() 
-                || containsSystemSchema(logicSQL.getSqlStatementContext().getDatabaseType(), logicSQL.getSqlStatementContext().getTablesContext().getSchemaNames())) {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        String defaultSchemaName = backendConnection.getConnectionSession().getSchemaName();
+        if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext 
+                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), defaultSchemaName))) {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
@@ -139,18 +141,6 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, result);
-    }
-    
-    private boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames) {
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            for (String each : schemaNames) {
-                if (!databaseType.getSystemSchemas().contains(each)) {
-                    continue;
-                }
-                return true;
-            }
-        }
-        return databaseType.getSystemSchemas().contains(backendConnection.getConnectionSession().getSchemaName());
     }
     
     private ResultSet doExecuteFederation(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts) throws SQLException {
@@ -176,9 +166,9 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         setQueryHeaders(new ArrayList<>(columnCount));
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(backendConnection.getConnectionSession().getSchemaName());
         LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
-        QueryHeaderBuilder queryHeaderBuilder = QueryHeaderBuilderFactory.getQueryHeaderBuilder(null == metaData ? null : metaData.getResource().getDatabaseType());
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == metaData ? null : metaData.getResource().getDatabaseType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            getQueryHeaders().add(queryHeaderBuilder.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
+            getQueryHeaders().add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
         }
         setMergedResult(new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet))));
         return new QueryResponseHeader(getQueryHeaders());

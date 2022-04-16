@@ -20,10 +20,9 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Persist repository configuration YAML swapper engine.
@@ -43,7 +42,7 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final String type, final PersistRepositoryConfiguration config) {
-        return (YamlPersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToYamlConfiguration(config);
+        return (YamlPersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type).swapToYamlConfiguration(config);
     }
     
     /**
@@ -53,12 +52,9 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      * @param yamlConfig YAML persist repository configuration
      * @return persist repository configuration
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
-        Optional<PersistRepositoryConfigurationYamlSwapper> swapper = TypedSPIRegistry.findRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties());
-        if (swapper.isPresent()) {
-            return (PersistRepositoryConfiguration) swapper.get().swapToObject(yamlConfig);
-        }
-        return null;
+        Optional<PersistRepositoryConfigurationYamlSwapper> swapper = TypedSPIRegistry.findRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
+        return swapper.map(optional -> (PersistRepositoryConfiguration) optional.swapToObject(yamlConfig)).orElse(null);
     }
 }

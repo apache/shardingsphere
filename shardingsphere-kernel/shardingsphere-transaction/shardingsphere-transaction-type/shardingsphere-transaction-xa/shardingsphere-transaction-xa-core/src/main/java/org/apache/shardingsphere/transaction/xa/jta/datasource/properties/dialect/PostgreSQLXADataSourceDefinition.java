@@ -28,12 +28,12 @@ import java.util.Collections;
 public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("org.postgresql.xa.PGXADataSource");
     }
     
     @Override
-    public Collection<String> getXADriverClassName() {
-        return Collections.singletonList("org.postgresql.xa.PGXADataSource");
+    public String getType() {
+        return "PostgreSQL";
     }
 }

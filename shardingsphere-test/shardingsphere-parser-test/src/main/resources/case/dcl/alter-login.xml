@@ -17,15 +17,51 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-login sql-case-id="alter_login_enable" />
-    <alter-login sql-case-id="alter_login_name" />
-    <alter-login sql-case-id="alter_login_passwd" />
-    <alter-login sql-case-id="alter_login_set_password" />
-    <alter-login sql-case-id="alter_login_set_hashed_password" />
-    <alter-login sql-case-id="alter_login_set_password_with_old_password" />
-    <alter-login sql-case-id="alter_login_set_default_database" />
-    <alter-login sql-case-id="alter_login_add_credential" />
-    <alter-login sql-case-id="alter_login_drop_credential" />
-    <alter-login sql-case-id="alter_login_unlock" />
-    <alter-login sql-case-id="alter_login_rename" />
+    <alter-login sql-case-id="alter_login_enable">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_set_password">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_set_hashed_password">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_set_password_with_old_password">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_set_default_database">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_add_credential">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_drop_credential">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_unlock">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_rename">
+        <login name="login1_bak" start-index="12" stop-index="21"/>
+    </alter-login>
+    
+    <alter-login sql-case-id="alter_login_with_credential">
+        <login name="login1" start-index="12" stop-index="17"/>
+    </alter-login>
+
+    <alter-login sql-case-id="alter_login_check_policy">
+        <login name="[login1]" start-index="12" stop-index="19"/>
+    </alter-login>
+
+    <alter-login sql-case-id="alter_login_disable">
+        <login name="[user@contoso.com]" start-index="12" stop-index="29"/>
+    </alter-login>
 </sql-parser-test-cases>

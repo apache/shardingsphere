@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,8 +43,8 @@ public final class StandaloneContextManagerBuilderTextTest {
     @Test
     public void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
-            .schemaConfigs(Collections.singletonMap("foo_schema", 
-                    new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
+            .databaseConfigs(Collections.singletonMap("foo_schema", 
+                    new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
             .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
             .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertNotNull(actual.getMetaDataContexts().getMetaDataMap().get("foo_schema"));

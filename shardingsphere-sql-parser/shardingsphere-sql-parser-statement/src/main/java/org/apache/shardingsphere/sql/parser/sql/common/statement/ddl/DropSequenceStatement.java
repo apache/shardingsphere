@@ -22,6 +22,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Collection;
+
 /**
  * Drop sequence statement.
  */
@@ -29,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Getter
 @Setter
 public abstract class DropSequenceStatement extends AbstractSQLStatement implements DDLStatement {
-
-    private String sequenceName;
+    
+    private Collection<String> sequenceNames;
 }

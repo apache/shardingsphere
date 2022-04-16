@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -31,11 +31,11 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
-
+    
     static {
         ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
     }
-
+    
     @Test
     public void assertBuild() {
         Collection<DefaultSchemaRuleConfigurationBuilder> registeredServices = OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class);

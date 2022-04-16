@@ -376,7 +376,40 @@ $(function() {
         root: 'section#body'
     });
 
-   
+    var logo = $('header img')
+    var logosrc = logo.attr('src')
+    var loadTheme = localStorage.getItem('ss-theme')
+    if(loadTheme){
+        $('body').attr("class", loadTheme+'-theme');
+        $('.change-theme span').removeClass('active')
+        $('.change-theme span[data-item='+loadTheme+']').addClass('active')
+        $('.change-theme span[data-item='+loadTheme+']').addClass(loadTheme)
+    }  
+    if(/dark|deep/.test(loadTheme)){
+        logo.attr('src', logosrc.replace('logo_v3','logo_v2'))
+    }else{
+        logo.attr('src', logosrc.replace('logo_v2','logo_v3'))
+    }
+
+    $('.change-theme span').click(function(){
+        var _this = $(this),
+        theme =  _this.data('item')
+        if(theme){
+            $('body').attr("class", theme+'-theme');
+            localStorage.setItem('ss-theme', theme)
+        }else{
+            $('body').attr("class", '');
+            localStorage.setItem('ss-theme', '')
+        }
+        if(/dark|deep/.test(theme)){
+            logo.attr('src', logosrc.replace('logo_v3','logo_v2'))
+        }else{
+            logo.attr('src', logosrc.replace('logo_v2','logo_v3'))
+        }
+        _this.addClass('active')
+        _this.addClass(theme)
+        _this.siblings().attr('class','')
+    })
 });
 
 window.onload = function(){
@@ -417,7 +450,7 @@ window.onload = function(){
       function deal(str){
         bocs.forEach(function(item){
           if(item.getAttribute('href').split('#')[1] == str){
-            console.log(item, str)
+            // console.log(item, str)
             item.classList='active'
           }else{
             item.classList=''

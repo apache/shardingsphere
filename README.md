@@ -84,13 +84,13 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 <hr>
 
-:white_check_mark: Version 5.1.0: released :tada:
+:white_check_mark: Version 5.1.1: released :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: Version 5.1.1
+:soon: Version 5.1.2
 
-We are currently working towards our 5.1.1 milestone. 
+We are currently working towards our 5.1.2 milestone. 
 Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 [comment]: <> (##)
@@ -128,7 +128,7 @@ They all provide functions of data scale-out, distributed transaction and distri
 
 <hr>
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 A lightweight Java framework providing extra services at the Java JDBC layer. 
 With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
@@ -139,7 +139,7 @@ With the client end connecting directly to the database, it provides services in
 
 <hr>
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.1.0/apache-shardingsphere-5.1.0-shardingsphere-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.lua/shardingsphere/5.1.1/apache-shardingsphere-5.1.1-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
 A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 

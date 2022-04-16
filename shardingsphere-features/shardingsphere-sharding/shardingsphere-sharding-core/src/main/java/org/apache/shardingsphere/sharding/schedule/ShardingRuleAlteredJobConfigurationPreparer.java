@@ -86,10 +86,9 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         Map<String, List<DataNode>> result = new LinkedHashMap<>();
         Set<String> reShardNeededTables = new HashSet<>(workflowConfig.getAlteredRuleYamlClassNameTablesMap().get(YamlShardingRuleConfiguration.class.getName()));
         for (Entry<String, TableRule> entry : tableRules.entrySet()) {
-            if (!reShardNeededTables.contains(entry.getKey())) {
-                continue;
+            if (reShardNeededTables.contains(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue().getActualDataNodes());
             }
-            result.put(entry.getKey(), entry.getValue().getActualDataNodes());
         }
         return result;
     }
@@ -111,8 +110,8 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         Map<String, Map<String, List<DataNode>>> result = new LinkedHashMap<>();
         for (Entry<String, List<DataNode>> entry : actualDataNodes.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                Map<String, List<DataNode>> groupedDataNodesMap = result.computeIfAbsent(each.getDataSourceName(), k -> new LinkedHashMap<>());
-                groupedDataNodesMap.computeIfAbsent(entry.getKey(), k -> new LinkedList<>()).add(each);
+                Map<String, List<DataNode>> groupedDataNodesMap = result.computeIfAbsent(each.getDataSourceName(), key -> new LinkedHashMap<>());
+                groupedDataNodesMap.computeIfAbsent(entry.getKey(), key -> new LinkedList<>()).add(each);
             }
         }
         return result;
@@ -144,18 +143,17 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                 tableMap.put(dataNode.getTableName(), each.getLogicTableName());
             }
         }
-        DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableMap);
+        DumperConfiguration dumperConfig = createDumperConfiguration(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableMap);
         Optional<ShardingRuleConfiguration> targetRuleConfigOptional = getTargetRuleConfiguration(pipelineConfig);
         Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfigOptional.orElse(sourceRuleConfig), new HashSet<>(handleConfig.splitLogicTableNames()));
-        ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, onRuleAlteredActionConfig, shardingColumnsMap);
+        ImporterConfiguration importerConfig = createImporterConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig, shardingColumnsMap);
         TaskConfiguration result = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", dataSourceName, result);
         return result;
     }
     
     private static ShardingSpherePipelineDataSourceConfiguration getSourceConfiguration(final PipelineConfiguration pipelineConfig) {
-        PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
-        return (ShardingSpherePipelineDataSourceConfiguration) result;
+        return (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final PipelineConfiguration pipelineConfig) {
@@ -201,7 +199,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return Collections.emptySet();
     }
     
-    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
+    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
@@ -209,8 +207,8 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return result;
     }
     
-    private static ImporterConfiguration createImporterConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
-                                                              final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<String, Set<String>> shardingColumnsMap) {
+    private static ImporterConfiguration createImporterConfiguration(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                                     final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<String, Set<String>> shardingColumnsMap) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
         int batchSize = onRuleAlteredActionConfig.getOutput().getBatchSize();
         int retryTimes = handleConfig.getRetryTimes();

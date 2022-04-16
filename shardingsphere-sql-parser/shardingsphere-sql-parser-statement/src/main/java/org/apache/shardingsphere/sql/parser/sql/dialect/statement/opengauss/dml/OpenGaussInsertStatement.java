@@ -36,7 +36,7 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     private WithSegment withSegment;
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment;
-
+    
     /**
      * Get with segment.
      *

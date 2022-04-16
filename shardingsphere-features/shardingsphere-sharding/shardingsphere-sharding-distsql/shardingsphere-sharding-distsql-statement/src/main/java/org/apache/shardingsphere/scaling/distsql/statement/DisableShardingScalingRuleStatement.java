@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleSta
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisableShardingScalingRuleStatement extends AlterRuleStatement {
+public final class DisableShardingScalingRuleStatement extends AlterRuleStatement implements ScalingSubjectSupplier {
     
     private final String scalingName;
 }

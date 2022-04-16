@@ -40,17 +40,17 @@ public final class EncryptExecutor extends AbstractFeatureExecutor {
             "COLUMNS(\n" +
             "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),\n" +
             "(NAME=order_id, CIPHER=order_cipher,TYPE(NAME=MD5))\n" +
-            "));";
+            "))";
     
     private static final String ALTER_RULE = "ALTER ENCRYPT RULE t_encrypt (\n" +
             "COLUMNS(\n" +
             "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),\n" +
             "(NAME=order_id,CIPHER=order_cipher,TYPE(NAME=MD5))\n" +
-            "));";
+            "))";
     
-    private static final String DROP_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_2;";
+    private static final String DROP_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_2";
     
-    private static final String SHOW_RULE = "show encrypt rules";
+    private static final String SHOW_RULE = "SHOW ENCRYPT RULES";
     
     @Override
     public void init(Statement statement) {

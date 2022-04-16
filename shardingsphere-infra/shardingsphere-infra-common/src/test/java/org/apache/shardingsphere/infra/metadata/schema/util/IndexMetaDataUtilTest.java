@@ -17,12 +17,28 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.util;
 
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class IndexMetaDataUtilTest {
+    
+    private static final String TABLE_NAME = "t_order";
+    
+    private static final String INDEX_NAME = "user_id_idx";
     
     @Test
     public void assertGetLogicIndexNameWithIndexNameSuffix() {
@@ -47,5 +63,25 @@ public final class IndexMetaDataUtilTest {
     @Test
     public void assertGetActualIndexNameWithoutActualTableName() {
         assertThat(IndexMetaDataUtil.getActualIndexName("order_index", null), is("order_index"));
+    }
+    
+    @Test
+    public void assertGetGeneratedLogicIndexName() {
+        ColumnSegment userIdColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        ColumnSegment userNameColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
+        assertThat(IndexMetaDataUtil.getGeneratedLogicIndexName(Arrays.asList(userIdColumnSegment, userNameColumnSegment)), is("user_id_user_name_idx"));
+    }
+    
+    @Test
+    public void assertGetTableNamesFromMetaData() {
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue(INDEX_NAME));
+        assertThat(IndexMetaDataUtil.getTableNamesFromMetaData(buildSchema(), Lists.newArrayList(indexSegment)), is(Collections.singletonList(TABLE_NAME)));
+    }
+    
+    private ShardingSphereSchema buildSchema() {
+        TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singletonList(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
+        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
+        tables.put(TABLE_NAME, tableMetaData);
+        return new ShardingSphereSchema(tables);
     }
 }

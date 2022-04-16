@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -31,21 +32,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Condition 1: Oracle version >= 12.2 WithoutTables.
- * Condition 2: 12.2>Oracle version >= 12.1 WithoutTables.
- * Condition 3: Oracle version < 12.1 WithoutTables.
- * Condition 4: Oracle version >= 12.2 WithTables.
- * Condition 5: 12.2>Oracle version >= 12.1 WithTables.
- * Condition 6: Oracle version < 12.1 WithTables.
- */
 public final class OracleTableMetaDataLoaderTest {
     
     private static final String ALL_CONSTRAINTS_SQL_WITHOUT_TABLES = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A"
@@ -73,9 +68,6 @@ public final class OracleTableMetaDataLoaderTest {
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
-    
     @Test
     public void assertLoadCondition1() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -87,7 +79,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -106,7 +98,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -125,7 +117,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -144,7 +136,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -163,7 +155,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -182,7 +174,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -232,12 +224,10 @@ public final class OracleTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        DialectTableMetaDataLoader result = DIALECT_METADATA_LOADER_MAP.get("Oracle");
-        if (null != result) {
-            return result;
-        }
-        throw new IllegalStateException("Can not find OracleTableMetaDataLoader");
+    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
+        assertTrue(result.isPresent());
+        return result.get();
     }
     
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {

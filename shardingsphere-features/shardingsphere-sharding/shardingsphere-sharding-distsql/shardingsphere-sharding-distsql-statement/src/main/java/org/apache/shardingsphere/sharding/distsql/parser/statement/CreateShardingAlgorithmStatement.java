@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingAlgorithmStatement extends CreateRuleStatement {
+public final class CreateShardingAlgorithmStatement extends CreateRuleStatement implements ShardingSubjectSupplier {
     
     private final Collection<ShardingAlgorithmSegment> algorithmSegments;
 }

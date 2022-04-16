@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 import java.util.Optional;
@@ -25,13 +25,21 @@ import java.util.Optional;
 /**
  * Show rules used resource statement.
  */
-@Getter
-public final class ShowRulesUsedResourceStatement extends ShowRulesStatement {
+public final class ShowRulesUsedResourceStatement extends ShowRulesStatement implements ResourceSubjectSupplier {
     
-    private final Optional<String> resourceName;
+    private final String resourceName;
     
-    public ShowRulesUsedResourceStatement(final Optional<String> resourceName, final SchemaSegment schema) {
+    public ShowRulesUsedResourceStatement(final String resourceName, final SchemaSegment schema) {
         super(schema);
         this.resourceName = resourceName;
+    }
+    
+    /**
+     * Get resource name.
+     * 
+     * @return resource name
+     */
+    public Optional<String> getResourceName() {
+        return Optional.ofNullable(resourceName);
     }
 }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -33,13 +33,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.startsWith;
 
 public final class PostgreSQLTableMetaDataLoaderTest {
     
@@ -56,11 +58,6 @@ public final class PostgreSQLTableMetaDataLoaderTest {
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
-
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -73,7 +70,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
     @Test
@@ -87,7 +84,7 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
@@ -140,13 +137,10 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
-            if ("PostgreSQL".equals(each.getDatabaseType())) {
-                return each;
-            }
-        }
-        throw new IllegalStateException("Can not find PostgreSQLTableMetaDataLoader");
+    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"));
+        assertTrue(result.isPresent());
+        return result.get();
     }
     
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {

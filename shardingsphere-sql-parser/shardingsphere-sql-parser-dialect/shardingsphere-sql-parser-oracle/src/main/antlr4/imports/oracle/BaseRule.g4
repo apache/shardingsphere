@@ -97,7 +97,7 @@ unreservedWord
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
-    | LENGTH | SINGLE_C
+    | LENGTH | SINGLE_C | capacityUnit
     ;
 
 schemaName
@@ -109,6 +109,10 @@ tableName
     ;
 
 viewName
+    : (owner DOT_)? name
+    ;
+
+triggerName
     : (owner DOT_)? name
     ;
 
@@ -161,6 +165,10 @@ operatorName
     ;
 
 dimensionName
+    : (owner DOT_)? name
+    ;
+
+directoryName
     : (owner DOT_)? name
     ;
 
@@ -1240,4 +1248,8 @@ libName
 
 externalDatatype
     : dataType
+    ;
+    
+capacityUnit
+    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
     ;

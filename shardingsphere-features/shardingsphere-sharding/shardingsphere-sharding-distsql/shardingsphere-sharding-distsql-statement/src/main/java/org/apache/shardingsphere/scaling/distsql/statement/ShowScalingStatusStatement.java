@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowScalingStatusStatement extends QueryableScalingRALStatement {
+public final class ShowScalingStatusStatement extends QueryableScalingRALStatement implements ScalingSubjectSupplier {
     
     private final String jobId;
 }

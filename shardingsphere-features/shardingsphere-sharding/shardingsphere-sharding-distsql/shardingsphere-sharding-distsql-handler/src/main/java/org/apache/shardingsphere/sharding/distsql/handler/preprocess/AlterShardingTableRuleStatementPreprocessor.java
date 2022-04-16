@@ -27,11 +27,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 public final class AlterShardingTableRuleStatementPreprocessor implements RuleDefinitionAlterPreprocessor<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public String getType() {
-        return AlterShardingTableRuleStatement.class.getName();
-    }
-    
-    @Override
     public ShardingRuleConfiguration preprocess(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
@@ -47,5 +42,10 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
         result.setScalingName(currentRuleConfig.getScalingName());
         result.setScaling(currentRuleConfig.getScaling());
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return AlterShardingTableRuleStatement.class.getName();
     }
 }

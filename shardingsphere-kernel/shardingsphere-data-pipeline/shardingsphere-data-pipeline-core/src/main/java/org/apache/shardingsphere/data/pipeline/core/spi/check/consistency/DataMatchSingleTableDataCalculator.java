@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalcula
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,44 +44,39 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Data match implementation of single table data calculator.
+ * Data match single table data calculator.
  */
+@Getter
+@Setter
 @Slf4j
 public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
     
-    private static final Collection<String> DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
-    
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
-    private volatile int chunkSize = 1000;
+    private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    @Override
-    public String getAlgorithmType() {
-        return DataMatchDataConsistencyCheckAlgorithm.TYPE;
-    }
+    private int chunkSize;
     
-    @Override
-    public Collection<String> getDatabaseTypes() {
-        return DATABASE_TYPES;
-    }
+    private Properties props;
     
     @Override
     public void init() {
-        Properties algorithmProps = getAlgorithmProps();
-        String chunkSizeValue = algorithmProps.getProperty(CHUNK_SIZE_KEY);
-        if (!Strings.isNullOrEmpty(chunkSizeValue)) {
-            int chunkSize = Integer.parseInt(chunkSizeValue);
-            if (chunkSize <= 0) {
-                log.warn("invalid chunkSize={}, use default value", chunkSize);
-            }
-            this.chunkSize = chunkSize;
+        chunkSize = getChunkSize();
+    }
+    
+    private int getChunkSize() {
+        int result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        if (result <= 0) {
+            log.warn("Invalid result={}, use default value", result);
+            return DEFAULT_CHUNK_SIZE;
         }
+        return result;
     }
     
     @Override
     protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getSQLBuilder(dataCalculateParameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
@@ -117,6 +111,11 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         }
     }
     
+    @Override
+    public String getType() {
+        return "DATA_MATCH";
+    }
+    
     @RequiredArgsConstructor
     @Getter
     private static final class CalculatedResult {
@@ -148,6 +147,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
+                    log.info("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
                     return false;
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
@@ -159,6 +159,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
+                        log.info("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
                         return false;
                     }
                 }

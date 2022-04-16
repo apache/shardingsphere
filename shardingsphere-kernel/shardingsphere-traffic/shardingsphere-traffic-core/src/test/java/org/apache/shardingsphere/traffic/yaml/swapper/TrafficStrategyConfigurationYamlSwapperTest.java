@@ -31,21 +31,21 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class TrafficStrategyConfigurationYamlSwapperTest {
-
+    
     private static final String NAME = "testName";
-
+    
     private static final String TEST_LABEL_ONE = "testLabelOne";
-
+    
     private static final String TEST_LABEL_TWO = "testLabelTwo";
-
+    
     private static final String ALGORITHM_NAME = "algorithmName";
-
+    
     private static final String LOAD_BALANCER_NAME = "testLoadBalancerName";
-
+    
     private static final List<String> LABELS = Lists.newArrayList(TEST_LABEL_ONE, TEST_LABEL_TWO);
-
+    
     private final TrafficStrategyConfigurationYamlSwapper yamlSwapper = new TrafficStrategyConfigurationYamlSwapper();
-
+    
     @Test
     public void swapToYamlConfiguration() {
         YamlTrafficStrategyConfiguration yamlTrafficStrategyConfiguration = yamlSwapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
@@ -54,11 +54,11 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
         assertThat(yamlTrafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
         assertThat(yamlTrafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
-
+    
     private TrafficStrategyConfiguration createTrafficStrategyConfiguration() {
         return new TrafficStrategyConfiguration(NAME, LABELS, ALGORITHM_NAME, LOAD_BALANCER_NAME);
     }
-
+    
     @Test
     public void swapToObject() {
         TrafficStrategyConfiguration trafficStrategyConfiguration = yamlSwapper.swapToObject(createYamlTrafficStrategyConfiguration());
@@ -67,7 +67,7 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
         assertThat(trafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
         assertThat(trafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
-
+    
     private YamlTrafficStrategyConfiguration createYamlTrafficStrategyConfiguration() {
         YamlTrafficStrategyConfiguration result = new YamlTrafficStrategyConfiguration();
         result.setName(NAME);

@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,18 +48,46 @@ public final class LockRegistryServiceTest {
     @Test
     public void assertTryLock() {
         lockRegistryService.tryLock("test", 50L);
-        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
+        verify(clusterPersistRepository).tryLock(LockNode.generateStandardLockName("test"), 50L, TimeUnit.MILLISECONDS);
     }
     
     @Test
     public void assertReleaseLock() {
         lockRegistryService.releaseLock("test");
-        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
+        verify(clusterPersistRepository).releaseLock(LockNode.generateStandardLockName("test"));
     }
     
     @Test
-    public void assertDeleteLockAck() {
-        lockRegistryService.deleteLockAck("test");
-        verify(clusterPersistRepository).delete(anyString());
+    public void assertGetAllGlobalLock() {
+        lockRegistryService.getAllGlobalSchemaLocks();
+        verify(clusterPersistRepository).getChildrenKeys(LockNode.getGlobalSchemaLocksNodePath());
+    }
+    
+    @Test
+    public void assertTryGlobalLock() {
+        String schemaLockName = LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307");
+        lockRegistryService.tryGlobalLock(schemaLockName, 300);
+        verify(clusterPersistRepository).tryLock(schemaLockName, 300, TimeUnit.MILLISECONDS);
+    }
+    
+    @Test
+    public void assertReleaseGlobalLock() {
+        String schemaLockName = LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseGlobalLock(schemaLockName);
+        verify(clusterPersistRepository).releaseLock(schemaLockName);
+    }
+    
+    @Test
+    public void assertAckLock() {
+        String schemaAckLock = LockNode.generateGlobalSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.ackLock(schemaAckLock, "127.0.0.1@3307");
+        verify(clusterPersistRepository).persistEphemeral(schemaAckLock, "127.0.0.1@3307");
+    }
+    
+    @Test
+    public void assertReleaseAckLock() {
+        String schemaAckLock = LockNode.generateGlobalSchemaAckLockName("schema", "127.0.0.1@3307");
+        lockRegistryService.releaseAckLock(schemaAckLock);
+        verify(clusterPersistRepository).delete(schemaAckLock);
     }
 }

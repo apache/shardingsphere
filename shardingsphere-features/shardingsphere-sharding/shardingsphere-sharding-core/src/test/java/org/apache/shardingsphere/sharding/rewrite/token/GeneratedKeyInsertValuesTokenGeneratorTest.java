@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyInsertValuesTokenGeneratorTest {
-
+    
     @Test
     public void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -64,7 +64,7 @@ public final class GeneratedKeyInsertValuesTokenGeneratorTest {
         sqlToken = generatedKeyInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
         assertThat(((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().get(0), instanceOf(DerivedLiteralExpressionSegment.class));
     }
-
+    
     private List<SQLToken> getPreviousSQLTokens() {
         List<ExpressionSegment> valuesList = new LinkedList<>();
         InsertValue insertValue = mock(InsertValue.class);
@@ -77,7 +77,7 @@ public final class GeneratedKeyInsertValuesTokenGeneratorTest {
         result.add(insertValuesToken);
         return result;
     }
-
+    
     private GeneratedKeyContext getGeneratedKeyContext() {
         GeneratedKeyContext result = mock(GeneratedKeyContext.class);
         Collection<Comparable<?>> generatedValuesCollection = new LinkedList<>();
@@ -85,7 +85,7 @@ public final class GeneratedKeyInsertValuesTokenGeneratorTest {
         when(result.getGeneratedValues()).thenReturn(generatedValuesCollection);
         return result;
     }
-
+    
     private List<InsertValueContext> getInsertValueContextsList() {
         InsertValueContext insertValueContext = mock(InsertValueContext.class);
         List<InsertValueContext> result = new LinkedList<>();

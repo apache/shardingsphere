@@ -20,70 +20,121 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Lock node.
+ * Global lock node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockNode {
     
-    private static final String LOCK_NODE_ROOT = "lock";
+    private static final String LOCK_ROOT = "lock";
+    
+    private static final String LOCK_SCOPE_STANDARD = "standard";
+    
+    private static final String LOCK_SCOPE_GLOBAL = "global";
+    
+    private static final String LOCK_LEVEL_SCHEMA = "schema";
     
     private static final String LOCKS_NODE = "locks";
     
     private static final String LOCKED_ACK_NODE = "ack";
     
     /**
-     * Get lock root node path.
-     * 
-     * @return lock root node path
+     * Get standard locks node path.
+     *
+     * @return standard locks node path
      */
-    public static String getLockRootNodePath() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE);
+    public static String getStandardLocksNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_STANDARD, LOCKS_NODE);
     }
     
     /**
-     * Get lock node path.
-     * 
+     * Get global schema locks node path.
+     *
+     * @return global schema lock node path
+     */
+    public static String getGlobalSchemaLocksNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_SCHEMA, LOCKS_NODE);
+    }
+    
+    /**
+     * Get global schema locked ack node path.
+     *
+     * @return global schema locked ack node path
+     */
+    public static String getGlobalSchemaLockedAckNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_SCHEMA, LOCKED_ACK_NODE);
+    }
+    
+    /**
+     * Generate standard lock name.
+     *
      * @param lockName lock name
-     * @return lock node path
+     * @return standard lock name
      */
-    public static String getLockNodePath(final String lockName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE, lockName);
+    public static String generateStandardLockName(final String lockName) {
+        return getStandardLocksNodePath() + "/" + lockName;
     }
     
     /**
-     * Get locked ack root node path.
-     * 
-     * @return locked ack root node path
+     * Generate global schema locks name.
+     *
+     * @param schema schema
+     * @param instanceId instance id
+     * @return global schema locks name
      */
-    public static String getLockedAckRootNodePah() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE);
+    public static String generateGlobalSchemaLocksName(final String schema, final String instanceId) {
+        return getGlobalSchemaLocksNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, instanceId);
     }
     
     /**
-     * Get locked ack node path.
-     * 
-     * @param ackLockName ack lock name
-     * @return locked ack node path
+     * Generate global schema ack lock name.
+     *
+     * @param schema schema
+     * @param lockedInstanceId locked instance id
+     * @return global schema ack lock name
      */
-    public static String getLockedAckNodePath(final String ackLockName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE, ackLockName);
+    public static String generateGlobalSchemaAckLockName(final String schema, final String lockedInstanceId) {
+        return getGlobalSchemaLockedAckNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, lockedInstanceId);
     }
     
     /**
-     * Get lock name by lock node path.
-     * 
-     * @param lockNodePath lock node path
-     * @return lock name
+     * Generate global schema Lock released node path.
+     *
+     * @param schema schema
+     * @param instanceId instance id
+     * @return global schema Lock released name
      */
-    public static Optional<String> getLockName(final String lockNodePath) {
-        Pattern pattern = Pattern.compile(getLockRootNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(lockNodePath);
+    public static String generateGlobalSchemaLockReleasedNodePath(final String schema, final String instanceId) {
+        return getGlobalSchemaLocksNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, instanceId) + "/leases";
+    }
+    
+    /**
+     * Parse global schema Locks node path.
+     *
+     * @param nodePath locks node path
+     * @return global schema locked node path
+     */
+    public static Optional<String> parseGlobalSchemaLocksNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getGlobalSchemaLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(nodePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Parse global schema locked ack node path.
+     *
+     * @param nodePath locked ack node path
+     * @return global schema locked ack node path
+     */
+    public static Optional<String> parseGlobalSchemaLockedAckNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getGlobalSchemaLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

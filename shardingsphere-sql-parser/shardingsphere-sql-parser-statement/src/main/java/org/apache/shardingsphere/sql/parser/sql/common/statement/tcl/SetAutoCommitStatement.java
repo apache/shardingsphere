@@ -29,6 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Setter
 @ToString
 public abstract class SetAutoCommitStatement extends AbstractSQLStatement implements TCLStatement {
-
+    
     private boolean autoCommit;
 }

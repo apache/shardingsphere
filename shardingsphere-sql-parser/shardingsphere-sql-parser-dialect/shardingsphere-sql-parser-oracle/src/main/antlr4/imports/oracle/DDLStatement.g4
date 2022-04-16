@@ -35,12 +35,37 @@ alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
     ;
 
+alterTrigger
+    : ALTER TRIGGER triggerName (
+    | triggerCompileClause
+    | ( ENABLE | DISABLE)
+    | RENAME TO name
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;    
+
+triggerCompileClause
+    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterValue
+    ;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
+    ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
     ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
+    ;
+
+dropView
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
 truncateTable
@@ -529,7 +554,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) capacityUnit?
     ;
 
 maxsizeClause
@@ -1024,6 +1049,17 @@ allowDisallowClustering
 
 alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
+    ;
+
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
     ;
 
 deallocateUnusedClause
@@ -2067,6 +2103,10 @@ alterDimensionDropClause
 
 dropDimension
     : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
     ;
 
 createFunction

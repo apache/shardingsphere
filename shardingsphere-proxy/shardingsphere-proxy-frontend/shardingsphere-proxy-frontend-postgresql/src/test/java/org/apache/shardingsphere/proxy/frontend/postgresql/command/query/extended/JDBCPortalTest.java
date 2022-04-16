@@ -35,8 +35,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -61,7 +61,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -123,7 +122,7 @@ public final class JDBCPortalTest {
         when(databaseCommunicationEngine.next()).thenReturn(true, true, false);
         when(databaseCommunicationEngine.getQueryResponseRow())
                 .thenReturn(new QueryResponseRow(Collections.singletonList(new TextQueryResponseCell(0))), new QueryResponseRow(Collections.singletonList(new TextQueryResponseCell(1))));
-        assertNull(portal.bind());
+        portal.bind();
         assertTrue(portal.describe() instanceof PostgreSQLRowDescriptionPacket);
         setField(portal, "sqlStatement", mock(SelectStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -147,7 +146,7 @@ public final class JDBCPortalTest {
                 new QueryResponseRow(Collections.singletonList(new BinaryQueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new BinaryQueryResponseCell(Types.INTEGER, 1))));
         setField(portal, "resultFormats", Collections.singletonList(PostgreSQLValueFormat.BINARY));
-        assertNull(portal.bind());
+        portal.bind();
         assertTrue(portal.describe() instanceof PostgreSQLRowDescriptionPacket);
         setField(portal, "sqlStatement", mock(SelectStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(2);
@@ -164,7 +163,7 @@ public final class JDBCPortalTest {
         setField(portal, "textProtocolBackendHandler", null);
         when(databaseCommunicationEngine.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(databaseCommunicationEngine.next()).thenReturn(false);
-        assertNull(portal.bind());
+        portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         setField(portal, "sqlStatement", mock(InsertStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -177,7 +176,7 @@ public final class JDBCPortalTest {
         setField(portal, "textProtocolBackendHandler", null);
         when(databaseCommunicationEngine.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(databaseCommunicationEngine.next()).thenReturn(false);
-        assertNull(portal.bind());
+        portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertTrue(actualPackets.iterator().next() instanceof PostgreSQLEmptyQueryResponsePacket);

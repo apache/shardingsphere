@@ -18,6 +18,7 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  - Answer questions;
  - Update documentation and example;
  - Improve processes and tools;
+ - Check whether [CI Scheduled Workflow]( https://github.com/apache/shardingsphere/actions/workflows/ci.yml?query=event%3Aschedule ) works or not periodically;
  - Guide new contributors join community.
 
 

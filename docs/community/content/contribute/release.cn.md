@@ -41,7 +41,7 @@ Release Note 需提供中文/英文两种版本，确认中文描述是否明确
 
 **5. 发送讨论邮件**
 
-1. 发送邮件至 `dev@shardingsphere.apache.org`，在邮件正文中描述或链接 Release Note；
+1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中描述或链接 Release Note；
 2. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
@@ -187,7 +187,23 @@ https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE
 
 更新 `examples` 模块的 pom，将版本由 `${CURRENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
 
-**4. 发布预校验**
+**4. 更新 ShardingSphere-JDBC Spring 文档中 xsd 文件链接**
+
+更新目录 `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace` 下文档内的所有 xsd 链接。
+
+将：
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
+```
+
+更新为：
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
+```
+
+在文档中指定 xsd 版本，而不是直接使用 `sharding.xsd`，是为了让历史版本的文档能够对应到正确版本的 xsd 文件。
+
+**5. 发布预校验**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
@@ -199,7 +215,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DdryRun=true：演练，即不产生版本号提交，不生成新的 tag。
 
-**5. 准备发布**
+**6. 准备发布**
 
 首先清理发布预校验本地信息。
 
@@ -222,7 +238,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-**6. 部署发布**
+**7. 部署发布**
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
@@ -319,6 +335,12 @@ Your decision? 5
 
 然后进行 gpg 签名检查。
 
+Bash 可以使用以下命令检查签名：
+```bash
+for each in $(ls *.asc); do gpg --verify $each ${each%.asc}; done
+```
+
+或逐个文件检查：
 ```shell
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
@@ -350,9 +372,10 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 **检查二进制包的文件内容**
 
 解压缩
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`，
-`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
+- `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`
+- `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
+- `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
+
 进行如下检查:
 
 - 存在 `LICENSE` 和 `NOTICE` 文件；
@@ -369,9 +392,9 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 **投票阶段**
 
 1. ShardingSphere 社区投票，发起投票邮件到 `dev@shardingsphere.apache.org`。PMC 需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少 72 小时并统计到 3 个 `+1 PMC member` 票后，即可进入下一阶段的投票。
+经过至少 **72 小时** 并统计到 **3 个 `+1 PMC member`** 票后，即可进入下一阶段的投票。
 
-2. 宣布投票结果，发起投票结果邮件到 `dev@shardingsphere.apache.org`。
+2. 宣布投票结果，发起投票结果邮件到 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)。
 
 **投票模板**
 
@@ -476,7 +499,7 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 **2. 在 Apache Staging 仓库找到 ShardingSphere 并点击 `Release`**
 
-**3. 合并 Github 的 release 分支到 `master`，合并完成后删除 release 分支**
+**3. （可选）合并 Github 的 release 分支到 `master`，合并完成后删除 release 分支**
 
 ```shell
 git checkout master
@@ -497,38 +520,33 @@ git branch -d ${RELEASE.VERSION}-release
 
 本地安装 Docker，并启动服务。
 
-5.2 编译 Docker 镜像
-
+（如果使用 Docker Desktop，可以跳过该步骤）配置 QEMU：
 ```shell
-git checkout ${RELEASE.VERSION}
-cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
-mvn clean package -Prelease,docker
+docker run --privileged --rm tonistiigi/binfmt --install all
 ```
 
-5.3 给本地 Docker 镜像打标记
+参考文档：[Docker Buildx: Build multi-platform images](https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images)
 
-通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687。
-
-```shell
-docker tag e9ea51023687 apache/shardingsphere-proxy:latest
-docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
-```
-
-5.4 发布 Docker 镜像
+5.2 登录 Docker Registry
 
 ```shell
 docker login
-docker push apache/shardingsphere-proxy:latest
-docker push apache/shardingsphere-proxy:${RELEASE_VERSION}
 ```
 
-5.5 确认发布成功
+5.3 构建并推送 ShardingSphere-Proxy Docker image
 
-登录 [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) 查看是否有发布的镜像。
+```shell
+git checkout ${RELEASE.VERSION}
+./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
+```
+
+5.4 确认发布成功
+
+查看 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
 
 **6. GitHub版本发布**
 
-在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面的 `${RELEASE_VERSION}` 版本上点击 `Edit`。
+在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面的 `${RELEASE.VERSION}` 版本上点击 `Edit`。
 
 编辑版本号及版本说明，并点击 `Publish release`。
 
@@ -542,7 +560,18 @@ https://shardingsphere.apache.org/document/current/cn/downloads/
 
 GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
 
-`最新版本` 中保留一个最新的版本。Incubator 阶段历史版本会自动归档到 [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)。
+[**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 中仅保留一个最新的版本。
+确认 [Archive repository](https://archive.apache.org/dist/shardingsphere/) 中存在上一版本后，从 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 删除上一版本：
+
+```shell
+svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.org/repos/dist/release/shardingsphere/${PREVIOUS.RELEASE.VERSION}
+```
+
+历史版本会自动归档到 [Archive repository](https://archive.apache.org/dist/shardingsphere/)。
+
+孵化阶段历史版本会自动归档到 [Incubator Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)。
+
+参考：[Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html)。
 
 **8. 上传 Spring namespace xsd 文件至官方网站**
 
@@ -567,7 +596,13 @@ GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
 
-**9. 邮件通知版本发布完成**
+**9. 官网首页增加发布版本文档入口**
+
+参考以下代码：
+- [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
+- [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
+
+**10. 邮件通知版本发布完成**
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
