@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
-
-import java.util.Properties;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Abstract single table data calculator.
+ * Alter trigger statement.
  */
-public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
-    
-    private Properties algorithmProps;
-    
-    @Override
-    public Properties getAlgorithmProps() {
-        return algorithmProps;
-    }
-    
-    @Override
-    public void setAlgorithmProps(final Properties algorithmProps) {
-        this.algorithmProps = algorithmProps;
-    }
-    
-    @Override
-    public void init() {
-    }
+@ToString
+public abstract class AlterTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractStreamingSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
+public abstract class AbstractStreamingSingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
     public final Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
