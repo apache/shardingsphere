@@ -214,9 +214,9 @@ public final class TableExtractor {
             extractTablesFromTableSegment(insertStatement.getTable());
         }
         if (insertStatement instanceof OracleInsertStatement) {
-             ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment().ifPresent(optional -> {
-                 optional.getInsertStatements().forEach(each -> extractTablesFromInsert(each));
-             });
+            ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment().ifPresent(optional -> {
+                optional.getInsertStatements().forEach(each -> extractTablesFromInsert(each));
+            });
         }
         if (!insertStatement.getColumns().isEmpty()) {
             for (ColumnSegment each : insertStatement.getColumns()) {
