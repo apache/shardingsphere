@@ -110,17 +110,17 @@ Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-co
 
 Example:
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 Response:
 ```
-mysql> preview select count(1) from t_order;
+mysql> preview SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
 | data_source_name | actual_sql                                                              |
 +------------------+-------------------------------------------------------------------------+
-| ds_0             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
-| ds_1             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
 +------------------+-------------------------------------------------------------------------+
 2 rows in set (0.65 sec)
 ```
@@ -264,23 +264,20 @@ If `status` fails, you can check the log of `proxy` to view the error stack and 
 
 Example:
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 Response:
 ```
-mysql> preview select count(1) from t_order;
-+------------------+--------------------------------+
-| data_source_name | sql                            |
-+------------------+--------------------------------+
-| ds_2             | select count(1) from t_order_0 |
-| ds_2             | select count(1) from t_order_1 |
-| ds_3             | select count(1) from t_order_0 |
-| ds_3             | select count(1) from t_order_1 |
-| ds_4             | select count(1) from t_order_0 |
-| ds_4             | select count(1) from t_order_1 |
-+------------------+--------------------------------+
-6 rows in set (0.01 sec)
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+3 rows in set (0.21 sec)
 ```
 
 #### Other DistSQL
@@ -302,11 +299,11 @@ It's not needed in practice. It just simulates databases for testing.
 
 Execute SQLs in MySQL:
 ```sql
-drop database if exists scaling_ds_0;
-create database scaling_ds_0 default charset utf8;
+DROP DATABASE IF EXISTS scaling_ds_0;
+CREATE DATABASE scaling_ds_0 DEFAULT CHARSET utf8;
 
-drop database if exists scaling_ds_1;
-create database scaling_ds_1 default charset utf8;
+DROP DATABASE IF EXISTS scaling_ds_1;
+CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
 ```
 
 #### Login proxy
@@ -319,9 +316,9 @@ mysql -h127.0.0.1 -P3307 -uroot -proot
 
 Create schema:
 ```sql
-create database scaling_db;
+CREATE DATABASE scaling_db;
 
-use scaling_db
+USE scaling_db
 ```
 
 Add source database resource:
@@ -379,34 +376,34 @@ It's not needed in practice.
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, creation_date DATE, PRIMARY KEY (item_id));
 
-insert into t_order (order_id, user_id, status) values (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
-insert into t_order_item (item_id, order_id, user_id, status) values (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
+INSERT INTO T_ORDER (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+INSERT INTO T_ORDER_ITEM (item_id, order_id, user_id, status) VALUES (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
 ```
 
 #### Run migration
 
 Preview sharding:
 ```sql
-mysql> preview select count(1) from t_order;
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
 | data_source_name | actual_sql                                                              |
 +------------------+-------------------------------------------------------------------------+
-| ds_0             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
-| ds_1             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
 +------------------+-------------------------------------------------------------------------+
 2 rows in set (0.65 sec)
 ```
 
 Create target databases in MySQL:
 ```sql
-drop database if exists scaling_ds_10;
-create database scaling_ds_10 default charset utf8;
+DROP DATABASE IF EXISTS scaling_ds_10;
+CREATE DATABASE scaling_ds_10 DEFAULT CHARSET utf8;
 
-drop database if exists scaling_ds_11;
-create database scaling_ds_11 default charset utf8;
+DROP DATABASE IF EXISTS scaling_ds_11;
+CREATE DATABASE scaling_ds_11 DEFAULT CHARSET utf8;
 
-drop database if exists scaling_ds_12;
-create database scaling_ds_12 default charset utf8;
+DROP DATABASE IF EXISTS scaling_ds_12;
+CREATE DATABASE scaling_ds_12 DEFAULT CHARSET utf8;
 ```
 
 Add target database resource:
@@ -450,7 +447,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 
 Query job progress:
 ```sql
-mysql> show scaling list;
+mysql> SHOW SCALING LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 | id                                         | tables               | sharding_total_count | active | create_time         | stop_time |
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
@@ -458,7 +455,7 @@ mysql> show scaling list;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 1 row in set (0.34 sec)
 
-mysql> show scaling status 0130317c30317c3054317c7363616c696e675f6462;
+mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
@@ -473,13 +470,13 @@ Choose an idle time of business system, stop source database writing or stop upp
 
 Stop source writing in proxy:
 ```sql
-mysql> stop scaling source writing 0130317c30317c3054317c7363616c696e675f6462;
+mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
 Query OK, 0 rows affected (0.07 sec)
 ```
 
 Data consistency check:
 ```sql
-mysql> check scaling 0130317c30317c3054317c7363616c696e675f6462 by type (name=CRC32_MATCH);
+mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -491,19 +488,19 @@ mysql> check scaling 0130317c30317c3054317c7363616c696e675f6462 by type (name=CR
 
 Apply metadata:
 ```sql
-mysql> apply scaling 0130317c30317c3054317c7363616c696e675f6462;
+mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
 Query OK, 0 rows affected (0.22 sec)
 ```
 
 Preview sharding again:
 ```sql
-mysql> preview select count(1) from t_order;
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
 | data_source_name | actual_sql                                                              |
 +------------------+-------------------------------------------------------------------------+
-| ds_2             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
-| ds_3             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
-| ds_4             | select count(1) from t_order_0 UNION ALL select count(1) from t_order_1 |
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
 +------------------+-------------------------------------------------------------------------+
 3 rows in set (0.21 sec)
 ```
