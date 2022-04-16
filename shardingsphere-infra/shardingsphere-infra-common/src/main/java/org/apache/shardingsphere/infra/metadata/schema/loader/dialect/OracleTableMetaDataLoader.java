@@ -184,7 +184,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "Oracle";
     }
 }

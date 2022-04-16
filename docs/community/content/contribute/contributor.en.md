@@ -13,7 +13,7 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
  - [Create](https://github.com/apache/shardingsphere/issues/new/choose) a new issue and choose the type of issue.
  - Define the issue with a clear and descriptive title.
  - Fill in necessary information according to the template.
- - Choose a label after issue created, for example: bug，enhancement，discussion.
+ - Choose a label after issue created, for example: bug, enhancement, discussion.
  - Please pay attention for your issue, you may need provide more information during discussion.
 
 ## Developer Flow

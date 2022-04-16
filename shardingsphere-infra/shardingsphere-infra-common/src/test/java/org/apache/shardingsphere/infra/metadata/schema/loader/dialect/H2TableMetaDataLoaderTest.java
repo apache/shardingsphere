@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,20 +32,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class H2TableMetaDataLoaderTest {
-
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
-
+    
     @Test
     public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -65,9 +62,9 @@ public final class H2TableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
                         + " INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?").executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
-
+    
     @Test
     public void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -91,16 +88,16 @@ public final class H2TableMetaDataLoaderTest {
                         + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
                 .executeQuery())
                 .thenReturn(generatedInfo);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
-
+    
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
         return result;
     }
-
+    
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -108,7 +105,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
-
+    
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -120,7 +117,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
         return result;
     }
-
+    
     private ResultSet mockPrimaryKeysMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -128,7 +125,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.getString("COLUMN_NAME")).thenReturn("id");
         return result;
     }
-
+    
     private ResultSet mockGeneratedInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -137,7 +134,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.getBoolean("IS_GENERATED")).thenReturn(false);
         return result;
     }
-
+    
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -145,16 +142,13 @@ public final class H2TableMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
     }
-
-    private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
-            if ("H2".equals(each.getDatabaseType())) {
-                return each;
-            }
-        }
-        throw new IllegalStateException("Can not find H2LTableMetaDataLoader");
+    
+    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        assertTrue(result.isPresent());
+        return result.get();
     }
-
+    
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
         TableMetaData actualTableMetaData = actual.get("tbl");

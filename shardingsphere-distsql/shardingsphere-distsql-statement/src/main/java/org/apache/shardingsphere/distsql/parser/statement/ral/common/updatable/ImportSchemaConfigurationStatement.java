@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 import java.util.Optional;
@@ -26,9 +26,18 @@ import java.util.Optional;
 /**
  * Import schema configuration statement.
  */
-@Setter
+@RequiredArgsConstructor
 @Getter
 public final class ImportSchemaConfigurationStatement extends UpdatableRALStatement {
     
-    private Optional<String> filePath;
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     * 
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
 }

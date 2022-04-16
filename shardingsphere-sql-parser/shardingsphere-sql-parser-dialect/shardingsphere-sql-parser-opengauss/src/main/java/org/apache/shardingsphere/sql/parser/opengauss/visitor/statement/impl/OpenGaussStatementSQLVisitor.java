@@ -100,6 +100,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Val
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnyNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AttrsContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -151,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvai
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
@@ -1187,5 +1190,27 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
      */
     protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public ASTNode visitAnyName(final AnyNameContext ctx) {
+        CollectionValue<NameSegment> result = new CollectionValue<>();
+        if (null != ctx.attrs()) {
+            result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
+        }
+        result.getValue().add(new NameSegment(ctx.colId().getStart().getStartIndex(), ctx.colId().getStop().getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        return result;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public ASTNode visitAttrs(final AttrsContext ctx) {
+        CollectionValue<NameSegment> result = new CollectionValue<>();
+        result.getValue().add(new NameSegment(ctx.attrName().getStart().getStartIndex(), ctx.attrName().getStop().getStopIndex(), new IdentifierValue(ctx.attrName().getText())));
+        if (null != ctx.attrs()) {
+            result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
+        }
+        return result;
     }
 }

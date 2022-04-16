@@ -25,22 +25,26 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 
 import java.util.LinkedList;
 
-public class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
-
+public final class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
+    
     public static final LinkedList<String> ACTIONS = new LinkedList<>();
-
+    
     @Override
     public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         ACTIONS.add("Report the summary of this task.");
     }
-
+    
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
         ACTIONS.add("Report a unit of this task.");
     }
-
+    
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants) {
         ACTIONS.add("Report this task on completion.");
+    }
+    
+    @Override
+    public void reportClean(final String executionID) {
     }
 }

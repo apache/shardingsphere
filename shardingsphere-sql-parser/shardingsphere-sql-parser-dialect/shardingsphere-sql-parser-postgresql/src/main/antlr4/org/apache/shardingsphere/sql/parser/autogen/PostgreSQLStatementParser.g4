@@ -40,7 +40,9 @@ execute
     | startTransaction
     | end
     | commit
+    | commitPrepared
     | rollback
+    | rollbackPrepared
     | abort
     | savepoint
     | releaseSavepoint
@@ -70,6 +72,7 @@ execute
     | alterProcedure
     | alterServer
     | alterSequence
+    | alterView
     | comment
     | createDatabase
     | createFunction
@@ -131,6 +134,14 @@ execute
     | dropForeignDataWrapper
     | dropRule
     | dropType
+    | dropRoutine
     | dropStatistics
-    ) SEMI_?
+    | dropPublication
+    | dropOperatorClass
+    | dropSubscription
+    | dropTextSearch
+    | dropOperatorFamily
+    | dropAccessMethod
+    | dropServer
+    ) SEMI_? EOF
     ;

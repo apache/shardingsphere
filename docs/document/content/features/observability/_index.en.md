@@ -36,7 +36,10 @@ Enable the SkyWalking plug-in in configuration file and need to configure the Sk
 Cooperating with [Apache SkyWalking](https://skywalking.apache.org/) team,
 Apache ShardingSphere team has realized `ShardingSphere` automatic monitor probe to automatically send performance data to `SkyWalking`. Note that automatic probe in this way cannot be used together with Apache ShardingSphere plug-in probe.
 
-Metrics used to collect and display statistical indicator of cluster. Apache ShardingSphere supports Prometheus by default.
+Metrics used to collect and display statistical indicator of cluster.
+Apache ShardingSphere supports Prometheus by default.
+
+![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
 ## Challenges
 

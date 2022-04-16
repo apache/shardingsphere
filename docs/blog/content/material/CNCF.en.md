@@ -6,7 +6,7 @@ chapter = true
 
 ### CNCF
 
-(Cloud Native Computing Foundation)，is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies including containers, micro-services, micro-service governance, and declarative APIs, etc.
+(Cloud Native Computing Foundation), is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies including containers, micro-services, micro-service governance, and declarative APIs, etc.
 
 ### CNCF Landscape
 

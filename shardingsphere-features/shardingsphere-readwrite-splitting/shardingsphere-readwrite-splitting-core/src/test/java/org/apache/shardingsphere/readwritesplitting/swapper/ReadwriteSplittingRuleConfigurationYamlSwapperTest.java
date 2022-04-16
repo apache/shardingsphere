@@ -19,16 +19,14 @@ package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
@@ -40,12 +38,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
-    
-    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
-    
-    static {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
-    }
     
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
@@ -117,7 +109,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     }
     
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
-        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = collection.stream()
+        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
                 .filter(swapper -> swapper instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
                 .map(swapper -> (ReadwriteSplittingRuleConfigurationYamlSwapper) swapper)
                 .findFirst();

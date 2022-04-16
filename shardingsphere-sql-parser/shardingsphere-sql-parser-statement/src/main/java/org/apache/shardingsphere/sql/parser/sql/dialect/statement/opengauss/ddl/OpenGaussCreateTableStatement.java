@@ -30,6 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 @Setter
 @ToString
 public final class OpenGaussCreateTableStatement extends CreateTableStatement implements OpenGaussStatement {
-
+    
     private boolean containsNotExistClause;
 }

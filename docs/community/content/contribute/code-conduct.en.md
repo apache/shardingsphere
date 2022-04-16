@@ -19,7 +19,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Make sure the test coverage rate is not lower than the master branch.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
- - If using IDEA，you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
+ - If using IDEA, you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
 
 ## Contributor Covenant Code of Conduct
 

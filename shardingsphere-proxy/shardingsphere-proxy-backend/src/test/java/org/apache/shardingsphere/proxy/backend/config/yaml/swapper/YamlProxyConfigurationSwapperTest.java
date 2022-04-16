@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -56,7 +56,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedDatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get("foo_db");
         assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
@@ -71,7 +71,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedDatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
         assertThat(ruleConfigs.size(), is(1));

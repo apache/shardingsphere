@@ -19,35 +19,14 @@ package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
-
-import java.util.Collection;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIMetadataAware;
 
 /**
- * Data consistency check algorithm, SPI.
+ * Data consistency check algorithm.
  */
-public interface DataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor, SingletonSPI {
-    
-    /**
-     * Get algorithm description.
-     *
-     * @return algorithm description
-     */
-    String getDescription();
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<String> getSupportedDatabaseTypes();
-    
-    /**
-     * Get algorithm provider.
-     *
-     * @return algorithm provider
-     */
-    String getProvider();
+@SingletonSPI
+public interface DataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, TypedSPIMetadataAware, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Get single table data calculator.

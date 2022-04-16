@@ -137,11 +137,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
 
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
-
     private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
                 : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
@@ -183,5 +178,10 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
             }
         }
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

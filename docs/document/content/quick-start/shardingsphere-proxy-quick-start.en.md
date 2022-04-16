@@ -4,6 +4,12 @@ title = "ShardingSphere-Proxy"
 weight = 2
 +++
 
+## Get ShardingSphere-Proxy
+
+ShardingSphere-Proxy is available at:
+- [Binary Distribution](/en/user-manual/shardingsphere-proxy/startup/bin/)
+- [Docker](/en/user-manual/shardingsphere-proxy/startup/docker/)
+
 ## Rule Configuration
 
 Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`.

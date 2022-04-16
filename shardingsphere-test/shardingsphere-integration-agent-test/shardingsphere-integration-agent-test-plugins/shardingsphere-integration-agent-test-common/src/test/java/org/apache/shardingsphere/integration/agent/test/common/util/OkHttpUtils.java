@@ -67,7 +67,7 @@ public final class OkHttpUtils {
     public <T> T get(final String url, final Class<T> clazz) throws IOException {
         return GSON.fromJson(get(url), clazz);
     }
-
+    
     /**
      * Get response json.
      *

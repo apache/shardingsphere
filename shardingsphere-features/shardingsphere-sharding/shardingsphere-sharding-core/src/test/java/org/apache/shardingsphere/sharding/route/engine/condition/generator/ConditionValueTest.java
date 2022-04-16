@@ -29,19 +29,18 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ConditionValueTest {
-
+    
     private ConditionValue conditionValue;
-
+    
     @Before
     public void setUp() {
         ExpressionSegment expressionSegment = new LiteralExpressionSegment(0, 0, "shardingsphere");
         conditionValue = new ConditionValue(expressionSegment, new LinkedList<>());
     }
-
+    
     @Test
     public void assertGetValue() {
         assertTrue(conditionValue.getValue().isPresent());
         assertThat(conditionValue.getValue().get(), is("shardingsphere"));
     }
 }
-

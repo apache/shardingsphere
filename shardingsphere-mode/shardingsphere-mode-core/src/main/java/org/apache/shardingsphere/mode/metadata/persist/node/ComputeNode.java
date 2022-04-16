@@ -39,6 +39,8 @@ public final class ComputeNode {
     
     private static final String LABELS_NODE = "labels";
     
+    private static final String PROCESS_TRIGGER = "process_trigger";
+    
     private static final String STATUS_NODE = "status";
     
     private static final String WORKER_ID = "worker_id";
@@ -73,6 +75,27 @@ public final class ComputeNode {
      */
     public static String getOnlineInstanceNodePath() {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE);
+    }
+    
+    /**
+     * Get process trigger node path.
+     * 
+     * @return path of process trigger node path
+     */
+    public static String getProcessTriggerNodePatch() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER);
+    }
+    
+    /**
+     * Get process trigger instance show process list id node path.
+     *
+     * @param instanceId instance id
+     * @param instanceType instance type
+     * @param showProcessListId show process list id
+     * @return path of process trigger instance node path
+     */
+    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final InstanceType instanceType, final String showProcessListId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId, showProcessListId);
     }
     
     /**

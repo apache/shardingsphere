@@ -69,5 +69,9 @@ execute
     | createFunction
     | dropDatabaseLink
     | dropDirectory
+    | dropView
+    | dropTrigger
+    | alterView
+    | alterTrigger
     ) SEMI_?
     ;

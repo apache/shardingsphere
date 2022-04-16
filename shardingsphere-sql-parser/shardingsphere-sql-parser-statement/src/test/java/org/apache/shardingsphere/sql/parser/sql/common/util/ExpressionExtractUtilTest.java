@@ -37,7 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ExpressionExtractUtilTest {
-
+    
     @Test
     public void assertExtractAndPredicates() {
         ColumnSegment left = new ColumnSegment(26, 33, new IdentifierValue("order_id"));
@@ -47,7 +47,7 @@ public final class ExpressionExtractUtilTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPredicates().iterator().next(), is(expressionSegment));
     }
-
+    
     @Test
     public void assertExtractAndPredicatesAndCondition() {
         ColumnSegment columnSegment1 = new ColumnSegment(28, 35, new IdentifierValue("order_id"));
@@ -65,7 +65,7 @@ public final class ExpressionExtractUtilTest {
         assertThat(iterator.next(), is(leftExpressionSegment));
         assertThat(iterator.next(), is(rightExpressionSegment));
     }
-
+    
     @Test
     public void assertExtractAndPredicatesOrCondition() {
         ColumnSegment columnSegment1 = new ColumnSegment(28, 33, new IdentifierValue("status"));
@@ -83,7 +83,7 @@ public final class ExpressionExtractUtilTest {
         assertThat(andPredicate1.getPredicates().iterator().next(), is(expressionSegment1));
         assertThat(andPredicate2.getPredicates().iterator().next(), is(expressionSegment2));
     }
-
+    
     @Test
     public void assertExtractAndPredicatesOrAndCondition() {
         ColumnSegment statusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));

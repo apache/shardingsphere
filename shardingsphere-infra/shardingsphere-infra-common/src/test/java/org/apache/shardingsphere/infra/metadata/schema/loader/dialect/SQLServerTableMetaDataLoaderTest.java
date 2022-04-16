@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,21 +32,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class SQLServerTableMetaDataLoaderTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
-    
-    private static final Map<String, DialectTableMetaDataLoader> DIALECT_METADATA_LOADER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
-            DialectTableMetaDataLoader.class, DialectTableMetaDataLoader::getDatabaseType);
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -64,7 +59,7 @@ public final class SQLServerTableMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
     @Test
@@ -84,7 +79,7 @@ public final class SQLServerTableMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -122,12 +117,10 @@ public final class SQLServerTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        DialectTableMetaDataLoader result = DIALECT_METADATA_LOADER_MAP.get("SQLServer");
-        if (null != result) {
-            return result;
-        }
-        throw new IllegalStateException("Can not find SQLServerTableMetaDataLoader");
+    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
+        assertTrue(result.isPresent());
+        return result.get();
     }
     
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {

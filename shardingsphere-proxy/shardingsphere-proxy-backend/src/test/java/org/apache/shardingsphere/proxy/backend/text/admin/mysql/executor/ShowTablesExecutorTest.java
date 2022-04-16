@@ -132,7 +132,7 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertShowTablesExecutorWithExpectedUpperCase() throws SQLException {
+    public void assertShowTablesExecutorWithUpperCase() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
@@ -146,7 +146,7 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertShowTablesExecutorWithUnexpectedLowerCase() throws SQLException {
+    public void assertShowTablesExecutorWithLowerCase() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
@@ -154,18 +154,8 @@ public final class ShowTablesExecutorTest {
         ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithUnexpectedUpperCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_ACCOUNT")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         assertFalse(showTablesExecutor.getMergedResult().next());
     }
     

@@ -49,25 +49,25 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptAssignmentTokenGeneratorTest {
-
+    
     private EncryptAssignmentTokenGenerator tokenGenerator;
-
+    
     private EncryptRule encryptRule;
-
+    
     private UpdateStatementContext updateStatement;
-
+    
     private InsertStatementContext insertStatement;
-
+    
     private AssignmentSegment assignmentSegment;
-
+    
     private SetAssignmentSegment setAssignmentSegment;
-
+    
     private LiteralExpressionSegment literalExpression;
-
+    
     private ParameterMarkerExpressionSegment parameterMarkerExpression;
-
+    
     private EncryptAlgorithm encryptAlgorithm;
-
+    
     @Before
     public void setup() {
         encryptAlgorithm = mock(EncryptAlgorithm.class);
@@ -87,38 +87,38 @@ public final class EncryptAssignmentTokenGeneratorTest {
         when(insertStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(setAssignmentSegment.getAssignments()).thenReturn(Arrays.asList(assignmentSegment));
     }
-
+    
     @Test
     public void assertIsGenerateSQLTokenUpdateSQLSuccess() {
         assertTrue(tokenGenerator.isGenerateSQLToken(updateStatement));
     }
-
+    
     @Test
     public void assertIsGenerateSQLTokenUpdateSQLFail() {
         assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
     }
-
+    
     @Test
     public void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(parameterMarkerExpression);
         Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
         assertThat(resultCollection.size(), is(1));
     }
-
+    
     @Test
     public void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(literalExpression);
         Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
         assertThat(resultCollection.size(), is(1));
     }
-
+    
     @Test
     public void assertGenerateSQLTokenWithUpdateEmpty() {
         when(assignmentSegment.getValue()).thenReturn(null);
         Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
         assertThat(resultCollection.size(), is(0));
     }
-
+    
     @Test
     public void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
         MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class);

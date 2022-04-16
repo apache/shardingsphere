@@ -88,11 +88,11 @@ public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
         for (ShardingSphereRule each : ruleMetaData.getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Set<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
                 Set<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
         return result;

@@ -37,7 +37,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(LockNode.getGlobalLocksNodePath());
+        return Collections.singleton(LockNode.getGlobalSchemaLocksNodePath());
     }
     
     @Override
@@ -47,7 +47,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = LockNode.getLockedName(event.getKey());
+        Optional<String> lockedName = LockNode.parseGlobalSchemaLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
             return handleGlobalLocksEvent(event.getType(), lockedName.get());
         }
@@ -59,8 +59,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
             return Optional.of(new LockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
             return Optional.of(new LockReleasedEvent(lockedName));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 }

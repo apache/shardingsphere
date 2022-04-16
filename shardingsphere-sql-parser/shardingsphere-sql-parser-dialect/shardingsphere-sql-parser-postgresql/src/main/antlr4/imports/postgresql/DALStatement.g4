@@ -22,7 +22,7 @@ import DDLStatement;
 options {tokenVocab = ModeLexer;}
 
 show
-    : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF
+    : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL)
     ;
 
 set

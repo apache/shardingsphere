@@ -76,5 +76,6 @@ execute
     | call
     | explain
     | setUser
+    | revert
     ) SEMI_?
     ;

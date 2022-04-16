@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ExpressionConditionUtilsTest {
-
+    
     @Test
     public void assertIsNowExpression() {
         assertFalse(ExpressionConditionUtils.isNowExpression(new LiteralExpressionSegment(0, 0, new Object())));

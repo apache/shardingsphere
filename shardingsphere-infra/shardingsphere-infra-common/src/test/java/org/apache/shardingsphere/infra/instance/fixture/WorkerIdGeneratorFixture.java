@@ -22,12 +22,11 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
 @RequiredArgsConstructor
 public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
-
+    
     private final long fixtureWorkerId;
-
+    
     @Override
     public long generate() {
         return fixtureWorkerId;
     }
 }
-

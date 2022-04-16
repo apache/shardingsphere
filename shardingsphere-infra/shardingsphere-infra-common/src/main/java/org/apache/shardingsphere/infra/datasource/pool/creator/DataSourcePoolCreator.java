@@ -40,6 +40,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
     
+    // TODO pipeline doesn't need cache even if cache is enabled, since there might be some temp data sources
+    // TODO when all data source configurations of instance are dropped by DistSQL, cached data source should be closed
+    
     /**
      * Create data sources.
      *
@@ -58,10 +61,11 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            if (GlobalDataSourceRegistry.getInstance().getDataSourceCache().containsKey(dataSourceProps.getInstance())) {
-                return GlobalDataSourceRegistry.getInstance().getDataSourceCache().get(dataSourceProps.getInstance());
+            if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceProps.getInstance())) {
+                return GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceProps.getInstance());
             }
         }
+        // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
@@ -74,7 +78,7 @@ public final class DataSourcePoolCreator {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            GlobalDataSourceRegistry.getInstance().getDataSourceCache().put(dataSourceProps.getInstance(), result);
+            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceProps.getInstance(), result);
         }
         return result;
     }

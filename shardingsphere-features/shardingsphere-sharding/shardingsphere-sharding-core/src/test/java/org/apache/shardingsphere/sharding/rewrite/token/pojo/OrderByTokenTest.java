@@ -27,9 +27,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OrderByTokenTest {
-
+    
     private OrderByToken orderByToken;
-
+    
     @Before
     public void setup() {
         orderByToken = new OrderByToken(0);
@@ -40,7 +40,7 @@ public final class OrderByTokenTest {
         orderDirections.add(0, OrderDirection.ASC);
         orderDirections.add(1, OrderDirection.ASC);
     }
-
+    
     @Test
     public void assertToString() {
         assertThat(orderByToken.toString(), is(" ORDER BY Test1 ASC,Test2 ASC "));
