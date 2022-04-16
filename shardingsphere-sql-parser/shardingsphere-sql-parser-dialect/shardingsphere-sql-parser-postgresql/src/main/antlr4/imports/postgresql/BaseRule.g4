@@ -245,6 +245,7 @@ unreservedWord
     | INSERT
     | INSTEAD
     | INVOKER
+    | INTERVAL
     | ISOLATION
     | KEY
     | LABEL
@@ -396,6 +397,8 @@ unreservedWord
     | TRUSTED
     | TYPE
     | TYPES
+    | TIME
+    | TIMESTAMP
     | UESCAPE
     | UNBOUNDED
     | UNCOMMITTED
