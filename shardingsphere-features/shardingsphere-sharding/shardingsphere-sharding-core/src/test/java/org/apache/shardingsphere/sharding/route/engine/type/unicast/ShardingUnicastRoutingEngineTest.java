@@ -53,14 +53,14 @@ public final class ShardingUnicastRoutingEngineTest {
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertFalse("ds_2".equalsIgnoreCase(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
-
+    
     @Test
     public void assertRoutingForBroadcastTable() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_config"));
         RouteContext routeContext = unicastRoutingEngine.route(shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
     }
-
+    
     @Test
     public void assertRoutingForNoTable() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.emptyList());

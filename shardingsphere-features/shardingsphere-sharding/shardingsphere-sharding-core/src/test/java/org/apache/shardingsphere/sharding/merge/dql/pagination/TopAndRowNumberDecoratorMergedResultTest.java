@@ -44,9 +44,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TopAndRowNumberDecoratorMergedResultTest {
-
+    
     private ShardingSphereSchema schema;
-
+    
     @Before
     public void setUp() {
         schema = mock(ShardingSphereSchema.class);
