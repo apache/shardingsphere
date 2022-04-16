@@ -544,7 +544,7 @@ docker login
 
 ```shell
 git checkout ${RELEASE.VERSION}
-./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true clean package
+./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
 ```
 
 5.4 Confirm the successful release
