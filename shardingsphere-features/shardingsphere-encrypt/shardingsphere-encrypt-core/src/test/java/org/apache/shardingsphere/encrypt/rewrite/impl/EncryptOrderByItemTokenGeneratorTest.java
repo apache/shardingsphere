@@ -89,5 +89,4 @@ public final class EncryptOrderByItemTokenGeneratorTest {
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }
-    
 }

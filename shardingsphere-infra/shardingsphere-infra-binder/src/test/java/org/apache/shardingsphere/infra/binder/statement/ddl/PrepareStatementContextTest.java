@@ -69,7 +69,8 @@ public final class PrepareStatementContextTest {
         PrepareStatementContext actual = new PrepareStatementContext(postgreSQLPrepare);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(postgreSQLPrepare));
-        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_1", "tbl_1", "tbl_1")));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("tbl_1", "tbl_1", "tbl_1", "tbl_1")));
     }
     
     private SelectStatement getSelect() {

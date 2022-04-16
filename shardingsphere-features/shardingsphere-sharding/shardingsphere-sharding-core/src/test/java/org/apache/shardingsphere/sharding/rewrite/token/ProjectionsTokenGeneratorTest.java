@@ -111,9 +111,9 @@ public final class ProjectionsTokenGeneratorTest {
         when(selectStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
         ProjectionsTokenGenerator projectionsTokenGenerator = getProjectionsTokenGenerator();
         ProjectionsToken projectionsToken = projectionsTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(projectionsToken.toString(routeUnit),
-                is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS " + TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS + " " + ", " + TEST_ACTUAL_TABLE_NAME_WRAPPED + ".null"
-                        + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " " + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
+        assertThat(projectionsToken.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS " + TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS + " "
+                + ", " + TEST_ACTUAL_TABLE_NAME_WRAPPED + ".null" + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " "
+                + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
     }
     
     private ProjectionsTokenGenerator getProjectionsTokenGenerator() {
