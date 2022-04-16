@@ -83,7 +83,7 @@ public final class InsertValueContextTest {
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         return Collections.singleton(new LiteralExpressionSegment(0, 10, literalObject));
     }
-
+    
     @Test
     public void assertGetParameterCount() {
         Collection<ExpressionSegment> expressions = Arrays.asList(

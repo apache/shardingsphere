@@ -30,18 +30,18 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public final class TestSQLStatementContextInstanceOfTableAvailable implements SQLStatementContext<SQLStatement>, TableAvailable {
-
+    
     private final SQLStatement sqlStatement;
-
+    
     private final Collection<SimpleTableSegment> allTables;
-
+    
     private final TablesContext tablesContext;
-
+    
     @Override
     public SQLStatement getSqlStatement() {
         return sqlStatement;
     }
-
+    
     @Override
     public TablesContext getTablesContext() {
         return tablesContext;

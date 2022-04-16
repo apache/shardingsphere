@@ -31,11 +31,11 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
-
+    
     static {
         ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
     }
-
+    
     @Test
     public void assertBuild() {
         Collection<DefaultSchemaRuleConfigurationBuilder> registeredServices = OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class);

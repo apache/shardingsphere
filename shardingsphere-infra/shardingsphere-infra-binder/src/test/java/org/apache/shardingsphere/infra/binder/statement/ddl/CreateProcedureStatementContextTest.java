@@ -29,17 +29,17 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class CreateProcedureStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLCreateProcedureStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLCreateProcedureStatement.class));
     }
-
+    
     private void assertNewInstance(final CreateProcedureStatement createProcedureStatement) {
         CreateProcedureStatementContext actual = new CreateProcedureStatementContext(createProcedureStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));

@@ -53,27 +53,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OrderByValueTest {
-
+    
     @Test
     public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException {
-        assertCompareToForAsc(new MySQLSelectStatement());   
+        assertCompareToForAsc(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQLServerSelectStatement());
@@ -105,27 +105,27 @@ public final class OrderByValueTest {
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-
+    
     @Test
     public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQLServerSelectStatement());
@@ -158,27 +158,27 @@ public final class OrderByValueTest {
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQLServerSelectStatement());
@@ -225,7 +225,7 @@ public final class OrderByValueTest {
         result.setIndex(indexOrderByItemSegment.getColumnIndex());
         return result;
     }
-
+    
     private OrderBySegment createOrderBySegment() {
         OrderByItemSegment orderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
         return new OrderBySegment(0, 0, Collections.singletonList(orderByItemSegment));

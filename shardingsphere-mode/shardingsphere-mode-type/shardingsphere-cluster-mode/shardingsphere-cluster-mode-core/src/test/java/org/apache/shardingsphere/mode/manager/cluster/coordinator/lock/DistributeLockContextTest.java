@@ -102,7 +102,7 @@ public final class DistributeLockContextTest {
         distributeLockContext.renew(new AckLockReleasedEvent("schema-127.0.0.1@3307"));
         assertNotNull(distributeLockContext.getSchemaLock("schema"));
     }
-
+    
     @Test
     public void assertRenew() throws IllegalAccessException, NoSuchFieldException {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));

@@ -41,32 +41,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class RevokeStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLRevokeStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLRevokeStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleRevokeStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerRevokeStatement.class));
     }
-
+    
     @Test
     public void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92RevokeStatement.class));
     }
-
+    
     private void assertNewInstance(final RevokeStatement revokeStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
