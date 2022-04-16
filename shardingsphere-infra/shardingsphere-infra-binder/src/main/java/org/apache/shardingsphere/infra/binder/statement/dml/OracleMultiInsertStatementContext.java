@@ -162,21 +162,23 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
     
     /**
      * Get column names for descending order.
+     * @param index the index on multi columnNames
      *
      * @return column names for descending order
      */
-    public Iterator<String> getDescendingColumnNames(final Integer cursor) {
-        return new LinkedList<>(columnNames.get(cursor)).descendingIterator();
+    public Iterator<String> getDescendingColumnNames(final Integer index) {
+        return new LinkedList<>(columnNames.get(index)).descendingIterator();
     }
     
     /**
      * Get grouped parameters.
+     * @param index the index on multi insertValueContexts
      *
      * @return grouped parameters
      */
-    public List<List<Object>> getGroupedParameters(final Integer cursor) {
+    public List<List<Object>> getGroupedParameters(final Integer index) {
         List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : insertValueContexts.get(cursor)) {
+        for (InsertValueContext each : insertValueContexts.get(index)) {
             result.add(each.getParameters());
         }
         if (null != insertSelectContext) {
@@ -199,10 +201,11 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
     
     /**
      * Get generated key context.
-     *
+     * @param index the index on multi generatedKeyContext.
+     * 
      * @return generated key context
      */
-    public Optional<GeneratedKeyContext> getGeneratedKeyContext(final Integer cursor) {
+    public Optional<GeneratedKeyContext> getGeneratedKeyContext(final Integer index) {
         return Optional.ofNullable(generatedKeyContext.get(cursor));
     }
     
@@ -224,7 +227,8 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
     
     /**
      * Get value list count.
-     *
+     * @param insertStatement the insertStatement of multi insertStatement.
+     * 
      * @return value list count
      */
     public int getValueListCount(final InsertStatement insertStatement) {
@@ -234,6 +238,7 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
         
     /**
      * Get insert column names.
+     * @param insertStatement the insertStatement of multi insertStatement.
      *
      * @return column names collection
      */

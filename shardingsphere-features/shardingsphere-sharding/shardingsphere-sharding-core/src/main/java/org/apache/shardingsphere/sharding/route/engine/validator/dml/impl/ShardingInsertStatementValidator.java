@@ -77,7 +77,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     private Optional<InsertSelectContext> getInsertSelectContext(final SQLStatementContext<InsertStatement> sqlStatementContext) {
         if (sqlStatementContext instanceof OracleMultiInsertStatementContext) {
             return Optional.ofNullable(((OracleMultiInsertStatementContext) sqlStatementContext).getInsertSelectContext());
-        }else if (sqlStatementContext instanceof InsertStatementContext) {
+        } else if (sqlStatementContext instanceof InsertStatementContext) {
             return Optional.ofNullable(((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
         }
         return Optional.empty();
