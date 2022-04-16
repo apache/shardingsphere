@@ -75,7 +75,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
     }
-       
+    
     @Test
     public void assertRouteDataSourceAndTable() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();

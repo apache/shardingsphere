@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlRuleConfigurationSwapperFactoryTest {
-
+    
     @Test
     public void newInstanceMapByRuleConfigurations() {
         RuleConfigurationFixture ruleConfigurationFixture = new RuleConfigurationFixture();
@@ -39,14 +39,14 @@ public final class YamlRuleConfigurationSwapperFactoryTest {
                 .newInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
         assertTrue(yamlRuleConfigurationSwapperMap.get(ruleConfigurationFixture) instanceof YamlRuleConfigurationSwapperFixture);
     }
-
+    
     @Test
     public void newInstanceMapByRuleConfigurationClasses() {
         Map<Class<?>, YamlRuleConfigurationSwapper> yamlRuleConfigurationSwapperMap = YamlRuleConfigurationSwapperFactory
                 .newInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
         assertTrue(yamlRuleConfigurationSwapperMap.get(RuleConfigurationFixture.class) instanceof YamlRuleConfigurationSwapperFixture);
     }
-
+    
     @Test
     public void newInstances() {
         Collection<YamlRuleConfigurationSwapper> yamlRuleConfigurationSwappers = YamlRuleConfigurationSwapperFactory.newInstances();

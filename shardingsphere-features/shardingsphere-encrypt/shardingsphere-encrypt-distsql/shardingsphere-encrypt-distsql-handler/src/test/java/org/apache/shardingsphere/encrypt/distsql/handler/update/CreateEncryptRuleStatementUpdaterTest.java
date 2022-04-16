@@ -43,7 +43,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     static {
@@ -62,8 +62,8 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithIncompleteDataType() throws DistSQLException {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
-                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()));
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "int varchar(10)", null, null, null,
+                new AlgorithmSegment("test", new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
         updater.checkSQLStatement(shardingSphereMetaData, statement, null);

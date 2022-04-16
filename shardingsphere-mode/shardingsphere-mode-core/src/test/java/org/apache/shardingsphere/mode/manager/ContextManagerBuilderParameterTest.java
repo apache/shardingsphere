@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ContextManagerBuilderParameterTest {
-
+    
     @Test
     public void assertIsEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, true);
@@ -47,7 +47,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertTrue(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenAllFieldIsEmpty() {
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
@@ -57,7 +57,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertTrue(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenAllFieldIsNotEmpty() {
@@ -73,7 +73,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenPropsIsNotEmpty() {
         Properties mockProperties = mock(Properties.class);
@@ -85,7 +85,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenGlobalRuleConfigsIsNotEmpty() {
@@ -98,7 +98,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenSchemaConfigsIsNotEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(false, false);
@@ -109,7 +109,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenDataSourcesIsNotEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(false, true);
@@ -120,7 +120,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenRuleConfigurationsIsNotEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, false);
@@ -131,7 +131,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenOnlyPropsIsEmpty() {
@@ -145,7 +145,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     public void assertIsEmptyWhenOnlyGlobalRuleConfigsIsEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, true);
@@ -158,7 +158,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenOnlySchemaConfigsIsEmpty() {
@@ -173,7 +173,7 @@ public final class ContextManagerBuilderParameterTest {
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
-
+    
     private Map<String, DatabaseConfiguration> getMockSchemaConfiguration(final boolean dataSourcesIsEmpty, final boolean ruleConfigurationsIsEmpty) {
         DatabaseConfiguration mockSchemaConfiguration = Mockito.mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
         lenient().when(mockSchemaConfiguration.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);

@@ -48,21 +48,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class EncryptOrderByItemTokenGeneratorTest {
-
+    
     private EncryptOrderByItemTokenGenerator generator;
-
+    
     @Before
     public void setup() {
         generator = new EncryptOrderByItemTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
     }
-
+    
     @Test
     public void assertGenerateSQLTokens() {
         Collection<SubstitutableColumnNameToken> sqlTokens = generator.generateSQLTokens(buildSelectStatementContext());
         assertThat(sqlTokens.size(), is(1));
     }
-
+    
     private SelectStatementContext buildSelectStatementContext() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")));
         simpleTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
@@ -77,7 +77,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
         when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeRegistry.getDefaultDatabaseType()));
         return result;
     }
-
+    
     private EncryptRule buildEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
@@ -89,5 +89,5 @@ public final class EncryptOrderByItemTokenGeneratorTest {
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }
-
+    
 }

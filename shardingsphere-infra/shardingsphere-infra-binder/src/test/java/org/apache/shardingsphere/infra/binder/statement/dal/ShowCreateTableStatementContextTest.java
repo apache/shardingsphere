@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowCreateTableStatementContextTest {
-
+    
     @Test
     public void assertNewInstance() {
         MySQLShowCreateTableStatement mySQLShowCreateTableStatement = mock(MySQLShowCreateTableStatement.class);
