@@ -18,54 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-
-import java.util.Collection;
-import java.util.Properties;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 /**
  * Single table data calculator.
  */
-public interface SingleTableDataCalculator {
+public interface SingleTableDataCalculator extends StatefulTypedSPI {
     
     /**
      * Initialize create data calculator.
      */
-    void init();
+    default void init() {
+    }
     
     /**
-     * Get algorithm properties.
-     *
-     * @return properties
-     */
-    Properties getAlgorithmProps();
-    
-    /**
-     * Set algorithm properties.
-     * Used by data consistency check algorithm.
-     *
-     * @param algorithmProps algorithm properties
-     */
-    void setAlgorithmProps(Properties algorithmProps);
-    
-    /**
-     * Calculate table data content, return checksum typically.
+     * Calculate table data content.
      *
      * @param dataCalculateParameter data calculate parameter
-     * @return calculated result, it will be used to check equality
+     * @return calculated result for checking equality
      */
     Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
-    
-    /**
-     * Get algorithm type.
-     *
-     * @return algorithm type
-     */
-    String getAlgorithmType();
-    
-    /**
-     * Get database types.
-     *
-     * @return database types
-     */
-    Collection<String> getDatabaseTypes();
 }

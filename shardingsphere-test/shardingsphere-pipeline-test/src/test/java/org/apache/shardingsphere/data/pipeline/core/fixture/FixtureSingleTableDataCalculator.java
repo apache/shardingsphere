@@ -18,25 +18,19 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
-import java.util.Collection;
 import java.util.Collections;
 
-public final class FixtureH2SingleTableDataCalculator extends AbstractSingleTableDataCalculator {
-    
-    @Override
-    public String getAlgorithmType() {
-        return FixtureDataConsistencyCheckAlgorithm.TYPE;
-    }
-    
-    @Override
-    public Collection<String> getDatabaseTypes() {
-        return Collections.singletonList("H2");
-    }
+public final class FixtureSingleTableDataCalculator implements SingleTableDataCalculator {
     
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         return Collections.singletonList(true);
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
