@@ -52,6 +52,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.CallStatementContext
 import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.OracleMultiInsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -92,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.Collections;
@@ -154,7 +156,11 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
+            InsertStatement insertStatement = (InsertStatement) sqlStatement;
+            if (isOracleMultiInsertStatement(insertStatement)) {
+                return new OracleMultiInsertStatementContext(metaDataMap, parameters, (OracleInsertStatement) insertStatement, defaultDatabaseName);
+            }
+            return new InsertStatementContext(metaDataMap, parameters, insertStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
@@ -163,6 +169,10 @@ public final class SQLStatementContextFactory {
             return new CopyStatementContext((CopyStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
+    }
+    
+    private static boolean isOracleMultiInsertStatement(final InsertStatement insertStatement) {
+        return insertStatement instanceof OracleInsertStatement && ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment().isPresent();
     }
     
     private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {

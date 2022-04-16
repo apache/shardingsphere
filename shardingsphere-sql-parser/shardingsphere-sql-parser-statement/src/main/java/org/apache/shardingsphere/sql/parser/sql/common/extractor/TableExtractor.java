@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -211,6 +212,11 @@ public final class TableExtractor {
     public void extractTablesFromInsert(final InsertStatement insertStatement) {
         if (null != insertStatement.getTable()) {
             extractTablesFromTableSegment(insertStatement.getTable());
+        }
+        if (insertStatement instanceof OracleInsertStatement) {
+             ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment().ifPresent(optional -> {
+                 optional.getInsertStatements().forEach(each -> extractTablesFromInsert(each));
+             });
         }
         if (!insertStatement.getColumns().isEmpty()) {
             for (ColumnSegment each : insertStatement.getColumns()) {
