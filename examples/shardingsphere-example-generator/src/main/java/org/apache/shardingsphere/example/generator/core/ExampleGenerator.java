@@ -37,8 +37,6 @@ public interface ExampleGenerator {
     String RESOURCES_PATH = "src/main/resources";
     
     default void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
-        Map<String, String> propsMap = new LinkedHashMap<>();
-        configuration.getProps().forEach((key, value) -> propsMap.put(key.toString(), value.toString()));
         for (String eachMode : configuration.getModes()) {
             for (String eachTransaction : configuration.getTransactions()) {
                 for (String eachFramework : configuration.getFrameworks()) {
