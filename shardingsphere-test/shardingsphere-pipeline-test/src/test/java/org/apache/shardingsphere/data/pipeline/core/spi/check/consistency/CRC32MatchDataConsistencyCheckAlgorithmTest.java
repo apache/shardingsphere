@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.checker.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.junit.Test;
 
 import java.util.Collections;
