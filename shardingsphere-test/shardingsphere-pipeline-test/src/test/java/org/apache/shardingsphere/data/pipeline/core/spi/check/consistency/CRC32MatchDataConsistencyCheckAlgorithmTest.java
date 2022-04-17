@@ -36,10 +36,4 @@ public final class CRC32MatchDataConsistencyCheckAlgorithmTest {
         assertNotNull(checkAlgorithm.getDescription());
         assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
     }
-    
-    @Test
-    public void assertGetSingleTableDataCalculator() {
-        CRC32MatchDataConsistencyCheckAlgorithm checkAlgorithm = new CRC32MatchDataConsistencyCheckAlgorithm();
-        checkAlgorithm.getSupportedDatabaseTypes().forEach(checkAlgorithm::getSingleTableDataCalculator);
-    }
 }

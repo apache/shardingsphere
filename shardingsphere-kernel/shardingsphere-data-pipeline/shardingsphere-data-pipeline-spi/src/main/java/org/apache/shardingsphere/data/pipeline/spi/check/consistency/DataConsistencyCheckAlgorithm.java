@@ -31,8 +31,7 @@ public interface DataConsistencyCheckAlgorithm extends ShardingSphereAlgorithm, 
     /**
      * Get single table data calculator.
      *
-     * @param supportedDatabaseType supported database type
      * @return single table data calculator
      */
-    SingleTableDataCalculator getSingleTableDataCalculator(String supportedDatabaseType);
+    SingleTableDataCalculator getSingleTableDataCalculator();
 }

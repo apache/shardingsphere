@@ -152,8 +152,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
         String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
         String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
-        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
-        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
+        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator();
+        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator();
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);

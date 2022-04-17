@@ -40,7 +40,7 @@ public final class FixtureDataConsistencyCheckAlgorithm implements DataConsisten
     }
     
     @Override
-    public SingleTableDataCalculator getSingleTableDataCalculator(final String supportedDatabaseType) {
+    public SingleTableDataCalculator getSingleTableDataCalculator() {
         return SingleTableDataCalculatorFactory.newInstance(TYPE);
     }
     
