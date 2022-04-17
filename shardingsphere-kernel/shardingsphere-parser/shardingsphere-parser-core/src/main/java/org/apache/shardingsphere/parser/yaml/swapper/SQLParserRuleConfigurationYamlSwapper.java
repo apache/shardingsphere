@@ -39,10 +39,10 @@ public final class SQLParserRuleConfigurationYamlSwapper implements YamlRuleConf
         result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
         return result;
     }
-
+    
     @Override
     public SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
-        CacheOption parseTreeCacheOption = null == yamlConfig.getParseTreeCache() 
+        CacheOption parseTreeCacheOption = null == yamlConfig.getParseTreeCache()
                 ? DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getParseTreeCache());
         CacheOption sqlStatementCacheOption = null == yamlConfig.getSqlStatementCache()
                 ? DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getSqlStatementCache());

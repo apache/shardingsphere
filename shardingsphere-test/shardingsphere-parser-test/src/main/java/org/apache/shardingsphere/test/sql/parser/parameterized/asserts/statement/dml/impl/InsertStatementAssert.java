@@ -81,7 +81,7 @@ public final class InsertStatementAssert {
     private static void assertInsertColumnsClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null != expected.getInsertColumnsClause()) {
             assertTrue(assertContext.getText("Actual insert columns segment should exist."), actual.getInsertColumns().isPresent());
-            InsertColumnsClauseAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getInsertColumnsClause());    
+            InsertColumnsClauseAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getInsertColumnsClause());
         } else {
             assertFalse(assertContext.getText("Actual insert columns segment should not exist."), actual.getInsertColumns().isPresent());
         }
@@ -105,7 +105,7 @@ public final class InsertStatementAssert {
             assertFalse(assertContext.getText("Actual set assignment segment should not exist."), setAssignmentSegment.isPresent());
         }
     }
-
+    
     private static void assertInsertSelectClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null != expected.getSelectTestCase()) {
             assertTrue(assertContext.getText("Actual insert select segment should exist."), actual.getInsertSelect().isPresent());
@@ -129,7 +129,7 @@ public final class InsertStatementAssert {
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(actual);
         if (null != expected.getWithClause()) {
             assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
-            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause()); 
+            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
         } else {
             assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
         }

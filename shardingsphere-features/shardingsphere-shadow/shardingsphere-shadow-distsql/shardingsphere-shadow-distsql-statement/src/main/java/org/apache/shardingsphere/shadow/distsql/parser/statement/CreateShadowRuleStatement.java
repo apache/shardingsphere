@@ -31,6 +31,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class CreateShadowRuleStatement extends CreateRuleStatement implements ShadowSubjectSupplier {
-
+    
     private final Collection<ShadowRuleSegment> rules;
 }

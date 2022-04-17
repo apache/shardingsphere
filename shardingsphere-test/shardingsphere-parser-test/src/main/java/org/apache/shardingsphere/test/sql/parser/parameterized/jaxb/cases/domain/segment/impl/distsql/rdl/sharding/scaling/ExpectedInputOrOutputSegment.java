@@ -31,13 +31,13 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedInputOrOutputSegment extends AbstractExpectedIdentifierSQLSegment {
-
+    
     @XmlAttribute(name = "worker-thread")
     private int workerThread;
-
+    
     @XmlAttribute(name = "batch-size")
     private int batchSize;
-
+    
     @XmlElement(name = "rate-limiter")
     private ExpectedAlgorithm rateLimiter;
 }

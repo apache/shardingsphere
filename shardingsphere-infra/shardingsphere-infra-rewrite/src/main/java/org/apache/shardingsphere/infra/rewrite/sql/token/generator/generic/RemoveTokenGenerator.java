@@ -56,7 +56,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
             result.addAll(generateRemoveAvailableSQLTokens(((RemoveAvailable) sqlStatementContext).getRemoveSegments()));
         }
-        if (sqlStatementContext instanceof TableAvailable && (((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent() 
+        if (sqlStatementContext instanceof TableAvailable && (((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent()
                 || !((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames().isEmpty())) {
             result.addAll(generateTableAvailableSQLTokens((TableAvailable) sqlStatementContext));
         }

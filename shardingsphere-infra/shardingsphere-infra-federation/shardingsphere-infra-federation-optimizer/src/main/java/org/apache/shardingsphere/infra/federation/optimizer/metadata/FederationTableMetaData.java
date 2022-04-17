@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class FederationTableMetaData {
     
-    private static final RelDataTypeFactory REL_DATA_TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);   
+    private static final RelDataTypeFactory REL_DATA_TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     
     private final String name;
     

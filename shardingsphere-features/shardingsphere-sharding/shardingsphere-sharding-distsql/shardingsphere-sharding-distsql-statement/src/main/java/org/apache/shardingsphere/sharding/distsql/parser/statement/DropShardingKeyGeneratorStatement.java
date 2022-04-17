@@ -30,6 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class DropShardingKeyGeneratorStatement extends DropRuleStatement implements ShardingSubjectSupplier {
-
+    
     private final Collection<String> keyGeneratorNames;
 }

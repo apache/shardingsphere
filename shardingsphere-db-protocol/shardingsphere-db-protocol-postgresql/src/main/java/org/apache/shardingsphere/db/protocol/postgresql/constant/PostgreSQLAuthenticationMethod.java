@@ -32,7 +32,7 @@ public enum PostgreSQLAuthenticationMethod {
     MD5("md5"),
     
     PASSWORD("password"),
-
+    
     SCRAM_SHA256("scram-sha-256");
     
     private final String methodName;

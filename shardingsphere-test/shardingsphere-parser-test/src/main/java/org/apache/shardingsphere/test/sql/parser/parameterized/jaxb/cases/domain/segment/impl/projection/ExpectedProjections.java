@@ -70,7 +70,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
      * @return size
      */
     public int getSize() {
-        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() 
+        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size()
                 + expressionProjections.size() + topProjections.size() + subqueryProjections.size();
     }
     

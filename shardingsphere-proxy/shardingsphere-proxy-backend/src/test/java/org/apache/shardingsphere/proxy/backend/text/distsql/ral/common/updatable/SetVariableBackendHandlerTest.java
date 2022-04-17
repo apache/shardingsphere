@@ -69,7 +69,7 @@ public final class SetVariableBackendHandlerTest {
     public void setUp() {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(properties));
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

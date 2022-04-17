@@ -76,7 +76,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (!((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintEncryptRewriteNeeded() 
+        if (!((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintEncryptRewriteNeeded()
                 && toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
             setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
             sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);

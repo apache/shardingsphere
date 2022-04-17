@@ -35,10 +35,10 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedFunction extends AbstractExpectedSQLSegment implements ExpectedProjection {
-
+    
     @XmlAttribute(name = "function-name")
     private String functionName;
-
+    
     @XmlElement(name = "parameter")
     private List<ExpectedExpression> parameters = new LinkedList<>();
     

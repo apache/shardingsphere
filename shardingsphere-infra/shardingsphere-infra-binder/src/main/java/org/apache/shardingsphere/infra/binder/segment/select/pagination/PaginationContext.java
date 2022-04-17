@@ -48,7 +48,7 @@ public final class PaginationContext {
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
         actualOffset = null == offsetSegment ? 0L : getValue(offsetSegment, parameters);
-        actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters); 
+        actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters);
     }
     
     private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
@@ -118,7 +118,8 @@ public final class PaginationContext {
      */
     public Optional<Integer> getRowCountParameterIndex() {
         return rowCountSegment instanceof ParameterMarkerPaginationValueSegment
-                ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex()) : Optional.empty();
+                ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex())
+                : Optional.empty();
     }
     
     /**

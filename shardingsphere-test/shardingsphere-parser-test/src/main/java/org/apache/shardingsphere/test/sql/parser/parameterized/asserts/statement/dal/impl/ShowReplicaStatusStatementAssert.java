@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowReplicaStatusStatementAssert {
-
+    
     /**
      * Assert show replica status statement is correct with expected show replica status statement test case.
      *

@@ -34,9 +34,9 @@ import java.lang.reflect.Method;
  * Command executor task advice.
  */
 public class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
-
+    
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
-
+    
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
@@ -47,13 +47,13 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
         target.setAttachment(span);
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
     }
-
+    
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).end();
         ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
-
+    
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);

@@ -105,7 +105,7 @@ public final class SelectStatementAssert {
         }
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
     }
-
+    
     private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (null != expected.getFrom()) {
             TableAssert.assertIs(assertContext, actual.getFrom(), expected.getFrom());
@@ -160,7 +160,7 @@ public final class SelectStatementAssert {
             assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
     }
-
+    
     private static void assertLockClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<LockSegment> actualLock = SelectStatementHandler.getLockSegment(actual);
         if (null != expected.getLockClause()) {

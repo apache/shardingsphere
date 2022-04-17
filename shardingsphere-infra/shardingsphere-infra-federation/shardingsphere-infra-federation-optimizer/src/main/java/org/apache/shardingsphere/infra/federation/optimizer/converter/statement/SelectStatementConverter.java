@@ -82,7 +82,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
             ConverterContextHolder.set(context);
             ProjectionsSegment projections = new ProjectionsConverter().convertToSQLSegment(sqlSelect.getSelectList()).orElseThrow(IllegalStateException::new);
             projections.setDistinctRow(sqlSelect.isDistinct());
-            // TODO create select statement for different dialect 
+            // TODO create select statement for different dialect
             result.setProjections(projections);
             new TableConverter().convertToSQLSegment(sqlSelect.getFrom()).ifPresent(result::setFrom);
             new WhereConverter().convertToSQLSegment(sqlSelect.getWhere()).ifPresent(result::setWhere);

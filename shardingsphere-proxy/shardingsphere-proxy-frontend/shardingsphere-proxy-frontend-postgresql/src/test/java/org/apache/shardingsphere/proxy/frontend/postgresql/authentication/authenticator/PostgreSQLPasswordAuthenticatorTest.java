@@ -42,7 +42,7 @@ public final class PostgreSQLPasswordAuthenticatorTest {
     @Test
     public void assertAuthenticate() {
         ShardingSphereUser user = new ShardingSphereUser(username, password, "");
-        assertTrue(authenticator.authenticate(user, new Object[] {password, null}));
-        assertFalse(authenticator.authenticate(user, new Object[] {"wrong", null}));
+        assertTrue(authenticator.authenticate(user, new Object[]{password, null}));
+        assertFalse(authenticator.authenticate(user, new Object[]{"wrong", null}));
     }
 }

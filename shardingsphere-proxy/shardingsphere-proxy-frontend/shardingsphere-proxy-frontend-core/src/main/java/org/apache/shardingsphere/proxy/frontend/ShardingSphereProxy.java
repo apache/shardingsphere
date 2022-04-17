@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTy
  */
 @Slf4j
 public final class ShardingSphereProxy {
-
+    
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
