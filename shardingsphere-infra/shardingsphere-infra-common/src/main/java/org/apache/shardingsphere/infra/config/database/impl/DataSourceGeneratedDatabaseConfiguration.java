@@ -41,7 +41,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     private final Map<String, DataSource> dataSources;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
-
+    
     private final Map<String, DataSourceProperties> dataSourceProperties;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
@@ -52,7 +52,6 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
-
 }

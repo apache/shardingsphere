@@ -77,7 +77,7 @@ import java.util.stream.Collectors;
 public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
-        
+    
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
@@ -214,7 +214,7 @@ public final class RuleAlteredJobWorker {
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
-    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules, 
+    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
                                                                                                               final Collection<YamlRuleConfiguration> targetRules) {
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> sourceRulesMap = sourceRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> targetRulesMap = targetRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
@@ -285,7 +285,7 @@ public final class RuleAlteredJobWorker {
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, 
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig,
                                                     final HandleConfiguration handleConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }

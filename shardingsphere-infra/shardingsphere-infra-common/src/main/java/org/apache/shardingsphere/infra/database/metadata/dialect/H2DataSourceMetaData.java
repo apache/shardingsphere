@@ -35,9 +35,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final int DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST_NAME = "";
-
+    
     private static final String DEFAULT_H2_MODEL = "";
-
+    
     private static final String MODEL_MEM = "mem";
     
     private static final String MODEL_PWD = "~";
@@ -49,9 +49,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
     private final String hostname;
-
+    
     private final String model;
-
+    
     private final int port;
     
     private final String catalog;

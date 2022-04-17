@@ -42,7 +42,7 @@ public final class EncryptEqualCondition implements EncryptCondition {
     private final String columnName;
     
     private final String tableName;
-
+    
     private final int startIndex;
     
     private final int stopIndex;

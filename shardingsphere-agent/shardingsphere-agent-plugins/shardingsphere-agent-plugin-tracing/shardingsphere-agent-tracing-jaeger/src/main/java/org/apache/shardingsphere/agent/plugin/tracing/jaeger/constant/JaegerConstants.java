@@ -38,13 +38,13 @@ public final class JaegerConstants {
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ErrorLogTagKeys {
-    
+        
         public static final String EVENT = "event";
-    
+        
         public static final String EVENT_ERROR_TYPE = "error";
-    
+        
         public static final String ERROR_KIND = "error.kind";
-    
+        
         public static final String MESSAGE = "message";
     }
     

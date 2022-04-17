@@ -323,7 +323,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             boolean recordsContentMatched = entry.getValue().isRecordsContentMatched();
             if (!recordsContentMatched || !recordsCountMatched) {
                 log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
-                    jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
+                        jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
                 return false;
             }
         }

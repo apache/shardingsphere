@@ -151,11 +151,11 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertGetChildrenKeys() {
         io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-            .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
-            .setValue(ByteString.copyFromUtf8("value1")).build();
+                .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
+                .setValue(ByteString.copyFromUtf8("value1")).build();
         io.etcd.jetcd.api.KeyValue keyValue2 = io.etcd.jetcd.api.KeyValue.newBuilder()
-            .setKey(ByteString.copyFromUtf8("/key/key2"))
-            .setValue(ByteString.copyFromUtf8("value3")).build();
+                .setKey(ByteString.copyFromUtf8("/key/key2"))
+                .setValue(ByteString.copyFromUtf8("value3")).build();
         List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1, ByteSequence.EMPTY), new KeyValue(keyValue2, ByteSequence.EMPTY),
                 new KeyValue(keyValue1, ByteSequence.EMPTY));
         when(getResponse.getKvs()).thenReturn(keyValues);

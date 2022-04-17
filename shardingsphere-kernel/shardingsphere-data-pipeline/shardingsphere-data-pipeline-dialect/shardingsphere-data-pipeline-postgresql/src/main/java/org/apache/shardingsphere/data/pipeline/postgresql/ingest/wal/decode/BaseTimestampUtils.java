@@ -36,7 +36,7 @@ public interface BaseTimestampUtils {
      * @throws SQLException the exp
      */
     Time toTime(Calendar cal, String input) throws SQLException;
-
+    
     /**
      * Get timestamp.
      *
