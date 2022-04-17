@@ -127,7 +127,7 @@ public final class ProjectionEngine {
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
         String innerExpression = projectionSegment.getInnerExpression();
-        String alias = projectionSegment.getAlias().orElse(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+        String alias = projectionSegment.getAlias().orElseGet(() -> DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
