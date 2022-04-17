@@ -53,7 +53,7 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
     
     private Map<String, ShardingSphereAlgorithmConfiguration> buildAlgorithmMap(final CreateShadowAlgorithmStatement sqlStatement) {
         return sqlStatement.getAlgorithms().stream().collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName,
-                each -> new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
+            each -> new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
     }
     
     @Override
@@ -87,7 +87,7 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
         }
         Collection<String> requireAlgorithmNames = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
-                different -> new DuplicateRuleException(SHADOW, schemaName, different));
+            different -> new DuplicateRuleException(SHADOW, schemaName, different));
     }
     
     @Override
