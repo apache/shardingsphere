@@ -59,6 +59,6 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
             return Collections.singletonList(getSqlStatement().getIndex());
         }
         return CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement()).map(each -> Collections.singletonList(new IndexSegment(each, each, 
-                new IdentifierValue(IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns()))))).orElse(Collections.emptyList());
+                new IdentifierValue(IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns()))))).orElseGet(Collections::emptyList);
     }
 }
