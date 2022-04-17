@@ -17,9 +17,16 @@
 
 package org.apache.shardingsphere.example.core.api.entity;
 
-import java.io.Serializable;
-import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@ToString
 public class OrderStatisticsInfo implements Serializable {
     
     private static final long serialVersionUID = -1770007969944794302L;
@@ -28,44 +35,7 @@ public class OrderStatisticsInfo implements Serializable {
     
     private Long userId;
     
-    private Date orderDate;
+    private LocalDate orderDate;
     
     private int orderNum;
-    
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public Long getUserId() {
-        return userId;
-    }
-    
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-    
-    public Date getOrderDate() {
-        return orderDate;
-    }
-    
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-    
-    public int getOrderNum() {
-        return orderNum;
-    }
-    
-    public void setOrderNum(int orderNum) {
-        this.orderNum = orderNum;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("id: %s, user_id: %s, order_date: %s, order_num: %s", id, userId, orderDate, orderNum);
-    }
 }

@@ -71,7 +71,7 @@ public class OrderStatisticsInfoRepositoryImpl implements OrderStatisticsInfoRep
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, orderStatisticsInfo.getUserId());
-            preparedStatement.setDate(2, new Date(orderStatisticsInfo.getOrderDate().getTime()));
+            preparedStatement.setDate(2, Date.valueOf(orderStatisticsInfo.getOrderDate()));
             preparedStatement.setInt(3, orderStatisticsInfo.getOrderNum());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -108,7 +108,7 @@ public class OrderStatisticsInfoRepositoryImpl implements OrderStatisticsInfoRep
                 OrderStatisticsInfo orderStatisticsInfo = new OrderStatisticsInfo();
                 orderStatisticsInfo.setId(resultSet.getLong(1));
                 orderStatisticsInfo.setUserId(resultSet.getLong(2));
-                orderStatisticsInfo.setOrderDate(resultSet.getDate(3));
+                orderStatisticsInfo.setOrderDate(resultSet.getDate(3).toLocalDate());
                 orderStatisticsInfo.setOrderNum(resultSet.getInt(4));
                 result.add(orderStatisticsInfo);
             }

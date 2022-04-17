@@ -24,11 +24,9 @@ import org.apache.shardingsphere.example.core.jdbc.repository.OrderStatisticsInf
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 public final class OrderStatisticsInfoServiceImpl implements ExampleService {
     
@@ -81,9 +79,9 @@ public final class OrderStatisticsInfoServiceImpl implements ExampleService {
         OrderStatisticsInfo result = new OrderStatisticsInfo();
         result.setUserId(new Long(i));
         if (i % 2 == 0) {
-            result.setOrderDate(new Date(LocalDateTime.now().plusYears(-1).toInstant(ZoneOffset.ofHours(8)).toEpochMilli()));
+            result.setOrderDate(LocalDate.now().plusYears(-1));
         } else {
-            result.setOrderDate(new Date(LocalDateTime.now().toInstant(ZoneOffset.ofHours(8)).toEpochMilli()));
+            result.setOrderDate(LocalDate.now());
         }
         result.setOrderNum(i * 10);
         orderStatisticsInfoRepository.insert(result);
