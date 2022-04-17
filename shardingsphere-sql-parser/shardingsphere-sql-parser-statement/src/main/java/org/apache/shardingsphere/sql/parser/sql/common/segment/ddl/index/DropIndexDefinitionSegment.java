@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefiniti
 @RequiredArgsConstructor
 @Getter
 public final class DropIndexDefinitionSegment implements AlterDefinitionSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private final IndexSegment indexSegment;
 }

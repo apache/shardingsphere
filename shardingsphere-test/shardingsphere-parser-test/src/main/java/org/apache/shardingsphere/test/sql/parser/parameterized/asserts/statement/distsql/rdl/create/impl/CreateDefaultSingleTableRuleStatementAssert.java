@@ -41,13 +41,13 @@ public final class CreateDefaultSingleTableRuleStatementAssert {
      * @param actual actual create default single table rule statement
      * @param expected expected create default single table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultSingleTableRuleStatement actual, 
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultSingleTableRuleStatement actual,
                                 final CreateDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())), 
+            assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDefaultResource(), is(expected.getDefaultDataSource()));
         }
     }

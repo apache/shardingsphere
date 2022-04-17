@@ -46,7 +46,7 @@ public final class CreateDefaultShadowAlgorithmStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s algorithm name assertion error: ", actual.getClass().getSimpleName())), 
+            assertThat(assertContext.getText(String.format("`%s`'s algorithm name assertion error: ", actual.getClass().getSimpleName())),
                     actual.getAlgorithmName(), is(expected.getAlgorithmName()));
         }
     }

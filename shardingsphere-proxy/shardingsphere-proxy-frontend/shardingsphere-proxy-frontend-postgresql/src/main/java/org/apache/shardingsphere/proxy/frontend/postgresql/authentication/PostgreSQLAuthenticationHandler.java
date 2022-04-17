@@ -55,7 +55,7 @@ public final class PostgreSQLAuthenticationHandler {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[] {digest, md5Salt}, getRules(databaseName))) {
+        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{digest, md5Salt}, getRules(databaseName))) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)

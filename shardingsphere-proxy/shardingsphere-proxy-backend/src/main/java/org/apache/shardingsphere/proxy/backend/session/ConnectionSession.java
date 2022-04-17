@@ -61,14 +61,14 @@ public final class ConnectionSession {
     
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
-
+    
     @Getter(AccessLevel.NONE)
     private AtomicBoolean readOnly = new AtomicBoolean(false);
-
+    
     private TransactionIsolationLevel defaultIsolationLevel;
-
+    
     private TransactionIsolationLevel isolationLevel;
-
+    
     private final BackendConnection backendConnection;
     
     private final ExecutorStatementManager statementManager;
@@ -135,7 +135,7 @@ public final class ConnectionSession {
     public boolean isAutoCommit() {
         return autoCommit.get();
     }
-
+    
     /**
      * Set autocommit.
      *
@@ -144,7 +144,7 @@ public final class ConnectionSession {
     public void setAutoCommit(final boolean autoCommit) {
         this.autoCommit.set(autoCommit);
     }
-
+    
     /**
      * Is readonly.
      *
@@ -153,7 +153,7 @@ public final class ConnectionSession {
     public boolean isReadOnly() {
         return readOnly.get();
     }
-
+    
     /**
      * Set readonly.
      *

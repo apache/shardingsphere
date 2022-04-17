@@ -33,7 +33,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedLockClause extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
     

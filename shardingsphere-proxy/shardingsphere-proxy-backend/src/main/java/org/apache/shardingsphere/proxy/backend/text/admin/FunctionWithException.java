@@ -22,7 +22,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
  */
 @FunctionalInterface
 public interface FunctionWithException<T, E extends Exception> {
-
+    
     /**
      * Apply function.
      *

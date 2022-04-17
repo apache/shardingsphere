@@ -21,7 +21,7 @@ package org.apache.shardingsphere.parser.constant;
  * SQL parser order.
  */
 public final class SQLParserOrder {
-
+    
     /**
      * SQL parser order.
      */

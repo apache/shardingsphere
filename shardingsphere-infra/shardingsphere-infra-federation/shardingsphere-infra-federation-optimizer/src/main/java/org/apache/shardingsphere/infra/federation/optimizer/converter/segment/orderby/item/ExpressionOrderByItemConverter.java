@@ -30,7 +30,7 @@ public final class ExpressionOrderByItemConverter implements SQLSegmentConverter
     
     @Override
     public Optional<SqlNode> convertToSQLNode(final ExpressionOrderByItemSegment segment) {
-        // TODO 
+        // TODO
         return Optional.empty();
     }
     

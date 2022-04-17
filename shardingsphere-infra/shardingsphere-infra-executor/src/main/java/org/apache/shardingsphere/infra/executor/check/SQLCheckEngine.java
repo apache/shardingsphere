@@ -63,7 +63,7 @@ public final class SQLCheckEngine {
     
     /**
      * Check SQL.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param rules rules
@@ -72,7 +72,7 @@ public final class SQLCheckEngine {
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules, 
+    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
                              final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentSchema, metaDataMap, entry.getKey());
@@ -81,7 +81,7 @@ public final class SQLCheckEngine {
             }
         }
     }
-
+    
     /**
      * Check user exists.
      * @param user user
@@ -101,7 +101,7 @@ public final class SQLCheckEngine {
         }
         return true;
     }
-
+    
     /**
      * Check authentication.
      * @param user user

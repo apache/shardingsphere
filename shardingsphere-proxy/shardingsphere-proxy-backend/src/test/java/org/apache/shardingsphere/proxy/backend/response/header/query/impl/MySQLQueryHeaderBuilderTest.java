@@ -81,7 +81,7 @@ public final class MySQLQueryHeaderBuilderTest {
     public void assertDataNodeContainedRuleIsNotPresent() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         ShardingSphereMetaData metaData = createMetaData();
-        QueryHeader actual = queryHeaderBuilder.build(queryResultMetaData, metaData, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1, 
+        QueryHeader actual = queryHeaderBuilder.build(queryResultMetaData, metaData, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1,
                 new LazyInitializer<DataNodeContainedRule>() {
                     
                     @Override
@@ -97,7 +97,7 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order", 
+        when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order",
                 Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));

@@ -18,5 +18,5 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 public final class RuleAlteredJobPreparerTest {
-    //TODO simple unit test can't cover prepare() method, it's a combination method
+    // TODO simple unit test can't cover prepare() method, it's a combination method
 }

@@ -301,7 +301,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
-        
+    
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
         String operator = ctx.patternMatchingOperator().getText();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
@@ -353,7 +353,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     }
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
-        SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(), 
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
@@ -551,7 +551,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
         }
         if (expr instanceof ExpressionSegment) {
-            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), 
+            return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(),
                     ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, (ExpressionSegment) expr);
         }
         return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection);
@@ -1021,7 +1021,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setAlias(alias);
             return result;
         }
-        //        TODO deal with functionTable and xmlTable
+        // TODO deal with functionTable and xmlTable
         TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
         return new SimpleTableSegment(tableName);
     }

@@ -21,7 +21,7 @@ package org.apache.shardingsphere.proxy.frontend.authentication;
  * Authenticator.
  */
 public interface Authenticator {
-
+    
     /**
      * Get the name of authentication method.
      *
