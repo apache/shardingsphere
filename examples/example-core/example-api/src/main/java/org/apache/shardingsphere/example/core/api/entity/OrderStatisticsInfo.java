@@ -15,39 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.type;
+package org.apache.shardingsphere.example.core.api.entity;
 
-public enum ShardingType {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@ToString
+public class OrderStatisticsInfo implements Serializable {
     
-    SHARDING_DATABASES,
+    private static final long serialVersionUID = -1770007969944794302L;
     
-    SHARDING_TABLES,
+    private Long id;
     
-    SHARDING_DATABASES_AND_TABLES,
+    private Long userId;
     
-    SHARDING_SHADOW_DATABASES,
+    private LocalDate orderDate;
     
-    ENCRYPT_SHADOW,
-    
-    READWRITE_SPLITTING,
-    
-    READWRITE_SPLITTING_SHADOW,
-    
-    SHARDING_READWRITE_SPLITTING,
-    
-    ENCRYPT,
-    
-    SHADOW,
-    
-    SHADOW_DEFAULT_ALGORITHM,
-    
-    SHARDING_AUTO_TABLES,
-    
-    SHARDING_HINT_DATABASES_ONLY,
-    
-    SHARDING_HINT_DATABASES_TABLES,
-    
-    READWRITE_SPLITTING_HINT,
-    
-    SHARDING_DATABASES_INTERVAL
+    private int orderNum;
 }
