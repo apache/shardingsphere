@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -42,5 +43,14 @@ public final class SingleTableDataCalculatorFactory {
      */
     public static SingleTableDataCalculator newInstance(final String type, final Properties props) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), SingleTableDataCalculator.class);
+    }
+    
+    /**
+     * Get all single table data calculator instances.
+     *
+     * @return all single table data calculator instances
+     */
+    public static Collection<SingleTableDataCalculator> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(SingleTableDataCalculator.class);
     }
 }

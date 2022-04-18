@@ -52,7 +52,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -232,8 +231,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return ShardingSphereServiceLoader.getServiceInstances(SingleTableDataCalculator.class)
-                .stream().map(each -> {
+        return SingleTableDataCalculatorFactory.getAllInstances().stream().map(each -> {
                     DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
                     result.setType(each.getType());
                     result.setDescription(each.getDescription());
