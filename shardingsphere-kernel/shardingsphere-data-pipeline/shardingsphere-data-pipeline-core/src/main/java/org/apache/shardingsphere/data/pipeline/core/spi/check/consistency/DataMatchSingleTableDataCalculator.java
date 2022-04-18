@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.calculator;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import lombok.Getter;
 import lombok.NonNull;
