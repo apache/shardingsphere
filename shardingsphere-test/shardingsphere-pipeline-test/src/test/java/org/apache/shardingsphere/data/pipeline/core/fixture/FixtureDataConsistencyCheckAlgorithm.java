@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 public final class FixtureDataConsistencyCheckAlgorithm implements DataConsistencyCheckAlgorithm {
     
@@ -41,7 +42,7 @@ public final class FixtureDataConsistencyCheckAlgorithm implements DataConsisten
     
     @Override
     public SingleTableDataCalculator getSingleTableDataCalculator() {
-        return SingleTableDataCalculatorFactory.newInstance(TYPE);
+        return SingleTableDataCalculatorFactory.newInstance(TYPE, new Properties());
     }
     
     @Override

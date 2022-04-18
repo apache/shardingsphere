@@ -19,10 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import org.junit.Test;
 
+import java.util.Properties;
+
 public final class SingleTableDataCalculatorFactoryTest {
     
     @Test
     public void assertNewInstanceSuccess() {
-        SingleTableDataCalculatorFactory.newInstance("FIXTURE");
+        SingleTableDataCalculatorFactory.newInstance("FIXTURE", new Properties());
     }
 }

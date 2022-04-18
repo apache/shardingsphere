@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Properties;
 
@@ -35,10 +36,11 @@ public final class SingleTableDataCalculatorFactory {
     /**
      * Create new instance of single table data calculator.
      *
-     * @param algorithmType algorithm type
+     * @param type algorithm type
+     * @param props properties
      * @return new instance of single table data calculator
      */
-    public static SingleTableDataCalculator newInstance(final String algorithmType) {
-        return TypedSPIRegistry.getRegisteredService(SingleTableDataCalculator.class, algorithmType, new Properties());
+    public static SingleTableDataCalculator newInstance(final String type, final Properties props) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), SingleTableDataCalculator.class);
     }
 }
