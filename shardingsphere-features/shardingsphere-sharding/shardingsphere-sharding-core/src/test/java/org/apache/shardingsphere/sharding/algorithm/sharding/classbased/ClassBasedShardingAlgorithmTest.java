@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -31,7 +31,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -88,17 +87,15 @@ public final class ClassBasedShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
-        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
+        Collection<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
-        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
-                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2, 15)));
+        Collection<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2, 15)));
         assertThat(actual.size(), is(4));
     }
     
@@ -106,7 +103,7 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertComplexKeysDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getComplexKeysShardingAlgorithm();
         assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategyType.COMPLEX));
-        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        Collection<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", null, null));
         assertThat(actual.size(), is(4));
     }
@@ -115,32 +112,32 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertHintDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getHintShardingAlgorithm();
         assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategyType.HINT));
-        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        Collection<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new HintShardingValue<>("t_order", "order_id", null));
         assertThat(actual.size(), is(4));
     }
     
     private ClassBasedShardingAlgorithm getStandardShardingAlgorithm() {
-        ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "standard");
-        shardingAlgorithm.getProps().setProperty("algorithmClassName", ClassBasedStandardShardingAlgorithmFixture.class.getName());
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
+        result.getProps().setProperty("strategy", "standard");
+        result.getProps().setProperty("algorithmClassName", ClassBasedStandardShardingAlgorithmFixture.class.getName());
+        result.init();
+        return result;
     }
     
     private ClassBasedShardingAlgorithm getComplexKeysShardingAlgorithm() {
-        ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "complex");
-        shardingAlgorithm.getProps().setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
+        result.getProps().setProperty("strategy", "complex");
+        result.getProps().setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
+        result.init();
+        return result;
     }
     
     private ClassBasedShardingAlgorithm getHintShardingAlgorithm() {
-        ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "hint");
-        shardingAlgorithm.getProps().setProperty("algorithmClassName", ClassBasedHintShardingAlgorithmFixture.class.getName());
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
+        result.getProps().setProperty("strategy", "hint");
+        result.getProps().setProperty("algorithmClassName", ClassBasedHintShardingAlgorithmFixture.class.getName());
+        result.init();
+        return result;
     }
 }
