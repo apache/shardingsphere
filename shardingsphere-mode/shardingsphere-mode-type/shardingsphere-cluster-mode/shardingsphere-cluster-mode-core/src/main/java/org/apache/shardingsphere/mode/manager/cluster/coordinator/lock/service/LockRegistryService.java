@@ -63,12 +63,17 @@ public final class LockRegistryService {
     }
     
     /**
-     * Release lock.
+     * Release global lock.
      *
      * @param lockName lock name
+     * @param isOwner is released by lock owner or not
      */
-    public void releaseGlobalLock(final String lockName) {
-        repository.releaseLock(lockName);
+    public void releaseGlobalLock(final String lockName, final boolean isOwner) {
+        if (isOwner) {
+            repository.releaseLock(lockName);
+            return;
+        }
+        repository.delete(lockName);
     }
     
     /**

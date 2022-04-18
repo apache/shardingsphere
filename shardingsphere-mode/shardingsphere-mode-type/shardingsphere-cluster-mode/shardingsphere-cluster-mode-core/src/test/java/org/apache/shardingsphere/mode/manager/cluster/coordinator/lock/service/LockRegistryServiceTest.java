@@ -73,7 +73,7 @@ public final class LockRegistryServiceTest {
     @Test
     public void assertReleaseGlobalLock() {
         String schemaLockName = LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307");
-        lockRegistryService.releaseGlobalLock(schemaLockName);
+        lockRegistryService.releaseGlobalLock(schemaLockName, true);
         verify(clusterPersistRepository).releaseLock(schemaLockName);
     }
     

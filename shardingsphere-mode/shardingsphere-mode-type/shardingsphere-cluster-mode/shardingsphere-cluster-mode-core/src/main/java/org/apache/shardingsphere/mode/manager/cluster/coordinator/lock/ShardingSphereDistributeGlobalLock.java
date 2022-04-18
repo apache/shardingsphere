@@ -140,14 +140,16 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             log.debug("releaseLock, state is not locked, ignore, lockName={}", lockName);
             return;
         }
-        lockService.releaseGlobalLock(LockNode.generateGlobalSchemaLocksName(lockName, ownerInstanceId.get()));
         String currentInstanceId = getCurrentInstanceId();
         if (isOwnerInstanceId(currentInstanceId)) {
-            lockedInstances.remove(ownerInstanceId.get());
-            ownerInstanceId.set("");
+            lockService.releaseGlobalLock(LockNode.generateGlobalSchemaLocksName(lockName, this.ownerInstanceId.get()), true);
+            lockedInstances.remove(this.ownerInstanceId.get());
+            this.ownerInstanceId.set("");
             synchronizedLockState.compareAndSet(LockState.LOCKED, LockState.UNLOCKED);
             return;
         }
+        lockService.releaseGlobalLock(LockNode.generateGlobalSchemaLockReleasedNodePath(lockName, this.ownerInstanceId.get()), false);
+        ownerInstanceId.set("");
         releaseAckLock(lockName, currentInstanceId);
     }
     
@@ -177,6 +179,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     public void ackLock(final String lockName, final String lockedInstanceId) {
         lockService.ackLock(LockNode.generateGlobalSchemaAckLockName(lockName, lockedInstanceId), lockedInstanceId);
         lockedInstances.add(lockedInstanceId);
+        synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKED);
     }
     
     @Override
@@ -201,5 +204,10 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         if (isLocked(lockName)) {
             synchronizedLockState.compareAndSet(LockState.LOCKED, LockState.UNLOCKED);
         }
+    }
+    
+    @Override
+    public void refreshOwner(final String ownerInstanceId) {
+        this.ownerInstanceId.set(ownerInstanceId);
     }
 }
