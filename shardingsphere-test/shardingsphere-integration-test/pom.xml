@@ -31,6 +31,7 @@
         <module>shardingsphere-integration-test-fixture</module>
         <module>shardingsphere-integration-test-env</module>
         <module>shardingsphere-integration-test-suite</module>
+        <module>shardingsphere-integration-test-scaling</module>
     </modules>
     
     <properties>
