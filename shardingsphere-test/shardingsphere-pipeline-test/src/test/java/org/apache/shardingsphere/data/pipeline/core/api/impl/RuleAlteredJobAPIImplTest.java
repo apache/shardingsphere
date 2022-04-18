@@ -145,8 +145,8 @@ public final class RuleAlteredJobAPIImplTest {
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
         ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
-        assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
+        assertTrue(checkResultMap.get("t_order").isCountMatched());
+        assertTrue(checkResultMap.get("t_order").isContentMatched());
         assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(2L));
     }
     
@@ -157,17 +157,17 @@ public final class RuleAlteredJobAPIImplTest {
         checkResultMap = Collections.emptyMap();
         assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
-        trueResult.setRecordsContentMatched(true);
+        trueResult.setContentMatched(true);
         DataConsistencyCheckResult checkResult;
         checkResult = new DataConsistencyCheckResult(100, 95);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setRecordsContentMatched(false);
+        checkResult.setContentMatched(false);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setRecordsContentMatched(true);
+        checkResult.setContentMatched(true);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
         assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }

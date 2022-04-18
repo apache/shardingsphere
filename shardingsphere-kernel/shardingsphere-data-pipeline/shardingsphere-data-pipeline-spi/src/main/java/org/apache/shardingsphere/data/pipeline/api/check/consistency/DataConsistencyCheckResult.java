@@ -33,13 +33,13 @@ public final class DataConsistencyCheckResult {
     
     private final long targetRecordsCount;
     
-    private final boolean recordsCountMatched;
+    private final boolean countMatched;
     
-    private boolean recordsContentMatched;
+    private boolean contentMatched;
     
     public DataConsistencyCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
         this.sourceRecordsCount = sourceRecordsCount;
         this.targetRecordsCount = targetRecordsCount;
-        recordsCountMatched = sourceRecordsCount == targetRecordsCount;
+        countMatched = sourceRecordsCount == targetRecordsCount;
     }
 }

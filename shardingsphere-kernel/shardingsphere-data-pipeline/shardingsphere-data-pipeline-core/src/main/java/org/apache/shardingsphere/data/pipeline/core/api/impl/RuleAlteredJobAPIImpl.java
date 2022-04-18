@@ -294,9 +294,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         String jobId = jobConfig.getHandleConfig().getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobConfig);
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
-        if (result.values().stream().allMatch(DataConsistencyCheckResult::isRecordsCountMatched)) {
+        if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountMatched)) {
             Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkRecordsContent(calculator);
-            result.forEach((key, value) -> value.setRecordsContentMatched(contentCheckResult.getOrDefault(key, false)));
+            result.forEach((key, value) -> value.setContentMatched(contentCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getClass().getName(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
@@ -309,8 +309,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
-            boolean recordsCountMatched = entry.getValue().isRecordsCountMatched();
-            boolean recordsContentMatched = entry.getValue().isRecordsContentMatched();
+            boolean recordsCountMatched = entry.getValue().isCountMatched();
+            boolean recordsContentMatched = entry.getValue().isContentMatched();
             if (!recordsContentMatched || !recordsCountMatched) {
                 log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
                         jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
