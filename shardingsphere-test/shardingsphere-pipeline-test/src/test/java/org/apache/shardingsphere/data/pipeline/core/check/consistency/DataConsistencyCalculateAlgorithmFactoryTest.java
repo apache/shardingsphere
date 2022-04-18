@@ -21,10 +21,10 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-public final class SingleTableDataCalculatorFactoryTest {
+public final class DataConsistencyCalculateAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstanceSuccess() {
-        SingleTableDataCalculatorFactory.newInstance("FIXTURE", new Properties());
+        DataConsistencyCalculateAlgorithmFactory.newInstance("FIXTURE", new Properties());
     }
 }

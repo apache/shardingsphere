@@ -74,7 +74,7 @@ public final class FinishedCheckJob implements SimpleJob {
                         sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
                     }
                     if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
-                        log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
+                        log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
                         ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
                         continue;
                     }

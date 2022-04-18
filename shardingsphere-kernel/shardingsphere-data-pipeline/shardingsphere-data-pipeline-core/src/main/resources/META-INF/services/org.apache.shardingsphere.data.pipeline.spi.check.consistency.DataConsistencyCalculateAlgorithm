@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.fixture.FixtureSingleTableDataCalculator
+org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCalculateAlgorithm
+org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.DataMatchDataConsistencyCalculateAlgorithm

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CRC32MatchSingleTableDataCalculatorTest {
+public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Mock
     private DataCalculateParameter dataCalculateParameter;
@@ -70,7 +70,7 @@ public final class CRC32MatchSingleTableDataCalculatorTest {
     
     @Test
     public void assertCalculateSuccess() {
-        Iterable<Object> calculate = new CRC32MatchSingleTableDataCalculator().calculate(dataCalculateParameter);
+        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
         long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
         long expectedDatabaseTypesSize = dataCalculateParameter.getColumnNames().size();
         assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
@@ -86,7 +86,7 @@ public final class CRC32MatchSingleTableDataCalculatorTest {
         when(connection.prepareStatement(sqlCommandForFieldTwo)).thenReturn(preparedStatement);
         when(connection.prepareStatement(sqlCommandForFieldThree)).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        Iterable<Object> calculate = new CRC32MatchSingleTableDataCalculator().calculate(dataCalculateParameter);
+        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
         long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
         long expectedDatabaseTypesSize = dataCalculateParameter.getColumnNames().size();
         assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
@@ -96,6 +96,6 @@ public final class CRC32MatchSingleTableDataCalculatorTest {
     public void assertCalculateFailed() throws SQLException {
         when(pipelineDataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
-        new CRC32MatchSingleTableDataCalculator().calculate(dataCalculateParameter);
+        new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
     }
 }

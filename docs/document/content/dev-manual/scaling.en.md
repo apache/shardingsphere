@@ -27,13 +27,13 @@ chapter = true
 | ------------------------------------------- | ------------------------------------------- |
 | IdleRuleAlteredJobCompletionDetectAlgorithm | Incremental task idle time based algorithm  |
 
-## SingleTableDataCalculator
+## DataConsistencyCalculateAlgorithm
 
-| *SPI Name*                                  | *Description*                                           |
-| ------------------------------------------- | ------------------------------------------------------- |
-| SingleTableDataCalculator                   | Single table data calculator for data consistency check |
+| *SPI Name*                                  | *Description*                                        |
+| ------------------------------------------- | ---------------------------------------------------- |
+| DataConsistencyCalculateAlgorithm           | Check data consistency algorithm                     |
 
 | *Implementation Class*                      | *Description*                                        |
 | ------------------------------------------- | ---------------------------------------------------- |
-| DataMatchSingleTableDataCalculator          | Check data consistency with every recodes one by one |
-| CRC32MatchMySQLSingleTableDataCalculator    | Use CRC32 to check data consistency                  |
+| DataMatchDataConsistencyCalculateAlgorithm  | Check data consistency with every recodes one by one |
+| CRC32MatchDataConsistencyCalculateAlgorithm | Use CRC32 to check data consistency                  |

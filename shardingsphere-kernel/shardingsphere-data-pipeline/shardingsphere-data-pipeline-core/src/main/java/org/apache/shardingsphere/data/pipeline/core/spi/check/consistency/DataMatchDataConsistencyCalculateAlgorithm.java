@@ -45,12 +45,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Data match single table data calculator.
+ * Data match data consistency calculate algorithm.
  */
 @Getter
 @Setter
 @Slf4j
-public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
+public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
     

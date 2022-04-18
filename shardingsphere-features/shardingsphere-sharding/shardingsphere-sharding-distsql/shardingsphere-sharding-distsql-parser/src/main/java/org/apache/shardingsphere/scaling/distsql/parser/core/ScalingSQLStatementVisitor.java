@@ -162,7 +162,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
             result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
         }
         if (null != ctx.dataConsistencyChecker()) {
-            result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
+            result.setDataConsistencyCalculator((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
         }
         return result;
     }

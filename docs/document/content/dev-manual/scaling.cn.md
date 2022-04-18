@@ -19,21 +19,21 @@ chapter = true
 
 ## JobCompletionDetectAlgorithm
 
-| *SPI 名称*                                   | *详细说明*                      |
-| ------------------------------------------- | ------------------------------ |
-| JobCompletionDetectAlgorithm                | 作业是否接近完成检测算法            |
+| *SPI 名称*                                   | *详细说明*                   |
+| ------------------------------------------- | --------------------------- |
+| JobCompletionDetectAlgorithm                | 作业是否接近完成检测算法         |
 
-| *已知实现类*                                  | *详细说明*                       |
-| ------------------------------------------- | ------------------------------- |
-| IdleRuleAlteredJobCompletionDetectAlgorithm | 基于增量迁移任务空闲时长的检测算法    |
+| *已知实现类*                                  | *详细说明*                    |
+| ------------------------------------------- | ---------------------------- |
+| IdleRuleAlteredJobCompletionDetectAlgorithm | 基于增量迁移任务空闲时长的检测算法 |
 
-## SingleTableDataCalculator
+## DataConsistencyCalculateAlgorithm
 
-| *SPI 名称*                                   | *详细说明*                       |
-| ------------------------------------------- | ------------------------------- |
-| SingleTableDataCalculator                   | 给数据一致性校验使用的单表数据计算算法 |
+| *SPI 名称*                                   | *详细说明*                    |
+| ------------------------------------------- | ---------------------------- |
+| DataConsistencyCalculateAlgorithm           | 校验数据一致性使用的算法         |
 
-| *已知实现类*                                  | *详细说明*                       |
-| ------------------------------------------- | ------------------------------- |
-| DataMatchSingleTableDataCalculator          | 根据数据逐条校验数据一致性的算法      |
-| CRC32MatchSingleTableDataCalculator         | 使用 CRC32 校验数据一致性的算法     |
+| *已知实现类*                                  | *详细说明*                    |
+| ------------------------------------------- | ---------------------------- |
+| DataMatchDataConsistencyCalculateAlgorithm  | 根据数据逐条校验数据一致性的算法   |
+| CRC32MatchDataConsistencyCalculateAlgorithm | 使用 CRC32 校验数据一致性的算法  |

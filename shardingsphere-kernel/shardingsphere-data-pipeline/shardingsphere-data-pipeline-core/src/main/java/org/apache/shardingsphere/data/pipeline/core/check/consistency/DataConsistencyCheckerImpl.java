@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsis
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -140,8 +140,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, Boolean> checkRecordsContent(final SingleTableDataCalculator singleTableDataCalculator) {
-        Collection<String> supportedDatabaseTypes = singleTableDataCalculator.getSupportedDatabaseTypes();
+    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
+        Collection<String> supportedDatabaseTypes = dataConsistencyCalculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceDataSourceConfig.getDatabaseType().getName());
@@ -170,8 +170,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
                 DataCalculateParameter sourceCalculateParameter = buildDataCalculateParameter(sourceDataSource, sourceDatabaseType, targetDatabaseType, each, columnNames, uniqueKey);
                 DataCalculateParameter targetCalculateParameter = buildDataCalculateParameter(targetDataSource, targetDatabaseType, sourceDatabaseType, each, columnNames, uniqueKey);
-                Iterator<Object> sourceCalculatedResults = singleTableDataCalculator.calculate(sourceCalculateParameter).iterator();
-                Iterator<Object> targetCalculatedResults = singleTableDataCalculator.calculate(targetCalculateParameter).iterator();
+                Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceCalculateParameter).iterator();
+                Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
