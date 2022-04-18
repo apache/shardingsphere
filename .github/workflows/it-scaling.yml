@@ -63,3 +63,6 @@ jobs:
     if: github.ref == 'xxx'
     name: empty
     runs-on: ubuntu-latest
+    steps:
+      - name: Empty
+        run: echo "empty"
