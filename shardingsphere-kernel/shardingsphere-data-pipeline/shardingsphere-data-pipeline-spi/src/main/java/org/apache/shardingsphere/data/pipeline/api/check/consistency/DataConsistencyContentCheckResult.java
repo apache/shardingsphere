@@ -29,5 +29,5 @@ import lombok.ToString;
 @ToString
 public final class DataConsistencyContentCheckResult {
     
-    private final boolean contentMatched;
+    private final boolean matched;
 }

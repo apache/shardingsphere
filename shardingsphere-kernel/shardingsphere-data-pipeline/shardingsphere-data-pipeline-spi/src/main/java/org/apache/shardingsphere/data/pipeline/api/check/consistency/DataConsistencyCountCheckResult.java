@@ -31,11 +31,11 @@ public final class DataConsistencyCountCheckResult {
     
     private final long targetRecordsCount;
     
-    private final boolean countMatched;
+    private final boolean matched;
     
     public DataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
         this.sourceRecordsCount = sourceRecordsCount;
         this.targetRecordsCount = targetRecordsCount;
-        countMatched = sourceRecordsCount == targetRecordsCount;
+        matched = sourceRecordsCount == targetRecordsCount;
     }
 }

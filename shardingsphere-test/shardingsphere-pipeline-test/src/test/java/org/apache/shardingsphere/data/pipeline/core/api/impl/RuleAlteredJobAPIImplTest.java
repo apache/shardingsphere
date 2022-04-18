@@ -147,9 +147,9 @@ public final class RuleAlteredJobAPIImplTest {
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
         ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").getCountCheckResult().isCountMatched());
+        assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
-        assertTrue(checkResultMap.get("t_order").getContentCheckResult().isContentMatched());
+        assertTrue(checkResultMap.get("t_order").getContentCheckResult().isMatched());
     }
     
     @Test

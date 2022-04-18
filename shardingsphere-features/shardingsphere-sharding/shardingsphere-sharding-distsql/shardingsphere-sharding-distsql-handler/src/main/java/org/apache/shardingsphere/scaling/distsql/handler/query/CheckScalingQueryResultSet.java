@@ -56,8 +56,8 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
                     result.add(each.getKey());
                     result.add(each.getValue().getCountCheckResult().getSourceRecordsCount());
                     result.add(each.getValue().getCountCheckResult().getTargetRecordsCount());
-                    result.add(each.getValue().getCountCheckResult().isCountMatched() + "");
-                    result.add(each.getValue().getContentCheckResult().isContentMatched() + "");
+                    result.add(each.getValue().getCountCheckResult().isMatched() + "");
+                    result.add(each.getValue().getContentCheckResult().isMatched() + "");
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }

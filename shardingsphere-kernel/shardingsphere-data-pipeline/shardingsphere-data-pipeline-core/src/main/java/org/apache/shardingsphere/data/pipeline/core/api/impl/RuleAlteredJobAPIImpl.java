@@ -296,7 +296,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         String jobId = jobConfig.getHandleConfig().getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobConfig);
         Map<String, DataConsistencyCountCheckResult> countCheckResult = dataConsistencyChecker.checkCount();
-        Map<String, DataConsistencyContentCheckResult> contentCheckResult = countCheckResult.values().stream().allMatch(DataConsistencyCountCheckResult::isCountMatched)
+        Map<String, DataConsistencyContentCheckResult> contentCheckResult = countCheckResult.values().stream().allMatch(DataConsistencyCountCheckResult::isMatched)
                 ? dataConsistencyChecker.checkContent(calculator) : Collections.emptyMap();
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getClass().getName(), countCheckResult);
         Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>(countCheckResult.size());
@@ -313,8 +313,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
-            boolean recordsCountMatched = entry.getValue().getCountCheckResult().isCountMatched();
-            boolean recordsContentMatched = entry.getValue().getContentCheckResult().isContentMatched();
+            boolean recordsCountMatched = entry.getValue().getCountCheckResult().isMatched();
+            boolean recordsContentMatched = entry.getValue().getContentCheckResult().isMatched();
             if (!recordsContentMatched || !recordsCountMatched) {
                 log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
                         jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
