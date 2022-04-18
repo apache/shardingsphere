@@ -35,7 +35,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjecti
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
@@ -76,8 +75,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (!((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintEncryptRewriteNeeded()
-                && toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
             setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
             sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
         }
