@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -52,8 +52,8 @@ public final class StandaloneContextManagerBuilderTextTest {
         assertTrue(actual.getMetaDataContexts().getMetaDataPersistService().isPresent());
         PersistRepository repository = actual.getMetaDataContexts().getMetaDataPersistService().get().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath("foo_schema", "0")));
-        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath("foo_schema", "0")));
+        assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_schema", "0")));
+        assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_schema", "0")));
         assertNotNull(actual.getTransactionContexts().getEngines().get("foo_schema"));
     }
 }
