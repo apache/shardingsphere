@@ -232,12 +232,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
         return SingleTableDataCalculatorFactory.getAllInstances().stream().map(each -> {
-                    DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
-                    result.setType(each.getType());
-                    result.setDescription(each.getDescription());
-                    result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-                    return result;
-                }).collect(Collectors.toList());
+            DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
+            result.setType(each.getType());
+            result.setDescription(each.getDescription());
+            result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+            return result;
+        }).collect(Collectors.toList());
     }
     
     @Override
