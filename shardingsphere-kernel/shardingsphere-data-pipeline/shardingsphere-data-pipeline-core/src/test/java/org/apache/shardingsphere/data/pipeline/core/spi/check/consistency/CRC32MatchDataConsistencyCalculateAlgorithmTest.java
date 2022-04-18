@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsis
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -31,10 +32,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.StreamSupport;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.anyString;
@@ -44,57 +45,43 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
-    @Mock
     private DataConsistencyCalculateParameter parameter;
     
+    @Mock
     private PipelineDataSourceWrapper pipelineDataSource;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Connection connection;
-    
-    @Mock
-    private PreparedStatement preparedStatement;
-    
-    @Mock
-    private ResultSet resultSet;
     
     @Before
     public void setUp() throws SQLException {
-        pipelineDataSource = mock(PipelineDataSourceWrapper.class, RETURNS_DEEP_STUBS);
-        connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        Collection<String> columnNames = Arrays.asList("fieldOne", "fieldTwo", "fieldThree");
-        when(parameter.getLogicTableName()).thenReturn("tableName");
-        when(parameter.getColumnNames()).thenReturn(columnNames);
-        when(parameter.getDataSource()).thenReturn(pipelineDataSource);
-        when(parameter.getDatabaseType()).thenReturn("FIXTURE");
-    }
-    
-    @Test
-    public void assertCalculateSuccess() {
-        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
-        long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
-        long expectedDatabaseTypesSize = parameter.getColumnNames().size();
-        assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
-    }
-    
-    @Test
-    public void assertCalculateWithQuerySuccess() throws SQLException {
-        String sqlCommandForFieldOne = "SELECT CRC32(fieldOne) FROM tableName";
-        String sqlCommandForFieldTwo = "SELECT CRC32(fieldTwo) FROM tableName";
-        String sqlCommandForFieldThree = "SELECT CRC32(fieldThree) FROM tableName";
+        parameter = DataConsistencyCalculateParameter.builder()
+                .logicTableName("foo_tbl").columnNames(Arrays.asList("foo_col", "bar_col")).dataSource(pipelineDataSource).databaseType("FIXTURE").build();
         when(pipelineDataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement(sqlCommandForFieldOne)).thenReturn(preparedStatement);
-        when(connection.prepareStatement(sqlCommandForFieldTwo)).thenReturn(preparedStatement);
-        when(connection.prepareStatement(sqlCommandForFieldThree)).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
-        long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
-        long expectedDatabaseTypesSize = parameter.getColumnNames().size();
-        assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
+    }
+    
+    @Test
+    public void assertCalculateSuccess() throws SQLException {
+        PreparedStatement preparedStatement0 = mockPreparedStatement(0L);
+        when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
+        PreparedStatement preparedStatement1 = mockPreparedStatement(1L);
+        when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
+        Iterator<Object> actual = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter).iterator();
+        assertThat(actual.next(), is(0L));
+        assertThat(actual.next(), is(1L));
+        assertFalse(actual.hasNext());
+    }
+    
+    private PreparedStatement mockPreparedStatement(final long expectedCRC32Result) throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        PreparedStatement result = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        when(result.executeQuery()).thenReturn(resultSet);
+        when(resultSet.getLong(1)).thenReturn(expectedCRC32Result);
+        return result;
     }
     
     @Test(expected = PipelineDataConsistencyCheckFailedException.class)
     public void assertCalculateFailed() throws SQLException {
-        when(pipelineDataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
         new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
     }
