@@ -27,13 +27,13 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import java.util.Collection;
 
 /**
- * Data calculate parameter.
+ * Data consistency calculate parameter.
  */
 @Getter
 @Setter
 @Builder
 @ToString
-public final class DataCalculateParameter {
+public final class DataConsistencyCalculateParameter {
     
     /**
      * Data source of source side or target side.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
@@ -46,21 +46,21 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     }
     
     @Override
-    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
-        return Collections.unmodifiableList(dataCalculateParameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, dataCalculateParameter, each)).collect(Collectors.toList()));
+    public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        return Collections.unmodifiableList(parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList()));
     }
     
-    private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataCalculateParameter dataCalculateParameter, final String columnName) {
-        Optional<String> sql = sqlBuilder.buildCRC32SQL(dataCalculateParameter.getLogicTableName(), columnName);
+    private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(parameter.getLogicTableName(), columnName);
         if (!sql.isPresent()) {
             throw new PipelineDataConsistencyCheckFailedException(
-                    String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`", dataCalculateParameter.getDatabaseType()));
+                    String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`", parameter.getDatabaseType()));
         }
         try {
-            return calculateCRC32(dataCalculateParameter.getDataSource(), sql.get());
+            return calculateCRC32(parameter.getDataSource(), sql.get());
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", dataCalculateParameter.getLogicTableName()), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", parameter.getLogicTableName()), ex);
         }
     }
     

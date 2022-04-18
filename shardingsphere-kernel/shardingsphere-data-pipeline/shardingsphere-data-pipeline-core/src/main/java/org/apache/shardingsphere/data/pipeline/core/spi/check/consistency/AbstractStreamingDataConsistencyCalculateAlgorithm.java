@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.util.Iterator;
@@ -36,17 +36,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     @Override
-    public final Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
-        return new ResultIterable(dataCalculateParameter);
+    public final Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
+        return new ResultIterable(parameter);
     }
     
     /**
      * Calculate chunked records at one time.
      *
-     * @param dataCalculateParameter data calculate parameter
+     * @param parameter data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<Object> calculateChunk(DataCalculateParameter dataCalculateParameter);
+    protected abstract Optional<Object> calculateChunk(DataConsistencyCalculateParameter parameter);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
@@ -54,18 +54,18 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
     @RequiredArgsConstructor
     final class ResultIterable implements Iterable<Object> {
         
-        private final DataCalculateParameter dataCalculateParameter;
+        private final DataConsistencyCalculateParameter parameter;
         
         @Override
         public Iterator<Object> iterator() {
-            return new ResultIterator(dataCalculateParameter);
+            return new ResultIterator(parameter);
         }
     }
     
     @RequiredArgsConstructor
     final class ResultIterator implements Iterator<Object> {
         
-        private final DataCalculateParameter dataCalculateParameter;
+        private final DataConsistencyCalculateParameter parameter;
         
         private final AtomicInteger calculationCount = new AtomicInteger(0);
         
@@ -81,7 +81,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
         public Object next() {
             calculateIfNecessary();
             Optional<Object> nextResult = this.nextResult;
-            dataCalculateParameter.setPreviousCalculatedResult(nextResult.orElse(null));
+            parameter.setPreviousCalculatedResult(nextResult.orElse(null));
             this.nextResult = null;
             return nextResult.orElse(null);
         }
@@ -90,7 +90,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
             if (null != nextResult) {
                 return;
             }
-            nextResult = calculateChunk(dataCalculateParameter);
+            nextResult = calculateChunk(parameter);
             if (!nextResult.isPresent()) {
                 log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
             }

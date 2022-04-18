@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.junit.Before;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Mock
-    private DataCalculateParameter dataCalculateParameter;
+    private DataConsistencyCalculateParameter parameter;
     
     private PipelineDataSourceWrapper pipelineDataSource;
     
@@ -62,17 +62,17 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         pipelineDataSource = mock(PipelineDataSourceWrapper.class, RETURNS_DEEP_STUBS);
         connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         Collection<String> columnNames = Arrays.asList("fieldOne", "fieldTwo", "fieldThree");
-        when(dataCalculateParameter.getLogicTableName()).thenReturn("tableName");
-        when(dataCalculateParameter.getColumnNames()).thenReturn(columnNames);
-        when(dataCalculateParameter.getDataSource()).thenReturn(pipelineDataSource);
-        when(dataCalculateParameter.getDatabaseType()).thenReturn("FIXTURE");
+        when(parameter.getLogicTableName()).thenReturn("tableName");
+        when(parameter.getColumnNames()).thenReturn(columnNames);
+        when(parameter.getDataSource()).thenReturn(pipelineDataSource);
+        when(parameter.getDatabaseType()).thenReturn("FIXTURE");
     }
     
     @Test
     public void assertCalculateSuccess() {
-        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
+        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
         long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
-        long expectedDatabaseTypesSize = dataCalculateParameter.getColumnNames().size();
+        long expectedDatabaseTypesSize = parameter.getColumnNames().size();
         assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
     }
     
@@ -86,9 +86,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         when(connection.prepareStatement(sqlCommandForFieldTwo)).thenReturn(preparedStatement);
         when(connection.prepareStatement(sqlCommandForFieldThree)).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
+        Iterable<Object> calculate = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
         long actualDatabaseTypesSize = StreamSupport.stream(calculate.spliterator(), false).count();
-        long expectedDatabaseTypesSize = dataCalculateParameter.getColumnNames().size();
+        long expectedDatabaseTypesSize = parameter.getColumnNames().size();
         assertThat(actualDatabaseTypesSize, is(expectedDatabaseTypesSize));
     }
     
@@ -96,6 +96,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     public void assertCalculateFailed() throws SQLException {
         when(pipelineDataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
-        new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(dataCalculateParameter);
+        new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
     }
 }
