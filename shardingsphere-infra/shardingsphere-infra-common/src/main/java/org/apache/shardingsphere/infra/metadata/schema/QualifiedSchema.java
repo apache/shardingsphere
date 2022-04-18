@@ -32,7 +32,7 @@ public final class QualifiedSchema {
     
     private static final String DELIMITER = ".";
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String groupName;
     
@@ -40,13 +40,13 @@ public final class QualifiedSchema {
     
     public QualifiedSchema(final String value) {
         List<String> values = Splitter.on(DELIMITER).splitToList(value);
-        schemaName = values.get(0);
+        databaseName = values.get(0);
         groupName = values.get(1);
         dataSourceName = values.get(2);
     }
     
     @Override
     public String toString() {
-        return String.join(DELIMITER, schemaName, groupName, dataSourceName);
+        return String.join(DELIMITER, databaseName, groupName, dataSourceName);
     }
 }
