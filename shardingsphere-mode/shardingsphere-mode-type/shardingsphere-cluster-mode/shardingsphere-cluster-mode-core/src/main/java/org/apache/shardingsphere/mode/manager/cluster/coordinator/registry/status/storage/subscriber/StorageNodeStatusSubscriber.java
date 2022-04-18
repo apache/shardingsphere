@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -48,7 +48,7 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
-        repository.persist(StorageStatusNode.getStatusPath(new QualifiedSchema(event.getSchemaName(), event.getGroupName(), event.getDataSourceName())),
+        repository.persist(StorageStatusNode.getStatusPath(new QualifiedDatabase(event.getDatabaseName(), event.getGroupName(), event.getDataSourceName())),
                 YamlEngine.marshal(event.getStorageNodeDataSource()));
     }
     

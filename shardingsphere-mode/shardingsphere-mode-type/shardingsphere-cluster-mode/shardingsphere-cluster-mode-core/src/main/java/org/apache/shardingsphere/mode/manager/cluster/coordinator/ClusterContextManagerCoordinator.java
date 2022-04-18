@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -159,8 +159,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
-        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedSchema = event.getQualifiedSchema();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -174,8 +174,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
-        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedSchema = event.getQualifiedSchema();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -327,6 +327,6 @@ public final class ClusterContextManagerCoordinator {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        disableDataSources.forEach((key, value) -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(key), true)));
+        disableDataSources.forEach((key, value) -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase(key), true)));
     }
 }
