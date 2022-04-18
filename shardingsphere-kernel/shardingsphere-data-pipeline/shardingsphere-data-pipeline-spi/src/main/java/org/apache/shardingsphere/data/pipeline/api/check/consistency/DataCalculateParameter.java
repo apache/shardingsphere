@@ -41,6 +41,9 @@ public final class DataCalculateParameter {
      */
     private PipelineDataSourceWrapper dataSource;
     
+    /**
+     * Logic table name.
+     */
     private String logicTableName;
     
     /**
