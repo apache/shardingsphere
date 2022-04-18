@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class EnableShardingScalingRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
 }

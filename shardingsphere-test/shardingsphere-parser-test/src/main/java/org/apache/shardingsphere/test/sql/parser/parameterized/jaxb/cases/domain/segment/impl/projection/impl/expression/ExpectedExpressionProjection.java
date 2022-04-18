@@ -30,16 +30,16 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection, ExpectedComplexExpressionSegment {
-
+    
     @XmlAttribute(name = "text")
     private String text;
-
+    
     @XmlAttribute(name = "literal-text")
     private String literalText;
-
+    
     @XmlAttribute(name = "alias")
     private String alias;
-
+    
     @XmlElement(name = "expr")
     private ExpectedExpression expr;
 }

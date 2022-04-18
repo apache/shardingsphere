@@ -28,11 +28,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
-
+    
     public static final String TEST_TYPE = "TEST_TYPE";
-
+    
     private StandalonePersistRepositoryConfigurationYamlSwapper swapper = new StandalonePersistRepositoryConfigurationYamlSwapper();
-
+    
     @Test
     public void assertSwapToYamlConfiguration() {
         Properties testProps = new Properties();
@@ -41,7 +41,7 @@ public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
         assertThat(actual.getProps(), is(testProps));
         assertThat(actual.getType(), is(TEST_TYPE));
     }
-
+    
     @Test
     public void assertSwapToObject() {
         YamlPersistRepositoryConfiguration yamlPersistRepositoryConfiguration = new YamlPersistRepositoryConfiguration();
@@ -52,7 +52,7 @@ public final class StandalonePersistRepositoryConfigurationYamlSwapperTest {
         assertThat(actual.getProps(), is(testProps));
         assertThat(actual.getType(), is(TEST_TYPE));
     }
-
+    
     @Test
     public void assertGetType() {
         assertThat(swapper.getType(), is("Standalone"));

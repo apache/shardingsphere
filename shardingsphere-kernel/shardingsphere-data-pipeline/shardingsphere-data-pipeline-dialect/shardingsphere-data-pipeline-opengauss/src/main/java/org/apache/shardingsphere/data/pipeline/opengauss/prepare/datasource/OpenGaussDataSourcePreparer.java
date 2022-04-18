@@ -129,7 +129,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             Collection<String> logicTableSQLs = splitTableDefinitionToSQLs(each).stream().map(sql -> {
                 TableDefinitionSQLType sqlType = getTableDefinitionSQLType(sql);
                 switch (sqlType) {
-                    //TODO replace constraint and index name
+                    // TODO replace constraint and index name
                     case CREATE_TABLE:
                         sql = addIfNotExistsForCreateTableSQL(sql);
                         sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());

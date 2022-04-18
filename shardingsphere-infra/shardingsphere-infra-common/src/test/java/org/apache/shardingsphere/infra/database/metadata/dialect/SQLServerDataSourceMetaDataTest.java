@@ -58,7 +58,7 @@ public final class SQLServerDataSourceMetaDataTest {
         assertThat(actual.getPort(), is(1433));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithDataBaseNameContainDotAndMicrosoft() {
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0");
@@ -67,7 +67,7 @@ public final class SQLServerDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("ds_0.0.0"));
         assertNull(actual.getSchema());
     }
-
+    
     @Test
     public void assertNewConstructorWithDataBaseNameContainDotAndWithoutMicrosoft() {
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0");

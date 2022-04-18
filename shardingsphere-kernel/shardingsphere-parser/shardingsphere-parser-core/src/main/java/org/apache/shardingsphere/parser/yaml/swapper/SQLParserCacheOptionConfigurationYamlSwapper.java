@@ -40,4 +40,3 @@ public final class SQLParserCacheOptionConfigurationYamlSwapper implements YamlC
         return new CacheOption(yamlConfig.getInitialCapacity(), yamlConfig.getMaximumSize(), yamlConfig.getConcurrencyLevel());
     }
 }
-

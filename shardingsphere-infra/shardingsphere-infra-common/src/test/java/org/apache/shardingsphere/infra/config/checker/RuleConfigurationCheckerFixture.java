@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.config.checker;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 
 public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
-
+    
     @Override
-    public void check(final String schemaName, final TestRuleConfiguration config) {
-
+    public void check(final String databaseName, final TestRuleConfiguration config) {
+        
     }
-
+    
     @Override
     public int getOrder() {
         return -10;
     }
-
+    
     @Override
     public Class<TestRuleConfiguration> getTypeClass() {
         return TestRuleConfiguration.class;

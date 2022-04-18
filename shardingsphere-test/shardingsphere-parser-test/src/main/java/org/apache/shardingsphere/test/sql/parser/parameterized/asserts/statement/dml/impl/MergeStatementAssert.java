@@ -78,7 +78,7 @@ public final class MergeStatementAssert {
                 SetClauseAssert.assertIs(assertContext, actual.getUpdate().getSetAssignment(), expected.getUpdateClause().getSetClause());
             } else {
                 assertNull(assertContext.getText("Actual assignment should not exist."), actual.getUpdate().getSetAssignment());
-            }   
+            }
         }
     }
     
@@ -89,7 +89,7 @@ public final class MergeStatementAssert {
                 WhereClauseAssert.assertIs(assertContext, actual.getUpdate().getWhere().get(), expected.getUpdateClause().getWhereClause());
             } else {
                 assertFalse(assertContext.getText("Actual update where segment should not exist."), actual.getUpdate().getWhere().isPresent());
-            }   
+            }
         }
         if (null != expected.getDeleteClause()) {
             if (null != expected.getDeleteClause().getWhereClause()) {

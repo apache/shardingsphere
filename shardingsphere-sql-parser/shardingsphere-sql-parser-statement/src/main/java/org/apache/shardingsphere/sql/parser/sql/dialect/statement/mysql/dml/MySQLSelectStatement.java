@@ -69,7 +69,7 @@ public final class MySQLSelectStatement extends SelectStatement implements MySQL
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
-
+    
     /**
      * Get simple table segment.
      *

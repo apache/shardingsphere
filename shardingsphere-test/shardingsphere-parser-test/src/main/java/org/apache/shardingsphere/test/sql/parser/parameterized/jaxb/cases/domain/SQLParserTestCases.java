@@ -370,7 +370,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-text-search")
     private final List<DropTextSearchStatementTestCase> dropTextSearchTestCases = new LinkedList<>();
     
@@ -553,7 +553,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-database-link")
     private final List<DropDatabaseLinkStatementTestCase> dropDatabaseLinkTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-view")
     private final List<AlterViewStatementTestCase> alterViewTestCases = new LinkedList<>();
     
@@ -604,13 +604,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-dimension")
     private final List<DropDimensionStatementTestCase> dropDimensionTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-directory")
     private final List<DropDirectoryStatementTestCase> dropDirectoryTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-group")
     private final List<DropGroupStatementTestCase> dropGroupTestCases = new LinkedList<>();
     
@@ -619,19 +619,19 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-procedure")
     private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-routine")
     private final List<DropRoutineStatementTestCase> dropRoutineTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-rule")
     private final List<DropRuleStatementTestCase> dropRuleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-statistics")
     private final List<DropStatisticsStatementTestCase> dropStatisticsTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-publication")
     private final List<DropPublicationStatementTestCase> dropPublicationTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-subscription")
     private final List<DropSubscriptionStatementTestCase> dropSubscriptionTestCases = new LinkedList<>();
     
@@ -640,10 +640,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-trigger")
     private final List<AlterTriggerStatementTestCase> alterTriggerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-event-trigger")
     private final List<DropEventTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
     
@@ -1171,7 +1171,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-foreign-table")
     private final List<AlterForeignTableTestCase> alterForeignTableTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-foreign-table")
     private final List<DropForeignTableStatementTestCase> dropForeignTableStatementTestCase = new LinkedList<>();
     
@@ -1237,7 +1237,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-sharding-algorithm")
     private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-owned")
     private final List<DropOwnedStatementTestCase> dropOwnedStatementTestCases = new LinkedList<>();
     
@@ -1246,34 +1246,34 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "import-schema-config")
     private final List<ImportSchemaConfigurationStatementTestCase> importSchemaConfigurationStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-operator")
     private final List<DropOperatorStatementTestCase> dropOperatorStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-materialized-view")
     private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-cast")
     private final List<DropCastStatementTestCase> dropCastStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-aggregate")
     private final List<DropAggregateStatementTestCase> dropAggregateStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-collation")
     private final List<DropCollationStatementTestCase> dropCollationStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-foreign-data-wrapper")
     private final List<DropForeignDataWrapperStatementTestCase> dropForeignDataWrapperStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-type")
     private final List<DropTypeStatementTestCase> dropTypeStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-operator-class")
     private final List<DropOperatorClassStatementTestCase> dropOperatorClassStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-operator-family")
     private final List<DropOperatorFamilyStatementTestCase> dropOperatorFamilyStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-access-method")
     private final List<DropAccessMethodStatementTestCase> dropAccessMethodStatementTestCases = new LinkedList<>();
     

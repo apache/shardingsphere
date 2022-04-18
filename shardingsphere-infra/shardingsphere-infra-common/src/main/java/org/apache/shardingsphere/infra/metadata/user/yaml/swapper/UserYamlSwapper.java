@@ -27,7 +27,7 @@ import java.util.Objects;
  * User YAML swapper.
  */
 public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
-
+    
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
         if (Objects.isNull(data)) {
@@ -39,7 +39,7 @@ public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserC
         result.setPassword(data.getPassword());
         return result;
     }
-
+    
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
         if (Objects.isNull(yamlConfig)) {

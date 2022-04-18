@@ -48,7 +48,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_INDEX = Pattern.compile("CREATE\\s+(UNIQUE\\s+)?INDEX+\\s", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_DROP_INDEX = Pattern.compile("DROP\\s+INDEX+\\s", Pattern.CASE_INSENSITIVE);
-
+    
     private static final Pattern PATTERN_COMMENT_ON = Pattern.compile("COMMENT\\s+ON\\s+(COLUMN\\s+|TABLE\\s+)", Pattern.CASE_INSENSITIVE);
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
@@ -79,7 +79,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
     }
     
-    //TODO simple lexer
+    // TODO simple lexer
     protected final TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
         if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
             return TableDefinitionSQLType.CREATE_TABLE;

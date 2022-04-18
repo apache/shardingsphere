@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlBasicCall> {
     
     private final boolean not;
-
+    
     public BetweenExpressionConverter() {
         not = false;
     }

@@ -29,9 +29,9 @@ import org.junit.rules.ExternalResource;
 import java.util.List;
 
 public final class OpenTelemetryCollector extends ExternalResource implements CollectorRule {
-
+    
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
-
+    
     @Override
     protected void before() {
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
@@ -42,21 +42,21 @@ public final class OpenTelemetryCollector extends ExternalResource implements Co
                 .buildAndRegisterGlobal()
                 .getTracer("shardingsphere-agent");
     }
-
+    
     /**
      * Get a List of the finished Spans, represented by SpanData.
-     * 
+     *
      * @return a List of the finished Spans.
      */
     public List<SpanData> getSpanItems() {
         return testExporter.getFinishedSpanItems();
     }
-
+    
     @Override
     public void cleanup() {
         testExporter.reset();
     }
-
+    
     @Override
     protected void after() {
         GlobalOpenTelemetry.resetForTest();

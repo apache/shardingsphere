@@ -20,16 +20,16 @@ package org.apache.shardingsphere.proxy.fixture;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 
 public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<RuleConfigurationFixture> {
-
+    
     @Override
-    public void check(final String schemaName, final RuleConfigurationFixture config) {
+    public void check(final String databaseName, final RuleConfigurationFixture config) {
     }
-
+    
     @Override
     public int getOrder() {
         return -2;
     }
-
+    
     @Override
     public Class<RuleConfigurationFixture> getTypeClass() {
         return RuleConfigurationFixture.class;

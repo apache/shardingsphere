@@ -254,7 +254,7 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      * @see <a href="https://dev.mysql.com/doc/internals/en/com-reset-connection.html">COM_RESET_CONNECTION</a>
      */
     COM_RESET_CONNECTION(0x1f);
-
+    
     private static final Map<Integer, MySQLCommandPacketType> MYSQL_COMMAND_PACKET_TYPE_CACHE = new HashMap<>();
     
     private final int value;

@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 public final class CreateTrafficRuleStatementTestCase extends SQLParserTestCase {
-   
+    
     @XmlElement(name = "rule")
     private final List<ExpectedTrafficRule> rules = new LinkedList<>();
 }

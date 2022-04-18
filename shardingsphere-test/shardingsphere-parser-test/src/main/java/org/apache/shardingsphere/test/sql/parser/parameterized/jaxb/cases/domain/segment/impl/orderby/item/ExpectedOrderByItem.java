@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public abstract class ExpectedOrderByItem extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlAttribute(name = "order-direction") 
+    @XmlAttribute(name = "order-direction")
     private String orderDirection = "ASC";
 }

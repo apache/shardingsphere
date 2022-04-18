@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class RowCountTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -50,7 +50,7 @@ public final class RowCountTokenGeneratorTest {
         when(selectStatementContext.getPaginationContext().getRowCountSegment()).thenReturn(Optional.of(numberLiteralPaginationValueSegment));
         assertTrue(rowCountTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         final int testOffsetSegmentValue = 12;

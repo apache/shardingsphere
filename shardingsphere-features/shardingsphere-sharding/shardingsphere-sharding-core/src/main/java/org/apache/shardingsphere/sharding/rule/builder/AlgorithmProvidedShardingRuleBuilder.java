@@ -35,7 +35,7 @@ import java.util.Map;
 public final class AlgorithmProvidedShardingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration config, final String schemaName,
+    public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration config, final String databaseName,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data sources cannot be empty.");
         return new ShardingRule(config, dataSources.keySet());

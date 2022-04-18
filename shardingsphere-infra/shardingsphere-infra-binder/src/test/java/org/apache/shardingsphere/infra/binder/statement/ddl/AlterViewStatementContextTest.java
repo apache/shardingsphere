@@ -38,14 +38,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlterViewStatementContextTest {
-
+    
     private SimpleTableSegment view;
-
+    
     @Before
     public void setUp() {
         view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
     }
-
+    
     @Test
     public void assertMySQLNewInstance() {
         SelectStatement select = mock(MySQLSelectStatement.class);
@@ -55,14 +55,14 @@ public final class AlterViewStatementContextTest {
         when(mySQLAlterViewStatement.getSelect()).thenReturn(Optional.of(select));
         assertNewInstance(mySQLAlterViewStatement);
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         PostgreSQLAlterViewStatement postgreSQLAlterViewStatement = mock(PostgreSQLAlterViewStatement.class);
         when(postgreSQLAlterViewStatement.getView()).thenReturn(view);
         assertNewInstance(postgreSQLAlterViewStatement);
     }
-
+    
     private void assertNewInstance(final AlterViewStatement alterViewStatement) {
         AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));

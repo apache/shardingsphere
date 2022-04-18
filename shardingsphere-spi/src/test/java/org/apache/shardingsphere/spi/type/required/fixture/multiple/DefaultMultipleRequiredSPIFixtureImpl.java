@@ -24,4 +24,3 @@ public final class DefaultMultipleRequiredSPIFixtureImpl implements MultipleRequ
         return true;
     }
 }
-

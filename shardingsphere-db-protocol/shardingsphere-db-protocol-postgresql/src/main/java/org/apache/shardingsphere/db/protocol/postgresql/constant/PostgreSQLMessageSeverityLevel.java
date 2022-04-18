@@ -25,26 +25,26 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 public final class PostgreSQLMessageSeverityLevel {
     
     public static final String DEBUG1 = "DEBUG1";
-
+    
     public static final String DEBUG2 = "DEBUG2";
-
+    
     public static final String DEBUG3 = "DEBUG3";
-
+    
     public static final String DEBUG4 = "DEBUG4";
-
+    
     public static final String DEBUG5 = "DEBUG5";
-
+    
     public static final String INFO = "INFO";
-
+    
     public static final String NOTICE = "NOTICE";
-
+    
     public static final String WARNING = "WARNING";
-
+    
     public static final String ERROR = "ERROR";
-
+    
     public static final String LOG = "LOG";
-
+    
     public static final String FATAL = "FATAL";
-
+    
     public static final String PANIC = "PANIC";
 }

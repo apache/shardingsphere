@@ -40,9 +40,9 @@ import java.util.Map;
  * JDBC executor callback advice.
  */
 public class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
-
+    
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
-
+    
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
@@ -66,12 +66,12 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
                 .setAttribute(OpenTelemetryConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
         target.setAttachment(spanBuilder.startSpan());
     }
-
+    
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).end();
     }
-
+    
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);

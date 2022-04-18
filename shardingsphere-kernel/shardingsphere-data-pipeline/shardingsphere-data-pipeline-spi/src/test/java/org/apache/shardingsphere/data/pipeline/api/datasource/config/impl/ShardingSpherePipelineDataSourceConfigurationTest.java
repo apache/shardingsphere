@@ -60,7 +60,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
         return result;
     }
-
+    
     @Test
     public void assertDataSourceCanBeAggregation() throws InvalidDataSourcePropertiesException {
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceAggregationYaml());
@@ -68,7 +68,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         assertTrue(actual.get(0).isInSameDatabaseInstance(actual.get(0).getAllLocalProperties().get("jdbcUrl").toString(), actual.get(1).getAllLocalProperties().get("jdbcUrl").toString()));
         actual.get(0).checkToBeAggregatedDataSources(actual.get(1));
     }
-
+    
     private String getDataSourceAggregationYaml() {
         return "dataSources:\n"
                 + "  ds_1:\n"
