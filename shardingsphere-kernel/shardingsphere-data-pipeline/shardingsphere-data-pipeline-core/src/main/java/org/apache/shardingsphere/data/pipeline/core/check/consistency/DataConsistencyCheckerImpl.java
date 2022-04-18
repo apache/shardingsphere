@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
@@ -65,7 +64,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Data consistency checker implementation.
  */
-@Getter
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
@@ -88,7 +86,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     @Override
     public Map<String, DataConsistencyCountCheckResult> checkCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-countCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdPrefix(jobId) + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
@@ -102,7 +100,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             }
             return result;
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("count check failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("Count check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -125,7 +123,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             long targetCount = targetFuture.get();
             return new DataConsistencyCountCheckResult(sourceCount, targetCount);
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("count check failed for table '%s'", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for table '%s'", table), ex);
         }
     }
     
@@ -136,7 +134,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("count for table '%s' failed", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", table), ex);
         }
     }
     
@@ -160,7 +158,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             logicTableNames.forEach(each -> {
                 //TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
+                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s'", each));
                 }
             });
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
@@ -190,7 +188,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 result.put(each, new DataConsistencyContentCheckResult(contentMatched));
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("data check failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("Data check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -200,16 +198,16 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private void checkDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final String databaseType) {
         if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new PipelineDataConsistencyCheckFailedException("database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+            throw new PipelineDataConsistencyCheckFailedException("Database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
         }
     }
     
     private Map<String, TableMetaData> getTableMetaDataMap(final String schemaName) {
         ContextManager contextManager = PipelineContext.getContextManager();
-        Preconditions.checkNotNull(contextManager, "contextManager null");
+        Preconditions.checkNotNull(contextManager, "ContextManager null");
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
         if (null == metaData) {
-            throw new RuntimeException("Can not get metaData by schemaName " + schemaName);
+            throw new RuntimeException("Can not get meta data by schema name " + schemaName);
         }
         return metaData.getDefaultSchema().getTables();
     }
