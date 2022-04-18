@@ -84,7 +84,8 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     
     @Override
     public boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
+                && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {

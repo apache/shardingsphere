@@ -65,7 +65,8 @@ public final class DatabaseVersionPersistService {
         if (activeVersion.isPresent()) {
             String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
             repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
-            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
+            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion),
+                    repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
             return Optional.of(newVersion);
         }
         return Optional.empty();

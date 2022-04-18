@@ -54,7 +54,8 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     @Override
