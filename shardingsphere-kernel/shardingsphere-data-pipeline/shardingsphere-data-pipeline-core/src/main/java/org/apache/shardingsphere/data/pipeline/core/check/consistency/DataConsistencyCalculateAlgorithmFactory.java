@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -26,31 +26,31 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Single table data calculator factory.
+ * Data consistency calculate algorithm factory.
  */
-public final class SingleTableDataCalculatorFactory {
+public final class DataConsistencyCalculateAlgorithmFactory {
     
     static {
-        ShardingSphereServiceLoader.register(SingleTableDataCalculator.class);
+        ShardingSphereServiceLoader.register(DataConsistencyCalculateAlgorithm.class);
     }
     
     /**
-     * Create new instance of single table data calculator.
+     * Create new instance of data consistency calculate algorithm.
      *
      * @param type algorithm type
      * @param props properties
-     * @return new instance of single table data calculator
+     * @return new instance of data consistency calculate algorithm
      */
-    public static SingleTableDataCalculator newInstance(final String type, final Properties props) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), SingleTableDataCalculator.class);
+    public static DataConsistencyCalculateAlgorithm newInstance(final String type, final Properties props) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), DataConsistencyCalculateAlgorithm.class);
     }
     
     /**
-     * Get all single table data calculator instances.
+     * Get all data consistency calculate algorithm instances.
      *
-     * @return all single table data calculator instances
+     * @return all data consistency calculate algorithm instances
      */
-    public static Collection<SingleTableDataCalculator> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(SingleTableDataCalculator.class);
+    public static Collection<DataConsistencyCalculateAlgorithm> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCalculateAlgorithm.class);
     }
 }

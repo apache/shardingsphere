@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmP
 import org.apache.shardingsphere.spi.type.typed.TypedSPIMetadataAware;
 
 /**
- * Single table data calculator.
+ * Data consistency calculate algorithm.
  */
-public interface SingleTableDataCalculator extends ShardingSphereAlgorithm, TypedSPIMetadataAware, ShardingSphereAlgorithmPostProcessor {
+public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm, TypedSPIMetadataAware, ShardingSphereAlgorithmPostProcessor {
     
     /**
-     * Calculate table data content.
+     * Calculate data for consistency check.
      *
      * @param dataCalculateParameter data calculate parameter
-     * @return calculated result for checking equality
+     * @return calculated result
      */
     Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
 }

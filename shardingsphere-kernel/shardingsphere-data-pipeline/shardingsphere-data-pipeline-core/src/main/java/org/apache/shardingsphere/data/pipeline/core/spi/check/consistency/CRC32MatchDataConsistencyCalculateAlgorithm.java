@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.calculator;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
@@ -35,9 +35,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * CRC32 match single table data calculator.
+ * CRC32 match data consistency calculate algorithm.
  */
-public final class CRC32MatchSingleTableDataCalculator implements SingleTableDataCalculator {
+public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
@@ -54,7 +54,8 @@ public final class CRC32MatchSingleTableDataCalculator implements SingleTableDat
     private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataCalculateParameter dataCalculateParameter, final String columnName) {
         Optional<String> sql = sqlBuilder.buildCRC32SQL(dataCalculateParameter.getLogicTableName(), columnName);
         if (!sql.isPresent()) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Unsupported CRC32MatchSingleTableDataCalculator with database type `%s`", dataCalculateParameter.getDatabaseType()));
+            throw new PipelineDataConsistencyCheckFailedException(
+                    String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`", dataCalculateParameter.getDatabaseType()));
         }
         try {
             return calculateCRC32(dataCalculateParameter.getDataSource(), sql.get());

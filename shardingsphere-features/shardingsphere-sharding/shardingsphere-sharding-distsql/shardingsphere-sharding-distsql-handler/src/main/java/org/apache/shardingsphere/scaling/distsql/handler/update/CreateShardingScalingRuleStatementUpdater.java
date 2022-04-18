@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -83,7 +83,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         checkRateLimiterExist(segment);
         checkStreamChannelExist(segment);
         checkCompletionDetectorExist(segment);
-        checkDataConsistencyCheckerExist(segment);
+        checkDataConsistencyCalculatorExist(segment);
     }
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
@@ -113,12 +113,12 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         }
     }
     
-    private void checkDataConsistencyCheckerExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getDataConsistencyChecker()) {
+    private void checkDataConsistencyCalculatorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
+        if (null != segment.getDataConsistencyCalculator()) {
             try {
-                SingleTableDataCalculatorFactory.newInstance(segment.getDataConsistencyChecker().getName(), new Properties());
+                DataConsistencyCalculateAlgorithmFactory.newInstance(segment.getDataConsistencyCalculator().getName(), new Properties());
             } catch (final ServiceProviderNotFoundException ex) {
-                throw new InvalidAlgorithmConfigurationException("data consistency checker", segment.getDataConsistencyChecker().getName());
+                throw new InvalidAlgorithmConfigurationException("data consistency calculator", segment.getDataConsistencyCalculator().getName());
             }
         }
     }

@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.calculator;
+package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Abstract single table data calculator.
+ * Streaming data consistency calculate algorithm.
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractStreamingSingleTableDataCalculator implements SingleTableDataCalculator {
+public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     @Override
     public final Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {

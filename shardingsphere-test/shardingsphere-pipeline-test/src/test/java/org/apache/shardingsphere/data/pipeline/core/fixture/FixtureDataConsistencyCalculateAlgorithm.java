@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public final class FixtureSingleTableDataCalculator implements SingleTableDataCalculator {
+public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     @Override
     public void init() {

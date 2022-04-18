@@ -69,7 +69,7 @@ public final class CreateShardingScalingRuleStatementAssert {
             assertInputOrOutputSegment("output", assertContext, actual.getOutputSegment(), expected.getOutputSegment());
             assertAlgorithmSegment("stream channel", assertContext, actual.getStreamChannel(), expected.getStreamChannel());
             assertAlgorithmSegment("completion detector", assertContext, actual.getCompletionDetector(), expected.getCompletionDetector());
-            assertAlgorithmSegment("data consistency checker", assertContext, actual.getDataConsistencyChecker(), expected.getDataConsistencyChecker());
+            assertAlgorithmSegment("data consistency calculator", assertContext, actual.getDataConsistencyCalculator(), expected.getDataConsistencyChecker());
         }
     }
     

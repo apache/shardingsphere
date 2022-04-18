@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.util.Map;
 
@@ -37,8 +37,8 @@ public interface DataConsistencyChecker {
     /**
      * Check whether each table's records content is valid.
      *
-     * @param calculator single table data calculator
+     * @param calculator data consistency calculate algorithm
      * @return records content check result. key is logic table name, value is check result.
      */
-    Map<String, Boolean> checkRecordsContent(SingleTableDataCalculator calculator);
+    Map<String, Boolean> checkRecordsContent(DataConsistencyCalculateAlgorithm calculator);
 }
