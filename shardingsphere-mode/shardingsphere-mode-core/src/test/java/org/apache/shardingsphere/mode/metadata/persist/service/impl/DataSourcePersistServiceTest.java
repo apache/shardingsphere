@@ -51,8 +51,8 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertLoad() {
-        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
-        when(repository.get("/metadata/foo_db/foo_db/versions/0/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
+        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/versions/0/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
@@ -75,26 +75,26 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertLoadWithoutPath() {
-        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
     @Test
     public void assertAppend() {
-        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        verify(repository).persist("/metadata/foo_db/foo_db/versions/0/dataSources", expected);
+        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", expected);
     }
     
     @Test
     public void assertDrop() {
-        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         String actual = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        when(repository.get("/metadata/foo_db/foo_db/versions/0/dataSources")).thenReturn(actual);
+        when(repository.get("/metadata/foo_db/versions/0/dataSources")).thenReturn(actual);
         new DataSourcePersistService(repository).drop("foo_db", Collections.singleton("foo_ds"));
-        verify(repository).persist("/metadata/foo_db/foo_db/versions/0/dataSources", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", "{}" + System.lineSeparator());
     }
     
     private DataSource createDataSource(final String name) {

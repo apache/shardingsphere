@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Optional;
@@ -39,7 +39,7 @@ public final class SchemaVersionPersistService {
      * @return active version
      */
     public Optional<String> getSchemaActiveVersion(final String schemaName) {
-        return Optional.ofNullable(repository.get(SchemaMetaDataNode.getActiveVersionPath(schemaName)));
+        return Optional.ofNullable(repository.get(DatabaseMetaDataNode.getActiveVersionPath(schemaName)));
     }
     
     /**
@@ -64,8 +64,8 @@ public final class SchemaVersionPersistService {
         Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
         if (activeVersion.isPresent()) {
             String newVersion = String.valueOf(new AtomicLong(Long.valueOf(activeVersion.get())).incrementAndGet());
-            repository.persist(SchemaMetaDataNode.getRulePath(schemaName, newVersion), repository.get(SchemaMetaDataNode.getRulePath(schemaName, activeVersion.get())));
-            repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, newVersion), repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, activeVersion.get())));
+            repository.persist(DatabaseMetaDataNode.getRulePath(schemaName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(schemaName, activeVersion.get())));
+            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(schemaName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(schemaName, activeVersion.get())));
             return Optional.of(newVersion);
         }
         return Optional.empty();
@@ -80,7 +80,7 @@ public final class SchemaVersionPersistService {
     public void persistActiveVersion(final String schemaName, final String version) {
         Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
         if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
-            repository.persist(SchemaMetaDataNode.getActiveVersionPath(schemaName), version);
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(schemaName), version);
         }
     }
     
@@ -91,6 +91,6 @@ public final class SchemaVersionPersistService {
      * @param version version
      */
     public void deleteVersion(final String schemaName, final String version) {
-        repository.delete(SchemaMetaDataNode.getSchemaVersionPath(schemaName, version));
+        repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(schemaName, version));
     }
 }

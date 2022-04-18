@@ -72,7 +72,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
         for (String each : databaseNames) {
             if (databaseType.getSystemSchemas().contains(each)) {

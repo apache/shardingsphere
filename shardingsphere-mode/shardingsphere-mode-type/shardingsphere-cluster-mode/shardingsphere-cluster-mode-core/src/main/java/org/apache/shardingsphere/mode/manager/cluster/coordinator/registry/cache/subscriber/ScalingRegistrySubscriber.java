@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionPreparedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -54,10 +54,10 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void startScaling(final SchemaVersionPreparedEvent event) {
         String activeVersion = schemaVersionPersistService.getSchemaActiveVersion(event.getSchemaName()).get();
-        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), activeVersion));
-        String targetDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), event.getVersion()));
-        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName(), activeVersion));
-        String targetRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName(), event.getVersion()));
+        String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), activeVersion));
+        String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), event.getVersion()));
+        String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(event.getSchemaName(), activeVersion));
+        String targetRule = repository.get(DatabaseMetaDataNode.getRulePath(event.getSchemaName(), event.getVersion()));
         log.info("start scaling job, locked the schema name, event={}", event);
         StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetDataSource, targetRule,
                 Integer.parseInt(activeVersion), Integer.parseInt(event.getVersion()));
