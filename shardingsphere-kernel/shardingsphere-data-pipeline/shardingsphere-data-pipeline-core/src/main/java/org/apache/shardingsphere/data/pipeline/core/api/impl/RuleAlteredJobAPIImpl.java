@@ -293,9 +293,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobConfig);
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkCount();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountMatched)) {
-            Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkRecordsContent(calculator);
+            Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkContent(calculator);
             result.forEach((key, value) -> value.setContentMatched(contentCheckResult.getOrDefault(key, false)));
         }
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getClass().getName(), result);

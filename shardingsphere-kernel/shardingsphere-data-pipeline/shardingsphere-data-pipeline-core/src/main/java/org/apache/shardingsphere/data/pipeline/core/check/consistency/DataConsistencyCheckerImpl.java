@@ -86,7 +86,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
+    public Map<String, DataConsistencyCheckResult> checkCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
@@ -140,7 +140,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
+    public Map<String, Boolean> checkContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
         Collection<String> supportedDatabaseTypes = dataConsistencyCalculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());

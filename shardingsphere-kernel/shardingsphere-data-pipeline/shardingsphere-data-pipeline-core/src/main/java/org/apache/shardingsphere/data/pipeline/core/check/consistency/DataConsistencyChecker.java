@@ -32,7 +32,7 @@ public interface DataConsistencyChecker {
      *
      * @return records count check result. key is logic table name, value is check result.
      */
-    Map<String, DataConsistencyCheckResult> checkRecordsCount();
+    Map<String, DataConsistencyCheckResult> checkCount();
     
     /**
      * Check whether each table's records content is valid.
@@ -40,5 +40,5 @@ public interface DataConsistencyChecker {
      * @param calculator data consistency calculate algorithm
      * @return records content check result. key is logic table name, value is check result.
      */
-    Map<String, Boolean> checkRecordsContent(DataConsistencyCalculateAlgorithm calculator);
+    Map<String, Boolean> checkContent(DataConsistencyCalculateAlgorithm calculator);
 }

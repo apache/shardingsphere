@@ -56,10 +56,10 @@ public final class DataConsistencyCheckerImplTest {
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
-        Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
+        Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkCount();
         assertTrue(resultMap.get("t_order").isCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
-        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.checkRecordsContent(new FixtureDataConsistencyCalculateAlgorithm());
+        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.checkContent(new FixtureDataConsistencyCalculateAlgorithm());
         assertTrue(dataCheckResultMap.get("t_order"));
     }
     
