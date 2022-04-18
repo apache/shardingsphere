@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import java.util.Map;
 
 /**
- * Data consistency checker interface.
+ * Data consistency checker.
  */
 public interface DataConsistencyChecker {
     
