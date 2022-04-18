@@ -31,6 +31,7 @@ on:
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
+      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
   pull_request:
@@ -46,11 +47,12 @@ on:
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
+      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: it-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
