@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIMetadataAware;
@@ -30,8 +30,8 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
     /**
      * Calculate data for consistency check.
      *
-     * @param dataCalculateParameter data calculate parameter
+     * @param parameter data consistency calculate parameter
      * @return calculated result
      */
-    Iterable<Object> calculate(DataCalculateParameter dataCalculateParameter);
+    Iterable<Object> calculate(DataConsistencyCalculateParameter parameter);
 }

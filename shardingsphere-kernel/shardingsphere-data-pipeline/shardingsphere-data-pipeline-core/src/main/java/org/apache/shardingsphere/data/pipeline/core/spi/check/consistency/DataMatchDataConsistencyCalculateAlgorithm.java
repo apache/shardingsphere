@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -77,15 +77,15 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
-        String logicTableName = dataCalculateParameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
-        String uniqueKey = dataCalculateParameter.getUniqueKey();
-        CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
+    protected Optional<Object> calculateChunk(final DataConsistencyCalculateParameter parameter) {
+        String logicTableName = parameter.getLogicTableName();
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        String uniqueKey = parameter.getUniqueKey();
+        CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
         String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueKeyValue);
         try {
-            return query(dataCalculateParameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
+            return query(parameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
         } catch (final SQLException ex) {
             throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
@@ -31,7 +31,7 @@ public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsi
     }
     
     @Override
-    public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
+    public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
         return Collections.singletonList(true);
     }
     

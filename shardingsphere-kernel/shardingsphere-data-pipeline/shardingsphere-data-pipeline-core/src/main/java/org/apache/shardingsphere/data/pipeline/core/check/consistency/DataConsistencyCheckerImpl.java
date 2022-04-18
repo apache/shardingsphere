@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -168,10 +168,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 TableMetaData tableMetaData = tableMetaDataMap.get(each);
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataCalculateParameter sourceCalculateParameter = buildDataCalculateParameter(sourceDataSource, sourceDatabaseType, targetDatabaseType, each, columnNames, uniqueKey);
-                DataCalculateParameter targetCalculateParameter = buildDataCalculateParameter(targetDataSource, targetDatabaseType, sourceDatabaseType, each, columnNames, uniqueKey);
-                Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceCalculateParameter).iterator();
-                Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetCalculateParameter).iterator();
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, sourceDatabaseType, targetDatabaseType, each, columnNames, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, targetDatabaseType, sourceDatabaseType, each, columnNames, uniqueKey);
+                Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceParameter).iterator();
+                Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetParameter).iterator();
                 boolean calculateResultsEquals = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
@@ -222,9 +222,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private DataCalculateParameter buildDataCalculateParameter(final PipelineDataSourceWrapper sourceDataSource, final String sourceDatabaseType, final String targetDatabaseType,
-                                                               final String tableName, final Collection<String> columnNames, final String uniqueKey) {
-        return DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType)
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String sourceDatabaseType,
+                                                             final String targetDatabaseType, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+        return DataConsistencyCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType)
                 .peerDatabaseType(targetDatabaseType).logicTableName(tableName).columnNames(columnNames).uniqueKey(uniqueKey).build();
     }
 }
