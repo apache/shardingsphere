@@ -77,7 +77,7 @@ As shown below, it means binlog has been turned on:
 
 Execute the following SQL to confirm whether the user has migration permission or not:
 ```sql
-SHOW GRANTS 'user';
+SHOW GRANTS FOR 'user';
 ```
 
 Result Example:
