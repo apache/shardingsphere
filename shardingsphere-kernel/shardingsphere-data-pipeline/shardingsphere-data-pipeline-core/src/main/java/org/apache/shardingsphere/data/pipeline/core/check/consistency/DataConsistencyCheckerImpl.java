@@ -168,8 +168,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 TableMetaData tableMetaData = tableMetaDataMap.get(each);
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, sourceDatabaseType, targetDatabaseType, each, columnNames, uniqueKey);
-                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, targetDatabaseType, sourceDatabaseType, each, columnNames, uniqueKey);
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetParameter).iterator();
                 boolean calculateResultsEquals = true;
@@ -222,9 +222,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         }
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String sourceDatabaseType,
-                                                             final String targetDatabaseType, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
-        return DataConsistencyCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType)
-                .peerDatabaseType(targetDatabaseType).logicTableName(tableName).columnNames(columnNames).uniqueKey(uniqueKey).build();
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames, 
+                                                             final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
+        return new DataConsistencyCalculateParameter(sourceDataSource, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

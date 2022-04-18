@@ -55,8 +55,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Before
     public void setUp() throws SQLException {
-        parameter = DataConsistencyCalculateParameter.builder()
-                .logicTableName("foo_tbl").columnNames(Arrays.asList("foo_col", "bar_col")).dataSource(pipelineDataSource).databaseType("FIXTURE").build();
+        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", "1");
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     

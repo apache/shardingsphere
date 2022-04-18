@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
 import com.google.common.collect.Range;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -29,9 +29,9 @@ import java.util.Collection;
 /**
  * Data consistency calculate parameter.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@Builder
 @ToString
 public final class DataConsistencyCalculateParameter {
     
@@ -39,33 +39,21 @@ public final class DataConsistencyCalculateParameter {
      * Data source of source side or target side.
      * Do not close it, it will be reused later.
      */
-    private PipelineDataSourceWrapper dataSource;
+    private final PipelineDataSourceWrapper dataSource;
     
-    /**
-     * Logic table name.
-     */
-    private String logicTableName;
+    private final String logicTableName;
     
-    /**
-     * All column names of logic table.
-     */
-    private Collection<String> columnNames;
+    private final Collection<String> columnNames;
     
-    /**
-     * Database type.
-     */
-    private String databaseType;
+    private final String databaseType;
     
-    /**
-     * Peer database type.
-     */
-    private String peerDatabaseType;
+    private final String peerDatabaseType;
     
     /**
      * It could be primary key.
      * It could be used in order by clause.
      */
-    private String uniqueKey;
+    private final String uniqueKey;
     
     /**
      * Used for range query.
