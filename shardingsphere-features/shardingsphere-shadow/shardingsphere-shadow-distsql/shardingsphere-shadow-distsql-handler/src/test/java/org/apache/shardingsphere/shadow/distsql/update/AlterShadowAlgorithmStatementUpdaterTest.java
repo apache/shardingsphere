@@ -54,8 +54,8 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteDuplicateAlgorithm() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
-                new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
+                new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
@@ -63,7 +63,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmWithoutConfiguration() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, null);
     }
     
@@ -71,8 +71,8 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmNotInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
-        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("SIMPLE_HINT", prop)));
+        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
+        AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm1", new AlgorithmSegment("SIMPLE_HINT", prop)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
     }
     
