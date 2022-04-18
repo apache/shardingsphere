@@ -25,47 +25,47 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Schema version persist service.
+ * Database version persist service.
  */
 @RequiredArgsConstructor
-public final class SchemaVersionPersistService {
+public final class DatabaseVersionPersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Get schema active version.
+     * Get database active version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return active version
      */
-    public Optional<String> getSchemaActiveVersion(final String schemaName) {
-        return Optional.ofNullable(repository.get(DatabaseMetaDataNode.getActiveVersionPath(schemaName)));
+    public Optional<String> getDatabaseActiveVersion(final String databaseName) {
+        return Optional.ofNullable(repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
     }
     
     /**
      * Verify the version is the active version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version version
      * @return true if the version is active version, false if not
      */
-    public boolean isActiveVersion(final String schemaName, final String version) {
-        Optional<String> actualVersion = getSchemaActiveVersion(schemaName);
+    public boolean isActiveVersion(final String databaseName, final String version) {
+        Optional<String> actualVersion = getDatabaseActiveVersion(databaseName);
         return actualVersion.isPresent() && actualVersion.get().equals(version);
     }
     
     /**
      * Create new schema version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return new version
      */
-    public Optional<String> createNewVersion(final String schemaName) {
-        Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
+    public Optional<String> createNewVersion(final String databaseName) {
+        Optional<String> activeVersion = getDatabaseActiveVersion(databaseName);
         if (activeVersion.isPresent()) {
-            String newVersion = String.valueOf(new AtomicLong(Long.valueOf(activeVersion.get())).incrementAndGet());
-            repository.persist(DatabaseMetaDataNode.getRulePath(schemaName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(schemaName, activeVersion.get())));
-            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(schemaName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(schemaName, activeVersion.get())));
+            String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
+            repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
+            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
             return Optional.of(newVersion);
         }
         return Optional.empty();
@@ -74,23 +74,23 @@ public final class SchemaVersionPersistService {
     /**
      * Persist active schema version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version version
      */
-    public void persistActiveVersion(final String schemaName, final String version) {
-        Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
+    public void persistActiveVersion(final String databaseName, final String version) {
+        Optional<String> activeVersion = getDatabaseActiveVersion(databaseName);
         if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(schemaName), version);
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), version);
         }
     }
     
     /**
-     * Delete schema version.
+     * Delete database version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version version
      */
-    public void deleteVersion(final String schemaName, final String version) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(schemaName, version));
+    public void deleteVersion(final String databaseName, final String version) {
+        repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(databaseName, version));
     }
 }

@@ -46,14 +46,14 @@ public final class SchemaRulePersistServiceTest {
     
     @Test
     public void assertLoadWithoutExistedNode() {
-        assertTrue(new SchemaRulePersistService(repository).load("foo_db").isEmpty());
+        assertTrue(new DatabaseRulePersistService(repository).load("foo_db").isEmpty());
     }
     
     @Test
     public void assertLoadWithExistedNode() {
         when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
-        Collection<RuleConfiguration> actual = new SchemaRulePersistService(repository).load("foo_db");
+        Collection<RuleConfiguration> actual = new DatabaseRulePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
     
@@ -61,7 +61,7 @@ public final class SchemaRulePersistServiceTest {
     public void assertIsExisted() {
         when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
-        SchemaRulePersistService schemaRulePersistService = new SchemaRulePersistService(repository);
+        DatabaseRulePersistService schemaRulePersistService = new DatabaseRulePersistService(repository);
         assertTrue(schemaRulePersistService.isExisted("foo_db"));
         assertFalse(schemaRulePersistService.isExisted("foo_db_1"));
     }

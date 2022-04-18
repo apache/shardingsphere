@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Optional;
@@ -38,11 +38,11 @@ public final class ScalingRegistrySubscriber {
     
     private final ClusterPersistRepository repository;
     
-    private final SchemaVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService schemaVersionPersistService;
     
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
-        schemaVersionPersistService = new SchemaVersionPersistService(repository);
+        schemaVersionPersistService = new DatabaseVersionPersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

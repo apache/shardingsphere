@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public final class ScalingRegistrySubscriberTest {
     private ClusterPersistRepository repository;
     
     @Mock
-    private SchemaVersionPersistService schemaVersionPersistService;
+    private DatabaseVersionPersistService schemaVersionPersistService;
     
     private ScalingRegistrySubscriber scalingRegistrySubscriber;
     

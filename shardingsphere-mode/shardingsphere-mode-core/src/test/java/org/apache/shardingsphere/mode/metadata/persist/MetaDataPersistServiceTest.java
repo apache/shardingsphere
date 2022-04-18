@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersis
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
@@ -66,7 +66,7 @@ public final class MetaDataPersistServiceTest {
     private DataSourcePersistService dataSourceService;
     
     @Mock
-    private SchemaRulePersistService schemaRuleService;
+    private DatabaseRulePersistService schemaRuleService;
     
     @Mock
     private GlobalRulePersistService globalRuleService;

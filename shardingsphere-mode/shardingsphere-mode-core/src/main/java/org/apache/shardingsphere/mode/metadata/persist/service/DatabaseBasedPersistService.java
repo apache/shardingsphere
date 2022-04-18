@@ -22,56 +22,56 @@ package org.apache.shardingsphere.mode.metadata.persist.service;
  * 
  * @param <T> type of configuration
  */
-public interface SchemaBasedPersistService<T> {
+public interface DatabaseBasedPersistService<T> {
     
     /**
      * Persist configurations.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param configs configurations
      * @param isOverwrite is overwrite
      */
-    void persist(String schemaName, T configs, boolean isOverwrite);
+    void persist(String databaseName, T configs, boolean isOverwrite);
     
     /**
      * Persist configurations.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param configs configurations
      */
-    void persist(String schemaName, T configs);
+    void persist(String databaseName, T configs);
     
     /**
      * Persist version configurations.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version version
      * @param configs configurations
      */
-    void persist(String schemaName, String version, T configs);
+    void persist(String databaseName, String version, T configs);
     
     /**
      * Load configurations.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return configurations
      */
-    T load(String schemaName);
+    T load(String databaseName);
     
     /**
      * Load configurations based version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version version
      * @return configurations
      */
-    T load(String schemaName, String version);
+    T load(String databaseName, String version);
     
     /**
      * Judge whether schema configuration existed.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return configuration existed or not
      */
-    boolean isExisted(String schemaName);
+    boolean isExisted(String databaseName);
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
@@ -34,30 +34,30 @@ import java.util.LinkedList;
  * Schema rule persist service.
  */
 @RequiredArgsConstructor
-public final class SchemaRulePersistService implements SchemaBasedPersistService<Collection<RuleConfiguration>> {
+public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String schemaName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
-        if (!configs.isEmpty() && (isOverwrite || !isExisted(schemaName))) {
-            persist(schemaName, configs);
+    public void persist(final String databaseName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
+        if (!configs.isEmpty() && (isOverwrite || !isExisted(databaseName))) {
+            persist(databaseName, configs);
         }
     }
     
     @Override
-    public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        if (Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName))) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(schemaName), DEFAULT_VERSION);
+    public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
+        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     @Override
-    public void persist(final String schemaName, final String version, final Collection<RuleConfiguration> configs) {
-        repository.persist(DatabaseMetaDataNode.getRulePath(schemaName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+    public void persist(final String databaseName, final String version, final Collection<RuleConfiguration> configs) {
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -66,27 +66,28 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<RuleConfiguration> load(final String schemaName) {
-        return isExisted(schemaName)
+    public Collection<RuleConfiguration> load(final String databaseName) {
+        return isExisted(databaseName)
                 // TODO process algorithm provided configuration 
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode.getRulePath(schemaName,
-                getSchemaActiveVersion(schemaName))), Collection.class, true))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode.getRulePath(databaseName,
+                getDatabaseActiveVersion(databaseName))), Collection.class, true))
                 : new LinkedList<>();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<RuleConfiguration> load(final String schemaName, final String version) {
         String yamlContent = repository.get(DatabaseMetaDataNode.getRulePath(schemaName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode
-                .getRulePath(schemaName, getSchemaActiveVersion(schemaName))), Collection.class, true));
+                .getRulePath(schemaName, getDatabaseActiveVersion(schemaName))), Collection.class, true));
     }
     
     @Override
-    public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName))));
+    public boolean isExisted(final String databaseName) {
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
     }
     
-    private String getSchemaActiveVersion(final String schemaName) {
-        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(schemaName));
+    private String getDatabaseActiveVersion(final String databaseName) {
+        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

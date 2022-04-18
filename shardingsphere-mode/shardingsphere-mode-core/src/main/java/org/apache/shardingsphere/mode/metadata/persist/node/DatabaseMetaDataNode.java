@@ -76,17 +76,6 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get schema name path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return schema name path
-     */
-    public static String getSchemaNamePath(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataSchemasPath(databaseName), schemaName);
-    }
-    
-    /**
      * Get rule path.
      *
      * @param schemaName schema name
