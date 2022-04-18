@@ -16,35 +16,48 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-test</artifactId>
+        <artifactId>shardingsphere-integration-test</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.1.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-integration-scaling-test</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-integration-test-env</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-integration-scaling-test-mysql</module>
-    </modules>
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>integration-tests</id>
                         <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
