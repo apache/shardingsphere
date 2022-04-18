@@ -150,10 +150,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
-        String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
-        String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
-        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator();
-        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator();
+        SingleTableDataCalculator singleTableDataCalculator = checkAlgorithm.getSingleTableDataCalculator();
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
@@ -167,23 +164,23 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                     throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
                 }
             });
+            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
+            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
             for (String each : logicTableNames) {
                 TableMetaData tableMetaData = tableMetaDataMap.get(each);
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
-                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
-                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.calculate(sourceCalculateParameter).iterator();
-                Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
+                DataCalculateParameter sourceCalculateParameter = buildDataCalculateParameter(sourceDataSource, sourceDatabaseType, targetDatabaseType, each, columnNames, uniqueKey);
+                DataCalculateParameter targetCalculateParameter = buildDataCalculateParameter(targetDataSource, targetDatabaseType, sourceDatabaseType, each, columnNames, uniqueKey);
+                Iterator<Object> sourceCalculatedResults = singleTableDataCalculator.calculate(sourceCalculateParameter).iterator();
+                Iterator<Object> targetCalculatedResults = singleTableDataCalculator.calculate(targetCalculateParameter).iterator();
                 boolean calculateResultsEquals = true;
-                while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
+                while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
                         inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
-                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
-                    Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
+                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
+                    Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
                     Object sourceCalculatedResult = sourceFuture.get();
                     Object targetCalculatedResult = targetFuture.get();
                     calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
@@ -226,4 +223,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             targetDataSourceConfig.appendJDBCQueryProperties(queryProps);
         }
     }
+    private DataCalculateParameter buildDataCalculateParameter(final PipelineDataSourceWrapper sourceDataSource, final String sourceDatabaseType, final String targetDatabaseType,
+                                                               final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+        return DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType)
+                .peerDatabaseType(targetDatabaseType).logicTableName(tableName).columnNames(columnNames).uniqueKey(uniqueKey).build();
+    }
+    
 }
