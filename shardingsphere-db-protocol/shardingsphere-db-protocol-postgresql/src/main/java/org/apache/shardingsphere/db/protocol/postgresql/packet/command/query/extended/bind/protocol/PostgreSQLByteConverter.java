@@ -123,7 +123,7 @@ public final class PostgreSQLByteConverter {
     }
     
     private static byte[] initBytesZeroCase(final int scale) {
-        final byte[] bytes = new byte[]{0, 0, -1, -1, 0, 0, 0, 0};
+        final byte[] bytes = new byte[] {0, 0, -1, -1, 0, 0, 0, 0};
         int2(bytes, 6, Math.max(0, scale));
         return bytes;
     }

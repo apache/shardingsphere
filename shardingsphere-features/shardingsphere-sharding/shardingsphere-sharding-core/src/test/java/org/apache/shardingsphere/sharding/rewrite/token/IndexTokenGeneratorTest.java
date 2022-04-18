@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class IndexTokenGeneratorTest {
-    
+
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
@@ -51,7 +51,7 @@ public final class IndexTokenGeneratorTest {
         indexSegmentCollection.add(mock(IndexSegment.class));
         assertTrue(indexTokenGenerator.isGenerateSQLToken(alterIndexStatementContext));
     }
-    
+
     @Test
     public void assertGenerateSQLTokens() {
         IndexSegment indexSegment = mock(IndexSegment.class);

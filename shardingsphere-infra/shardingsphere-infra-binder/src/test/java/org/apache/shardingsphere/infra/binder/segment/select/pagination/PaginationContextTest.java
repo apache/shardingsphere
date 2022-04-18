@@ -74,7 +74,7 @@ public final class PaginationContextTest {
     
     @Test
     public void assertGetActualOffsetWithNumberLiteralPaginationValueSegment() {
-        assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
+        assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(), 
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualOffset(), is(30L));
     }
     
@@ -91,7 +91,7 @@ public final class PaginationContextTest {
     @Test
     public void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
-                getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
+            getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
     }
     
     @Test

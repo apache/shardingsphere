@@ -95,10 +95,10 @@ public final class EtcdRepositoryTest {
     
     @Mock
     private CompletableFuture putFuture;
-    
+
     @Mock
     private CompletableFuture lockFuture;
-    
+
     @Mock
     private Lock etcdLock;
     
@@ -151,12 +151,12 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertGetChildrenKeys() {
         io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-                .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
-                .setValue(ByteString.copyFromUtf8("value1")).build();
+            .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
+            .setValue(ByteString.copyFromUtf8("value1")).build();
         io.etcd.jetcd.api.KeyValue keyValue2 = io.etcd.jetcd.api.KeyValue.newBuilder()
-                .setKey(ByteString.copyFromUtf8("/key/key2"))
-                .setValue(ByteString.copyFromUtf8("value3")).build();
-        List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1, ByteSequence.EMPTY), new KeyValue(keyValue2, ByteSequence.EMPTY),
+            .setKey(ByteString.copyFromUtf8("/key/key2"))
+            .setValue(ByteString.copyFromUtf8("value3")).build();
+        List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1, ByteSequence.EMPTY), new KeyValue(keyValue2, ByteSequence.EMPTY), 
                 new KeyValue(keyValue1, ByteSequence.EMPTY));
         when(getResponse.getKvs()).thenReturn(keyValues);
         List<String> actual = repository.getChildrenKeys("/key");
@@ -301,14 +301,14 @@ public final class EtcdRepositoryTest {
         FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
         return result;
     }
-    
+
     @Test
     @SneakyThrows
     public void assertTryLock() {
         repository.tryLock("test", 5, TimeUnit.SECONDS);
         verify(etcdLock).lock(ByteSequence.from("test", StandardCharsets.UTF_8), 123L);
     }
-    
+
     @Test
     @SneakyThrows
     public void assertReleaseLock() {

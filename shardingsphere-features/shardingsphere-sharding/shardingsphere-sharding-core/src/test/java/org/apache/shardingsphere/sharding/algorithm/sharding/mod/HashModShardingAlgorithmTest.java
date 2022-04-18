@@ -47,14 +47,14 @@ public final class HashModShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
                 new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("a", "f")));
         assertThat(actual.size(), is(4));
     }

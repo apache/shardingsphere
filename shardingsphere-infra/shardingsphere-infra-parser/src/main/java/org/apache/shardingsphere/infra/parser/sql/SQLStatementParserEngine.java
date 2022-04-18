@@ -30,7 +30,7 @@ public final class SQLStatementParserEngine {
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
     private final LoadingCache<String, SQLStatement> sqlStatementCache;
-    
+
     public SQLStatementParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
         sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);

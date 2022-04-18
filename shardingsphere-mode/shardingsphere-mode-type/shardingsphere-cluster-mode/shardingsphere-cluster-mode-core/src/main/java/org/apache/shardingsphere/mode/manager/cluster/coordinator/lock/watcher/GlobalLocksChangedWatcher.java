@@ -59,7 +59,8 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
             return Optional.of(new LockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
             return Optional.of(new LockReleasedEvent(lockedName));
+        } else {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }

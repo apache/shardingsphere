@@ -43,7 +43,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-    
+
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     static {

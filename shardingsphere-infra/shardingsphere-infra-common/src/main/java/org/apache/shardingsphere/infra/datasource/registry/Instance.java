@@ -28,8 +28,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @EqualsAndHashCode
 public final class Instance {
-    
+
     private final String ip;
-    
+
     private final Integer port;
 }
+

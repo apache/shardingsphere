@@ -34,7 +34,7 @@ import java.util.Map;
 public final class ShadowRuleBuilder implements SchemaRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final ShadowRuleConfiguration config, final String databaseName,
+    public ShadowRule build(final ShadowRuleConfiguration config, final String schemaName,
                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return new ShadowRule(config);
     }

@@ -41,7 +41,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     private final ShardingConditions shardingConditions;
     
     private final ConfigurationProperties props;
-    
+
     private final Collection<String> logicTables;
     
     @Override
@@ -68,7 +68,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
         } else {
             RouteContext routeContext = new ShardingCartesianRoutingEngine(routeContexts).route(shardingRule);
             result.getOriginalDataNodes().addAll(routeContext.getOriginalDataNodes());
-            result.getRouteUnits().addAll(routeContext.getRouteUnits());
+            result.getRouteUnits().addAll(routeContext.getRouteUnits());    
         }
         return result;
     }

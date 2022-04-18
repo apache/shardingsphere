@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowColumnsStatementContextTest {
-    
+
     @Test
     public void assertNewInstance() {
         MySQLShowColumnsStatement mySQLShowColumnsStatement = mock(MySQLShowColumnsStatement.class);

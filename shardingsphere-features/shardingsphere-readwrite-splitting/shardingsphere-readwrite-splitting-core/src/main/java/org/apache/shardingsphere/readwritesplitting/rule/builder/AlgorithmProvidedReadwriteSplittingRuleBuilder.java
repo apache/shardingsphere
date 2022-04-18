@@ -34,7 +34,7 @@ import java.util.Map;
 public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final String databaseName,
+    public ReadwriteSplittingRule build(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final String schemaName,
                                         final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return new ReadwriteSplittingRule(config);
     }

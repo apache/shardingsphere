@@ -77,3 +77,4 @@ public class EncryptRuleSpringBootConfiguration {
         return new EncryptAlgorithmProvidedBeanRegistry(environment);
     }
 }
+

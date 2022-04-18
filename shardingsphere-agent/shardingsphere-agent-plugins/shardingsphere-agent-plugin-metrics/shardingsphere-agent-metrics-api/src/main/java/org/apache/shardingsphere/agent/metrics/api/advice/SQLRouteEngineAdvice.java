@@ -64,7 +64,7 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
             MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).ifPresent(MetricsWrapper::inc);
         }
     }
-    
+
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         RouteContext routeContext = (RouteContext) result.getResult();

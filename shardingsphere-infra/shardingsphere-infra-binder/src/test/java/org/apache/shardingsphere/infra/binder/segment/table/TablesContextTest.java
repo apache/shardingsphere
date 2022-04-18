@@ -48,7 +48,7 @@ public final class TablesContextTest {
     
     @Test
     public void assertGetTableNames() {
-        TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"),
+        TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), 
                 createTableSegment("table_2", "tbl_2")), DatabaseTypeRegistry.getDefaultDatabaseType());
         assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
     }
@@ -99,7 +99,7 @@ public final class TablesContextTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), 
                 DatabaseTypeRegistry.getDefaultDatabaseType()).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
@@ -109,11 +109,11 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
-        TableMetaData tableMetaData = new TableMetaData("TABLE_1",
+        TableMetaData tableMetaData = new TableMetaData("TABLE_1", 
                 Collections.singletonList(new ColumnMetaData("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(tableMetaData).collect(Collectors.toMap(TableMetaData::getName, value -> value)));
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), 
                 DatabaseTypeRegistry.getDefaultDatabaseType()).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));

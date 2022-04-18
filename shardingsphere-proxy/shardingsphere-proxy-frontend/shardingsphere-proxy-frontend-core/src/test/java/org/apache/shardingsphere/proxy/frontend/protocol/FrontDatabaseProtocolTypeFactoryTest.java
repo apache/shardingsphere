@@ -51,7 +51,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         setContextManager(metaDataContexts);
         assertTrue(metaDataContexts.getMetaDataMap().isEmpty());
@@ -60,7 +60,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), mockMetaDataMap(),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), mockMetaDataMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         setContextManager(metaDataContexts);
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());

@@ -27,7 +27,7 @@ import java.util.Properties;
  * Sharding algorithm factory bean.
  */
 public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShardingAlgorithm> {
-    
+
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
     }

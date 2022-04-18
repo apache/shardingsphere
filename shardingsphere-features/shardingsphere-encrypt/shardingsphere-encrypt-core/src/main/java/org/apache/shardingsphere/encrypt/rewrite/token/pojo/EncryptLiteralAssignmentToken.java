@@ -60,7 +60,7 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         public String toString() {
             return columnName + " = " + toString(value);
         }
-        
+    
         private String toString(final Object value) {
             return value instanceof String ? "'" + value + "'" : value.toString();
         }

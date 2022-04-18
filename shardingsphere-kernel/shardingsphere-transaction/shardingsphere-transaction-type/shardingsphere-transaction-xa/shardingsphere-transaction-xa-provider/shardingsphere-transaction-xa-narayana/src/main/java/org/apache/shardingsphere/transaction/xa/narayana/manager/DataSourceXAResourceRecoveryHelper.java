@@ -75,7 +75,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     @Override
     public XAResource[] getXAResources() {
         if (connect()) {
-            return new XAResource[]{this};
+            return new XAResource[] {this};
         }
         return NO_XA_RESOURCES;
     }

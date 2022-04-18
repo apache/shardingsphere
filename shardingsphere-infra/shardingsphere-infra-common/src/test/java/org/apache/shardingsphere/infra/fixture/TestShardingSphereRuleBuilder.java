@@ -33,7 +33,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public SchemaRule build(final TestRuleConfiguration config, final String databaseName,
+    public SchemaRule build(final TestRuleConfiguration config, final String schemaName,
                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return RULE;
     }

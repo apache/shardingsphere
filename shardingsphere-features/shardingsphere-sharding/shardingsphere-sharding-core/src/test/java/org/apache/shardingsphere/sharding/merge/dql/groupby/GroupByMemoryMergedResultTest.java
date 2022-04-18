@@ -126,7 +126,7 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
-    
+
     @Test
     public void assertNextForAggregationResultSetsEmpty() throws SQLException {
         QueryResult queryResult1 = createQueryResult();

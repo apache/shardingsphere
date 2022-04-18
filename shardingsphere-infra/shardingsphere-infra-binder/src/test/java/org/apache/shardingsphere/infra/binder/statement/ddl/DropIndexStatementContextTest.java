@@ -40,27 +40,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DropIndexStatementContextTest {
-    
+
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLDropIndexStatement.class));
     }
-    
+
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLDropIndexStatement.class));
     }
-    
+
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleDropIndexStatement.class));
     }
-    
+
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerDropIndexStatement.class));
     }
-    
+
     private void assertNewInstance(final DropIndexStatement dropIndexStatement) {
         Collection<IndexSegment> indexes = new LinkedList<>();
         IndexSegment index1 = new IndexSegment(0, 0, new IdentifierValue("idx_1"));

@@ -91,7 +91,7 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
         public boolean hasNext() {
             return iterator.hasNext();
         }
-        
+    
         @Override
         public Optional<ShadowColumnCondition> next() {
             ExpressionSegment expressionSegment = iterator.next();

@@ -30,11 +30,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ClusterPersistRepositoryFactoryTest {
-    
+
     static {
         ShardingSphereServiceLoader.register(ClusterPersistRepositoryFixture.class);
     }
-    
+
     @Test
     public void assertNewInstance() {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());

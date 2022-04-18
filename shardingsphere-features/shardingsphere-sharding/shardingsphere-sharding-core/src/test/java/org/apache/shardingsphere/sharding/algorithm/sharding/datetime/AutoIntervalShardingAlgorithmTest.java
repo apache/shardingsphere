@@ -51,21 +51,21 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_1"));
     }
     
     @Test
     public void assertPreciseDoShardingBeyondTheLastOne() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2021-01-01 00:00:02")), is("t_order_5"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllRange() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2019-01-01 00:00:00", "2020-01-01 00:00:15")));
         assertThat(actual.size(), is(5));
     }
@@ -73,7 +73,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithPartRange() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:04", "2020-01-01 00:00:10")));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));
@@ -84,7 +84,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.lessThan("2020-01-01 00:00:11")));
         assertThat(actual.size(), is(4));
         assertTrue(actual.contains("t_order_0"));
@@ -96,7 +96,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithoutUpperBound() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.greaterThan("2020-01-01 00:00:09")));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_3"));
@@ -125,11 +125,11 @@ public final class AutoIntervalShardingAlgorithmTest {
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
         }
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:00", "2020-01-01 00:00:10")));
         assertThat(actual.size(), is(11));
     }
-    
+
     @Test
     public void assertRangeDoShardingInValueWithMilliseconds() {
         AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();

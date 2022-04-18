@@ -36,11 +36,11 @@ import java.util.Map.Entry;
  * YAML proxy configuration swapper.
  */
 public final class YamlProxyConfigurationSwapper {
-    
+
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-    
+
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-    
+
     /**
      * Swap YAML proxy configuration to proxy configuration.
      *
@@ -53,20 +53,20 @@ public final class YamlProxyConfigurationSwapper {
                 yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
         return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
-    
+
     private Map<String, DataSourceGeneratedDatabaseConfiguration> swapDatabaseConfigurations(final YamlProxyConfiguration yamlConfig) {
         Map<String, DataSourceGeneratedDatabaseConfiguration> result = new LinkedHashMap<>(yamlConfig.getDatabaseConfigurations().size(), 1);
         boolean isDataSourceAggregation = yamlConfig.getServerConfiguration().getProps().containsKey("data-source-aggregation-enabled")
                 && (boolean) yamlConfig.getServerConfiguration().getProps().get("data-source-aggregation-enabled");
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : yamlConfig.getDatabaseConfigurations().entrySet()) {
-            Map<String, DataSourceConfiguration> databaseDataSourceConfigs
+            Map<String, DataSourceConfiguration> databaseDataSourceConfigs 
                     = swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName(), isDataSourceAggregation);
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
             result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
         }
         return result;
     }
-    
+
     private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String databaseName,
                                                                               final boolean isDataSourceAggregation) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1);

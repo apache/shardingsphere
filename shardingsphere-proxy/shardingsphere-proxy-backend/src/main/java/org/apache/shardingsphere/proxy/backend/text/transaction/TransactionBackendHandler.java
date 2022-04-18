@@ -54,7 +54,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private final TransactionOperationType operationType;
     
     private final TransactionManager backendTransactionManager;
-    
+
     private final ConnectionSession connectionSession;
     
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {

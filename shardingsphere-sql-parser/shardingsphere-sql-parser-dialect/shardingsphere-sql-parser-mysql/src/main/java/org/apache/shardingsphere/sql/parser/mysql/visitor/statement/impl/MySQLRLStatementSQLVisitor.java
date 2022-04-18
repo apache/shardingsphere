@@ -40,8 +40,7 @@ public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor i
         super(props);
     }
     
-    @Override
-    public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
+    @Override public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
         return new MySQLChangeMasterStatement();
     }
     

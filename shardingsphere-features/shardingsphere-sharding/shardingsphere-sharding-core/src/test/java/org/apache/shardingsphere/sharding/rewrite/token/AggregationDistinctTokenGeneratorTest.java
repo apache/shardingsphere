@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AggregationDistinctTokenGeneratorTest {
-    
+
     @Test
     public void assertIsGenerateSQLToken() {
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
@@ -47,7 +47,7 @@ public final class AggregationDistinctTokenGeneratorTest {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         assertFalse(aggregationDistinctTokenGenerator.isGenerateSQLToken(insertStatementContext));
     }
-    
+
     @Test
     public void assertGenerateSQLToken() {
         AggregationDistinctProjection aggregationDistinctProjection = mock(AggregationDistinctProjection.class);

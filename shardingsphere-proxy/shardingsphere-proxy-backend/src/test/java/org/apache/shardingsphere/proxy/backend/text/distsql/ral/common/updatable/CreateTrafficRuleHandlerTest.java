@@ -67,7 +67,7 @@ public final class CreateTrafficRuleHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"), 
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
     }
@@ -77,7 +77,7 @@ public final class CreateTrafficRuleHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"), 
                 new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
         new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
     }

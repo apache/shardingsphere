@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyAssignmentTokenGeneratorTest {
-    
+
     @Test
     public void assertGenerateSQLToken() {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class, RETURNS_DEEP_STUBS);

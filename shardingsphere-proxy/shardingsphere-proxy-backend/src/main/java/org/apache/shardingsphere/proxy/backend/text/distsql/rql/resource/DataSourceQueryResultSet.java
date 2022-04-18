@@ -71,7 +71,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
+        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds", 
                 "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }
     

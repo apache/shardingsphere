@@ -123,6 +123,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private List<Object> getColumnDataFromMppDataEvent(final MppTableData data) {
         List<Object> columns = new LinkedList<>();
+    
         for (int i = 0; i < data.getColumnsType().length; i++) {
             columns.add(readColumnData(data.getColumnsVal()[i], data.getColumnsType()[i]));
         }

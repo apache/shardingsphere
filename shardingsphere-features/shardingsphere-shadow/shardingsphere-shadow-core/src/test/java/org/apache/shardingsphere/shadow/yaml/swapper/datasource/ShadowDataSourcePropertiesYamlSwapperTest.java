@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ShadowDataSourcePropertiesYamlSwapperTest {
-    
+
     @Test
     public void assertSwapToYamlConfiguration() {
         ShadowDataSourceConfiguration shadowDataSourceConfiguration = new ShadowDataSourceConfiguration("ds", "ds-shadow");
@@ -34,7 +34,7 @@ public final class ShadowDataSourcePropertiesYamlSwapperTest {
         assertThat(shadowDataSourceConfiguration.getSourceDataSourceName(), is(configuration.getSourceDataSourceName()));
         assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is(configuration.getShadowDataSourceName()));
     }
-    
+
     @Test
     public void assertSwapToObject() {
         YamlShadowDataSourceConfiguration yamlConfiguration = new YamlShadowDataSourceConfiguration();

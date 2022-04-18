@@ -66,7 +66,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
-    
+      
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
@@ -118,7 +118,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Proxy backend driver type. Default driver is JDBC.
      */
     PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class),
-    
+
     /**
      * Whether enable data source aggregation, default false.
      */

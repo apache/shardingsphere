@@ -158,7 +158,7 @@ public final class TableRuleTest {
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
     }
-    
+
     @Test
     public void assertDatNodeGroups() {
         Collection<String> dataSourceNames = new LinkedList<>();
@@ -171,7 +171,7 @@ public final class TableRuleTest {
         assertTrue(actual.get("ds0").contains(new DataNode("ds0", "table_0")));
         assertTrue(actual.get("ds1").contains(new DataNode("ds1", "table_0")));
     }
-    
+
     @Test
     public void assertCreateTableRuleWithdataSourceNames() {
         Collection<String> dataSourceNames = new LinkedList<>();

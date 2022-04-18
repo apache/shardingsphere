@@ -134,7 +134,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds,
+        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;

@@ -82,7 +82,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     private static final String TABLE_NAME = "t_order";
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", 
             new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
     
     private ContextManager contextManagerBefore;

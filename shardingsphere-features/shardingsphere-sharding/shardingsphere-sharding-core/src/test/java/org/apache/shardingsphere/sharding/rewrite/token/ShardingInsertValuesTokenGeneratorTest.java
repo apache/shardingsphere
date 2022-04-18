@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingInsertValuesTokenGeneratorTest {
-    
+
     @Test
     public void assertIsGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
@@ -56,7 +56,7 @@ public final class ShardingInsertValuesTokenGeneratorTest {
         when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(Boolean.FALSE);
         assertTrue(shardingInsertValuesTokenGenerator.isGenerateSQLToken(insertStatementContext));
     }
-    
+
     @Test
     public void assertGenerateSQLToken() {
         List<ExpressionSegment> expressionSegmentList = new LinkedList<>();

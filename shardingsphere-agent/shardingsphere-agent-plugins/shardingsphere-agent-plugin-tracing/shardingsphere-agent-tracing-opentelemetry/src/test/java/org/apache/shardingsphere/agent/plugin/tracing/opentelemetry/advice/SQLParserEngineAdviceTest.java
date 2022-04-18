@@ -40,16 +40,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
-    
+
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
-    
+
     private static final String SQL_STMT = "select 1";
-    
+
     private SQLParserEngineAdvice advice;
-    
+
     private Span parentSpan;
-    
+
     @Before
     public void setup() {
         parentSpan = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
@@ -58,7 +58,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, parentSpan);
         advice = new SQLParserEngineAdvice();
     }
-    
+
     @Test
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
@@ -75,7 +75,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STMT));
     }
-    
+
     @Test
     public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());

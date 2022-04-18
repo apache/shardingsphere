@@ -46,25 +46,25 @@ public final class ModShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
-        assertThat(shardingAlgorithm.doSharding(createAvailableTargetNames(),
+        assertThat(shardingAlgorithm.doSharding(createAvailableTargetNames(), 
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 17)), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargets() {
-        Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(),
+        Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(), 
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
     
     private Collection<String> createAvailableTargetNames() {
-        return Arrays.asList("t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
+        return Arrays.asList("t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15", 
                 "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7");
     }
     
     @Test
     public void assertRangeDoShardingWithPartTargets() {
-        Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(),
+        Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(), 
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 2L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_1"));

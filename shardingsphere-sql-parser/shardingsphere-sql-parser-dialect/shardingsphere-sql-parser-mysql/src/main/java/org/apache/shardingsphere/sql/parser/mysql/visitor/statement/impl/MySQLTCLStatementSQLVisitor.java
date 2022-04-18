@@ -107,7 +107,7 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setAutoCommit(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
         return result;
     }
-    
+
     private AutoCommitSegment generateAutoCommitSegment(final Token ctx) {
         boolean autoCommit = "1".equals(ctx.getText()) || "ON".equals(ctx.getText());
         return new AutoCommitSegment(ctx.getStartIndex(), ctx.getStopIndex(), autoCommit);

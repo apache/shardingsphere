@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class PersistRepositoryConfigurationYamlSwapperEngineTest {
-    
+
     @Test
     public void assertSwapToYamlConfiguration() {
         PersistRepositoryConfigurationYamlSwapperEngine persistRepositoryConfigurationYamlSwapperEngine = new PersistRepositoryConfigurationYamlSwapperEngine();
@@ -39,7 +39,7 @@ public final class PersistRepositoryConfigurationYamlSwapperEngineTest {
         YamlPersistRepositoryConfiguration yamlPersistRepositoryConfiguration = persistRepositoryConfigurationYamlSwapperEngine.swapToYamlConfiguration(type, standalonePersistRepositoryConfiguration);
         assertTrue(yamlPersistRepositoryConfiguration.getType().equalsIgnoreCase("Standalone"));
     }
-    
+
     @Test
     public void assertSwapToObject() {
         PersistRepositoryConfigurationYamlSwapperEngine persistRepositoryConfigurationYamlSwapperEngine = new PersistRepositoryConfigurationYamlSwapperEngine();

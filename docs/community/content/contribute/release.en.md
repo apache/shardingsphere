@@ -527,29 +527,34 @@ Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and RE
 
 Install and start docker service
 
-(You may skip this step if you are using Docker Desktop) Configure QEMU:
-```shell
-docker run --privileged --rm tonistiigi/binfmt --install all
-```
-
-Refer to: [Docker Buildx: Build multi-platform images](https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images)
-
-5.2 Login Docker Registry
-
-```shell
-docker login
-```
-
-5.3 Build and push ShardingSphere-Proxy Docker image
+5.2 Compile Docker Image
 
 ```shell
 git checkout ${RELEASE.VERSION}
-./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
+cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
+mvn clean package -Prelease,docker
 ```
 
-5.4 Confirm the successful release
+5.3 Tag the local Docker Image
 
-Go to [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) and check whether there is a published image. And make sure that the image supports both `linux/amd64` and `linux/arm64`.
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-proxy:latest
+docker tag e9ea51023687 apache/shardingsphere-proxy:${RELEASE.VERSION}
+```
+
+5.4 Publish Docker Image
+
+```shell
+docker login
+docker push apache/shardingsphere-proxy:latest
+docker push apache/shardingsphere-proxy:${RELEASE.VERSION}
+```
+
+5.5 Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
 
 **6. Publish release in GitHub**
 

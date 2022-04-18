@@ -29,15 +29,16 @@ import java.util.List;
 /**
  * Lock segment.
  */
+
 @RequiredArgsConstructor
 @Getter
 public final class LockSegment implements SQLSegment {
-    
+
     private final int startIndex;
-    
+
     private final int stopIndex;
+
+    private List<SimpleTableSegment> tables = new LinkedList<>();
     
-    private final List<SimpleTableSegment> tables = new LinkedList<>();
-    
-    private final List<ColumnSegment> columns = new LinkedList<>();
+    private List<ColumnSegment> columns = new LinkedList<>();
 }

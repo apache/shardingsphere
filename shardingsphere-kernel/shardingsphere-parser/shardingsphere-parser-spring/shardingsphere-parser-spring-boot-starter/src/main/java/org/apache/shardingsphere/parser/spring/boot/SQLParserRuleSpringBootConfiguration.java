@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * SQL parser rule configuration for spring boot.
+ * Sharding rule configuration for spring boot.
  */
 @Configuration
 @EnableConfigurationProperties(YamlSQLParserRuleSpringBootConfiguration.class)

@@ -126,7 +126,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         assertThat(mgrDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_2"));
     }
     
-    // TODO Fix me
+    //TODO Fix me
     @Ignore
     @Test
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {

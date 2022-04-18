@@ -29,9 +29,9 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public final class OpenTelemetryTracingPluginBootServiceTest {
-    
+
     private final OpenTelemetryTracingPluginBootService openTelemetryTracingPluginBootService = new OpenTelemetryTracingPluginBootService();
-    
+
     @Test
     public void assertStart() {
         Properties props = new Properties();
@@ -42,12 +42,12 @@ public final class OpenTelemetryTracingPluginBootServiceTest {
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());
         assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
     }
-    
+
     @Test
     public void assertType() {
         assertThat(openTelemetryTracingPluginBootService.getType(), is("OpenTelemetry"));
     }
-    
+
     @After
     public void close() {
         openTelemetryTracingPluginBootService.close();

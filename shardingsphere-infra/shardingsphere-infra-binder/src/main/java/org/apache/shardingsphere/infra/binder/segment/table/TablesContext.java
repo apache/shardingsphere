@@ -89,7 +89,7 @@ public final class TablesContext {
     }
     
     private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
-        Optional<OwnerSegment> owner = databaseType instanceof PostgreSQLDatabaseType
+        Optional<OwnerSegment> owner = databaseType instanceof PostgreSQLDatabaseType 
                 || databaseType instanceof OpenGaussDatabaseType ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
         return owner.map(optional -> optional.getIdentifier().getValue());
     }

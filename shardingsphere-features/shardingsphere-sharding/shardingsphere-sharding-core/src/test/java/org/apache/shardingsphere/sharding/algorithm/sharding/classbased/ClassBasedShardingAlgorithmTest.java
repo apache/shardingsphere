@@ -89,7 +89,7 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertPreciseDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
     
@@ -97,7 +97,7 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertRangeDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2, 15)));
         assertThat(actual.size(), is(4));
     }

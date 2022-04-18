@@ -709,14 +709,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-    
+
     @Override
     public String visitUserVariable(final UserVariableContext ctx) {
         formatPrint("@");
         visit(ctx.textOrIdentifier());
         return result.toString();
     }
-    
+
     @Override
     public String visitSystemVariable(final SystemVariableContext ctx) {
         formatPrint("@@");
@@ -734,7 +734,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-    
+
     @Override
     public String visitTerminal(final TerminalNode node) {
         if ("<EOF>".equals(node.getText())) {

@@ -102,7 +102,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         if (sqlNode instanceof SqlIdentifier) {
             SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
             if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names) || isOwnerShorthandProjection(sqlIdentifier)) {
-                return new ShorthandProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
+                return new ShorthandProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);    
             }
             return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
         } else if (sqlNode instanceof SqlBasicCall) {
@@ -122,7 +122,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     }
     
     private boolean isOwnerShorthandProjection(final SqlIdentifier sqlIdentifier) {
-        return 2 == sqlIdentifier.names.size()
+        return 2 == sqlIdentifier.names.size() 
                 && SqlIdentifier.STAR.names.equals(ImmutableList.of(sqlIdentifier.names.get(1)));
     }
 }

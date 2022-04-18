@@ -55,7 +55,7 @@ public final class ShardingRuleBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertBuild() {
-        assertThat(builder.build(ruleConfig, "test_schema",
+        assertThat(builder.build(ruleConfig, "test_schema", 
                 Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShardingRule.class));
     }
     

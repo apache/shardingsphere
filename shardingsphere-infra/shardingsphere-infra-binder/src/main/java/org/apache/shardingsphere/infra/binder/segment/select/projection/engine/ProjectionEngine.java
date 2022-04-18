@@ -68,7 +68,7 @@ public final class ProjectionEngine {
     
     /**
      * Create projection.
-     *
+     * 
      * @param table table segment
      * @param projectionSegment projection segment
      * @return projection
@@ -98,7 +98,7 @@ public final class ProjectionEngine {
         // TODO subquery
         return Optional.empty();
     }
-    
+
     private ParameterMarkerProjection createProjection(final ParameterMarkerExpressionSegment projectionSegment) {
         return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
     }
@@ -127,7 +127,7 @@ public final class ProjectionEngine {
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
         String innerExpression = projectionSegment.getInnerExpression();
-        String alias = projectionSegment.getAlias().orElseGet(() -> DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+        String alias = projectionSegment.getAlias().orElse(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
@@ -166,7 +166,7 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
-        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each
+        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each 
             -> createProjection(subSelectStatement.getFrom(), each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
         return getColumnProjections(projections);
     }

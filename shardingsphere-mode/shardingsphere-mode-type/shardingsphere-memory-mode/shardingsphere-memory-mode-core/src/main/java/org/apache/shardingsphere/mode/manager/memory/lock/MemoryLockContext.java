@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -57,9 +58,11 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get schema lock args schema name can not be null.");
-        return locks.get(schemaName);
+    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        if (null == schemaName) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(locks.get(schemaName));
     }
     
     @Override

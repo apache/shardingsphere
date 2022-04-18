@@ -109,7 +109,7 @@ public final class ResultSetAdapterTest {
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
         assertThat(actual.findColumn("col"), is(1));
     }
-    
+
     private ShardingSphereResultSet mockShardingSphereResultSet(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col");

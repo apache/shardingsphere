@@ -139,7 +139,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private byte[] decrypt(final byte[] cipherValue) {
         return handle(cipherValue, Cipher.DECRYPT_MODE);
     }
-    
+
     @SneakyThrows
     private byte[] handle(final byte[] input, final int mode) {
         Cipher cipher = Cipher.getInstance(sm4ModePadding, BouncyCastleProvider.PROVIDER_NAME);

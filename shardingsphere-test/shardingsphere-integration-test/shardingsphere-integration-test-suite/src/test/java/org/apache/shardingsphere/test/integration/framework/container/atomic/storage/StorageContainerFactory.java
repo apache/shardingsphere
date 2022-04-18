@@ -41,7 +41,7 @@ public final class StorageContainerFactory {
         switch (databaseType.getName()) {
             case "MySQL":
                 return new MySQLContainer(scenario);
-            case "PostgreSQL":
+            case "PostgreSQL" :
                 return new PostgreSQLContainer(scenario);
             case "H2":
                 return new H2Container(scenario);

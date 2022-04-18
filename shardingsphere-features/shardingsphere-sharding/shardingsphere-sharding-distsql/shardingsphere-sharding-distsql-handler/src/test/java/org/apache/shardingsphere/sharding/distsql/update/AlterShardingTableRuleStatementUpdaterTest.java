@@ -107,7 +107,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
         assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
-        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_mod_test"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_MOD_TEST"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_snowflake_test"));
@@ -135,7 +135,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfiguration.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
         assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
-        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_mod_test"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_MOD_TEST"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake_test"));

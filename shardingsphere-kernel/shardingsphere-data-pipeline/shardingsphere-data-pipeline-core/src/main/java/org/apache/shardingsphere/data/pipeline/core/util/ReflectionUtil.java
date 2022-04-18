@@ -119,15 +119,14 @@ public final class ReflectionUtil {
      * @param methodName method name
      * @param parameterTypes parameter types
      * @param parameterValues parameter values
-     * @return invoke method result.
      * @throws NoSuchMethodException no such field exception
      * @throws InvocationTargetException invocation target exception
      * @throws IllegalAccessException illegal access exception
      */
-    public static Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
+    public static void invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
         method.setAccessible(true);
-        return method.invoke(target, parameterValues);
+        method.invoke(target, parameterValues);
     }
 }

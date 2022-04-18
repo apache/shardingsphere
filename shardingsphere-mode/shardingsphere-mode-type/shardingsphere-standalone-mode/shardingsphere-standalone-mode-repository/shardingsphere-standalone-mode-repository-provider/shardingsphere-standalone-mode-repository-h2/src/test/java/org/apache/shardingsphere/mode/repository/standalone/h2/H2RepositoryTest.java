@@ -47,7 +47,7 @@ public final class H2RepositoryTest {
     public void assertType() {
         assertThat(h2Repository.getType(), is("H2"));
     }
-    
+
     @Test
     public void assertPersistAndGet() {
         h2Repository.persist("/testPath/test1", "test1_content");
@@ -55,7 +55,7 @@ public final class H2RepositoryTest {
         h2Repository.persist("/testPath/test1", "modify_content");
         assertThat(h2Repository.get("/testPath/test1"), is("modify_content"));
     }
-    
+
     @Test
     public void assertPersistAndGetChildrenKeys() {
         h2Repository.persist("/testPath/test1", "test1_content");
@@ -64,7 +64,7 @@ public final class H2RepositoryTest {
         assertThat(childrenKeys.get(0), is("test1"));
         assertThat(childrenKeys.get(1), is("test2"));
     }
-    
+
     @Test
     public void assertDelete() {
         h2Repository.delete("/testPath");

@@ -278,7 +278,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         DatabaseType databaseType = mock(OracleDatabaseType.class);
         when(databaseType.getName()).thenReturn("Oracle");
-        Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule,
+        Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule, 
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         assertThat(actual.keySet().iterator().next(), is("t_order"));
         TableMetaData tableMetaData = actual.values().iterator().next();

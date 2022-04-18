@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DistinctProjectionPrefixTokenGeneratorTest {
-    
+
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
@@ -49,7 +49,7 @@ public final class DistinctProjectionPrefixTokenGeneratorTest {
         aggregationDistinctProjectionList.add(mock(AggregationDistinctProjection.class));
         assertTrue(distinctProjectionPrefixTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
-    
+
     @Test
     public void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);

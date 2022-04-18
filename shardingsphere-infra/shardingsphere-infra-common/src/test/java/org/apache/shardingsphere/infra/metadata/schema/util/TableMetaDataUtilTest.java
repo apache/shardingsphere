@@ -36,7 +36,7 @@ public final class TableMetaDataUtilTest {
     
     @Test
     public void assertGetTableMetaDataLoadMaterial() {
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class),
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), 
                 Collections.singletonMap("foo_ds", new MockedDataSource()), Arrays.asList(mock(DataNodeContainedRule.class), mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class));
         assertThat(TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_user"), materials, false).size(), is(1));
     }

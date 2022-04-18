@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExportSchemaConfigurationStatementTestCase extends SQLParserTestCase {
-    
+
     @XmlElement(name = "schema")
     private ExpectedSchema schema;
 }

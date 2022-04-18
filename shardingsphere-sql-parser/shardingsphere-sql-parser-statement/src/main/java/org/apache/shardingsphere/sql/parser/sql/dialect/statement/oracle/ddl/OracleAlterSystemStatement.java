@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  * Oracle alter system statement.
  */
 @ToString
-public final class OracleAlterSystemStatement extends AlterSystemStatement implements OracleStatement {
+public class OracleAlterSystemStatement extends AlterSystemStatement implements OracleStatement {
 }

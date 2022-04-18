@@ -31,9 +31,9 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
-    
+
     private LimitSegment limit;
-    
+
     /**
      * Get order by segment.
      *

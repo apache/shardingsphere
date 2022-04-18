@@ -47,7 +47,7 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
                 left = optional.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, optional.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }

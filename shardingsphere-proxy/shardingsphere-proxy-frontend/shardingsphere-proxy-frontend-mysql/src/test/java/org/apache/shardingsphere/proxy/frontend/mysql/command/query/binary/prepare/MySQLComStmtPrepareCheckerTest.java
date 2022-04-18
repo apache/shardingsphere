@@ -80,18 +80,17 @@ public final class MySQLComStmtPrepareCheckerTest {
     @Test
     public void assertIsStatementAllowed() {
         Collection<SQLStatement> sqlStatements = Arrays.asList(
-                new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
-                new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(),
-                new MySQLDropIndexStatement(), new MySQLCreateDatabaseStatement(), new MySQLDropDatabaseStatement(), new MySQLCreateTableStatement(),
-                new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new MySQLRenameUserStatement(), new MySQLDropUserStatement(),
-                new MySQLCreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new MySQLDoStatement(), new MySQLFlushStatement(),
-                new MySQLGrantStatement(), new MySQLInsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(),
-                new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new MySQLRenameTableStatement(), new MySQLRepairTableStatement(),
-                new MySQLResetStatement(), new MySQLRevokeStatement(), new MySQLSelectStatement(), new MySQLSetStatement(), new MySQLShowWarningsStatement(),
-                new MySQLShowErrorsStatement(), new MySQLShowBinlogEventsStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(),
-                new MySQLShowCreateEventStatement(),
-                new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new MySQLStartSlaveStatement(),
-                new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement());
+            new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
+            new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(), 
+            new MySQLDropIndexStatement(), new MySQLCreateDatabaseStatement(), new MySQLDropDatabaseStatement(), new MySQLCreateTableStatement(), 
+            new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new MySQLRenameUserStatement(), new MySQLDropUserStatement(), 
+            new MySQLCreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new MySQLDoStatement(), new MySQLFlushStatement(),
+            new MySQLGrantStatement(), new MySQLInsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), 
+            new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new MySQLRenameTableStatement(), new MySQLRepairTableStatement(), 
+            new MySQLResetStatement(), new MySQLRevokeStatement(), new MySQLSelectStatement(), new MySQLSetStatement(), new MySQLShowWarningsStatement(),
+            new MySQLShowErrorsStatement(), new MySQLShowBinlogEventsStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),
+            new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new MySQLStartSlaveStatement(),
+            new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement());
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isStatementAllowed(each));
         }

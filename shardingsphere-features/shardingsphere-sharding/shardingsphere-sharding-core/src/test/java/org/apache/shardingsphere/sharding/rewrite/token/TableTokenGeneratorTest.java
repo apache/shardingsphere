@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TableTokenGeneratorTest {
-    
+
     @Test
     public void assertGenerateSQLToken() {
         ShardingRule shardingRule = mock(ShardingRule.class);

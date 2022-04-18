@@ -64,7 +64,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
             zipkinSpanHandler.close();
         }
         if (null != sender) {
-            sender.close();
+            sender.close(); 
         }
     }
     

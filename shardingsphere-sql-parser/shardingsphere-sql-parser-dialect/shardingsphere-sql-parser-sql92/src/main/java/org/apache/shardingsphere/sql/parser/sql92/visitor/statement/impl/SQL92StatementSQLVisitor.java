@@ -360,7 +360,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), 
                     parameterMarker.getValue(), parameterMarker.getType());
             parameterMarkerSegments.add(segment);
             return segment;
@@ -540,7 +540,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     /**
      * Get original text.
-     *
+     * 
      * @param ctx context
      * @return original text
      */

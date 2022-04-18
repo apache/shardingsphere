@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
-    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.newInstance("MySQL");
+    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {

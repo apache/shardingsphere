@@ -72,6 +72,5 @@ execute
     | dropView
     | dropTrigger
     | alterView
-    | alterTrigger
     ) SEMI_?
     ;

@@ -59,7 +59,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
-    
+
     private static final String LOAD_FILTED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
     
     @Override
@@ -121,7 +121,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
         boolean isPrimaryKey = primaryKeys.contains(tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
-        // TODO user defined collation which deterministic is false
+        //TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive);
     }
@@ -161,7 +161,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     }
     
     private String getLoadRoleTableGrantsSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL,
+        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL, 
             tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

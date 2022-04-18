@@ -57,7 +57,7 @@ public final class ShardingPrepareStatementValidatorTest {
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), 
                 Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
     }
     
@@ -68,7 +68,7 @@ public final class ShardingPrepareStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), 
                 Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
     }
     
@@ -81,7 +81,7 @@ public final class ShardingPrepareStatementValidatorTest {
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), 
                 Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
     }
 }

@@ -33,6 +33,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 public abstract class Record {
     
     private final IngestPosition<?> position;
-    
+        
     private long commitTime;
 }

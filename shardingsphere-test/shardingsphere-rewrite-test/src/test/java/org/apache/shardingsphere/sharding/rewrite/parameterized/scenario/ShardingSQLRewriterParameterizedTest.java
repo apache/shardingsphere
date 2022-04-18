@@ -54,7 +54,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private static final String CASE_PATH = "scenario/sharding/case";
     
-    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
+    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
                                                 final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
@@ -63,14 +63,14 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, ShardingSQLRewriterParameterizedTest.class);
     }
-    
+
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
         URL url = ShardingSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
-    
+
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.checker.CRC32MatchDataConsistencyCheckAlgorithm
-org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.checker.DataMatchDataConsistencyCheckAlgorithm
+org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm
+org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.DataMatchDataConsistencyCheckAlgorithm

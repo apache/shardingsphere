@@ -92,7 +92,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         } else if (Type.DELETED == event.getType()) {
             return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(3)));
         }
-        return Optional.empty();
+        return Optional.empty();  
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {

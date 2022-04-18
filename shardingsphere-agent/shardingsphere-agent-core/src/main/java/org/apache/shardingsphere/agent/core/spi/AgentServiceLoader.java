@@ -34,7 +34,7 @@ public final class AgentServiceLoader<T> {
     private final Map<Class<?>, Collection<T>> serviceMap = new ConcurrentHashMap<>();
     
     private final Class<T> service;
-    
+
     private AgentServiceLoader(final Class<T> service) {
         this.service = service;
         register(service);

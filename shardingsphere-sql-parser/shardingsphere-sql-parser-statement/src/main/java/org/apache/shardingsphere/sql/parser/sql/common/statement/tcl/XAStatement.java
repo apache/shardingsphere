@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Setter
 @ToString
 public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
-    
+
     private String op;
-    
+
     private String xid;
 }

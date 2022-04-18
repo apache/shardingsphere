@@ -40,7 +40,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     TABLE_LOCKED(1302, "C1302", "The table %s of schema %s is locked"),
     
     TOO_MANY_CONNECTIONS_EXCEPTION(1040, "08004", "Too many connections"),
-    
+
     RUNTIME_EXCEPTION(1997, "C1997", "Runtime exception: [%s]"),
     
     UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: [%s]"),

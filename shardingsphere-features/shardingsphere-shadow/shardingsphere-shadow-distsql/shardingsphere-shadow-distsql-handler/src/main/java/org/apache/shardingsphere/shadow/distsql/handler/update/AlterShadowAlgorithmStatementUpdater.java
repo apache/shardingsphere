@@ -72,7 +72,7 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(sqlStatement.getAlgorithms());
         Collection<String> requireAlgorithmNames = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
-        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
+        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(), 
             different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
     }
     

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSphereUsersTest {
-    
+
     @Test
     public void assertFindUser() {
         Collection<ShardingSphereUser> shardingSphereUserCollection = new LinkedList<>();

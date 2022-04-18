@@ -92,6 +92,7 @@ public final class XATransactionDataSourceTest {
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"), "ds11", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider, times(0)).removeRecoveryResource(anyString(), any(XADataSource.class));
+       
     }
     
     @Test

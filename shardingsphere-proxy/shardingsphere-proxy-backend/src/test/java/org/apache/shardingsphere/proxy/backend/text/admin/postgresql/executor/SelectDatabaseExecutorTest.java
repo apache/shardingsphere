@@ -67,7 +67,7 @@ import static org.mockito.Mockito.when;
 public final class SelectDatabaseExecutorTest {
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
-    
+
     private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
     
     @Before
@@ -75,7 +75,7 @@ public final class SelectDatabaseExecutorTest {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), 
                 mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
@@ -126,8 +126,8 @@ public final class SelectDatabaseExecutorTest {
     
     @Test
     public void assertSelectSchemataExecute() throws SQLException {
-        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner,"
-                + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
+        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner," 
+                + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
@@ -160,8 +160,8 @@ public final class SelectDatabaseExecutorTest {
     
     @Test
     public void assertSelectSchemataWithoutDataSourceExecute1() throws SQLException {
-        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, "
-                + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
+        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, " 
+                + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();

@@ -117,14 +117,14 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
         assertThat(autoTableRule.getActualDataSources(), is("ds_0"));
-        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_mod_test"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_MOD_TEST"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("product_id_snowflake_test"));
         autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item_input"));
         assertThat(autoTableRule.getActualDataSources(), is("logic_ds"));
-        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_mod_test"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_MOD_TEST"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_input_snowflake_test"));
@@ -168,7 +168,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_mod_test"));
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_MOD_TEST"));
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_snowflake_test"));
         return result;
     }

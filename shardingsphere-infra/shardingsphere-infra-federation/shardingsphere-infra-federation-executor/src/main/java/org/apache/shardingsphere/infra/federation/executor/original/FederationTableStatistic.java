@@ -35,27 +35,27 @@ public final class FederationTableStatistic implements Statistic {
     public Double getRowCount() {
         return Statistic.super.getRowCount();
     }
-    
+
     @Override
     public boolean isKey(final ImmutableBitSet columns) {
         return Statistic.super.isKey(columns);
     }
-    
+
     @Override
     public List<ImmutableBitSet> getKeys() {
         return Statistic.super.getKeys();
     }
-    
+
     @Override
     public List<RelReferentialConstraint> getReferentialConstraints() {
         return new ArrayList<>();
     }
-    
+
     @Override
     public List<RelCollation> getCollations() {
         return new ArrayList<>();
     }
-    
+
     @Override
     public RelDistribution getDistribution() {
         return RelDistributionTraitDef.INSTANCE.getDefault();

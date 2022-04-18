@@ -40,9 +40,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
-    
+
     private final ModeConfiguration modeConfiguration = new ModeConfiguration("Memory", null, false);
-    
+
     private final LockContext lockContext = mock(LockContext.class);
     
     @Test
@@ -59,7 +59,7 @@ public final class InstanceContextTest {
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
     }
-    
+
     @Test
     public void assertUpdateWorkerId() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
@@ -71,7 +71,7 @@ public final class InstanceContextTest {
         actual = context.getWorkerId();
         assertThat(actual, is(expected));
     }
-    
+
     @Test
     public void assertUpdateLabel() {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
@@ -82,7 +82,7 @@ public final class InstanceContextTest {
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
     }
-    
+
     @Test
     public void assertGetInstance() {
         ComputeNodeInstance expected = new ComputeNodeInstance(mock(InstanceDefinition.class));
@@ -90,14 +90,14 @@ public final class InstanceContextTest {
         ComputeNodeInstance actual = context.getInstance();
         assertThat(actual, is(expected));
     }
-    
+
     @Test
     public void assertGetState() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);
         StateContext actual = context.getInstance().getState();
         assertNotNull(actual);
     }
-    
+
     @Test
     public void assertGetWorkerIdGenerator() {
         WorkerIdGeneratorFixture expected = new WorkerIdGeneratorFixture(Long.MIN_VALUE);
@@ -105,7 +105,7 @@ public final class InstanceContextTest {
         WorkerIdGeneratorFixture actual = (WorkerIdGeneratorFixture) context.getWorkerIdGenerator();
         assertThat(actual, is(expected));
     }
-    
+
     @Test
     public void assertGetModeConfiguration() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration, lockContext);

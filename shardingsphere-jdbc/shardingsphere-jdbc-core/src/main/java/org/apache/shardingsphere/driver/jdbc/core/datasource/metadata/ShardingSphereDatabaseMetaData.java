@@ -61,7 +61,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     public Connection getConnection() throws SQLException {
         if (null == currentPhysicalConnection) {
             currentPhysicalConnection = connection.getConnectionManager().getRandomConnection();
-        }
+        } 
         return currentPhysicalConnection;
     }
     
@@ -118,13 +118,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-                getDatabaseMetaData().getColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
+            getDatabaseMetaData().getColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
     @Override
     public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-                getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
+            getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
     }
     
     @Override
@@ -159,9 +159,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public ResultSet getCrossReference(final String parentCatalog,
-            final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
+                                       final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
         return createDatabaseMetaDataResultSet(
-                getDatabaseMetaData().getCrossReference(getActualCatalog(parentCatalog), getActualSchema(parentSchema), parentTable, foreignCatalog, foreignSchema, foreignTable));
+            getDatabaseMetaData().getCrossReference(getActualCatalog(parentCatalog), getActualSchema(parentSchema), parentTable, foreignCatalog, foreignSchema, foreignTable));
     }
     
     @Override
@@ -197,7 +197,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-                getDatabaseMetaData().getPseudoColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
+            getDatabaseMetaData().getPseudoColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
@@ -215,7 +215,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {
-        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);
+        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);  
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {

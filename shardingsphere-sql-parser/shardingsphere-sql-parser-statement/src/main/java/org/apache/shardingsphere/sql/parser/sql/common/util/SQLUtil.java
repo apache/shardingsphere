@@ -120,7 +120,7 @@ public final class SQLUtil {
     public static String getExactlyValue(final String value) {
         return null == value ? null : CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value);
     }
-    
+
     /**
      * Get exactly value for SQL expression.
      *
@@ -312,8 +312,8 @@ public final class SQLUtil {
     public static String convertLikePatternToRegex(final String pattern) {
         String result = pattern;
         if (pattern.contains("_")) {
-            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");
-            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");    
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");    
         }
         if (pattern.contains("%")) {
             result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");

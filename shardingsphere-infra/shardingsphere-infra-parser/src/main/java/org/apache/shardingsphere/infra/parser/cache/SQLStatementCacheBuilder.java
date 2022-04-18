@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementCacheBuilder {
-    
+
     /**
      * Build SQL statement cache.
      *
@@ -39,7 +39,7 @@ public final class SQLStatementCacheBuilder {
      * @param databaseType database type
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final String databaseType,
+    public static LoadingCache<String, SQLStatement> build(final String databaseType, 
                                                            final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         return CacheBuilder.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize())
                 .concurrencyLevel(sqlStatementCacheOption.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption, isParseComment));

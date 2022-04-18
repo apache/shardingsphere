@@ -137,7 +137,7 @@ public final class JDBCBackendDataSourceTest {
         private final String datasourceName;
         
         private final int connectionSize;
-        
+    
         private final ConnectionMode connectionMode;
         
         @Override

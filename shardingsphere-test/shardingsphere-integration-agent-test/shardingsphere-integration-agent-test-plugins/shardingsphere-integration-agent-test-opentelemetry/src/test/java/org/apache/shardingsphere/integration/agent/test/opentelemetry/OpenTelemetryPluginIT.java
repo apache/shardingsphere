@@ -46,7 +46,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
     private static final String PARSE_SQL = "/shardingsphere/parsesql/";
     
     private static final String EXECUTE_SQL = "/shardingsphere/executesql/";
-    
+
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();

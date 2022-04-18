@@ -82,7 +82,7 @@ public final class CommandExecutorTask implements Runnable {
         } finally {
             // TODO optimize SQLStatementSchemaHolder
             SQLStatementSchemaHolder.remove();
-            Collection<SQLException> exceptions = Collections.emptyList();
+            Collection<SQLException> exceptions = Collections.emptyList(); 
             try {
                 connectionSession.getBackendConnection().closeExecutionResources();
             } catch (final BackendConnectionException ex) {

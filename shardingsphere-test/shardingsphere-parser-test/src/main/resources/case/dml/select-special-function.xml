@@ -153,18 +153,4 @@
             </expression-projection>
         </projections>
     </select>
-
-    <select sql-case-id="select_with_extract_function">
-        <projections start-index="7" stop-index="56">
-            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
-                <expr>
-                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')">
-                        <parameter>
-                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55"/>
-                        </parameter>
-                    </function>
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
 </sql-parser-test-cases>

@@ -30,11 +30,11 @@ public class OpenTelemetryTracingPluginBootService implements PluginBootService 
         // tracer will be created
         sdk.getTracer("shardingsphere-agent");
     }
-    
+
     @Override
     public void close() {
     }
-    
+
     @Override
     public String getType() {
         return "OpenTelemetry";

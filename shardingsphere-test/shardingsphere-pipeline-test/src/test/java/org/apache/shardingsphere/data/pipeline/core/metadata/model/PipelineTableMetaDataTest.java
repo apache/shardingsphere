@@ -30,14 +30,14 @@ import java.sql.Types;
 import java.util.Collections;
 
 public final class PipelineTableMetaDataTest {
-    
+
     private PipelineTableMetaData pipelineTableMetaData;
-    
+
     @Before
     public void setUp() {
         pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true)));
     }
-    
+
     @Test
     public void assertGetColumnMetaDataGivenColumnIndex() {
         PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData(0);
@@ -46,7 +46,7 @@ public final class PipelineTableMetaDataTest {
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertTrue(actual.isPrimaryKey());
     }
-    
+
     @Test
     public void assertGetColumnMetaDataGivenColumnName() {
         PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData("test");
@@ -56,7 +56,7 @@ public final class PipelineTableMetaDataTest {
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertTrue(actual.isPrimaryKey());
     }
-    
+
     @Test
     public void assertIsPrimaryKey() {
         assertTrue(pipelineTableMetaData.isPrimaryKey(0));

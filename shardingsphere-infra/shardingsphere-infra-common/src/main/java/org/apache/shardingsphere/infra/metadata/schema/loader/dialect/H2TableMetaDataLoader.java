@@ -41,28 +41,28 @@ import java.util.stream.Collectors;
  * Table meta data loader for H2.
  */
 public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
-    
+
     private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS "
             + "WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
-    
+
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_ORDINAL_POSITION;
-    
+
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"
             + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN (%s)";
-    
+
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE";
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
-    
+
     private static final String GENERATED_INFO_SQL = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
             + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
     
     private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME IN (%s)";
-    
+
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
@@ -75,7 +75,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         }
         return result;
     }
-    
+
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
@@ -98,7 +98,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         }
         return result;
     }
-    
+
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
                                               final Map<String, Boolean> tableGenerated) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
@@ -108,12 +108,12 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         // H2 database case sensitive is always true
         return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
     }
-    
+
     private String getTableMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? TABLE_META_DATA_SQL
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-    
+
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
@@ -132,11 +132,11 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         }
         return result;
     }
-    
+
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-    
+
     private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
                 : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
@@ -157,7 +157,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         }
         return result;
     }
-    
+
     private String getGeneratedInfoSQL(final Collection<String> tables) {
         return tables.isEmpty() ? GENERATED_INFO_SQL
                 : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));

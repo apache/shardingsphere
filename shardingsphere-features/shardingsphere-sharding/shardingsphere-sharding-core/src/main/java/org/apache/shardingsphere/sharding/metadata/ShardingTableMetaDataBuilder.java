@@ -76,10 +76,10 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
         }
         return result;
-    }
-    
+    }  
+
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
-        return shardingRule.findTableRule(tableName).map(tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule),
+        return shardingRule.findTableRule(tableName).map(tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), 
                 getIndexMetaDataList(tableMetaData, tableRule), getConstraintMetaDataList(tableMetaData, shardingRule, tableRule))).orElse(tableMetaData);
     }
     

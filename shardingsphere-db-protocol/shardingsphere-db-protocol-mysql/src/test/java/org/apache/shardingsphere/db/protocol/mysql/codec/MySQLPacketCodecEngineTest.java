@@ -79,7 +79,7 @@ public final class MySQLPacketCodecEngineTest {
         new MySQLPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
     }
-    
+
     @Test
     public void assertDecodeWithEmptyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
@@ -89,7 +89,7 @@ public final class MySQLPacketCodecEngineTest {
         new MySQLPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
     }
-    
+
     @Test
     public void assertDecodeWithStickyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);

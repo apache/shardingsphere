@@ -17,7 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-trigger sql-case-id="alter_trigger" />
-    <alter-trigger sql-case-id="alter_trigger_disable" />
-    <alter-trigger sql-case-id="alter_trigger_enable" />
+    <create-trigger sql-case-id="alter_trigger" />
 </sql-parser-test-cases>

@@ -38,17 +38,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AnalyzeTableStatementContextTest {
-    
+
     @Test
     public void assertMysqlNewInstance() {
         assertNewInstance(mock(MySQLAnalyzeTableStatement.class));
     }
-    
+
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAnalyzeTableStatement.class));
     }
-    
+
     private void assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));

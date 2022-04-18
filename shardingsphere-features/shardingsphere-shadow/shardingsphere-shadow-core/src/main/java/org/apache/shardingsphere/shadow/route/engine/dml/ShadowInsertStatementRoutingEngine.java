@@ -90,7 +90,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
             index++;
             return columnValues.map(values -> new ShadowColumnCondition(getSingleTableName(), columnName, values));
         }
-        
+    
         private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
             Collection<Comparable<?>> result = new LinkedList<>();
             for (InsertValueContext each : insertValueContexts) {

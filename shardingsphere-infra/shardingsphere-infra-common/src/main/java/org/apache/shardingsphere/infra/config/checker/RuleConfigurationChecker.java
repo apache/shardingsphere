@@ -30,8 +30,8 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
     /**
      * Check rule configuration.
      * 
-     * @param databaseName database name to be checked
+     * @param schemaName schema name to be checked
      * @param config rule configuration to be checked
      */
-    void check(String databaseName, T config);
+    void check(String schemaName, T config);
 }

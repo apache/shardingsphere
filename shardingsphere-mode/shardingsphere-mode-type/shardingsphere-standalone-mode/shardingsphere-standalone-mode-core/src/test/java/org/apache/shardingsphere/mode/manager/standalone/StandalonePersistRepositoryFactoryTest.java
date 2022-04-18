@@ -33,24 +33,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class StandalonePersistRepositoryFactoryTest {
-    
+
     static {
         ShardingSphereServiceLoader.register(StandalonePersistRepositoryFixture.class);
     }
-    
+
     @Test
     public void assertNewInstanceWithNoConfig() {
         StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(null);
         assertThat(standalonePersistRepository.getType(), is("File"));
     }
-    
+
     @Test
     public void assertNewInstanceWithConfig() {
         PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("File", new Properties());
         StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(config);
         assertNotNull(standalonePersistRepository);
     }
-    
+
     @Test(expected = ServiceProviderNotFoundException.class)
     public void assertNewInstanceWhenTypeIsNotExist() {
         PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("NOT_EXISTED", new Properties());

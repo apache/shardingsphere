@@ -72,7 +72,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         }
         return result;
     }
-    
+
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {
         List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
         Set<String> availableDatasourceNames = Collections.emptySet();

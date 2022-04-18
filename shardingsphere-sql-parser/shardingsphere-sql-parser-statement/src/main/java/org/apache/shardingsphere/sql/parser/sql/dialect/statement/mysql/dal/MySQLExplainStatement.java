@@ -45,7 +45,7 @@ public final class MySQLExplainStatement extends ExplainStatement implements MyS
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
     }
-    
+
     /**
      * Get column segment.
      *

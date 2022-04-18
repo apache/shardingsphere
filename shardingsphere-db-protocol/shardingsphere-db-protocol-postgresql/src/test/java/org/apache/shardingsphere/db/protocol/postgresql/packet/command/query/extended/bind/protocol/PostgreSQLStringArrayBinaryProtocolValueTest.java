@@ -50,7 +50,7 @@ public final class PostgreSQLStringArrayBinaryProtocolValueTest {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = newInstance().read(payload, parameterValue.length());
         assertNotNull(result);
-        assertThat(result, is(new String[]{"a", "b"}));
+        assertThat(result, is(new String[] {"a", "b"}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

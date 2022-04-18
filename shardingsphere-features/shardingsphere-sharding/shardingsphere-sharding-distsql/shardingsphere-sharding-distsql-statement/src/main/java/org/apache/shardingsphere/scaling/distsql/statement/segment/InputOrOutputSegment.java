@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 @RequiredArgsConstructor
 @Getter
 public final class InputOrOutputSegment implements ASTNode {
-    
+
     private final Integer workerThread;
-    
+
     private final Integer batchSize;
     
     private final AlgorithmSegment rateLimiter;

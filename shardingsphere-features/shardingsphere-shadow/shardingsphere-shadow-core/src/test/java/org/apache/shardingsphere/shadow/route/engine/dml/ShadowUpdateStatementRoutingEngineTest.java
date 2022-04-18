@@ -92,7 +92,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
         assertThat(sqlNotesIt.next(), is("/*aaa:bbb*/"));
     }
-    
+
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(createDataSources());
@@ -100,13 +100,13 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
-    
+
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
         result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm());
         return result;
     }
-    
+
     private ShadowAlgorithm createColumnShadowAlgorithm() {
         Properties properties = new Properties();
         properties.setProperty("column", "user_id");
@@ -117,7 +117,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
     }
-    
+
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         Collection<String> shadowAlgorithmNames = new LinkedList<>();
@@ -125,7 +125,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
         return result;
     }
-    
+
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));

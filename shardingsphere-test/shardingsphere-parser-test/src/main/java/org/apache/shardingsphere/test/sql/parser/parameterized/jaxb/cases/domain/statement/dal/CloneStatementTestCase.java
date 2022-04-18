@@ -37,4 +37,5 @@ public final class CloneStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "instance")
     private ExpectedInstance instance;
+
 }

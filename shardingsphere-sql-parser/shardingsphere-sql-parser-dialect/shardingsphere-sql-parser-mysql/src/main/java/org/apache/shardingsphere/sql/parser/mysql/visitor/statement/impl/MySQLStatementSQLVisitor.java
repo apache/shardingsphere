@@ -221,7 +221,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
-    
+
     private int currentParameterIndex;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
@@ -274,13 +274,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
-    
+
     @Override
     public ASTNode visitTemporalLiterals(final TemporalLiteralsContext ctx) {
         // TODO deal with TemporalLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-    
+
     @Override
     public final ASTNode visitHexadecimalLiterals(final HexadecimalLiteralsContext ctx) {
         // TODO deal with hexadecimalLiterals
@@ -316,7 +316,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), 
                 ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -327,7 +327,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitViewName(final ViewNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier().getStart().getStartIndex(),
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier().getStart().getStartIndex(), 
                 ctx.identifier().getStop().getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -368,7 +368,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-    
+
     @Override
     public final ASTNode visitViewNames(final ViewNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -747,8 +747,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -886,7 +885,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             ColumnSegment columnSegment = (ColumnSegment) visit(ctx.columnRefList().columnRef(0));
             result.getParameters().add(columnSegment);
         }
-        return result;
+        return result; 
     }
     
     @Override
@@ -1018,7 +1017,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             if (expr instanceof ColumnSegment) {
                 return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection);
             } else {
-                return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
+                return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), 
                         ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, (ExpressionSegment) expr);
             }
         }
@@ -1438,8 +1437,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return projection;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
@@ -1528,7 +1526,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-    
+
     private String getJoinType(final JoinedTableContext ctx) {
         String joinType = null;
         if (null != ctx.innerJoinType()) {
@@ -1546,7 +1544,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return joinType;
     }
-    
+
     private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
@@ -1599,7 +1597,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(result);
         return result;
@@ -1615,7 +1613,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(result);
         return result;
@@ -1626,7 +1624,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.collationName()) {
             return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.collationName().textOrIdentifier().getText());
         }
-        ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+        ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         parameterMarkerSegments.add(segment);
         return segment;

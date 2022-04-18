@@ -102,7 +102,7 @@ public final class WalEventConverter {
     }
     
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
-        // TODO completion columns
+        //TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(IngestDataChangeType.DELETE);
         List<String> primaryKeyColumns = metaDataLoader.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();

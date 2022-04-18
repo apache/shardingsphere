@@ -68,21 +68,21 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
-        this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryTypes(config.getDiscoveryTypes()));
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryTypes(config.getDiscoveryTypes()));
     }
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
-        this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), config.getDiscoveryTypes());
+    public DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
+        this(schemaName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), config.getDiscoveryTypes());
     }
     
-    private DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
+    private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
                                   final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryType> discoveryTypes) {
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
-        findMasterSlaveRelation(databaseName, dataSourceMap);
+        findMasterSlaveRelation(schemaName, dataSourceMap);
         initAware();
-        initHeartBeatJobs(databaseName, dataSourceMap);
+        initHeartBeatJobs(schemaName, dataSourceMap);
     }
     
     private static Map<String, DatabaseDiscoveryType> getDiscoveryTypes(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -103,7 +103,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void findMasterSlaveRelation(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    private void findMasterSlaveRelation(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
@@ -111,13 +111,13 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(databaseName, originalDataSourceMap);
+                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(schemaName, originalDataSourceMap);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            databaseDiscoveryType.updatePrimaryDataSource(databaseName, originalDataSourceMap, disabledDataSourceNames, groupName);
+            databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(databaseName, originalDataSourceMap, groupName);
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, groupName);
         }
     }
     
@@ -185,14 +185,14 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void initHeartBeatJobs(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    private void initHeartBeatJobs(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + databaseName + "-" + entry.getValue().getGroupName(),
-                    each -> new HeartbeatJob(databaseName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
+                CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + schemaName + "-" + entry.getValue().getGroupName(),
+                    each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
                                 .execute(null), entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
                 modeScheduleContext.get().startCronJob(job);
             }

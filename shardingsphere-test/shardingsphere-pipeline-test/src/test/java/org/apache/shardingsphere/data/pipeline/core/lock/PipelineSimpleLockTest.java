@@ -48,5 +48,5 @@ public final class PipelineSimpleLockTest {
         assertTrue(locked);
         pipelineSimpleLock.releaseLock(lockName);
     }
-    
+
 }

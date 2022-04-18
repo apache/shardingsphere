@@ -45,12 +45,13 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> textValues() {
         return Arrays.asList(
-                new Object[]{new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}},
-                new Object[]{new BigDecimal("0.00"), new byte[]{0, 0, -1, -1, 0, 0, 0, 2}},
-                new Object[]{new BigDecimal("0.0001"), new byte[]{0, 1, -1, -1, 0, 0, 0, 4, 0, 1}},
-                new Object[]{new BigDecimal("9999"), new byte[]{0, 1, 0, 0, 0, 0, 0, 0, 39, 15}},
-                new Object[]{new BigDecimal("9999.0"), new byte[]{0, 1, 0, 0, 0, 0, 0, 1, 39, 15}},
-                new Object[]{new BigDecimal("9999.9999"), new byte[]{0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}});
+                new Object[]{new BigDecimal("0"), new byte[] {0, 0, -1, -1, 0, 0, 0, 0}},
+                new Object[]{new BigDecimal("0.00"), new byte[] {0, 0, -1, -1, 0, 0, 0, 2}},
+                new Object[]{new BigDecimal("0.0001"), new byte[] {0, 1, -1, -1, 0, 0, 0, 4, 0, 1}},
+                new Object[]{new BigDecimal("9999"), new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 39, 15}},
+                new Object[]{new BigDecimal("9999.0"), new byte[] {0, 1, 0, 0, 0, 0, 0, 1, 39, 15}},
+                new Object[]{new BigDecimal("9999.9999"), new byte[] {0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}}
+        );
     }
     
     @Test

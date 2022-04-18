@@ -125,7 +125,7 @@ public final class DataSourcePoolCreator {
             }
         }
     }
-    
+
     private static boolean isCanBeDataSourceAggregation(final DataSourceProperties dataSourceProps) {
         if (!dataSourceProps.getConnectionPropertySynonyms().getLocalProperties().containsKey("jdbcUrl")) {
             return false;

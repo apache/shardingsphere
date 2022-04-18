@@ -97,7 +97,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
+                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());   
             }
         }
         return result;

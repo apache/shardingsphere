@@ -32,7 +32,7 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines",
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines", 
             "parameters", "routines", "schemata", "tables", "views")),
     
     MYSQL_MYSQL("MySQL", "mysql", Sets.newHashSet("db")),
@@ -58,7 +58,7 @@ public enum SystemSchemaBuilderRule {
             SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getDatabaseType() + "." + each.getSchema(), each);
         }
     }
-    
+
     /**
      * Value of builder rule.
      * 

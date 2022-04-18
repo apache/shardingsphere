@@ -55,7 +55,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        // TODO Check openGauss configuration
+        //TODO Check openGauss configuration
     }
     
     @Override
@@ -75,8 +75,8 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         String result = "";
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                 Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
                     if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
                         return entry.getKey();
@@ -94,8 +94,8 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                 Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
                     if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
                             || entry.getKey().equals(oldPrimaryDataSource)) {

@@ -368,7 +368,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterForeignTable(final AlterForeignTableContext ctx) {
         return new PostgreSQLAlterForeignTableStatement();
     }
-    
+
     @Override
     public ASTNode visitDropForeignTable(final DropForeignTableContext ctx) {
         return new PostgreSQLDropForeignTableStatement();
@@ -521,22 +521,22 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropPolicy(final DropPolicyContext ctx) {
         return new PostgreSQLDropPolicyStatement();
     }
-    
+
     @Override
     public ASTNode visitDropRule(final DropRuleContext ctx) {
         return new PostgreSQLDropRuleStatement();
     }
-    
+
     @Override
     public ASTNode visitDropStatistics(final DropStatisticsContext ctx) {
         return new PostgreSQLDropStatisticsStatement();
     }
-    
+
     @Override
     public ASTNode visitDropPublication(final DropPublicationContext ctx) {
         return new PostgreSQLDropPublicationStatement();
     }
-    
+
     @Override
     public ASTNode visitDropSubscription(final DropSubscriptionContext ctx) {
         return new PostgreSQLDropSubscriptionStatement();
@@ -649,7 +649,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
         return new PostgreSQLDropFunctionStatement();
     }
-    
+
     @Override
     public ASTNode visitDropGroup(final DropGroupContext ctx) {
         return new PostgreSQLDropGroupStatement();
@@ -677,7 +677,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
-            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),
+            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(), 
                     nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext.identifier()))));
         }
         return result;
@@ -695,7 +695,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
         return new PostgreSQLDropProcedureStatement();
     }
-    
+
     @Override
     public ASTNode visitDropRoutine(final DropRoutineContext ctx) {
         return new PostgreSQLDropRoutineStatement();
@@ -707,21 +707,21 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
         PostgreSQLCreateSequenceStatement result = new PostgreSQLCreateSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
         PostgreSQLAlterSequenceStatement result = new PostgreSQLAlterSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
         PostgreSQLDropSequenceStatement result = new PostgreSQLDropSequenceStatement();
@@ -733,7 +733,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitPrepare(final PrepareContext ctx) {
         PostgreSQLPrepareStatement result = new PostgreSQLPrepareStatement();
         if (null != ctx.preparableStmt().select()) {
-            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
+            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));    
         }
         if (null != ctx.preparableStmt().insert()) {
             result.setInsert((InsertStatement) visit(ctx.preparableStmt().insert()));
@@ -751,12 +751,12 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
         return new PostgreSQLDeallocateStatement();
     }
-    
+
     @Override
     public ASTNode visitDropCast(final DropCastContext ctx) {
         return new PostgreSQLDropCastStatement();
     }
-    
+        
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
         return new PostgreSQLCreateTablespaceStatement();
@@ -771,7 +771,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
         return new PostgreSQLDropTablespaceStatement();
     }
-    
+
     @Override
     public ASTNode visitDropTextSearch(final DropTextSearchContext ctx) {
         return new PostgreSQLDropTextSearchStatement();
@@ -881,22 +881,22 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDiscard(final DiscardContext ctx) {
         return new PostgreSQLDiscardStatement();
     }
-    
+
     @Override
     public ASTNode visitDropOwned(final DropOwnedContext ctx) {
         return new PostgreSQLDropOwnedStatement();
     }
-    
+
     @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
         return new PostgreSQLDropOperatorStatement();
     }
-    
+
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
         return new PostgreSQLDropMaterializedViewStatement();
     }
-    
+
     @Override
     public ASTNode visitDropEventTrigger(final DropEventTriggerContext ctx) {
         return new PostgreSQLDropEventTriggerStatement();
@@ -906,12 +906,12 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropAggregate(final DropAggregateContext ctx) {
         return new PostgreSQLDropAggregateStatement();
     }
-    
+
     @Override
     public ASTNode visitDropCollation(final DropCollationContext ctx) {
         return new PostgreSQLDropCollationStatement();
     }
-    
+
     @Override
     public ASTNode visitDropForeignDataWrapper(final DropForeignDataWrapperContext ctx) {
         return new PostgreSQLDropForeignDataWrapperStatement();
@@ -921,7 +921,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
         return new PostgreSQLDropTriggerStatement();
     }
-    
+
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
         return new PostgreSQLDropTypeStatement();
@@ -968,12 +968,12 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropOperatorClass(final DropOperatorClassContext ctx) {
         return new PostgreSQLDropOperatorClassStatement();
     }
-    
+
     @Override
     public ASTNode visitDropOperatorFamily(final DropOperatorFamilyContext ctx) {
         return new PostgreSQLDropOperatorFamilyStatement();
     }
-    
+
     @Override
     public ASTNode visitDropAccessMethod(final DropAccessMethodContext ctx) {
         return new PostgreSQLDropAccessMethodStatement();

@@ -89,7 +89,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
             statement.executeQuery("");
         }
     }
-    
+
     @Test
     public void assertExecuteGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
@@ -98,7 +98,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
             assertNull(statement.getResultSet());
         }
     }
-    
+
     @Test
     public void assertExecuteUpdateGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";

@@ -45,13 +45,13 @@ public final class XADataSourceFactoryTest {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("H2"), dataSource);
         assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
     }
-    
+
     @Test
     public void assertCreateMariaDBXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), dataSource);
         assertThat(xaDataSource, instanceOf(MariaDbDataSource.class));
     }
-    
+
     @Test
     public void assertCreatePGXADataSource() {
         when(dataSource.getJdbcUrl()).thenReturn("jdbc:postgresql://localhost:5432/db1");

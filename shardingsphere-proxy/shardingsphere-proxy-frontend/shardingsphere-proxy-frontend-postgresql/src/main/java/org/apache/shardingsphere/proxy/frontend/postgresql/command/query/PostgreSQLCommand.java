@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
@@ -70,7 +71,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * PostgreSQL command.
- *
  * @see <a href="https://www.postgresql.org/docs/13/sql-commands.html">SQL Commands</a>
  */
 @Getter
@@ -91,6 +91,7 @@ public enum PostgreSQLCommand {
     ALTER_TABLESPACE(AlterTablespaceStatement.class),
     ALTER_TABLE(AlterTableStatement.class),
     ALTER_VIEW(AlterViewStatement.class),
+    CREATE(AddResourceStatement.class, CreateShardingTableRuleStatement.class),
     CREATE_DATABASE(CreateDatabaseStatement.class),
     CREATE_FUNCTION(CreateFunctionStatement.class),
     CREATE_INDEX(CreateIndexStatement.class),
@@ -115,8 +116,7 @@ public enum PostgreSQLCommand {
     ROLLBACK(RollbackStatement.class),
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
-    RESET(ResetParameterStatement.class),
-    SUCCESS(DistSQLStatement.class);
+    RESET(ResetParameterStatement.class);
     
     private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(64, 1);
     

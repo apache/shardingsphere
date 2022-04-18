@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Example generator.
@@ -37,23 +36,20 @@ public interface ExampleGenerator {
     String RESOURCES_PATH = "src/main/resources";
     
     default void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
-        for (String eachMode : configuration.getModes()) {
-            for (String eachTransaction : configuration.getTransactions()) {
-                for (String eachFramework : configuration.getFrameworks()) {
-                    for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
-                        generate(templateConfig, buildDataModel(configuration.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
-                    }
-                }
+        for (String eachFramework : configuration.getFrameworks()) {
+            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
+                generate(templateConfig, buildDataModel(configuration, eachFramework, eachFeature), eachFramework, eachFeature);
             }
         }
     }
-
-    default Map<String, String> buildDataModel(final Properties props, final String mode, final String transaction, final String framework, final String feature) {
+    
+    default Map<String, String> buildDataModel(final YamlExampleConfiguration configuration, final String framework, final String feature) {
         Map<String, String> result = new LinkedHashMap<>();
-        props.forEach((key, value) -> result.put(key.toString(), value.toString()));
+        configuration.getProps().forEach((key, value) -> result.put(key.toString(), value.toString()));
         result.put("product", getType());
-        result.put("mode", mode);
-        result.put("transaction", transaction);
+        // TODO support mode & transaction combination
+        result.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
+        result.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
         result.put("feature", feature);
         result.put("framework", framework);
         result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);

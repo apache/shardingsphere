@@ -37,6 +37,6 @@ public final class MySQLTableStatement extends TableStatement implements MySQLSt
     private SimpleTableSegment table;
     
     private ColumnSegment column;
-    
+
     private LimitSegment limit;
 }

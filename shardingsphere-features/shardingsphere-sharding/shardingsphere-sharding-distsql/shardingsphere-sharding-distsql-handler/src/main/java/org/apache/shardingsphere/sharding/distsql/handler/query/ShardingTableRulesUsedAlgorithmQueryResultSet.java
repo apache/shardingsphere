@@ -34,9 +34,9 @@ import java.util.List;
  * Result set for show sharding table rules used algorithm.
  */
 public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements DistSQLResultSet {
-    
+
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
-    
+
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
@@ -45,7 +45,7 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
         shardingTableRules.forEach(each -> requireResult(statement, metaData.getName(), result, each));
         data = result.iterator();
     }
-    
+
     private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String schemaName, final List<Collection<Object>> result,
                                final ShardingRuleConfiguration shardingRuleConfiguration) {
         if (!statement.getAlgorithmName().isPresent()) {
@@ -63,22 +63,22 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
             }
         });
     }
-    
+
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("schema", "type", "name");
     }
-    
+
     @Override
     public boolean next() {
         return data.hasNext();
     }
-    
+
     @Override
     public Collection<Object> getRowData() {
         return data.next();
     }
-    
+
     @Override
     public String getType() {
         return ShowShardingTableRulesUsedAlgorithmStatement.class.getName();

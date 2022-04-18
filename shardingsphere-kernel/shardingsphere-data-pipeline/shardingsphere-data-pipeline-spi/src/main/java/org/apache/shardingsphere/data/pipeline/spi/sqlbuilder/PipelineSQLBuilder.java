@@ -23,7 +23,6 @@ import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Pipeline SQL builder.
@@ -111,15 +110,4 @@ public interface PipelineSQLBuilder extends StatelessTypedSPI {
      * @return split SQL
      */
     String buildSplitByPrimaryKeyRangeSQL(String tableName, String primaryKey);
-    
-    /**
-     * Build CRC32 SQL.
-     *
-     * @param tableName table Name
-     * @param column column
-     * @return CRC32 SQL
-     */
-    default Optional<String> buildCRC32SQL(final String tableName, final String column) {
-        return Optional.empty();
-    }
 }

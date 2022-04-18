@@ -40,3 +40,4 @@ public @interface ShardingSphereTransactionType {
      */
     TransactionType value() default TransactionType.LOCAL;
 }
+

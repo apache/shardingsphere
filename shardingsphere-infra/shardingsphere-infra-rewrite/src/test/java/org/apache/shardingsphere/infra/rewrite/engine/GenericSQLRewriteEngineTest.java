@@ -35,7 +35,7 @@ public final class GenericSQLRewriteEngineTest {
     @Test
     public void assertRewrite() {
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine().rewrite(
-                new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
+                new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
                         mock(ShardingSphereSchema.class), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList()));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));

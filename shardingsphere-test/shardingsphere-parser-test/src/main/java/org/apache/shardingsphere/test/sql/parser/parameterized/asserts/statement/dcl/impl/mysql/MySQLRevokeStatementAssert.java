@@ -29,6 +29,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+
 /**
  * MySQL Revoke statement assert.
  */

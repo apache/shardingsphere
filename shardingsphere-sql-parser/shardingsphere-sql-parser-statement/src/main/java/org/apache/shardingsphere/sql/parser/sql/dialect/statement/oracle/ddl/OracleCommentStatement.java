@@ -31,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @Setter
 @ToString
 public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
-    
+
     private IndextypeSegment indextype;
 }

@@ -160,7 +160,7 @@ public class SpringBootStarterTest {
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> actual) {
         assertThat(actual.size(), is(3));
         assertThat(actual.get("user-id-match-algorithm"), instanceOf(ColumnShadowAlgorithm.class));
-        assertThat(actual.get("order-id-match-algorithm"), instanceOf(ColumnShadowAlgorithm.class));
+        assertThat(actual.get("order-id-match-algorithm"), instanceOf(ColumnShadowAlgorithm.class)); 
         assertThat(actual.get("simple-hint-algorithm"), instanceOf(HintShadowAlgorithm.class));
     }
     
@@ -181,7 +181,7 @@ public class SpringBootStarterTest {
         assertCacheOption(actual.getSqlStatementCache());
         assertCacheOption(actual.getParseTreeCache());
     }
-    
+
     private void assertCacheOption(final CacheOption actual) {
         assertThat(actual.getInitialCapacity(), is(1024));
         assertThat(actual.getMaximumSize(), is(1024L));

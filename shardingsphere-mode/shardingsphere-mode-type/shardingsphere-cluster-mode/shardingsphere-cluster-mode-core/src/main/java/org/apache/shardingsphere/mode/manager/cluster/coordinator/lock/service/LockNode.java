@@ -121,7 +121,8 @@ public final class LockNode {
      * @return global schema locked node path
      */
     public static Optional<String> parseGlobalSchemaLocksNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getGlobalSchemaLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
+        // TODO "(.+)/leases/(.+)$"
+        Pattern pattern = Pattern.compile(getGlobalSchemaLocksNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

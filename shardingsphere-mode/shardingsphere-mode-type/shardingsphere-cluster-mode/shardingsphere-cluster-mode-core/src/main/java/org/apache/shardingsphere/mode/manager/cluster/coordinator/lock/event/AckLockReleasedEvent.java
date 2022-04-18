@@ -18,22 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
  * Ack released Lock event.
  */
+@RequiredArgsConstructor
 @Getter
 public final class AckLockReleasedEvent implements GovernanceEvent {
     
-    private final String schema;
-    
-    private final String lockedInstance;
-    
-    public AckLockReleasedEvent(final String lockName) {
-        String[] schemaInstance = LockNodeUtil.parseSchemaLockName(lockName);
-        this.schema = schemaInstance[0];
-        this.lockedInstance = schemaInstance[1];
-    }
+    private final String lockName;
 }

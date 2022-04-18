@@ -27,3 +27,4 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 @ToString
 public final class OpenGaussCreateSequenceStatement extends CreateSequenceStatement implements OpenGaussStatement {
 }
+

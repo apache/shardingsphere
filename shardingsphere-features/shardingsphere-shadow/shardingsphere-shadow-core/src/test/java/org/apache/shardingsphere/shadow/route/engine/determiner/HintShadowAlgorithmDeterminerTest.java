@@ -62,19 +62,19 @@ public final class HintShadowAlgorithmDeterminerTest {
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
-    
+
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
         result.put("simple-hint-algorithm", createHintShadowAlgorithm());
         return result;
     }
-    
+
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), createShadowAlgorithmNames()));
         return result;
     }
-    
+
     private Collection<String> createShadowAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
         result.add("simple-hint-algorithm");

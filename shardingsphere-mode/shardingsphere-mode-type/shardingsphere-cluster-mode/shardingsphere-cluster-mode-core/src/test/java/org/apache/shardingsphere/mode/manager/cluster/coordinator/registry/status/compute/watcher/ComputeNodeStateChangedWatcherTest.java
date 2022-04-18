@@ -38,7 +38,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     
     @Test
     public void assertCreateEventWhenEnabled() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status",
+        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", 
                 YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((StateEvent) actual.get()).getStatus(), is(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())));
@@ -75,7 +75,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels",
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
@@ -85,7 +85,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateUpdateLabelsEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels",
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));

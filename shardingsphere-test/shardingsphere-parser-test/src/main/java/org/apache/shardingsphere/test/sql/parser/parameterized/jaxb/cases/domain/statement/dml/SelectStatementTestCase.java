@@ -46,10 +46,10 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "from")
     private ExpectedTable from;
-    
+
     @XmlElement(name = "simple-table")
     private ExpectedSimpleTable simpleTable;
-    
+
     @XmlElement(name = "projections")
     private final ExpectedProjections projections = new ExpectedProjections();
     
@@ -70,7 +70,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "limit")
     private ExpectedLimitClause limitClause;
-    
+
     @XmlElement(name = "lock")
     private ExpectedLockClause lockClause;
     

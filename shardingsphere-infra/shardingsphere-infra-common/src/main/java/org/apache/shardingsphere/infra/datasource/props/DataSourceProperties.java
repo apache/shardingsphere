@@ -122,7 +122,7 @@ public final class DataSourceProperties {
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
-    
+
     /**
      * Can data source be aggregate.
      *
@@ -150,7 +150,7 @@ public final class DataSourceProperties {
             }
         }
     }
-    
+
     /**
      * Is data source in same instance.
      *
@@ -167,12 +167,12 @@ public final class DataSourceProperties {
         return sourceJdbcUrl.getHostname().equals(targetJdbcUrl.getHostname()) && sourceJdbcUrl.getPort() == targetJdbcUrl.getPort()
                 && sourceJdbcUrl.getQueryProperties().equals(targetJdbcUrl.getQueryProperties());
     }
-    
+
     private JdbcUrl parseStandardJdbcUrlParserByJdbcUrl(final String jdbcUrl) {
         StandardJdbcUrlParser jdbcUrlParser = new StandardJdbcUrlParser();
         return jdbcUrlParser.parse(jdbcUrl);
     }
-    
+
     private String parseJdbcUrl() {
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
             if (entry.getKey().equals("jdbcUrl")) {
@@ -181,7 +181,7 @@ public final class DataSourceProperties {
         }
         return "";
     }
-    
+
     /**
      * Get instance from data source.
      *
@@ -191,7 +191,7 @@ public final class DataSourceProperties {
         JdbcUrl jdbcUrl = parseStandardJdbcUrlParserByJdbcUrl(parseJdbcUrl());
         return new Instance(jdbcUrl.getHostname(), jdbcUrl.getPort());
     }
-    
+
     /**
      * Get database from data source.
      *

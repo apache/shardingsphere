@@ -28,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class StorageNodeDataSource {
-    
+
     private String role;
     
     private String status;

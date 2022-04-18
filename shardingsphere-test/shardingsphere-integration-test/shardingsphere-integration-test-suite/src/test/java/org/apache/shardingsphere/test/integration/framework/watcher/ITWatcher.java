@@ -45,9 +45,9 @@ public final class ITWatcher extends TestWatcher {
             cause.printStackTrace(printStream);
             printStream.flush();
             return out.toString();
-            // CHECKSTYLE:OFF
+            //CHECKSTYLE:OFF
         } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+            //CHECKSTYLE:ON
             return "";
         }
     }

@@ -169,7 +169,7 @@ public final class DatabaseMetaDataResultSetTest {
         assertThat(databaseMetaDataResultSet.getString(NUMBER_COLUMN_LABEL), is("100"));
         assertThat(databaseMetaDataResultSet.getString(INDEX_NAME_COLUMN_LABEL), is(LOGIC_INDEX_NAME));
     }
-    
+
     @Test
     public void assertGetStringWithLabelCaseInsensitive() throws SQLException {
         databaseMetaDataResultSet.next();
@@ -178,7 +178,7 @@ public final class DatabaseMetaDataResultSetTest {
         assertThat(databaseMetaDataResultSet.getString(NUMBER_COLUMN_LABEL.toLowerCase()), is("100"));
         assertThat(databaseMetaDataResultSet.getString(INDEX_NAME_COLUMN_LABEL.toLowerCase()), is(LOGIC_INDEX_NAME));
     }
-    
+
     @Test
     public void assertGetNStringWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
@@ -187,7 +187,7 @@ public final class DatabaseMetaDataResultSetTest {
         assertThat(databaseMetaDataResultSet.getNString(3), is("100"));
         assertThat(databaseMetaDataResultSet.getNString(6), is(LOGIC_INDEX_NAME));
     }
-    
+
     @Test
     public void assertGetNStringWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();

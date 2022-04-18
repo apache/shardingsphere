@@ -38,3 +38,4 @@ public final class BetweenExpression implements ExpressionSegment {
     
     private final boolean not;
 }
+

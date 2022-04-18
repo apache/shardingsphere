@@ -57,3 +57,4 @@ public final class EncryptSpringBootConditionTest {
         assertFalse(matchOutcome.isMatch());
     }
 }
+

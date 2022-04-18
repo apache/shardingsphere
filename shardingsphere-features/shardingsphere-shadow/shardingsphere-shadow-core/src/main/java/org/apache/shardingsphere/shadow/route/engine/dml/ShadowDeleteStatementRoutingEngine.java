@@ -79,7 +79,7 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
         
         private final Iterator<ExpressionSegment> iterator;
-        
+    
         private final List<Object> parameters;
         
         ShadowColumnConditionIterator(final Collection<ExpressionSegment> predicates, final List<Object> parameters) {

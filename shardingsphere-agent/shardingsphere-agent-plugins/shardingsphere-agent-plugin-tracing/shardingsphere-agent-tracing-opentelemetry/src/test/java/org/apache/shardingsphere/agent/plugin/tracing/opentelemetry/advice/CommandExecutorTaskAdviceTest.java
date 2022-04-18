@@ -37,17 +37,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
-    
+
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
-    
+
     private CommandExecutorTaskAdvice advice;
-    
+
     @Before
     public void setup() {
         advice = new CommandExecutorTaskAdvice();
     }
-    
+
     @Test
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
@@ -60,7 +60,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(spanData.getKind(), is(SpanKind.CLIENT));
     }
-    
+
     @Test
     public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());

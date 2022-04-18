@@ -52,9 +52,9 @@ public final class ScalingUtil {
         try {
             // TODO getJobStatus
             return "";
-            // CHECKSTYLE:OFF
+            //CHECKSTYLE:OFF
         } catch (Exception ignored) {
-            // CHECKSTYLE:ON
+            //CHECKSTYLE:ON
         }
         return null;
     }

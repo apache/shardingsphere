@@ -35,10 +35,9 @@ chapter = true
 
 | *Implementation Class*           | *Description*                     |
 | -------------------------------- | --------------------------------- |
+| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
 | ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
-| GlobalAckChangedWatcher          | Global ack changed watcher        |
-| GlobalLocksChangedWatcher        | Global locks changed watcher      |
+| PropertiesChangedWatcher         | Properties changed watcher        |
+| PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
 | GlobalRuleChangedWatcher         | Global rule changed watcher       |
 | MetaDataChangedWatcher           | Meta data changed watcher         |
-| PropertiesChangedWatcher         | Properties changed watcher        |
-| StorageNodeStateChangedWatcher   | Storage node changed watcher      |

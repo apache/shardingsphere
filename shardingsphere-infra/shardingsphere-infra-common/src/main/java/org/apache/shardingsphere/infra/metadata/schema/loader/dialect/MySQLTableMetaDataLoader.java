@@ -55,7 +55,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
     
-    private static final String CONSTRAINT_META_DATA_SQL = "SELECT CONSTRAINT_NAME, TABLE_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE "
+    private static final String CONSTRAINT_META_DATA_SQL = "SELECT CONSTRAINT_NAME, TABLE_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE " 
             + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
     
     @Override
@@ -74,7 +74,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     
     private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ConstraintMetaData>> result = new LinkedHashMap<>();
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection(); 
              PreparedStatement preparedStatement = connection.prepareStatement(getConstraintMetaDataSQL(tables))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -132,7 +132,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
-    
+
     private String getTableMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? TABLE_META_DATA_SQL : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }

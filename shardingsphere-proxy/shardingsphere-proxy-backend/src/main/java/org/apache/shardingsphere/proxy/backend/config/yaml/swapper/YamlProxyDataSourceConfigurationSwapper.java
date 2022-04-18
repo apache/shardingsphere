@@ -53,7 +53,7 @@ public final class YamlProxyDataSourceConfigurationSwapper {
         return new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(),
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), yamlConfig.getCustomPoolProps());
     }
-    
+
     private void setGlobalDataSourceSchema(final String databaseName, final String dataSourceName, final String jdbcUrl) {
         String key = databaseName + "." + dataSourceName;
         StandardJdbcUrlParser jdbcUrlParser = new StandardJdbcUrlParser();

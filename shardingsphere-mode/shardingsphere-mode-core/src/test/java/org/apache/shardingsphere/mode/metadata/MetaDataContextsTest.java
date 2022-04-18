@@ -47,7 +47,7 @@ public final class MetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, optimizerContext, new ConfigurationProperties(new Properties()));
         assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME), is(metaData));
     }

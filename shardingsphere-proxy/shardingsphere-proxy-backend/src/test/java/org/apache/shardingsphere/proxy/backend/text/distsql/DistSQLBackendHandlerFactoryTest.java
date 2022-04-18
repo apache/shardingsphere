@@ -211,7 +211,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
-    
+
     @Test
     public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         setContextManager(true);
@@ -247,7 +247,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
-    // TODO assertExecuteStopScalingSourceWritingContext, assertExecuteCheckoutScalingContext throw exception
+    //TODO assertExecuteStopScalingSourceWritingContext, assertExecuteCheckoutScalingContext throw exception
     @Ignore
     @Test
     public void assertExecuteStopScalingSourceWritingContext() throws SQLException {

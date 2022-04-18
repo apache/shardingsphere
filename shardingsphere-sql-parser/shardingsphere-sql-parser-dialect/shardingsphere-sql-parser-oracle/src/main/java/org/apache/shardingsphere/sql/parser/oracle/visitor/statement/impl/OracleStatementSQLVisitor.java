@@ -209,15 +209,15 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-    
+
     @Override
     public final ASTNode visitSynonymName(final SynonymNameContext ctx) {
         return visit(ctx.identifier());
     }
-    
+
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), 
                 ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -238,7 +238,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public final ASTNode visitViewName(final ViewNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), 
                 ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -251,7 +251,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
     }
-    
+
     @Override
     public final ASTNode visitFunction(final FunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((IdentifierValue) visit(ctx.name())).getValue(), ctx.getText());
@@ -421,7 +421,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), 
                     parameterMarker.getValue(), parameterMarker.getType());
             parameterMarkerSegments.add(segment);
             return segment;

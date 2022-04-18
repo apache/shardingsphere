@@ -34,6 +34,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertFalse;
@@ -60,8 +61,9 @@ public final class DistributeLockContextTest {
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
         instanceContext.initLockContext();
         distributeLockContext.getOrCreateSchemaLock("schema");
-        ShardingSphereLock schemaLock = distributeLockContext.getSchemaLock("schema");
-        assertTrue(schemaLock instanceof ShardingSphereDistributeGlobalLock);
+        Optional<ShardingSphereLock> schemaLock = distributeLockContext.getSchemaLock("schema");
+        assertTrue(schemaLock.isPresent());
+        assertTrue(schemaLock.get() instanceof ShardingSphereDistributeGlobalLock);
     }
     
     @Test
@@ -84,7 +86,7 @@ public final class DistributeLockContextTest {
         computeNodeInstancesDeclaredField.setAccessible(true);
         computeNodeInstancesDeclaredField.set(distributeLockContext, Arrays.asList(new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"))));
         distributeLockContext.renew(new LockedEvent("schema1-127.0.0.1@3308"));
-        assertNotNull(distributeLockContext.getSchemaLock("schema1"));
+        assertTrue(distributeLockContext.getSchemaLock("schema1").isPresent());
     }
     
     @Test
@@ -98,11 +100,11 @@ public final class DistributeLockContextTest {
         Field globalLocksDeclaredField = DistributeLockContext.class.getDeclaredField("globalLocks");
         globalLocksDeclaredField.setAccessible(true);
         globalLocksDeclaredField.set(distributeLockContext, globalLocks);
-        assertNotNull(distributeLockContext.getSchemaLock("schema"));
+        assertTrue(distributeLockContext.getSchemaLock("schema").isPresent());
         distributeLockContext.renew(new AckLockReleasedEvent("schema-127.0.0.1@3307"));
-        assertNotNull(distributeLockContext.getSchemaLock("schema"));
+        assertFalse(distributeLockContext.getSchemaLock("schema").isPresent());
     }
-    
+
     @Test
     public void assertRenew() throws IllegalAccessException, NoSuchFieldException {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));

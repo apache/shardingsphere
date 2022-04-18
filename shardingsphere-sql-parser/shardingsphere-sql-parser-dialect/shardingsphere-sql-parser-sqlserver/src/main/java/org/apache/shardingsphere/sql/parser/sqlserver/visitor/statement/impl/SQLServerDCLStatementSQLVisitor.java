@@ -351,7 +351,7 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
             userSegment.setUser(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
             userSegment.setStartIndex(ctx.stringLiterals().start.getStartIndex());
             userSegment.setStopIndex(ctx.stringLiterals().stop.getStopIndex());
-            result.setUser(userSegment);
+            result.setUser(userSegment); 
         }
         return result;
     }

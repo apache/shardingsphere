@@ -39,7 +39,7 @@ import java.util.Set;
 public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public final void check(final String databaseName, final T config) {
+    public final void check(final String schemaName, final T config) {
         checkShadowRuleConfiguration(config);
     }
     

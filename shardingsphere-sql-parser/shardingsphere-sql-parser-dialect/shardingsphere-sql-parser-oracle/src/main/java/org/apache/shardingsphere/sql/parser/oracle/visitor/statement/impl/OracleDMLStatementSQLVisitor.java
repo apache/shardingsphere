@@ -218,7 +218,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     private InsertMultiTableElementSegment createInsertMultiTableElementSegment(final List<MultiTableElementContext> ctx) {
         Collection<OracleInsertStatement> insertStatements = new LinkedList<>();
-        for (MultiTableElementContext each : ctx) {
+        for (MultiTableElementContext each: ctx) {
             insertStatements.add((OracleInsertStatement) visit(each));
         }
         InsertMultiTableElementSegment result = new InsertMultiTableElementSegment(ctx.get(0).getStart().getStartIndex(), ctx.get(ctx.size() - 1).getStop().getStopIndex());
@@ -276,7 +276,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitConditionalInsertClause(final ConditionalInsertClauseContext ctx) {
         Collection<OracleInsertStatement> insertStatements = new LinkedList<>();
-        for (ConditionalInsertWhenPartContext each : ctx.conditionalInsertWhenPart()) {
+        for (ConditionalInsertWhenPartContext each: ctx.conditionalInsertWhenPart()) {
             insertStatements.addAll(createInsertStatementsFromConditionalInsertWhen(each));
         }
         if (null != ctx.conditionalInsertElsePart()) {
@@ -289,7 +289,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     private Collection<OracleInsertStatement> createInsertStatementsFromConditionalInsertWhen(final ConditionalInsertWhenPartContext ctx) {
         Collection<OracleInsertStatement> result = new LinkedList<>();
-        for (MultiTableElementContext each : ctx.multiTableElement()) {
+        for (MultiTableElementContext each: ctx.multiTableElement()) {
             result.add((OracleInsertStatement) visit(each));
         }
         return result;
@@ -297,7 +297,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     private Collection<OracleInsertStatement> createInsertStatementsFromConditionalInsertElse(final ConditionalInsertElsePartContext ctx) {
         Collection<OracleInsertStatement> result = new LinkedList<>();
-        for (MultiTableElementContext each : ctx.multiTableElement()) {
+        for (MultiTableElementContext each: ctx.multiTableElement()) {
             result.add((OracleInsertStatement) visit(each));
         }
         return result;
@@ -374,8 +374,8 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
             return result;
         } else if (null != ctx.selectSubquery()) {
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
-                    (OracleSelectStatement) visit(ctx.selectSubquery()));
+            SubquerySegment subquerySegment =
+                    new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
             result.getColumns().add(column);
@@ -416,7 +416,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
             result.getColumns().add(column);
-            return result;
+            return result;   
         }
     }
     
@@ -869,7 +869,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         } else if (null != ctx.shardsClause()) {
             result = (TableSegment) visit(ctx.shardsClause());
         } else {
-            result = (TableSegment) visit(ctx.queryTableExprClause());
+            result = (TableSegment) visit(ctx.queryTableExprClause());   
         }
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
@@ -963,7 +963,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.rollupCubeClause()) {
             for (RollupCubeClauseContext each : ctx.rollupCubeClause()) {
                 result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(each));
-            }
+            }  
         }
         if (null != ctx.groupingExprList()) {
             for (GroupingExprListContext each : ctx.groupingExprList()) {
