@@ -23,7 +23,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | Statement                                            | Function                                                          | Example                                  |
 |:---------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------- |
 | SHOW SCALING LIST                                    | Query running list                                                | SHOW SCALING LIST                        |
-| SHOW SCALING STATUS jobId                               | Query scaling status, xx: jobId                                   | SHOW SCALING LIST 1234                 |
+| SHOW SCALING STATUS jobId                               | Query scaling status, xx: jobId                                   | SHOW SCALING STATUS 1234                 |
 | START SCALING jobId                                     | Start scaling, xx: jobId                                          | START SCALING 1234                       |
 | STOP SCALING jobId                                      | Stop scaling, xx: jobId                                           | STOP SCALING 1234                        |
 | DROP SCALING jobId                                      | Drop scaling, xx: jobId                                           | DROP SCALING 1234                        |
