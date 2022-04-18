@@ -68,11 +68,11 @@ public final class SQLHintExtractor {
     }
     
     /**
-     * Judge whether is hint indicated encrypt rewrite needed or skip.
+     * Judge whether hint skip encrypt rewrite or not.
      *
-     * @return whether is hint indicated encrypt rewrite needed or skip
+     * @return whether hint skip encrypt rewrite or not
      */
-    public boolean isHintEncryptRewriteNeeded() {
+    public boolean isHintSkipEncryptRewrite() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
     }
 }
