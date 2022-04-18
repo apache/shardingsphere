@@ -73,21 +73,18 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private final RuleAlteredContext ruleAlteredContext;
     
-    private final String jobId;
-    
     private final Collection<String> logicTableNames;
     
     public DataConsistencyCheckerImpl(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         dataSourceFactory = new PipelineDataSourceFactory();
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        jobId = jobConfig.getHandleConfig().getJobId();
         logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
     }
     
     @Override
     public Map<String, DataConsistencyCountCheckResult> checkCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdPrefix(jobId) + "-count-check-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
@@ -150,7 +147,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>();
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
