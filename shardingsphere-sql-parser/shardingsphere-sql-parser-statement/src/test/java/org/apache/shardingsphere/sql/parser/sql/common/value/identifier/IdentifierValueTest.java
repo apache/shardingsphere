@@ -29,13 +29,13 @@ public final class IdentifierValueTest {
         String text = "'ms_group_${0..1}'";
         assertThat(new IdentifierValue(text).getValue(), is("ms_group_${0..1}"));
     }
-
+    
     @Test
     public void assertGetIdentifierValueWithQuote() {
         String text = "\"ms_group_${0..1}\"";
         assertThat(new IdentifierValue(text).getValue(), is("ms_group_${0..1}"));
     }
-
+    
     @Test
     public void assertGetIdentifierValueWithBackQuote() {
         String text = "`t_order`";
@@ -47,7 +47,7 @@ public final class IdentifierValueTest {
         String text = "ds_${[1,2]}.t_order";
         assertThat(new IdentifierValue(text).getValue(), is("ds_${1,2}.t_order"));
     }
-
+    
     @Test
     public void assertGetIdentifierValueWithReservedBracket() {
         String text = "ds_${[1,2]}.t_order";

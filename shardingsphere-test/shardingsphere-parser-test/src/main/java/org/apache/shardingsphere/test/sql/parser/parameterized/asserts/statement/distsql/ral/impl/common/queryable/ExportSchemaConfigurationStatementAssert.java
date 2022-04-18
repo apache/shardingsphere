@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
  * Export schema configuration statement assert.
  */
 public final class ExportSchemaConfigurationStatementAssert {
-
+    
     /**
      * Assert export schema configuration statement is correct with expected parser result.
      *

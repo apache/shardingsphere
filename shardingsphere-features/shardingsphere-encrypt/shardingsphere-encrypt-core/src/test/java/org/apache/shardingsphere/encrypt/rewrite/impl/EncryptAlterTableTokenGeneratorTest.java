@@ -135,7 +135,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
         when(result.getSqlStatement().getAddColumnDefinitions()).thenReturn(Collections.singletonList(addColumnDefinitionSegment));
         return result;
     }
-
+    
     private AlterTableStatementContext buildModifyColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
@@ -185,7 +185,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
         EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
         EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
         EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, 
+        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType,
                 "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
     }
     

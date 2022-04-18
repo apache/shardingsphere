@@ -94,7 +94,7 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertPostValidateWhenNotUpdateShardingColumn() {
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
-        new ShardingUpdateStatementValidator().postValidate(shardingRule, sqlStatementContext, Collections.emptyList(), 
+        new ShardingUpdateStatementValidator().postValidate(shardingRule, sqlStatementContext, Collections.emptyList(),
                 mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), mock(RouteContext.class));
     }
     
@@ -108,7 +108,7 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidateWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), 
+        new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()),
                 Collections.emptyList(), mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), createFullRouteContext());
     }
     

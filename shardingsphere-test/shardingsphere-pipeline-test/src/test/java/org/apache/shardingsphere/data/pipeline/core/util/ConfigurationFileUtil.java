@@ -46,7 +46,7 @@ public final class ConfigurationFileUtil {
     
     /**
      * Read file and ignore comments.
-     * 
+     *
      * @param fileName file name
      * @return file content without comments
      */

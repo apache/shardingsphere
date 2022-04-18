@@ -36,22 +36,26 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
             "KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
-            ");";
+            ")";
     
     private static final String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=5)),\n" +
             "KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
-            ");";
+            ")";
     
-    private static final String DROP_RULE = "DROP SHARDING TABLE RULE t_order;\n";
+    private static final String DROP_RULE = "DROP SHARDING TABLE RULE t_order";
     
     private static final String DROP_ALGORITHM = "DROP SHARDING ALGORITHM t_order_hash_mod";
     
-    private static final String SHOW_RULE = "show sharding table rules;";
+    private static final String SHOW_RULE = "SHOW SHARDING TABLE RULES";
     
-    private static final String SHOW_ALGORITHM = "show sharding algorithms";
+    private static final String SHOW_ALGORITHM = "SHOW SHARDING ALGORITHMS";
+    
+    private static final String DROP_KEY_GENERATOR = "DROP SHARDING KEY GENERATOR t_order_snowflake";
+    
+    private static final String SHOW_KEY_GENERATORS = "SHOW SHARDING KEY GENERATORS";
     
     @Override
     public void init(Statement statement) {
@@ -72,6 +76,9 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
         executeDropAlgorithm();
         executeShowRule();
         executeShowAlgorithm();
+        executeShowKeyGenerators();
+        executeDropKeyGenerator();
+        executeShowKeyGenerators();
     }
     
     private void executeShowRule() throws SQLException {
@@ -104,5 +111,16 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
     private void executeDropAlgorithm() throws SQLException {
         log.info("drop algorithm...");
         statement.execute(DROP_ALGORITHM);
+    }
+    
+    private void executeShowKeyGenerators() throws SQLException {
+        log.info("show sharding key generators...");
+        ResultSet resultSet = statement.executeQuery(SHOW_KEY_GENERATORS);
+        log.info(new Gson().toJson(getResultData(resultSet)));
+    }
+    
+    private void executeDropKeyGenerator() throws SQLException {
+        log.info("drop sharding key generator...");
+        statement.execute(DROP_KEY_GENERATOR);
     }
 }

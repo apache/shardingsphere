@@ -69,8 +69,8 @@ public final class InstanceMethodAroundInterceptorTest {
     @Parameters
     public static Collection<Object[]> prepareData() {
         return Arrays.asList(
-                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}}, 
-                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}}, 
+                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}},
+                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}},
                 new Object[]{false, "mockWithException", null, new String[]{"before", "exception", "after"}});
     }
     

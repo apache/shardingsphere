@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -56,7 +55,7 @@ public final class MetaDataContexts implements AutoCloseable {
     private final ConfigurationProperties props;
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
-        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, 
+        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null,
                 OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
     
@@ -86,15 +85,6 @@ public final class MetaDataContexts implements AutoCloseable {
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
         return metaDataMap.get(schemaName);
-    }
-    
-    /**
-     * Get lock.
-     *
-     * @return lock
-     */
-    public Optional<ShardingSphereLock> getLock() {
-        return Optional.empty();
     }
     
     @Override

@@ -52,7 +52,7 @@ public final class AlterShardingAlgorithmStatementUpdater implements RuleDefinit
         checkExist(requireNames, currentRuleConfig);
         checkAlgorithmType(sqlStatement);
     }
-
+    
     private void checkDuplicate(final String schemaName, final Collection<String> requireNames) throws DistSQLException {
         Collection<String> duplicateRequire = requireNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());

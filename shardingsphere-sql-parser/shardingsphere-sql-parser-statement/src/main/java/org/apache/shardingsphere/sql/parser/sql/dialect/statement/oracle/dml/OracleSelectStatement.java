@@ -36,7 +36,7 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     private LockSegment lock;
     
     private ModelSegment modelSegment;
-
+    
     /**
      * Get lock segment.
      *

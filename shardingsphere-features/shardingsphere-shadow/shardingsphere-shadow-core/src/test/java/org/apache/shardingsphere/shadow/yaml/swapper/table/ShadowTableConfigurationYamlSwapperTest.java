@@ -37,7 +37,7 @@ public final class ShadowTableConfigurationYamlSwapperTest {
         assertThat(yamlShadowTableConfiguration.getShadowAlgorithmNames(), is(shadowTableConfiguration.getShadowAlgorithmNames()));
         assertThat(yamlShadowTableConfiguration.getDataSourceNames(), is(shadowTableConfiguration.getDataSourceNames()));
     }
-
+    
     @Test
     public void assertSwapToObject() {
         YamlShadowTableConfiguration yamlConfig = new YamlShadowTableConfiguration();

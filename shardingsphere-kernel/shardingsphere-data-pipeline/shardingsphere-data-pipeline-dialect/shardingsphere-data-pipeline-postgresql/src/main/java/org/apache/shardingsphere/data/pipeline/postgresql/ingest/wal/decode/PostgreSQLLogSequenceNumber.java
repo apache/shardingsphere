@@ -29,12 +29,12 @@ import org.postgresql.replication.LogSequenceNumber;
 public final class PostgreSQLLogSequenceNumber implements BaseLogSequenceNumber {
     
     private final LogSequenceNumber logSequenceNumber;
-
+    
     @Override
     public long asLong() {
         return logSequenceNumber.asLong();
     }
-
+    
     @Override
     public Object get() {
         return logSequenceNumber;

@@ -50,7 +50,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         private Integer batchSize;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
-    
+        
         /**
          * Build with default value.
          *
@@ -72,7 +72,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         private Integer batchSize;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
-    
+        
         /**
          * Build with default value.
          *

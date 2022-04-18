@@ -53,5 +53,5 @@ public final class Column {
     @Override
     public int hashCode() {
         return hashCode;
-    } 
+    }
 }

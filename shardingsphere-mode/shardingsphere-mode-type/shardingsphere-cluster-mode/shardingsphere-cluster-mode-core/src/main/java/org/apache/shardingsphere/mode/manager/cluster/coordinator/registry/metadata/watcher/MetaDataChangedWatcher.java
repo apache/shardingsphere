@@ -84,7 +84,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
         Optional<String> schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
         Optional<String> tableName = SchemaMetaDataNode.getTableName(event.getKey());
-        return schemaName.isPresent() && tableName.isPresent() 
+        return schemaName.isPresent() && tableName.isPresent()
                 && !SystemSchemaBuilderRule.isSystemTable(schemaName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
     }
     
@@ -121,7 +121,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     @SuppressWarnings("unchecked")
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final String schemaVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty() ? new HashMap<>()
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
+                ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
                         Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return new DataSourceChangedEvent(schemaName, schemaVersion, dataSourcePropertiesMap);
@@ -130,11 +131,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final String schemaVersion, final DataChangedEvent event) {
         return new RuleConfigurationsChangedEvent(schemaName, schemaVersion, getRuleConfigurations(event.getValue()));
     }
-
+    
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
         Collection<YamlRuleConfiguration> rules = Strings.isNullOrEmpty(yamlContent)
-                ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class, true);
+                ? new LinkedList<>()
+                : YamlEngine.unmarshal(yamlContent, Collection.class, true);
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     

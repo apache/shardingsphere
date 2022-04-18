@@ -195,7 +195,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
             statement.executeQuery("");
         }
     }
-
+    
     @Test
     public void assertShowColumnsTable() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {

@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PackageAssert {
-
+    
     /**
      * Assert actual package segment is correct with expected package.
      *
@@ -55,4 +55,3 @@ public final class PackageAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }
-

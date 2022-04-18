@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ConstraintTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
@@ -50,7 +50,7 @@ public final class ConstraintTokenGeneratorTest {
         constraintSegmentCollection.add(mock(ConstraintSegment.class));
         assertTrue(constraintTokenGenerator.isGenerateSQLToken(alterTableStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLTokens() {
         ConstraintSegment constraintSegment = mock(ConstraintSegment.class);

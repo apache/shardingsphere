@@ -76,7 +76,7 @@ public final class DeleteStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get with segment.
      *

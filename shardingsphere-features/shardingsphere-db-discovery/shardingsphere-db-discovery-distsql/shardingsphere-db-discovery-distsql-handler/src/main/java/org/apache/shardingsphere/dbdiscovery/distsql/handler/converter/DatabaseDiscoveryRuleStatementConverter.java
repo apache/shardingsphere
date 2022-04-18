@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 /**
  * Database discovery rule statement converter.
  */
@@ -102,7 +101,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      */
     public static DatabaseDiscoveryRuleConfiguration convertDiscoveryType(final Collection<DatabaseDiscoveryTypeSegment> typeSegment) {
         final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        typeSegment.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryTypeName(), 
+        typeSegment.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryTypeName(),
                 new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
         return result;
     }

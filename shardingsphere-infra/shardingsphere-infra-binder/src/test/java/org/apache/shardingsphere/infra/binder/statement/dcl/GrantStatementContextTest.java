@@ -41,32 +41,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GrantStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLGrantStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLGrantStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleGrantStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerGrantStatement.class));
     }
-
+    
     @Test
     public void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92GrantStatement.class));
     }
-
+    
     private void assertNewInstance(final GrantStatement grantStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));

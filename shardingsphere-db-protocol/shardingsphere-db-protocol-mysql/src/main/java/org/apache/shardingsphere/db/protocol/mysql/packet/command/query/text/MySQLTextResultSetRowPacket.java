@@ -39,9 +39,9 @@ import java.util.Collection;
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
-
+    
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    
     private final int sequenceId;
     
     private final Collection<Object> data;

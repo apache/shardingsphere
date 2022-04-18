@@ -63,14 +63,14 @@ public final class OwnerTokenTest {
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
-
+    
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
         OwnerToken ownerToken = new OwnerToken(0, 1, null, new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
-
+    
     private void assertTokenGrid(final OwnerToken ownerToken) {
         assertThat(ownerToken.getStartIndex(), is(0));
         assertThat(ownerToken.getStopIndex(), is(1));

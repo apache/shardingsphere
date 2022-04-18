@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNull;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateShadowRuleStatementAssert {
-
+    
     /**
      * Assert create shadow rule statement is correct with expected parser result.
      *
@@ -53,7 +53,7 @@ public final class CreateShadowRuleStatementAssert {
             assertShadowRule(assertContext, actual.getRules(), expected.getRules());
         }
     }
-
+    
     private static void assertShadowRule(final SQLCaseAssertContext assertContext, final Collection<ShadowRuleSegment> actual, final List<ExpectedShadowRule> expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual shadow rule should not exist."), actual);

@@ -32,7 +32,7 @@ public enum EtcdPropertyKey implements TypedPropertyKey {
      * Time to live seconds.
      */
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class),
-
+    
     /**
      * Time out to connection.
      */

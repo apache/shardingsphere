@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @Setter
 @ToString
 public final class OraclePurgeStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
-
+    
     private IndexSegment index;
     
     private SimpleTableSegment table;

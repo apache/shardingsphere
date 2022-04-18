@@ -67,7 +67,7 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
      * Begin transaction.
      */
     void begin();
-
+    
     /**
      * Begin transaction with given timeout.
      *

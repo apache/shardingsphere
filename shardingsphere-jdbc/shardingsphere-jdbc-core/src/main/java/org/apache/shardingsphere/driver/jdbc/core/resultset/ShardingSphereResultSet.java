@@ -196,12 +196,12 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public String getString(final String columnLabel) throws SQLException {
         return getString(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
-
+    
     @Override
     public String getNString(final int columnIndex) throws SQLException {
         return getString(columnIndex);
     }
-
+    
     @Override
     public String getNString(final String columnLabel) throws SQLException {
         return getString(columnLabel);
@@ -276,7 +276,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
         return getTime(getIndexFromColumnLabelAndIndexMap(columnLabel), cal);
     }
-            
+    
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);

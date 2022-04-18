@@ -105,7 +105,7 @@ public final class ShardingTableRuleStatementConverter {
      * @return ShardingSphere algorithm configuration
      */
     public static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+        return new ShardingSphereAlgorithmConfiguration(segment.getName().toLowerCase(), segment.getProps());
     }
     
     private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment rule) {
@@ -161,14 +161,14 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName, algorithmType);
+        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
     }
     
     private static String getTableShardingAlgorithmName(final String tableName, final ShardingStrategyLevelType strategyLevel, final String algorithmType) {
-        return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType);
+        return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
     }
     
-    private static String getKeyGeneratorName(final String tableName, final String columnName) {
-        return String.format("%s_%s", tableName, columnName);
+    private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
+        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
     }
 }

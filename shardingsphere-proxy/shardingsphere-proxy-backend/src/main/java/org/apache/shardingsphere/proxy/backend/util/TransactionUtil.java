@@ -28,7 +28,7 @@ import java.sql.Connection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionUtil {
-
+    
     /**
      * Get the value of type int according to TransactionIsolationLevel.
      *
@@ -49,7 +49,7 @@ public final class TransactionUtil {
                 return Connection.TRANSACTION_NONE;
         }
     }
-
+    
     /**
      * Get the value of type TransactionIsolationLevel according to int.
      *

@@ -104,12 +104,12 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     public Savepoint setSavepoint() throws SQLException {
         throw new SQLFeatureNotSupportedException("setSavepoint");
     }
-
+    
     @Override
     public Savepoint setSavepoint(final String name) throws SQLException {
         throw new SQLFeatureNotSupportedException("setSavepoint name");
     }
-
+    
     @Override
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
         throw new SQLFeatureNotSupportedException("releaseSavepoint");

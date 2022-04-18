@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.lock;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
-import java.util.Optional;
-
 /**
  * Lock context.
  */
@@ -47,7 +45,7 @@ public interface LockContext {
      * @param schemaName schema name
      * @return schema lock
      */
-    Optional<ShardingSphereLock> getSchemaLock(String schemaName);
+    ShardingSphereLock getSchemaLock(String schemaName);
     
     /**
      *  Is locked schema.

@@ -35,11 +35,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingInsertValuesTokenTest {
-
+    
     private ShardingInsertValuesToken shardingInsertValuesToken;
-
+    
     private RouteUnit routeUnit;
-
+    
     @Before
     public void setup() {
         shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
@@ -57,7 +57,7 @@ public final class ShardingInsertValuesTokenTest {
         List<InsertValue> insertValues = shardingInsertValuesToken.getInsertValues();
         insertValues.add(shardingInsertValue);
     }
-
+    
     @Test
     public void assertToString() {
         assertThat(shardingInsertValuesToken.toString(routeUnit), is("('shardingsphere', 'test')"));

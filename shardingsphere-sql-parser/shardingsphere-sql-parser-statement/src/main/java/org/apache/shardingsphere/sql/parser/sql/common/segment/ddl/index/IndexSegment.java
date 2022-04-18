@@ -42,10 +42,9 @@ public final class IndexSegment implements SQLSegment, OwnerAvailable {
     private final IdentifierValue identifier;
     
     private OwnerSegment owner;
-
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
-
 }

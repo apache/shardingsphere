@@ -29,6 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.String
 public final class ResetSlaveOptionSegment extends ResetOptionSegment {
     
     private boolean all;
-
+    
     private StringLiteralValue channelOption;
 }

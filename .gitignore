@@ -36,6 +36,7 @@ logs/
 *.diff
 *.patch
 *.tmp
+.hugo_build.lock
 
 # system ignore
 .DS_Store

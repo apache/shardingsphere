@@ -131,7 +131,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.getSQLBuilder(databaseType.getName()).buildCountSQL(table));
+             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);

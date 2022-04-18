@@ -41,4 +41,3 @@ public final class PostgreSQLImporter extends AbstractImporter {
         return new PostgreSQLPipelineSQLBuilder(shardingColumnsMap);
     }
 }
-

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class DropDefaultSingleTableRuleStatementTestCase extends SQLParserTestCase {
-   
+    
     @XmlAttribute(name = "contains-exist-clause")
     private boolean containsExistClause;
     
