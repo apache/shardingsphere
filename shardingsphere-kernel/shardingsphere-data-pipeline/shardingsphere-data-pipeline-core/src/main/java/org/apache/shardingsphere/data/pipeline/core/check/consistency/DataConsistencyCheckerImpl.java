@@ -67,9 +67,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
-    
     private final JobConfiguration jobConfig;
+    
+    private final PipelineDataSourceFactory dataSourceFactory;
     
     private final RuleAlteredContext ruleAlteredContext;
     
@@ -79,6 +79,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     public DataConsistencyCheckerImpl(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
+        dataSourceFactory = new PipelineDataSourceFactory();
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         jobId = jobConfig.getHandleConfig().getJobId();
         logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
