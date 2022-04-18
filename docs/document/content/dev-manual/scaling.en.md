@@ -15,7 +15,7 @@ chapter = true
 | ---------------------- | --------------------------- |
 | MySQLScalingEntry      | MySQL entry of scaling      |
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
-| OpenGaussScalingEntry  | openGauss entry of scaling |
+| OpenGaussScalingEntry  | openGauss entry of scaling  |
 
 ## JobCompletionDetectAlgorithm
 
