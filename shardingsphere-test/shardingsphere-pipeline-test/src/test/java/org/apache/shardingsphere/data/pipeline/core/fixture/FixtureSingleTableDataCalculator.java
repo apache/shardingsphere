@@ -19,10 +19,16 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
+import java.util.Collection;
 import java.util.Collections;
 
 public final class FixtureSingleTableDataCalculator implements SingleTableDataCalculator {
+    
+    @Override
+    public void init() {
+    }
     
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
@@ -32,5 +38,15 @@ public final class FixtureSingleTableDataCalculator implements SingleTableDataCa
     @Override
     public String getType() {
         return "FIXTURE";
+    }
+    
+    @Override
+    public Collection<String> getSupportedDatabaseTypes() {
+        return DatabaseTypeRegistry.getDatabaseTypeNames();
+    }
+    
+    @Override
+    public String getDescription() {
+        return "Fixture";
     }
 }

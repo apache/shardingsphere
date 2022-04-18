@@ -28,13 +28,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -45,7 +43,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -118,19 +115,6 @@ public final class RuleAlteredJobAPIImplTest {
     }
     
     @Test
-    public void assertListDataConsistencyCheckAlgorithms() {
-        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = ruleAlteredJobAPI.listDataConsistencyCheckAlgorithms();
-        assertTrue(algorithmInfos.size() > 0);
-        Optional<DataConsistencyCheckAlgorithmInfo> algorithmInfoOptional = algorithmInfos.stream().filter(each -> each.getType().equals(FixtureDataConsistencyCheckAlgorithm.TYPE)).findFirst();
-        assertTrue(algorithmInfoOptional.isPresent());
-        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfoOptional.get();
-        assertThat(algorithmInfo.getType(), is(FixtureDataConsistencyCheckAlgorithm.TYPE));
-        FixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new FixtureDataConsistencyCheckAlgorithm();
-        assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
-        assertThat(algorithmInfo.getSupportedDatabaseTypes(), is(fixtureAlgorithm.getSupportedDatabaseTypes()));
-    }
-    
-    @Test
     public void assertIsDataConsistencyCheckNeeded() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
@@ -158,7 +142,7 @@ public final class RuleAlteredJobAPIImplTest {
         initTableData(jobConfig.getPipelineConfig());
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
         ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
         ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());

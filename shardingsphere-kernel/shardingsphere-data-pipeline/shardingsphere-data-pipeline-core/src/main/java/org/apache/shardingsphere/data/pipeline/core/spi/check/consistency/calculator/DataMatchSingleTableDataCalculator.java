@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalcula
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -50,6 +51,8 @@ import java.util.Properties;
 @Setter
 @Slf4j
 public final class DataMatchSingleTableDataCalculator extends AbstractStreamingSingleTableDataCalculator {
+    
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -114,6 +117,16 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     @Override
     public String getType() {
         return "DATA_MATCH";
+    }
+    
+    @Override
+    public Collection<String> getSupportedDatabaseTypes() {
+        return SUPPORTED_DATABASE_TYPES;
+    }
+    
+    @Override
+    public String getDescription() {
+        return "Match raw data of records.";
     }
     
     @RequiredArgsConstructor

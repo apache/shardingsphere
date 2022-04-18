@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIMetadataAware;
 
 /**
  * Single table data calculator.
  */
-public interface SingleTableDataCalculator extends StatefulTypedSPI {
-    
-    /**
-     * Initialize create data calculator.
-     */
-    default void init() {
-    }
+public interface SingleTableDataCalculator extends ShardingSphereAlgorithm, TypedSPIMetadataAware, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Calculate table data content.
