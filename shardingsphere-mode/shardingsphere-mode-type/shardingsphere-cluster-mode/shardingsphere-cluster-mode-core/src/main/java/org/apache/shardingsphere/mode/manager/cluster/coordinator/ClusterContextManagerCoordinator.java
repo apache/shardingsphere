@@ -283,8 +283,8 @@ public final class ClusterContextManagerCoordinator {
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
         if (!processContexts.isEmpty()) {
-            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(), 
-                    instanceDefinition.getInstanceType().name().toLowerCase() + "_" + instanceDefinition.getInstanceId().getId()), 
+            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(),
+                    instanceDefinition.getInstanceType().name().toLowerCase() + "_" + instanceDefinition.getInstanceId().getId()),
                     YamlEngine.marshal(new BatchYamlExecuteProcessContext(new LinkedList<>(processContexts))));
         }
         registryCenter.getRepository().delete(ComputeNode
@@ -325,8 +325,8 @@ public final class ClusterContextManagerCoordinator {
     
     private void disableDataSources(final StatusContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
-        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry ->
-                StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        disableDataSources.entrySet().stream().forEach(entry -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(entry.getKey()), true)));
+        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        disableDataSources.forEach((key, value) -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(key), true)));
     }
 }

@@ -103,7 +103,7 @@ public final class ExpressionExtractUtil {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.add((ParameterMarkerExpressionSegment) each);
             }
-            // TODO support more expression type if necessary 
+            // TODO support more expression type if necessary
             if (each instanceof BinaryOperationExpression) {
                 extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getLeft()));
                 extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getRight()));

@@ -38,27 +38,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CreateIndexStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLCreateIndexStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLCreateIndexStatement.class));
     }
-
+    
     @Test
     public void assertOracleSQLNewInstance() {
         assertNewInstance(mock(OracleCreateIndexStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerSQLNewInstance() {
         assertNewInstance(mock(SQLServerCreateIndexStatement.class));
     }
-
+    
     private void assertNewInstance(final CreateIndexStatement createIndexStatement) {
         CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));

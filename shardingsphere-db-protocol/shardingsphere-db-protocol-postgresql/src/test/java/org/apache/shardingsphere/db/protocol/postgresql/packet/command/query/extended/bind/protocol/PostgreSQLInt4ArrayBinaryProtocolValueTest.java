@@ -50,7 +50,7 @@ public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = newInstance().read(payload, parameterValue.length());
         assertNotNull(result);
-        assertThat(result, is(new int[] {11, 12}));
+        assertThat(result, is(new int[]{11, 12}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

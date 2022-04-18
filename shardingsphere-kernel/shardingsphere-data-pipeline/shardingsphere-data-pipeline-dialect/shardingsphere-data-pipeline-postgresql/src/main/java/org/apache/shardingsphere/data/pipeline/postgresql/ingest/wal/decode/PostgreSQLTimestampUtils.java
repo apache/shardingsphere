@@ -32,12 +32,12 @@ import java.util.Calendar;
 public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {
     
     private final TimestampUtils timestampUtils;
-
+    
     @Override
     public Time toTime(final Calendar cal, final String input) throws SQLException {
         return timestampUtils.toTime(cal, input);
     }
-
+    
     @Override
     public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
         return timestampUtils.toTimestamp(cal, input);

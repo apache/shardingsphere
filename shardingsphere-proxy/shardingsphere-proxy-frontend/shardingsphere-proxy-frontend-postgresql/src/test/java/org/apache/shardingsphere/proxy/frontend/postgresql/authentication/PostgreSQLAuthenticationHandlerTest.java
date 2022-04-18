@@ -143,7 +143,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
+        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
                 buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     

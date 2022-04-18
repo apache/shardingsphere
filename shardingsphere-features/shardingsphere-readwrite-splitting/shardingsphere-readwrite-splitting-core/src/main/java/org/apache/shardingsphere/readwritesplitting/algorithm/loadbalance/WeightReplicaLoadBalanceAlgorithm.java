@@ -56,7 +56,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
         }
         return readDataSourceNames.get(index);
     }
-
+    
     private double[] initWeight(final List<String> readDataSourceNames) {
         double[] result = getWeights(readDataSourceNames);
         if (result.length != 0 && Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {

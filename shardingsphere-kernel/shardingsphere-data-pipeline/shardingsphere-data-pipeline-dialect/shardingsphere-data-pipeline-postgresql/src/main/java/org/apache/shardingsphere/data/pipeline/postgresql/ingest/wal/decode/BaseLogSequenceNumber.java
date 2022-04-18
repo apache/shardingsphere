@@ -28,7 +28,7 @@ public interface BaseLogSequenceNumber {
      * @return Long the squence number of long value
      */
     long asLong();
-
+    
     /**
      * Get the binded object.
      *

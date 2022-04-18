@@ -23,18 +23,18 @@ import java.util.Map;
 
 @Data
 public class TracingResult {
-
+    
     private String traceId;
-
+    
     private String id;
-
+    
     private String name;
-
+    
     private Long timestamp;
-
+    
     private Long duration;
-
+    
     private Map<String, String> localEndpoint;
-
+    
     private Map<String, String> tags;
 }

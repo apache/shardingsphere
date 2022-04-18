@@ -102,7 +102,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
-        return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig, 
+        return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig), null))), encryptors, true);
     }
 }

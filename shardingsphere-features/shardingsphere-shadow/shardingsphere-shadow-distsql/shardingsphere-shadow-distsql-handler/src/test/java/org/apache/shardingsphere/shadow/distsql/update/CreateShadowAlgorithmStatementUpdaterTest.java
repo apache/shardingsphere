@@ -43,8 +43,8 @@ import static org.mockito.Mockito.when;
 public final class CreateShadowAlgorithmStatementUpdaterTest {
     
     static {
-        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);    
-    } 
+        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
+    }
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;

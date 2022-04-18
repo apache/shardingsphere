@@ -23,14 +23,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class ConnectInfo {
-
+    
     private final int serverId;
-
+    
     private final String host;
-
+    
     private final int port;
-
+    
     private final String username;
-
+    
     private final String password;
 }

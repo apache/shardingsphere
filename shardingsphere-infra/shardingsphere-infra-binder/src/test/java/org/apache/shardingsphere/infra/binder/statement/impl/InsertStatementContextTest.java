@@ -168,7 +168,7 @@ public final class InsertStatementContextTest {
     private void setUpOnDuplicateValues(final MySQLInsertStatement insertStatement) {
         List<ColumnSegment> parameterMarkerExpressionAssignmentColumns = new LinkedList<>();
         parameterMarkerExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")));
-        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns, 
+        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns,
                 new ParameterMarkerExpressionSegment(0, 0, 4));
         List<ColumnSegment> literalExpressionAssignmentColumns = new LinkedList<>();
         literalExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")));

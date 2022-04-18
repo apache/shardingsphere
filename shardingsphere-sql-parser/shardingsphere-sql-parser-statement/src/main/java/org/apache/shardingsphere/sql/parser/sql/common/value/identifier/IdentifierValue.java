@@ -40,7 +40,7 @@ public final class IdentifierValue implements ValueASTNode<String> {
     public IdentifierValue(final String text) {
         this(SQLUtil.getExactlyValue(text), QuoteCharacter.getQuoteCharacter(text));
     }
-
+    
     public IdentifierValue(final String text, final String reservedCharacters) {
         this(SQLUtil.getExactlyValue(text, reservedCharacters), QuoteCharacter.getQuoteCharacter(text));
     }

@@ -186,11 +186,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         public DefaultDatabaseMetadataExecutor(final String sql) {
             this.sql = sql;
         }
-    
+        
         @Override
         protected void initSchemaData(final String schemaName) {
         }
-    
+        
         /**
          * Get the schema names as a condition for SQL execution.
          *
@@ -215,8 +215,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
             try (Connection conn = dataSourceEntry.get().getValue().getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet resultSet = ps.executeQuery()) {
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ResultSet resultSet = ps.executeQuery()) {
                 callback.apply(resultSet);
             }
         }

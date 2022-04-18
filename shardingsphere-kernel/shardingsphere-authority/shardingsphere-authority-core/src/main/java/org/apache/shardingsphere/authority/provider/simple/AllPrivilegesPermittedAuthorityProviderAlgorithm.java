@@ -55,21 +55,21 @@ public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements A
     }
     
     private static final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
-    
+        
         @Override
         public void setSuperPrivilege() {
         }
-    
+        
         @Override
         public boolean hasPrivileges(final String schema) {
             return true;
         }
-    
+        
         @Override
         public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
             return true;
         }
-    
+        
         @Override
         public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
             return true;

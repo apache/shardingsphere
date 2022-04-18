@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public abstract class AbstractExpectedDelimiterSQLSegment extends AbstractExpectedSQLSegment implements ExpectedDelimiterSQLSegment {
-
+    
     @XmlAttribute(name = "start-delimiter")
     private String startDelimiter = "";
     

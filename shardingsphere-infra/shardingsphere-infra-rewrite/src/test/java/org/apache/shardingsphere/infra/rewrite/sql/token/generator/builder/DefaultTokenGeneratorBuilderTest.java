@@ -36,21 +36,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DefaultTokenGeneratorBuilderTest {
-
+    
     @Test
     public void assertGetSQLTokenGeneratorsWithShowTableStatus() {
         ShowTableStatusStatementContext sqlStatementContext = mock(ShowTableStatusStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
-
+    
     @Test
     public void assertGetSQLTokenGeneratorsWithSelect() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
-
+    
     @Test
     public void assertGetSQLTokenGeneratorsWithShowColumns() {
         ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
@@ -58,7 +58,7 @@ public final class DefaultTokenGeneratorBuilderTest {
         when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
-
+    
     private void assertGetSQLTokenGenerators(final SQLStatementContext sqlStatementContext) {
         DefaultTokenGeneratorBuilder defaultTokenGeneratorBuilder = new DefaultTokenGeneratorBuilder(sqlStatementContext);
         Collection<SQLTokenGenerator> sqlTokenGenerators = defaultTokenGeneratorBuilder.getSQLTokenGenerators();

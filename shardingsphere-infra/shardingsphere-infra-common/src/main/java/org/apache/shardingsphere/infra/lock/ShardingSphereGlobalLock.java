@@ -39,6 +39,13 @@ public interface ShardingSphereGlobalLock extends ShardingSphereLock {
     void releaseAckLock(String lockName, String instanceId);
     
     /**
+     * Release locked state.
+     *
+     * @param lockName lock name
+     */
+    void releaseLockedState(String lockName);
+    
+    /**
      * Add locked instance id.
      *
      * @param instanceId instance id
@@ -46,9 +53,9 @@ public interface ShardingSphereGlobalLock extends ShardingSphereLock {
     void addLockedInstance(String instanceId);
     
     /**
-     * Release locked state.
+     * Remove locked instance id.
      *
-     * @param lockName lock name
+     * @param instanceId instance id
      */
-    void releaseLockedState(String lockName);
+    void removeLockedInstance(String instanceId);
 }

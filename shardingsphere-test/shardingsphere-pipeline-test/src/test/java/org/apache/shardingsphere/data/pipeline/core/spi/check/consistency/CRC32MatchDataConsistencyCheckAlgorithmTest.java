@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
+import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.checker.CRC32MatchDataConsistencyCheckAlgorithm;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,7 +37,7 @@ public final class CRC32MatchDataConsistencyCheckAlgorithmTest {
         assertThat(checkAlgorithm.getSupportedDatabaseTypes(), is(Collections.singletonList("MySQL")));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetSingleTableDataCalculator() {
         CRC32MatchDataConsistencyCheckAlgorithm checkAlgorithm = new CRC32MatchDataConsistencyCheckAlgorithm();
         checkAlgorithm.getSupportedDatabaseTypes().forEach(checkAlgorithm::getSingleTableDataCalculator);

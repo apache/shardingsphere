@@ -107,7 +107,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
         
         private final Callable<Connection> connectionSupplier;
-    
+        
         @Override
         protected void waitUntilReady() {
             Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,

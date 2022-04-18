@@ -64,12 +64,12 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
     public String getString(final String columnLabel) {
         return "";
     }
-
+    
     @Override
     public String getNString(final int columnIndex) {
         return "";
     }
-
+    
     @Override
     public String getNString(final String columnLabel) {
         return "";

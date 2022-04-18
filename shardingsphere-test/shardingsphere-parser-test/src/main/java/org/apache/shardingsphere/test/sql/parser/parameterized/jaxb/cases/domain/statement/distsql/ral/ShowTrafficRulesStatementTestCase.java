@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class ShowTrafficRulesStatementTestCase extends SQLParserTestCase {
-   
+    
     @XmlAttribute(name = "rule-name")
     private String ruleName;
 }

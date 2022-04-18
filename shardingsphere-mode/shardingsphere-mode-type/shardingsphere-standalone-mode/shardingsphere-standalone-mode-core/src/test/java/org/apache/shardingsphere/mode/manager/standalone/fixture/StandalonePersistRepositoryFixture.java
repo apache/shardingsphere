@@ -25,18 +25,18 @@ import java.util.List;
 import java.util.Map;
 
 public final class StandalonePersistRepositoryFixture implements StandalonePersistRepository {
-
+    
     private Map<String, String> persistMap = new HashMap<>();
-
+    
     @Override
     public String get(final String key) {
         return persistMap.get(key);
     }
-
+    
     @Override
     public List<String> getChildrenKeys(final String key) {
         List<String> result = new LinkedList<>();
-        for (String each: persistMap.keySet()) {
+        for (String each : persistMap.keySet()) {
             if (each.startsWith(key)) {
                 String child = each.substring(key.length() + 1, each.indexOf('/', key.length() + 1));
                 if (!result.contains(child)) {
@@ -46,20 +46,20 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
         }
         return result;
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         persistMap.put(key, value);
     }
-
+    
     @Override
     public void delete(final String key) {
     }
-
+    
     @Override
     public void close() {
     }
-
+    
     @Override
     public String getType() {
         return "File";

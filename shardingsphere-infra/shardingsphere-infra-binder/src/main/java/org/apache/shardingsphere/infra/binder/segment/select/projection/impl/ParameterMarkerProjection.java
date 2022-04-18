@@ -34,28 +34,28 @@ import java.util.Optional;
 @EqualsAndHashCode
 @ToString
 public final class ParameterMarkerProjection implements Projection {
-
+    
     private final int parameterMarkerIndex;
     
     private final ParameterMarkerType parameterMarkerType;
-
+    
     private final String alias;
-
+    
     @Override
     public String getExpression() {
         return String.valueOf(parameterMarkerIndex);
     }
-
+    
     @Override
     public String getColumnLabel() {
         return getAlias().orElse(String.valueOf(parameterMarkerIndex));
     }
-
+    
     @Override
     public Optional<String> getAlias() {
         return Optional.ofNullable(alias);
     }
-
+    
     /**
      * Get expression with alias.
      *

@@ -31,9 +31,9 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class SQLServerUpdateStatement extends UpdateStatement implements SQLServerStatement {
-
+    
     private WithSegment withSegment;
-
+    
     /**
      * Get with segment.
      *

@@ -53,32 +53,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlterTableStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLAlterTableStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAlterTableStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleAlterTableStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerAlterTableStatement.class));
     }
-
+    
     @Test
     public void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92AlterTableStatement.class));
     }
-
+    
     private void assertNewInstance(final AlterTableStatement alterTableStatement) {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1")));

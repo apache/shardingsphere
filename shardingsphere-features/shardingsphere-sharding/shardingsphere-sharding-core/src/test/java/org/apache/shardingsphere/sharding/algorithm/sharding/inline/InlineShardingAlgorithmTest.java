@@ -64,16 +64,16 @@ public final class InlineShardingAlgorithmTest {
     @Test(expected = ShardingSphereException.class)
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
-        inlineShardingAlgorithm.doSharding(availableTargetNames, 
+        inlineShardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0));
     }
     
     @Test
     public void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
@@ -81,9 +81,9 @@ public final class InlineShardingAlgorithmTest {
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, 
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
 }

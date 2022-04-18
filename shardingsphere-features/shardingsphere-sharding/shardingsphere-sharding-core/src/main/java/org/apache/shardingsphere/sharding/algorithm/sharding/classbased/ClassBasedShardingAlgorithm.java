@@ -35,27 +35,27 @@ import java.util.Properties;
  * Class based sharding algorithm.
  */
 public final class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ComplexKeysShardingAlgorithm<Comparable<?>>, HintShardingAlgorithm<Comparable<?>> {
-
+    
     private static final String STRATEGY_KEY = "strategy";
-
+    
     private static final String ALGORITHM_CLASS_NAME_KEY = "algorithmClassName";
-
+    
     private StandardShardingAlgorithm standardShardingAlgorithm;
-
+    
     private ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
-
+    
     private HintShardingAlgorithm hintShardingAlgorithm;
-
+    
     @Getter
     private ClassBasedShardingAlgorithmStrategyType strategy;
-
+    
     @Getter
     private String algorithmClassName;
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     @Override
     public void init() {
         String strategyKey = props.getProperty(STRATEGY_KEY);
@@ -65,7 +65,7 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
         Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
         createAlgorithmInstance();
     }
-
+    
     private void createAlgorithmInstance() {
         switch (strategy) {
             case STANDARD:
@@ -81,27 +81,27 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
                 break;
         }
     }
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return standardShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         return standardShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Comparable<?>> shardingValue) {
         return complexKeysShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Comparable<?>> shardingValue) {
         return hintShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
-
+    
     @Override
     public String getType() {
         return "CLASS_BASED";

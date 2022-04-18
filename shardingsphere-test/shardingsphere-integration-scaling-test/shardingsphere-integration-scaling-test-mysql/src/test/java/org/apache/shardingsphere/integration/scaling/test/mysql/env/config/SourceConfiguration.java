@@ -93,7 +93,7 @@ public final class SourceConfiguration {
     @SneakyThrows(SQLException.class)
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
         ShardingSpherePipelineDataSourceConfiguration config = getHostConfiguration(tableRules);
-        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, 
+        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME,
                 null, new YamlDataSourceConfigurationSwapper().swapToDataSources(config.getRootConfig().getDataSources()),
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(config.getRootConfig().getRules()), null);
     }

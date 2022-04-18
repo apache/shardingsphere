@@ -52,7 +52,7 @@ public final class ScalingEnvironmentManager {
         try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                String sql = PipelineSQLBuilderFactory.getSQLBuilder(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
+                String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }

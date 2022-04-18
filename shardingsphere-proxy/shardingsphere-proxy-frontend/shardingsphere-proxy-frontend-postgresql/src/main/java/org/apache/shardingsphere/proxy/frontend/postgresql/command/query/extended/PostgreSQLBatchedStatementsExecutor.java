@@ -184,11 +184,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
-    
+        
         BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(databaseType, sqlStatement, isExceptionThrown);
         }
-    
+        
         @Override
         protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
             try {
@@ -197,7 +197,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
                 statement.close();
             }
         }
-    
+        
         @SuppressWarnings("OptionalContainsCollection")
         @Override
         protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {

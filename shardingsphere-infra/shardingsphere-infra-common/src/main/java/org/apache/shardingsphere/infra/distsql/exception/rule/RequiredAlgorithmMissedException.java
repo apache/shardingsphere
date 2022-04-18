@@ -25,7 +25,7 @@ import java.util.Collection;
 public final class RequiredAlgorithmMissedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1952698375135777585L;
-
+    
     public RequiredAlgorithmMissedException() {
         super(1115, "No sharding algorithm definition in current statement");
     }

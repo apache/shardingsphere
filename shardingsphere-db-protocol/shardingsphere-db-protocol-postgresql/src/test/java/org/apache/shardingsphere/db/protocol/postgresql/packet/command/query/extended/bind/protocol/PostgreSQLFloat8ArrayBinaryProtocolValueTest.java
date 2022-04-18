@@ -50,7 +50,7 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValueTest {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = newInstance().read(payload, parameterValue.length());
         assertNotNull(result);
-        assertThat(result, is(new double[] {11.1D, 12.1D}));
+        assertThat(result, is(new double[]{11.1D, 12.1D}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     
