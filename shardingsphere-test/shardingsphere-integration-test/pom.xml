@@ -29,6 +29,7 @@
     
     <modules>
         <module>shardingsphere-integration-test-fixture</module>
+        <module>shardingsphere-integration-test-env</module>
         <module>shardingsphere-integration-test-suite</module>
     </modules>
     

@@ -27,6 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
         <dockerfile.skip.build>true</dockerfile.skip.build>
     </properties>
     
