@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
@@ -74,10 +73,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
-    }
     
     @Override
     public List<JobInfo> list() {
@@ -237,7 +232,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCheckAlgorithm.class)
+        return ShardingSphereServiceLoader.getServiceInstances(SingleTableDataCalculator.class)
                 .stream().map(each -> {
                     DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
                     result.setType(each.getType());

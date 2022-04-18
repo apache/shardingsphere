@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCo
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableDataCalculatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
@@ -60,7 +59,6 @@ public final class RuleAlteredContext {
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
         ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
     
