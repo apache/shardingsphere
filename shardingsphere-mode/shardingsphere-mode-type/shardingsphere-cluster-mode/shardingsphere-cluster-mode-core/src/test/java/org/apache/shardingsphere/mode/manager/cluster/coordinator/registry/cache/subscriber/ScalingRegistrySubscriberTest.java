@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cach
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -43,5 +44,10 @@ public final class ScalingRegistrySubscriberTest {
         Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("databaseVersionPersistService");
         persistServiceField.setAccessible(true);
         persistServiceField.set(scalingRegistrySubscriber, databaseVersionPersistService);
+    }
+    
+    @Test
+    public void assertCacheRuleConfiguration() {
+        // TODO finish test case
     }
 }
