@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -69,16 +68,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private final JobConfiguration jobConfig;
     
-    private final PipelineDataSourceFactory dataSourceFactory;
-    
-    private final RuleAlteredContext ruleAlteredContext;
-    
     private final Collection<String> logicTableNames;
     
     public DataConsistencyCheckerImpl(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
-        dataSourceFactory = new PipelineDataSourceFactory();
-        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
     }
     
@@ -90,8 +83,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
-        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>();
             for (String each : logicTableNames) {
                 result.put(each, countCheck(each, sourceDataSource, targetDataSource, executor));
@@ -149,9 +142,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm inputRateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
-        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+        JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
+        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
             logicTableNames.forEach(each -> {
                 //TODO put to preparer

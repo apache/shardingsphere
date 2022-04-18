@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -28,6 +30,7 @@ import java.sql.SQLException;
 /**
  * Pipeline data source factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineDataSourceFactory {
     
     /**
@@ -37,7 +40,7 @@ public final class PipelineDataSourceFactory {
      * @return new data source wrapper
      */
     @SneakyThrows(SQLException.class)
-    public PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
+    public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
         DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
         return new PipelineDataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
     }
