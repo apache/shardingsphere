@@ -72,7 +72,7 @@ public final class DatabaseVersionPersistService {
     }
     
     /**
-     * Persist active schema version.
+     * Persist active database version.
      * 
      * @param databaseName database name
      * @param version version
