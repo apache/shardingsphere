@@ -21,7 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -86,7 +87,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> checkCount() {
+    public Map<String, DataConsistencyCountCheckResult> checkCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
@@ -95,7 +96,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
+            Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>();
             for (String each : logicTableNames) {
                 result.put(each, countCheck(each, sourceDataSource, targetDataSource, executor));
             }
@@ -115,14 +116,14 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         return jobId.substring(0, 6);
     }
     
-    private DataConsistencyCheckResult countCheck(
+    private DataConsistencyCountCheckResult countCheck(
             final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
         try {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
             long sourceCount = sourceFuture.get();
             long targetCount = targetFuture.get();
-            return new DataConsistencyCheckResult(sourceCount, targetCount);
+            return new DataConsistencyCountCheckResult(sourceCount, targetCount);
         } catch (final InterruptedException | ExecutionException ex) {
             throw new PipelineDataConsistencyCheckFailedException(String.format("count check failed for table '%s'", table), ex);
         }
@@ -140,7 +141,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, Boolean> checkContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
+    public Map<String, DataConsistencyContentCheckResult> checkContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
         Collection<String> supportedDatabaseTypes = dataConsistencyCalculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
@@ -149,7 +150,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
-        Map<String, Boolean> result = new HashMap<>();
+        Map<String, DataConsistencyContentCheckResult> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
@@ -172,7 +173,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetParameter).iterator();
-                boolean calculateResultsEquals = true;
+                boolean contentMatched = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
                         inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
@@ -181,12 +182,12 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                     Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
                     Object sourceCalculatedResult = sourceFuture.get();
                     Object targetCalculatedResult = targetFuture.get();
-                    calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
-                    if (!calculateResultsEquals) {
+                    contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
+                    if (!contentMatched) {
                         break;
                     }
                 }
-                result.put(each, calculateResultsEquals);
+                result.put(each, new DataConsistencyContentCheckResult(contentMatched));
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {
             throw new PipelineDataConsistencyCheckFailedException("data check failed", ex);

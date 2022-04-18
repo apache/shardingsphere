@@ -54,10 +54,10 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();
                     result.add(each.getKey());
-                    result.add(each.getValue().getSourceRecordsCount());
-                    result.add(each.getValue().getTargetRecordsCount());
-                    result.add(each.getValue().isCountMatched() + "");
-                    result.add(each.getValue().isContentMatched() + "");
+                    result.add(each.getValue().getCountCheckResult().getSourceRecordsCount());
+                    result.add(each.getValue().getCountCheckResult().getTargetRecordsCount());
+                    result.add(each.getValue().getCountCheckResult().isCountMatched() + "");
+                    result.add(each.getValue().getContentCheckResult().isContentMatched() + "");
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
