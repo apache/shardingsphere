@@ -67,7 +67,7 @@ public final class DataNodeTest {
     
     @Test
     public void assertToString() {
-        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0, schemaName=null)"));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
