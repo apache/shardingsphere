@@ -55,62 +55,62 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RenameTableStatementSchemaRefresherTest {
-
+    
     private final String oriTableNamePrefix = "TABLE";
-
+    
     private final String newTableNamePrefix = "NEW_TABLE";
-
+    
     private final String schemaMetaDataName = "SCHEMA_META_DATA_NAME";
-
+    
     private final String databaseName = "DATABASE_NAME";
-
+    
     private final String logicDataSourceName = "LOGIC_DATA_SOURCE_NAME";
-
+    
     @Mock
     private ShardingSphereMetaData schemaMetaData;
-
+    
     @Mock
     private FederationDatabaseMetaData database;
-
+    
     @Mock
     private Map<String, OptimizerPlannerContext> optimizerPlanners;
-
+    
     private List<String> logicDataSourceNames;
-
+    
     @Mock
     private RenameTableStatement sqlStatement;
-
+    
     @InjectMocks
     private ConfigurationProperties props;
-
+    
     @Mock
     private ShardingSphereResource shardingSphereResource;
-
+    
     @Mock
     private ShardingSphereSchema shardingSphereSchema;
-
+    
     private RenameTableStatementSchemaRefresher renameTableStatementSchemaRefresher;
-
+    
     @Before
     public void setup() {
         renameTableStatementSchemaRefresher = new RenameTableStatementSchemaRefresher();
     }
-
+    
     @Test
     public void assertRefreshNonRenameTableStatement() {
         refreshRenameTableStatement(0);
     }
-
+    
     @Test
     public void assertRefreshOneRenameTableStatement() {
         refreshRenameTableStatement(1);
     }
-
+    
     @Test
     public void assertRefreshMultipleRenameTableStatement() {
         refreshRenameTableStatement(2);
     }
-
+    
     @SneakyThrows
     private void refreshRenameTableStatement(final int renameStatementCount) {
         Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
@@ -141,19 +141,18 @@ public final class RenameTableStatementSchemaRefresherTest {
         assertThat(listener.actualCount, is(listener.renameCount));
         ShardingSphereEventBus.getInstance().unregister(listener);
     }
-
+    
     @RequiredArgsConstructor
-    private final class RenameTableLister {
-
+    private static final class RenameTableLister {
+        
         private final int renameCount;
-
+        
         private int actualCount = -1;
-
+        
         @Subscribe
         public void process(final Object message) {
             if (message instanceof SchemaAlteredEvent) {
-                SchemaAlteredEvent newMessage = (SchemaAlteredEvent) message;
-                actualCount = newMessage.getAlteredTables().size();
+                actualCount = ((SchemaAlteredEvent) message).getAlteredTables().size();
             }
         }
     }
