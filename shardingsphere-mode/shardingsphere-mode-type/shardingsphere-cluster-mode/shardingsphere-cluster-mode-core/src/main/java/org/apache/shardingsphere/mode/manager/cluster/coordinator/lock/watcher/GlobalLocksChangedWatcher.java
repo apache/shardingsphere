@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -49,16 +49,16 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         Optional<String> lockedName = LockNode.parseGlobalSchemaLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
-            return handleGlobalLocksEvent(event.getType(), lockedName.get());
+            return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalLocksEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleGlobalSchemaLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
-            return Optional.of(new LockedEvent(lockedName));
+            return Optional.of(new SchemaLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
-            return Optional.of(new LockReleasedEvent(lockedName));
+            return Optional.of(new SchemaLockReleasedEvent(lockedName));
         }
         return Optional.empty();
     }
