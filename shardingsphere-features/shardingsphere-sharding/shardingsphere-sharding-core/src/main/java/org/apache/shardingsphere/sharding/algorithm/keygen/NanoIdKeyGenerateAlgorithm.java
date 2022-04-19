@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
@@ -32,7 +34,7 @@ public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
     public Comparable<?> generateKey() {
-        return NanoIdUtils.randomNanoId();
+        return NanoIdUtils.randomNanoId(ThreadLocalRandom.current(), NanoIdUtils.DEFAULT_ALPHABET, NanoIdUtils.DEFAULT_SIZE);
     }
     
     @Override
