@@ -45,27 +45,27 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = metaData.getName();
+        String databaseName = metaData.getName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExist(schemaName, currentRuleConfig);
-        checkAlgorithm(schemaName, sqlStatement, currentRuleConfig);
+        checkConfigurationExist(databaseName, currentRuleConfig);
+        checkAlgorithm(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
+    private void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
-    private void checkAlgorithm(final String schemaName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkAlgorithm(final String databaseName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
         String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
         if (!sqlStatement.isContainsExistClause()) {
-            ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+            ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, databaseName, different));
         }
-        checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
-        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), () -> new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
+        checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(databaseName, identical));
+        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), () -> new AlgorithmInUsedException(databaseName, Collections.singleton(defaultShadowAlgorithmName)));
     }
     
     private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 

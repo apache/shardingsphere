@@ -60,25 +60,25 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData);
+        String databaseName = shardingSphereMetaData.getName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Readwrite splitting", schemaName);
+            throw new RequiredRuleMissedException("Readwrite splitting", databaseName);
         }
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
+    private void checkToBeAlteredRules(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
                                        final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new RequiredRuleMissedException("Readwrite splitting", schemaName, notExistedRuleNames);
+            throw new RequiredRuleMissedException("Readwrite splitting", databaseName, notExistedRuleNames);
         }
     }
     
@@ -94,7 +94,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         }
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement,
+    private void checkToBeAlteredResources(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                            final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
@@ -107,10 +107,10 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
             }
         });
         Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistResources));
+        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
         Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistLogicResources));
+        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {

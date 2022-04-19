@@ -46,17 +46,17 @@ public final class AlterShardingAlgorithmStatementUpdater implements RuleDefinit
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getName();
         Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream().map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
-        checkDuplicate(schemaName, requireNames);
+        checkDuplicate(databaseName, requireNames);
         checkExist(requireNames, currentRuleConfig);
         checkAlgorithmType(sqlStatement);
     }
     
-    private void checkDuplicate(final String schemaName, final Collection<String> requireNames) throws DistSQLException {
+    private void checkDuplicate(final String databaseName, final Collection<String> requireNames) throws DistSQLException {
         Collection<String> duplicateRequire = requireNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), () -> new DuplicateRuleException("sharding", schemaName, duplicateRequire));
+        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicateRequire));
     }
     
     private void checkExist(final Collection<String> requireNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {

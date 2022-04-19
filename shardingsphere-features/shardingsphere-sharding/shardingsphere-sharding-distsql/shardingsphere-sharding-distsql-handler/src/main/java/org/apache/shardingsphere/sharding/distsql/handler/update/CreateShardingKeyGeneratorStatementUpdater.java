@@ -50,12 +50,12 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
         checkKeyGeneratorAlgorithm(sqlStatement);
     }
     
-    private void checkDuplicate(final String schemaName, final CreateShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicate(final String databaseName, final CreateShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> keyGeneratorNames = sqlStatement.getKeyGeneratorSegments().stream()
                 .map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toCollection(LinkedList::new));
-        checkDuplicateInput(keyGeneratorNames, duplicated -> new DuplicateKeyGeneratorException("sharding", schemaName, duplicated));
+        checkDuplicateInput(keyGeneratorNames, duplicated -> new DuplicateKeyGeneratorException("sharding", databaseName, duplicated));
         if (null != currentRuleConfig) {
-            checkExist(keyGeneratorNames, currentRuleConfig.getKeyGenerators().keySet(), duplicated -> new DuplicateKeyGeneratorException("sharding", schemaName, duplicated));
+            checkExist(keyGeneratorNames, currentRuleConfig.getKeyGenerators().keySet(), duplicated -> new DuplicateKeyGeneratorException("sharding", databaseName, duplicated));
         }
     }
     

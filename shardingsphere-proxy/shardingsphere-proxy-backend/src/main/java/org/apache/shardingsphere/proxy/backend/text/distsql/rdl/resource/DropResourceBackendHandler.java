@@ -50,29 +50,29 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws DistSQLException {
+    public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(schemaName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isContainsExistClause());
-        ProxyContext.getInstance().getContextManager().dropResource(schemaName, toBeDroppedResourceNames);
+        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isContainsExistClause());
+        ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames,
+    private void check(final String databaseName, final Collection<String> toBeDroppedResourceNames,
                        final boolean ignoreSingleTables, final boolean allowNotExist) throws DistSQLException {
         if (!allowNotExist) {
-            checkResourceNameExisted(schemaName, toBeDroppedResourceNames);
+            checkResourceNameExisted(databaseName, toBeDroppedResourceNames);
         }
-        checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames, ignoreSingleTables);
+        checkResourceNameNotInUse(databaseName, toBeDroppedResourceNames, ignoreSingleTables);
     }
     
-    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
+        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResourceNames));
+        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
     
-    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws DistSQLException {
-        Multimap<String, String> inUsedMultimap = getInUsedResources(schemaName);
+    private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws DistSQLException {
+        Multimap<String, String> inUsedMultimap = getInUsedResources(databaseName);
         Collection<String> inUsedResourceNames = inUsedMultimap.keySet();
         inUsedResourceNames.retainAll(toBeDroppedResourceNames);
         if (!inUsedResourceNames.isEmpty()) {
@@ -93,9 +93,9 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
     }
     
-    private Multimap<String, String> getInUsedResources(final String schemaName) {
+    private Multimap<String, String> getInUsedResources(final String databaseName) {
         Multimap<String, String> result = LinkedListMultimap.create();
-        for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));

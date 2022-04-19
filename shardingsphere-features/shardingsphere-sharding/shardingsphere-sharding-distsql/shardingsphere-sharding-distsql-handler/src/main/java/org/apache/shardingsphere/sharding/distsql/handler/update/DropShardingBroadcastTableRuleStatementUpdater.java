@@ -36,15 +36,15 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkBroadCastTableRuleExist(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkBroadCastTableRuleExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkBroadCastTableRuleExist(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement,
+    private void checkBroadCastTableRuleExist(final String databaseName, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                               final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
@@ -52,12 +52,12 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
             LinkedList<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));
-            DistSQLException.predictionThrow(notExistRules.isEmpty(), () -> new RequiredRuleMissedException("Broadcast", schemaName, notExistRules));
+            DistSQLException.predictionThrow(notExistRules.isEmpty(), () -> new RequiredRuleMissedException("Broadcast", databaseName, notExistRules));
         }
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Broadcast", schemaName));
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Broadcast", databaseName));
     }
     
     @Override
