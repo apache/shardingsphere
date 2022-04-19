@@ -35,18 +35,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,26 +57,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class RenameTableStatementSchemaRefresherTest {
     
-    private final String oriTableNamePrefix = "TABLE";
-    
-    private final String newTableNamePrefix = "NEW_TABLE";
-    
-    private final String schemaMetaDataName = "SCHEMA_META_DATA_NAME";
-    
-    private final String databaseName = "DATABASE_NAME";
-    
-    private final String logicDataSourceName = "LOGIC_DATA_SOURCE_NAME";
-    
-    @Mock
-    private ShardingSphereMetaData schemaMetaData;
-    
     @Mock
     private FederationDatabaseMetaData database;
     
     @Mock
     private Map<String, OptimizerPlannerContext> optimizerPlanners;
-    
-    private List<String> logicDataSourceNames;
     
     @Mock
     private RenameTableStatement sqlStatement;
@@ -89,12 +75,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     @Mock
     private ShardingSphereSchema shardingSphereSchema;
     
-    private RenameTableStatementSchemaRefresher renameTableStatementSchemaRefresher;
-    
-    @Before
-    public void setup() {
-        renameTableStatementSchemaRefresher = new RenameTableStatementSchemaRefresher();
-    }
+    private final RenameTableStatementSchemaRefresher renameTableStatementSchemaRefresher = new RenameTableStatementSchemaRefresher();
     
     @Test
     public void assertRefreshNonRenameTableStatement() {
@@ -113,33 +94,37 @@ public final class RenameTableStatementSchemaRefresherTest {
     
     @SneakyThrows
     private void refreshRenameTableStatement(final int renameStatementCount) {
-        Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
-        for (int i = 0; i < renameStatementCount; i++) {
-            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(oriTableNamePrefix + i)));
-            SimpleTableSegment newSimpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(newTableNamePrefix + i)));
-            RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 1);
-            renameTableDefinitionSegment.setTable(simpleTableSegment);
-            renameTableDefinitionSegment.setRenameTable(newSimpleTableSegment);
-            renameTables.add(renameTableDefinitionSegment);
-        }
-        when(sqlStatement.getRenameTables()).thenReturn(renameTables);
-        when(schemaMetaData.getName()).thenReturn(schemaMetaDataName);
-        ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>());
-        when(schemaMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(schemaMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(schemaMetaData.getDefaultSchema()).thenReturn(shardingSphereSchema);
+        when(sqlStatement.getRenameTables()).thenReturn(getRenameTableDefinitionSegments(renameStatementCount));
         doNothing().when(shardingSphereSchema).remove(anyString());
         Map<String, DataSource> dataSources = new HashMap<>();
         when(shardingSphereResource.getDataSources()).thenReturn(dataSources);
         when(shardingSphereResource.getDatabaseType()).thenReturn(new SQL92DatabaseType());
-        when(database.getName()).thenReturn(databaseName);
-        logicDataSourceNames = new LinkedList<>();
-        logicDataSourceNames.add(logicDataSourceName);
+        when(database.getName()).thenReturn("DATABASE_NAME");
+        Collection<String> logicDataSourceNames = new LinkedList<>();
+        logicDataSourceNames.add("LOGIC_DATA_SOURCE_NAME");
         RenameTableLister listener = new RenameTableLister(renameStatementCount);
         ShardingSphereEventBus.getInstance().register(listener);
-        renameTableStatementSchemaRefresher.refresh(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
+        renameTableStatementSchemaRefresher.refresh(createShardingSphereMetaData(), database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
         assertThat(listener.actualCount, is(listener.renameCount));
         ShardingSphereEventBus.getInstance().unregister(listener);
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        return new ShardingSphereMetaData("SCHEMA_META_DATA_NAME", 
+                shardingSphereResource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("SCHEMA_META_DATA_NAME", shardingSphereSchema));
+    }
+    
+    private Collection<RenameTableDefinitionSegment> getRenameTableDefinitionSegments(final int renameStatementCount) {
+        Collection<RenameTableDefinitionSegment> result = new LinkedList<>();
+        for (int i = 0; i < renameStatementCount; i++) {
+            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("TABLE_" + i)));
+            SimpleTableSegment newSimpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("NEW_TABLE_" + i)));
+            RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 1);
+            renameTableDefinitionSegment.setTable(simpleTableSegment);
+            renameTableDefinitionSegment.setRenameTable(newSimpleTableSegment);
+            result.add(renameTableDefinitionSegment);
+        }
+        return result;
     }
     
     @RequiredArgsConstructor
