@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class PostgreSQLSelectStatement extends SelectStatement implements PostgreSQLStatement {
     
     private LimitSegment limit;
-
+    
     private LockSegment lock;
     
     private WindowSegment window;
@@ -48,7 +48,7 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
-
+    
     /**
      * Get lock segment.
      *
@@ -57,7 +57,7 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
     }
-
+    
     /**
      * Get window segment.
      *

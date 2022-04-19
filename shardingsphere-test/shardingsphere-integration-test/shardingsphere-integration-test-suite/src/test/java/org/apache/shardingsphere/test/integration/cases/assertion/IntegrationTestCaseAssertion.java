@@ -52,7 +52,7 @@ public final class IntegrationTestCaseAssertion {
     
     @XmlElement(name = "initial-sql")
     private IntegrationTestCaseAssertionSQL initialSQL;
-
+    
     @XmlElement(name = "destroy-sql")
     private IntegrationTestCaseAssertionSQL destroySQL;
     

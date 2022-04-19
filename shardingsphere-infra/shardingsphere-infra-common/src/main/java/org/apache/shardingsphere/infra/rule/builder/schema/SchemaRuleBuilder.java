@@ -38,11 +38,11 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * Build schema rule.
      *
      * @param config rule configuration
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSources data sources
      * @param builtRules built rules
      * @param props configuration properties
      * @return built schema rule
      */
-    SchemaRule build(T config, String schemaName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, ConfigurationProperties props);
+    SchemaRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, ConfigurationProperties props);
 }

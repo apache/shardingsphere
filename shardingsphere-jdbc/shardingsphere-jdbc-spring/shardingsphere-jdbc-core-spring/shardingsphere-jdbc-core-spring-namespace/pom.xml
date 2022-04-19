@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-core-spring</artifactId>
-        <version>5.1.1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
     <name>${project.artifactId}</name>
@@ -108,6 +108,11 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
         </dependency>
     </dependencies>
 </project>

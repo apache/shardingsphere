@@ -32,11 +32,11 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class SQLServerDeleteStatement extends DeleteStatement implements SQLServerStatement {
-
+    
     private WithSegment withSegment;
     
     private OutputSegment outputSegment;
-
+    
     /**
      * Get with segment.
      *

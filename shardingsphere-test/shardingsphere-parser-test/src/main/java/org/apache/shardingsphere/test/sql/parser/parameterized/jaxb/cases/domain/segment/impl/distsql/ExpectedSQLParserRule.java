@@ -30,13 +30,13 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedSQLParserRule extends AbstractExpectedIdentifierSQLSegment {
-
+    
     @XmlAttribute
     private boolean sqlCommentParseEnabled;
     
     @XmlElement(name = "parse-tree-cache")
     private ExpectedCacheOption parseTreeCache;
-
+    
     @XmlElement(name = "sql-statement-cache")
     private ExpectedCacheOption sqlStatementCache;
 }

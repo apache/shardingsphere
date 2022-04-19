@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -148,7 +146,7 @@ public final class DropResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertResourceNameInUseIgnoreSingleTables() throws ResourceDefinitionViolationException {
+    public void assertResourceNameInUseIgnoreSingleTables() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
@@ -162,15 +160,15 @@ public final class DropResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithIfExists() throws ResourceDefinitionViolationException {
+    public void assertExecuteWithIfExists() throws DistSQLException {
         DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
         ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
-    @Test(expected = ResourceInUsedException.class)
-    public void assertResourceNameInUseWithIfExists() throws ResourceDefinitionViolationException {
+    @Test(expected = DistSQLException.class)
+    public void assertResourceNameInUseWithIfExists() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));

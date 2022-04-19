@@ -284,7 +284,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
@@ -473,7 +473,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), 
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
                     parameterMarker.getValue(), parameterMarker.getType());
             parameterMarkerSegments.add(segment);
             return segment;
@@ -658,7 +658,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitViewName(final ViewNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
@@ -669,7 +669,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
@@ -678,13 +678,13 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitAggregationClause(final AggregationClauseContext ctx) {
         // TODO :Unsupported for union | except | intersect SQL.
         return visit(ctx.selectClause(0));
     }
-
+    
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
@@ -710,13 +710,13 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
-
+    
     private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
         int orderByStartIndex = ctx.start.getStartIndex();
@@ -754,11 +754,11 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         selectStatement.setLimit(limitSegment);
         return selectStatement;
     }
-
+    
     private boolean isDistinct(final SelectClauseContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
-
+    
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
@@ -772,7 +772,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         result.getProjections().addAll(projections);
         return result;
     }
-
+    
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableReference(0));
@@ -783,7 +783,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         return result;
     }
-
+    
     private JoinTableSegment generateJoinTableSourceFromTableReference(final TableReferenceContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(tableSegment.getStartIndex());
@@ -792,12 +792,12 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         result.setRight((TableSegment) visit(ctx));
         return result;
     }
-
+    
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
-
+    
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();

@@ -355,7 +355,7 @@ public final class ProjectionsContextEngineTest {
                 .createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
-        
+    
     @Test
     public void assertCreateProjectionsContextWithTemporaryTableForMySQL() {
         assertCreateProjectionsContextWithTemporaryTable(new MySQLSelectStatement(), new MySQLSelectStatement());

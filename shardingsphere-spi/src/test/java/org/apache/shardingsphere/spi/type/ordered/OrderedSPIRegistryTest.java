@@ -65,11 +65,11 @@ public final class OrderedSPIRegistryTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
     }
-
+    
     @Test
     public void assertGetRegisteredServicesFromCache() {
         FixtureCustomInterface key = new FixtureCustomInterfaceImpl();
-        assertThat(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key)), 
+        assertThat(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key)),
                 is(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key))));
     }
 }

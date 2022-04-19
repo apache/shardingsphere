@@ -60,7 +60,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertEmptyValue() {
-        String key = "/metadata/sharding_db/sharding_schema/dataSources";
+        String key = "/metadata/sharding_db/dataSources";
         Optional<GovernanceEvent> actual = createEvent(key, null, Type.UPDATED);
         assertFalse(actual.isPresent());
     }
@@ -75,7 +75,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateDataSourceChangedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema/versions/0/dataSources";
+        String key = "/metadata/sharding_db/versions/0/dataSources";
         String value = "{}";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.UPDATED);
         assertTrue(actual.isPresent());
@@ -83,21 +83,21 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateRuleChangedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema/versions/0/rules";
+        String key = "/metadata/sharding_db/versions/0/rules";
         Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.UPDATED);
         assertTrue(actual.isPresent());
     }
     
     @Test
     public void assertCreateTableSchemaChangedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema/tables/t_order";
+        String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.UPDATED);
         assertTrue(actual.isPresent());
     }
     
     @Test
     public void assertCreateTableSchemaDeletedEvent() {
-        String key = "/metadata/sharding_db/sharding_schema/tables/t_order";
+        String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
         assertTrue(actual.isPresent());
         assertThat(((SchemaChangedEvent) actual.get()).getDeletedTable(), is("t_order"));

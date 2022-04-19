@@ -124,7 +124,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         // TODO move federation route logic to binder
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         String defaultSchemaName = backendConnection.getConnectionSession().getSchemaName();
-        if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext 
+        if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext
                 && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), defaultSchemaName))) {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
@@ -157,7 +157,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) backendConnection.getConnectionSession().getStatementManager();
-        return new DriverExecutionPrepareEngine<>(getDriverType(), maxConnectionsSizePerQuery, backendConnection, statementManager, 
+        return new DriverExecutionPrepareEngine<>(getDriverType(), maxConnectionsSizePerQuery, backendConnection, statementManager,
                 new StatementOption(isReturnGeneratedKeys), metaData.getMetaData(backendConnection.getConnectionSession().getSchemaName()).getRuleMetaData().getRules());
     }
     

@@ -62,14 +62,14 @@ public class EncryptSpringBootStarterTest {
         assertThat(encryptRuleConfiguration.getTables().size(), is(1));
         assertEncryptTable(encryptRuleConfiguration.getTables().iterator().next());
     }
-
+    
     private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
         assertThat(encryptors.size(), is(2));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
     }
-
+    
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
         assertThat(tableRuleConfig.getColumns().size(), is(2));
@@ -78,13 +78,13 @@ public class EncryptSpringBootStarterTest {
         assertEncryptColumn2(columnRuleConfigs.next());
         assertEncryptColumn1(columnRuleConfigs.next());
     }
-
+    
     private void assertEncryptColumn1(final EncryptColumnRuleConfiguration columnRuleConfig) {
         assertThat(columnRuleConfig.getLogicColumn(), is("pwd"));
         assertThat(columnRuleConfig.getCipherColumn(), is("pwd_cipher"));
         assertThat(columnRuleConfig.getEncryptorName(), is("aesEncryptor"));
     }
-
+    
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
         assertThat(columnRuleConfig.getLogicColumn(), is("credit_card"));
         assertThat(columnRuleConfig.getCipherColumn(), is("credit_card_cipher"));

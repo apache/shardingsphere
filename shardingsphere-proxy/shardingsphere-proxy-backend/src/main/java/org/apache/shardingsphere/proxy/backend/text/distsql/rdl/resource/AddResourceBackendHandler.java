@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,9 +48,9 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private final DataSourcePropertiesValidator validator;
     
-    public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final ConnectionSession connectionSession) {
+    public AddResourceBackendHandler(final AddResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
-        this.databaseType = databaseType;
+        databaseType = connectionSession.getDatabaseType();
         validator = new DataSourcePropertiesValidator();
     }
     
@@ -71,8 +70,8 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
-        List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
+    private void checkSQLStatement(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
+        Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
             if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(each.getName())) {
@@ -80,8 +79,6 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
             }
             dataSourceNames.add(each.getName());
         }
-        if (!duplicateDataSourceNames.isEmpty()) {
-            throw new DuplicateResourceException(duplicateDataSourceNames);
-        }
+        DistSQLException.predictionThrow(duplicateDataSourceNames.isEmpty(), () -> new DuplicateResourceException(duplicateDataSourceNames));
     }
 }

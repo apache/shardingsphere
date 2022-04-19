@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TransactionBackendHandlerFactoryTest {
-
+    
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setTransactionContexts() {

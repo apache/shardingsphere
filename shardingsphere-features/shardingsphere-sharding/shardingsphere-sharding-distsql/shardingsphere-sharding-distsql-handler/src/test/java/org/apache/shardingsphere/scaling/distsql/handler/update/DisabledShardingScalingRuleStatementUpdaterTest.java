@@ -64,7 +64,7 @@ public final class DisabledShardingScalingRuleStatementUpdaterTest {
         currentRuleConfig.getScaling().put(scalingName, null);
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(scalingName), currentRuleConfig);
     }
-
+    
     @Test
     public void assertBuildToBeAlteredRuleConfiguration() {
         ShardingRuleConfiguration result = updater.buildToBeAlteredRuleConfiguration(createSQLStatement("default_scaling"));

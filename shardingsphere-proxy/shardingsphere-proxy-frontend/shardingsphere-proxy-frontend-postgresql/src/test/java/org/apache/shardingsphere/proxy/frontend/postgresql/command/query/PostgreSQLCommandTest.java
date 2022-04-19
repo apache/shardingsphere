@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -175,9 +176,10 @@ public final class PostgreSQLCommandTest {
     
     @Test
     public void assertValueOfCreateShardingTableRuleOrCreateDataSourcesStatement() {
-        assertThat(PostgreSQLCommand.valueOf(AddResourceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
-        assertThat(PostgreSQLCommand.valueOf(CreateShardingTableRuleStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
-        assertThat(PostgreSQLCommand.CREATE.getTag(), is("CREATE"));
+        assertThat(PostgreSQLCommand.valueOf(AddResourceStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
+        assertThat(PostgreSQLCommand.valueOf(CreateShardingTableRuleStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
+        assertThat(PostgreSQLCommand.valueOf(DistSQLStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
+        assertThat(PostgreSQLCommand.SUCCESS.getTag(), is("SUCCESS"));
     }
     
     @Test

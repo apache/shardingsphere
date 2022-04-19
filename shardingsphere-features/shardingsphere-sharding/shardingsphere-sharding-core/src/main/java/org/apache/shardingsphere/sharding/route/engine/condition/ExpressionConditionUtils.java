@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionConditionUtils {
-
+    
     /**
      * Judge now() expression.
      * @param segment ExpressionSegment
@@ -37,7 +37,7 @@ public final class ExpressionConditionUtils {
     public static boolean isNowExpression(final ExpressionSegment segment) {
         return segment instanceof ComplexExpressionSegment && "now()".equalsIgnoreCase(((ComplexExpressionSegment) segment).getText());
     }
-
+    
     /**
      * Judge null expression.
      * @param segment ExpressionSegment

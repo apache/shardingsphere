@@ -43,7 +43,7 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return TypedSPIRegistry.getRegisteredService(DriverState.class, 
+        return TypedSPIRegistry.getRegisteredService(DriverState.class,
                 contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(schemaName, contextManager);
     }
 }

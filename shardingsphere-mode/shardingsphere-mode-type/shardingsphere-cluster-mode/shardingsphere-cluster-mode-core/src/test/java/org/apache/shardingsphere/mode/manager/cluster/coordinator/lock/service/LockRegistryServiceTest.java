@@ -64,10 +64,17 @@ public final class LockRegistryServiceTest {
     }
     
     @Test
+    public void assertTryGlobalLock() {
+        String schemaLockName = LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307");
+        lockRegistryService.tryGlobalLock(schemaLockName, 300);
+        verify(clusterPersistRepository).tryLock(schemaLockName, 300, TimeUnit.MILLISECONDS);
+    }
+    
+    @Test
     public void assertReleaseGlobalLock() {
         String schemaLockName = LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307");
-        lockRegistryService.releaseGlobalLock(schemaLockName);
-        verify(clusterPersistRepository).delete(schemaLockName);
+        lockRegistryService.releaseGlobalLock(schemaLockName, true);
+        verify(clusterPersistRepository).releaseLock(schemaLockName);
     }
     
     @Test

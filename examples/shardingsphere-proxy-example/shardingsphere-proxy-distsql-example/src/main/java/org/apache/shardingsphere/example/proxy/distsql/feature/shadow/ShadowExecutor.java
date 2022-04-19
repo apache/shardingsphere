@@ -34,28 +34,28 @@ public final class ShadowExecutor extends AbstractFeatureExecutor {
     private static final String ADD_RULE = "CREATE SHADOW RULE shadow_rule(\n" +
             "SOURCE=ds_0,\n" +
             "SHADOW=ds_1,\n" +
-            "t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
-            "t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))));";
+            "t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
+            "t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))));";
     
     private static final String ALTER_RULE = "ALTER SHADOW RULE shadow_rule(\n" +
             "SOURCE=ds_1,\n" +
             "SHADOW=ds_0,\n" +
-            "t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
-            "t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))))";
+            "t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
+            "t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))))";
     
     private static final String ALTER_ALGORITHM = "ALTER SHADOW ALGORITHM \n" +
-            "(simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\"))), \n" +
-            "(shadow_rule_t_order_column_regex_match, TYPE(NAME=COLUMN_REGEX_MATCH,PROPERTIES(\"operation\"=\"insert\", \"column\"=\"user_id\", \"regex\"='[1]')));";
+            "(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\"))), \n" +
+            "(shadow_rule_t_order_regex_match, TYPE(NAME=REGEX_MATCH,PROPERTIES(\"operation\"=\"insert\", \"column\"=\"user_id\", \"regex\"='[1]')))";
     
-    private static final String DROP_RULE = "DROP SHADOW RULE shadow_rule;";
+    private static final String DROP_RULE = "DROP SHADOW RULE shadow_rule";
     
-    private static final String DROP_ALGORITHM = "DROP shadow algorithm simple_note_algorithm,shadow_rule_t_order_column_regex_match,shadow_rule_t_order_item_simple_note;";
+    private static final String DROP_ALGORITHM = "DROP SHADOW ALGORITHM simple_hint_algorithm,shadow_rule_t_order_regex_match,shadow_rule_t_order_item_simple_hint";
     
-    private static final String SHOW_RULE = "show shadow rules;";
+    private static final String SHOW_RULE = "SHOW SHADOW RULES";
     
-    private static final String SHOW_TABLE_RULE = "show shadow table rules;";
+    private static final String SHOW_TABLE_RULE = "SHOW SHADOW TABLE RULES";
     
-    private static final String SHOW_ALGORITHM = "show shadow algorithms";
+    private static final String SHOW_ALGORITHM = "SHOW SHADOW ALGORITHMS";
     
     @Override
     public void init(Statement statement) {

@@ -35,6 +35,23 @@ alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
     ;
 
+alterTrigger
+    : ALTER TRIGGER triggerName (
+    | triggerCompileClause
+    | ( ENABLE | DISABLE)
+    | RENAME TO name
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;    
+
+triggerCompileClause
+    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterValue
+    ;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;

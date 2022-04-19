@@ -75,7 +75,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         SqlOperator operator = convertOperator(segment.getOperator());
         SqlNode left = new ExpressionConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new ExpressionConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
-        return Optional.of(new SqlBasicCall(operator, new SqlNode[] {left, right}, SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(operator, new SqlNode[]{left, right}, SqlParserPos.ZERO));
     }
     
     @Override

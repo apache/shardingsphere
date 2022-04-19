@@ -46,5 +46,5 @@ Attributes：
 
 | *Name*                     | *DataType*             | *Description*                                                                   | *Default Value*       |
 | -------------------------- | ---------------------- | ------------------------------------------------------------------------------- | ------------- |
-| type (+)                   | String                 | Database discovery type, such as: MGR、openGauss                                  | -             |
+| type (+)                   | String                 | Database discovery type, such as: MGR, openGauss                                  | -             |
 | props (?)                  | Properties             | Required parameters for high-availability types, such as MGR's group-name       | -             |

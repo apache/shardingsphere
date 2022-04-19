@@ -38,25 +38,25 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PipelineDataSourceWrapperTest {
-
+    
     private static final String CLIENT_USERNAME = "username";
-
+    
     private static final String CLIENT_PASSWORD = "password";
-
+    
     private static final int LOGIN_TIMEOUT = 15;
-
+    
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
-
+    
     @Mock
     private Connection connection;
-
+    
     @Mock
     private PrintWriter printWriter;
-
+    
     @Mock
     private Logger parentLogger;
-
+    
     @Before
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
@@ -66,7 +66,7 @@ public final class PipelineDataSourceWrapperTest {
         when(dataSource.isWrapperFor(any())).thenReturn(Boolean.TRUE);
         when(dataSource.getParentLogger()).thenReturn(parentLogger);
     }
-
+    
     @Test
     public void assertGetConnection() throws SQLException {
         PipelineDataSourceWrapper dataSourceWrapper = new PipelineDataSourceWrapper(dataSource, new H2DatabaseType());
@@ -77,41 +77,41 @@ public final class PipelineDataSourceWrapperTest {
         assertIsWrappedFor(dataSourceWrapper.isWrapperFor(any()));
         assertGetParentLogger(dataSourceWrapper.getParentLogger());
     }
-
+    
     private void assertGetLogWriter(final PrintWriter actual) {
         assertThat(actual, is(printWriter));
     }
-
+    
     private void assertGetLoginTimeout(final int actual) {
         assertThat(actual, is(LOGIN_TIMEOUT));
     }
-
+    
     private void assertIsWrappedFor(final boolean actual) {
         assertThat(actual, is(Boolean.TRUE));
     }
-
+    
     private void assertGetParentLogger(final Logger actual) {
         assertThat(actual, is(parentLogger));
     }
-
+    
     @Test(expected = SQLException.class)
     public void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
         new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT);
     }
-
+    
     @Test(expected = SQLException.class)
     public void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
         new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter);
     }
-
+    
     @Test(expected = SQLException.class)
     public void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
         new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close();
     }
-
+    
     @Test(expected = SQLException.class)
     public void assertCloseSQLExceptionFailure() throws Exception {
         doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();

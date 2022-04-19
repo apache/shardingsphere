@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MyS
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Internal Result Set.
  */

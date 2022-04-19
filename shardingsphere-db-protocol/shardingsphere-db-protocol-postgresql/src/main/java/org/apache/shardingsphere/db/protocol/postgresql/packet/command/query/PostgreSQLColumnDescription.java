@@ -36,7 +36,7 @@ public final class PostgreSQLColumnDescription {
     private final int columnIndex;
     
     private final int columnLength;
-
+    
     private final int typeOID;
     
     private final int typeModifier = -1;

@@ -37,4 +37,3 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
         return "SQLServer";
     }
 }
-

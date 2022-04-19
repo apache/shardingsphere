@@ -27,14 +27,14 @@ import java.util.Optional;
  * Show sharding table rules used algorithm statement.
  */
 public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
-
+    
     private final String algorithmName;
-
+    
     public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final SchemaSegment schema) {
         super(schema);
         this.algorithmName = algorithmName;
     }
-
+    
     /**
      * Get algorithm name.
      *

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -71,24 +71,24 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
-        for (String each : schemaNames) {
+        for (String each : databaseNames) {
             if (databaseType.getSystemSchemas().contains(each)) {
                 continue;
             }
-            builder.addSchema(each, databaseType, createSchemaConfiguration(each, metaDataPersistService, parameter), props);
+            builder.addDatabase(each, databaseType, createDatabaseConfiguration(each, metaDataPersistService, parameter), props);
         }
-        builder.addSystemSchemas(databaseType);
+        builder.addSystemDatabases(databaseType);
         return builder.build(metaDataPersistService);
     }
     
-    private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
-                                                          final ContextManagerBuilderParameter parameter) {
-        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getDatabaseConfigs());
-        Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
-        return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
+    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName, final MetaDataPersistService metaDataPersistService,
+                                                              final ContextManagerBuilderParameter parameter) {
+        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
+        Collection<RuleConfiguration> databaseRuleConfigs = metaDataPersistService.getSchemaRuleService().load(databaseName);
+        return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
     private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {

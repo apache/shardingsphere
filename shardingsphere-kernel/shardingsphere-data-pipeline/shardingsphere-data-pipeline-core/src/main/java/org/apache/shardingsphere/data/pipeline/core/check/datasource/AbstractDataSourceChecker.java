@@ -70,7 +70,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private PipelineSQLBuilder getSQLBuilder() {
-        return PipelineSQLBuilderFactory.getSQLBuilder(getDatabaseType());
+        return PipelineSQLBuilderFactory.newInstance(getDatabaseType());
     }
     
     protected abstract String getDatabaseType();

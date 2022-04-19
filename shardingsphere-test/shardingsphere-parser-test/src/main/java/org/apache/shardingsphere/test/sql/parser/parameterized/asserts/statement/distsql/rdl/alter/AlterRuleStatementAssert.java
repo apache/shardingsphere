@@ -101,7 +101,7 @@ public final class AlterRuleStatementAssert {
         } else if (actual instanceof AlterShadowAlgorithmStatement) {
             AlterShadowAlgorithmStatementAssert.assertIs(assertContext, (AlterShadowAlgorithmStatement) actual, (AlterShadowAlgorithmStatementTestCase) expected);
         } else if (actual instanceof AlterDefaultSingleTableRuleStatement) {
-            AlterDefaultSingleTableRuleStatementAssert.assertIs(assertContext, (AlterDefaultSingleTableRuleStatement) actual, 
+            AlterDefaultSingleTableRuleStatementAssert.assertIs(assertContext, (AlterDefaultSingleTableRuleStatement) actual,
                     (AlterDefaultSingleTableRuleStatementTestCase) expected);
         } else if (actual instanceof AlterShardingKeyGeneratorStatement) {
             AlterShardingKeyGeneratorStatementAssert.assertIs(assertContext, (AlterShardingKeyGeneratorStatement) actual, (AlterShardingKeyGeneratorStatementTestCase) expected);

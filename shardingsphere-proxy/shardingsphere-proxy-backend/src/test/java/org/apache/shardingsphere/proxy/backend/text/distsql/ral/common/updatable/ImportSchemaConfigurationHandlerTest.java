@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -171,9 +170,7 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     private ImportSchemaConfigurationStatement createSqlStatement(final String importFilePath) {
-        ImportSchemaConfigurationStatement result = new ImportSchemaConfigurationStatement();
-        result.setFilePath(Optional.of(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath()));
-        return result;
+        return new ImportSchemaConfigurationStatement(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
     }
     
     private ConnectionSession mockConnectionSession() {

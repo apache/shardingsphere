@@ -38,7 +38,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate() {
-        return metaDataPersistService.getComputeNodePersistService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).orElseGet(() -> reGenerate());
+        return metaDataPersistService.getComputeNodePersistService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).orElseGet(this::reGenerate);
     }
     
     private Long reGenerate() {

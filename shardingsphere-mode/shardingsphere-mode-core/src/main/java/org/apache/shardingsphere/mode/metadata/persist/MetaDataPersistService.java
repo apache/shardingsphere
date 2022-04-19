@@ -20,18 +20,18 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
@@ -55,7 +55,7 @@ public final class MetaDataPersistService {
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
     
-    private final SchemaRulePersistService schemaRuleService;
+    private final DatabaseRulePersistService schemaRuleService;
     
     private final GlobalRulePersistService globalRuleService;
     
@@ -63,17 +63,17 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final SchemaVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService schemaVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
-        schemaRuleService = new SchemaRulePersistService(repository);
+        schemaRuleService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        schemaVersionPersistService = new SchemaVersionPersistService(repository);
+        schemaVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
     /**
@@ -84,11 +84,11 @@ public final class MetaDataPersistService {
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs,
+    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> schemaConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
+        for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
             String schemaName = entry.getKey();
             dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
             schemaRuleService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
@@ -117,14 +117,14 @@ public final class MetaDataPersistService {
     /**
      * Get effective data sources.
      * 
-     * @param schemaName schema name
-     * @param schemaConfigs schema configurations
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
      * @return effective data sources
      */
-    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
-        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(schemaName);
-        return schemaConfigs.containsKey(schemaName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(schemaName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
+        return databaseConfigs.containsKey(databaseName)
+                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(

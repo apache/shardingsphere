@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -33,8 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsis
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -131,7 +130,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.getSQLBuilder(databaseType.getName()).buildCountSQL(table));
+             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
@@ -141,8 +140,8 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     }
     
     @Override
-    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
-        Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
+    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
+        Collection<String> supportedDatabaseTypes = dataConsistencyCalculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceDataSourceConfig.getDatabaseType().getName());
@@ -150,10 +149,6 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
-        String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
-        String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
-        SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
-        SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
         Map<String, Boolean> result = new HashMap<>();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
@@ -167,23 +162,23 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                     throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
                 }
             });
+            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
+            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
             for (String each : logicTableNames) {
                 TableMetaData tableMetaData = tableMetaDataMap.get(each);
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataCalculateParameter sourceCalculateParameter = DataCalculateParameter.builder().dataSource(sourceDataSource).databaseType(sourceDatabaseType).peerDatabaseType(targetDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
-                DataCalculateParameter targetCalculateParameter = DataCalculateParameter.builder().dataSource(targetDataSource).databaseType(targetDatabaseType).peerDatabaseType(sourceDatabaseType)
-                    .logicTableName(each).columnNames(columnNames).uniqueKey(uniqueKey).build();
-                Iterator<Object> sourceCalculatedResultIterator = sourceCalculator.calculate(sourceCalculateParameter).iterator();
-                Iterator<Object> targetCalculatedResultIterator = targetCalculator.calculate(targetCalculateParameter).iterator();
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+                Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceParameter).iterator();
+                Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetParameter).iterator();
                 boolean calculateResultsEquals = true;
-                while (sourceCalculatedResultIterator.hasNext() && targetCalculatedResultIterator.hasNext()) {
+                while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
                         inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
-                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResultIterator::next);
-                    Future<Object> targetFuture = executor.submit(targetCalculatedResultIterator::next);
+                    Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
+                    Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
                     Object sourceCalculatedResult = sourceFuture.get();
                     Object targetCalculatedResult = targetFuture.get();
                     calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
@@ -225,5 +220,10 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             sourceDataSourceConfig.appendJDBCQueryProperties(queryProps);
             targetDataSourceConfig.appendJDBCQueryProperties(queryProps);
         }
+    }
+    
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames, 
+                                                             final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
+        return new DataConsistencyCalculateParameter(sourceDataSource, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

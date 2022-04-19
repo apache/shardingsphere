@@ -48,8 +48,8 @@ public final class PostgreSQLMD5PasswordAuthenticatorTest {
         ShardingSphereUser user = new ShardingSphereUser(username, password, "");
         byte[] md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
         String md5Digest = md5Encode(username, password, md5Salt);
-        assertTrue(authenticator.authenticate(user, new Object[] {md5Digest, md5Salt}));
-        assertFalse(authenticator.authenticate(user, new Object[] {"wrong", md5Salt}));
+        assertTrue(authenticator.authenticate(user, new Object[]{md5Digest, md5Salt}));
+        assertFalse(authenticator.authenticate(user, new Object[]{"wrong", md5Salt}));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

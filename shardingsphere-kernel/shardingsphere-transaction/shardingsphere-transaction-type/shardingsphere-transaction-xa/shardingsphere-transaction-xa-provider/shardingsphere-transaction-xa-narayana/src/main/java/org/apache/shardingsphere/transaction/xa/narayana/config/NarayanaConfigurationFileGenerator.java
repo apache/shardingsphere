@@ -25,7 +25,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -140,12 +140,12 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @Override
-    public Properties getTransactionProps(final Properties originTransactionProps, final SchemaConfiguration schemaConfiguration, final String modeType) {
+    public Properties getTransactionProps(final Properties originTransactionProps, final DatabaseConfiguration databaseConfiguration, final String modeType) {
         Properties result = new Properties();
         if (!originTransactionProps.isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
         } else if ("Cluster".equals(modeType)) {
-            generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
+            generateDefaultJdbcStoreConfiguration(databaseConfiguration, result);
         }
         return result;
     }
@@ -158,13 +158,13 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     
-    private void generateDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
-        Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
+    private void generateDefaultJdbcStoreConfiguration(final DatabaseConfiguration databaseConfiguration, final Properties props) {
+        Map<String, DataSource> datasourceMap = databaseConfiguration.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
         if (!dataSource.isPresent()) {
             return;
         }
-        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get(), 
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get(),
                 DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         int endIndex = jdbcUrl.indexOf("?");
@@ -185,8 +185,8 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", type));
     }
     
-    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, 
-                                          final String recoveryStoreDataSource, final Properties props) {
+    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword,
+            final String recoveryStoreDataSource, final Properties props) {
         props.setProperty("recoveryStoreUrl", recoveryStoreUrl);
         props.setProperty("recoveryStoreUser", recoveryStoreUser);
         props.setProperty("recoveryStorePassword", recoveryStorePassword);

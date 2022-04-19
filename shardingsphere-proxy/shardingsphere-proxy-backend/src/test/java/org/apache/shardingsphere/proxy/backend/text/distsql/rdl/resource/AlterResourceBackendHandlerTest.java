@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
@@ -43,9 +43,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -81,7 +81,8 @@ public final class AlterResourceBackendHandlerTest {
     
     @Before
     public void setUp() throws Exception {
-        alterResourceBackendHandler = new AlterResourceBackendHandler(new MySQLDatabaseType(), alterResourceStatement, connectionSession);
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        alterResourceBackendHandler = new AlterResourceBackendHandler(alterResourceStatement, connectionSession);
         Field field = alterResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
         field.set(alterResourceBackendHandler, validator);
@@ -135,7 +136,7 @@ public final class AlterResourceBackendHandlerTest {
     }
     
     private AlterResourceStatement createAlterResourceStatementWithDuplicateResourceNames() {
-        List<DataSourceSegment> result = new LinkedList<>();
+        Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_0", null, null, null, "root", "", new Properties()));
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", null, null, null, "root", "", new Properties()));
         return new AlterResourceStatement(result);

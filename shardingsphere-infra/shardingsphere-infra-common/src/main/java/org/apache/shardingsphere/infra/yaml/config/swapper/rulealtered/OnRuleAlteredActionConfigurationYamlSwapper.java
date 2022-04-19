@@ -47,7 +47,7 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         result.setOutput(OUTPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getOutput()));
         result.setStreamChannel(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getStreamChannel()));
         result.setCompletionDetector(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getCompletionDetector()));
-        result.setDataConsistencyChecker(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getDataConsistencyChecker()));
+        result.setDataConsistencyChecker(ALGORITHM_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(data.getDataConsistencyCalculator()));
         return result;
     }
     

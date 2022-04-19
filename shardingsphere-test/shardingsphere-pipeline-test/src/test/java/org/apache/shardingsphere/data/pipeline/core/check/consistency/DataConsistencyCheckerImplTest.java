@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -59,7 +59,7 @@ public final class DataConsistencyCheckerImplTest {
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
         assertTrue(resultMap.get("t_order").isRecordsCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
-        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.checkRecordsContent(new FixtureDataConsistencyCheckAlgorithm());
+        Map<String, Boolean> dataCheckResultMap = dataConsistencyChecker.checkRecordsContent(new FixtureDataConsistencyCalculateAlgorithm());
         assertTrue(dataCheckResultMap.get("t_order"));
     }
     

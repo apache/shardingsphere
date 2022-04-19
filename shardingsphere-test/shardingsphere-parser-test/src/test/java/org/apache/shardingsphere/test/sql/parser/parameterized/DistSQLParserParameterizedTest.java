@@ -47,7 +47,7 @@ public final class DistSQLParserParameterizedTest {
     public DistSQLParserParameterizedTest(final String sqlCaseId) {
         this.sqlCaseId = sqlCaseId;
     }
-
+    
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return DIST_SQL_CASES_LOADER.getTestParameters(null);

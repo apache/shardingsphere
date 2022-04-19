@@ -77,7 +77,7 @@ import java.util.stream.Collectors;
 public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
-        
+    
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
@@ -171,7 +171,7 @@ public final class RuleAlteredJobWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
-            log.warn("There is an outstanding job with the same schema name");
+            log.warn("There is uncompleted job with the same schema name, please handle it first, current job will be ignored");
             return;
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
@@ -214,7 +214,7 @@ public final class RuleAlteredJobWorker {
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
-    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules, 
+    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
                                                                                                               final Collection<YamlRuleConfiguration> targetRules) {
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> sourceRulesMap = sourceRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> targetRulesMap = targetRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
@@ -285,7 +285,7 @@ public final class RuleAlteredJobWorker {
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, 
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig,
                                                     final HandleConfiguration handleConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }
@@ -337,7 +337,7 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String schemaName) {
         log.info("restoreSourceWriting, schemaName={}", schemaName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName);
         if (null != lock && lock.isLocked(schemaName)) {
             log.info("Source writing is still stopped on schema '{}', restore it now", schemaName);
             lock.releaseLock(schemaName);

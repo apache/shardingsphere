@@ -107,7 +107,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
         EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
         EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
         EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, 
+        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType,
                 "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
     }
 }
