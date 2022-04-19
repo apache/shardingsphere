@@ -41,10 +41,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -52,6 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,12 +69,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     private ConfigurationProperties props;
     
     @Mock
-    private ShardingSphereResource shardingSphereResource;
-    
-    @Mock
     private ShardingSphereSchema shardingSphereSchema;
-    
-    private final RenameTableStatementSchemaRefresher renameTableStatementSchemaRefresher = new RenameTableStatementSchemaRefresher();
     
     @Test
     public void assertRefreshNonRenameTableStatement() {
@@ -96,34 +90,36 @@ public final class RenameTableStatementSchemaRefresherTest {
     private void refreshRenameTableStatement(final int renameStatementCount) {
         when(sqlStatement.getRenameTables()).thenReturn(getRenameTableDefinitionSegments(renameStatementCount));
         doNothing().when(shardingSphereSchema).remove(anyString());
-        Map<String, DataSource> dataSources = new HashMap<>();
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSources);
-        when(shardingSphereResource.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         when(database.getName()).thenReturn("DATABASE_NAME");
         Collection<String> logicDataSourceNames = new LinkedList<>();
         logicDataSourceNames.add("LOGIC_DATA_SOURCE_NAME");
         RenameTableLister listener = new RenameTableLister(renameStatementCount);
         ShardingSphereEventBus.getInstance().register(listener);
-        renameTableStatementSchemaRefresher.refresh(createShardingSphereMetaData(), database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
+        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), database, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
         assertThat(listener.actualCount, is(listener.renameCount));
         ShardingSphereEventBus.getInstance().unregister(listener);
-    }
-    
-    private ShardingSphereMetaData createShardingSphereMetaData() {
-        return new ShardingSphereMetaData("SCHEMA_META_DATA_NAME", 
-                shardingSphereResource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("SCHEMA_META_DATA_NAME", shardingSphereSchema));
     }
     
     private Collection<RenameTableDefinitionSegment> getRenameTableDefinitionSegments(final int renameStatementCount) {
         Collection<RenameTableDefinitionSegment> result = new LinkedList<>();
         for (int i = 0; i < renameStatementCount; i++) {
-            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("TABLE_" + i)));
-            SimpleTableSegment newSimpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("NEW_TABLE_" + i)));
-            RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 1);
-            renameTableDefinitionSegment.setTable(simpleTableSegment);
-            renameTableDefinitionSegment.setRenameTable(newSimpleTableSegment);
-            result.add(renameTableDefinitionSegment);
+            RenameTableDefinitionSegment segment = new RenameTableDefinitionSegment(0, 1);
+            segment.setTable(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("TABLE_" + i))));
+            segment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("NEW_TABLE_" + i))));
+            result.add(segment);
         }
+        return result;
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        return new ShardingSphereMetaData("SCHEMA_META_DATA_NAME",
+                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("SCHEMA_META_DATA_NAME", shardingSphereSchema));
+    }
+    
+    private ShardingSphereResource mockShardingSphereResource() {
+        ShardingSphereResource result = mock(ShardingSphereResource.class);
+        when(result.getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         return result;
     }
     
