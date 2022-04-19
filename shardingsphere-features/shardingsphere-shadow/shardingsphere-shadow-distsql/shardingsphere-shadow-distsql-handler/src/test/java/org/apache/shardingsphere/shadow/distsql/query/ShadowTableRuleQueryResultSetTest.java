@@ -58,7 +58,7 @@ public final class ShadowTableRuleQueryResultSetTest {
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_note", properties));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", properties));
         return result;
     }
 }

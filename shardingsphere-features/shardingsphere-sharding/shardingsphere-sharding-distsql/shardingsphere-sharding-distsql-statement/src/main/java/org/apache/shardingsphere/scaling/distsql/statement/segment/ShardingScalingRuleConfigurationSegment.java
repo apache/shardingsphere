@@ -37,5 +37,5 @@ public final class ShardingScalingRuleConfigurationSegment implements ASTNode {
     
     private AlgorithmSegment completionDetector;
     
-    private AlgorithmSegment dataConsistencyChecker;
+    private AlgorithmSegment dataConsistencyCalculator;
 }

@@ -15,7 +15,7 @@ chapter = true
 | ---------------------- | --------------------------- |
 | MySQLScalingEntry      | MySQL entry of scaling      |
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
-| OpenGaussScalingEntry  | openGauss entry of scaling |
+| OpenGaussScalingEntry  | openGauss entry of scaling  |
 
 ## JobCompletionDetectAlgorithm
 
@@ -27,24 +27,13 @@ chapter = true
 | ------------------------------------------- | ------------------------------------------- |
 | IdleRuleAlteredJobCompletionDetectAlgorithm | Incremental task idle time based algorithm  |
 
-## DataConsistencyCheckAlgorithm
+## DataConsistencyCalculateAlgorithm
 
-| *SPI Name*                                  | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| DataConsistencyCheckAlgorithm               | Data consistency check algorithm on source and target database cluster |
+| *SPI Name*                                  | *Description*                                        |
+| ------------------------------------------- | ---------------------------------------------------- |
+| DataConsistencyCalculateAlgorithm           | Check data consistency algorithm                     |
 
-| *Implementation Class*                      | *Description*                                                          |
-| ------------------------------------------- | ---------------------------------------------------------------------- |
-| DataMatchDataConsistencyCheckAlgorithm      | Records content match implementation. Type name: DATA_MATCH.           |
-| CRC32MatchDataConsistencyCheckAlgorithm     | Records CRC32 match implementation. Type name: CRC32_MATCH.            |
-
-## SingleTableDataCalculator
-
-| *SPI Name*                                  | *Description*                                                          |
-| ------------------------------------------- | ---------------------------------------------------------------------- |
-| SingleTableDataCalculator                   | Single table data calculator for data consistency check                |
-
-| *Implementation Class*                      | *Description*                                                          |
-| ------------------------------------------- | ---------------------------------------------------------------------- |
-| DataMatchSingleTableDataCalculator          | Single table data calculator for DATA_MATCH data consistency check     |
-| CRC32MatchMySQLSingleTableDataCalculator    | Single table data calculator for CRC32_MATCH data consistency check    |
+| *Implementation Class*                      | *Description*                                        |
+| ------------------------------------------- | ---------------------------------------------------- |
+| DataMatchDataConsistencyCalculateAlgorithm  | Check data consistency with every recodes one by one |
+| CRC32MatchDataConsistencyCalculateAlgorithm | Use CRC32 to check data consistency                  |

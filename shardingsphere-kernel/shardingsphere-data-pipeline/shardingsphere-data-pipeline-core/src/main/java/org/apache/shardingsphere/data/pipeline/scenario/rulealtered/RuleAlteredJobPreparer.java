@@ -129,14 +129,14 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void prepareTarget(final JobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
-        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
-        if (null == dataSourcePreparer) {
+        Optional<DataSourcePreparer> dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
+        if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
         PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
-        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {

@@ -272,6 +272,7 @@ unreservedWord
     | MODE
     | MONTH
     | MOVE
+    | MOD
     | NAME
     | NAMES
     | NEW

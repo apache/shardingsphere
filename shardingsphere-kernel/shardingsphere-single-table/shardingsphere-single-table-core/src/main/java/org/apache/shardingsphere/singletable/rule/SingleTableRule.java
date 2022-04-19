@@ -38,6 +38,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -225,12 +226,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return tableNames.values();
+        return new HashSet<>(tableNames.values());
     }
     
     @Override
     public Collection<String> getTables() {
-        return tableNames.values();
+        return new HashSet<>(tableNames.values());
     }
     
     @Override
