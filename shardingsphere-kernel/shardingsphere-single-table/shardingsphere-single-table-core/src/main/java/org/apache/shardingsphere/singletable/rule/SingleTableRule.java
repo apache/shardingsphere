@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
