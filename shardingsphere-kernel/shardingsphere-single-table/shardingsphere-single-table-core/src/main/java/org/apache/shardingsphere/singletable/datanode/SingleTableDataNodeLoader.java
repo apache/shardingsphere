@@ -77,13 +77,14 @@ public final class SingleTableDataNodeLoader {
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
-                if (!excludedTables.contains(each)) {
-                    Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
-                    DataNode dataNode = new DataNode(dataSourceName, each);
-                    dataNode.setSchemaName(entry.getKey());
-                    dataNodes.add(dataNode);
-                    result.putIfAbsent(each, dataNodes);
-                }   
+                if (excludedTables.contains(each)) {
+                    continue;
+                }
+                Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
+                DataNode dataNode = new DataNode(dataSourceName, each);
+                dataNode.setSchemaName(entry.getKey());
+                dataNodes.add(dataNode);
+                result.putIfAbsent(each, dataNodes);
             }
         }
         return result;
