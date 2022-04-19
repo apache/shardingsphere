@@ -107,7 +107,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(databaseName)) {
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
             throw new SchemaNotExistedException(databaseName);
         }
     }

@@ -69,17 +69,17 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     @Override
     public final void execute(final ConnectionSession connectionSession) throws SQLException {
-        List<String> schemaNames = getSchemaNames(connectionSession);
-        for (String schemaName : schemaNames) {
-            initSchemaData(schemaName);
-            getSourceData(schemaName, resultSet -> handleResultSet(schemaName, resultSet));
+        List<String> databaseNames = getDatabaseNames(connectionSession);
+        for (String databaseName : databaseNames) {
+            initDatabaseData(databaseName);
+            getSourceData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
         }
         createPreProcessing();
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
     }
     
-    private void handleResultSet(final String schemaName, final ResultSet resultSet) throws SQLException {
+    private void handleResultSet(final String databaseName, final ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             Map<String, Object> rowMap = new LinkedHashMap<>();
             Map<String, String> aliasMap = new LinkedHashMap<>();
@@ -88,7 +88,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
                 rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
             }
-            rowPostProcessing(schemaName, rowMap, aliasMap);
+            rowPostProcessing(databaseName, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
                 rows.addFirst(rowMap);
             }
@@ -96,19 +96,19 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     }
     
     /**
-     * Initialize the schema data.
+     * Initialize the database data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      */
-    protected abstract void initSchemaData(String schemaName);
+    protected abstract void initDatabaseData(String databaseName);
     
     /**
-     * Get the schema names as a condition for SQL execution.
+     * Get the database names as a condition for SQL execution.
      *
      * @param connectionSession connection session
-     * @return schema names
+     * @return database names
      */
-    protected abstract List<String> getSchemaNames(ConnectionSession connectionSession);
+    protected abstract List<String> getDatabaseNames(ConnectionSession connectionSession);
     
     /**
      * Add default row data.
@@ -128,11 +128,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Get the source object of the row data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param rowMap row
      * @param aliasMap alias
      */
-    protected abstract void rowPostProcessing(String schemaName, Map<String, Object> rowMap, Map<String, String> aliasMap);
+    protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream()
@@ -159,17 +159,17 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Determine whether there is authority.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param grantee grantee
      * @return has authority or not
      */
-    protected static boolean hasAuthority(final String schemaName, final Grantee grantee) {
-        return SQLCheckEngine.check(schemaName, getRules(schemaName), grantee);
+    protected static boolean hasAuthority(final String databaseName, final Grantee grantee) {
+        return SQLCheckEngine.check(databaseName, getRules(databaseName), grantee);
     }
     
-    private static Collection<ShardingSphereRule> getRules(final String schemaName) {
+    private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
@@ -188,30 +188,30 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         }
         
         @Override
-        protected void initSchemaData(final String schemaName) {
+        protected void initDatabaseData(final String databaseName) {
         }
         
         /**
-         * Get the schema names as a condition for SQL execution.
+         * Get the database names as a condition for SQL execution.
          *
-         * @return schema names
+         * @return database names
          */
         @Override
-        protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
-            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
+        protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+            String database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
-            return Collections.singletonList(schema);
+            return Collections.singletonList(database);
         }
         
         /**
          * Get the source data of the row data.
          *
-         * @param schemaName schema name
+         * @param databaseName database name
          * @throws SQLException SQLException
          */
         @Override
-        protected void getSourceData(final String schemaName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
-            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
+        protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
+            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
             try (Connection conn = dataSourceEntry.get().getValue().getConnection();
@@ -224,12 +224,12 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         /**
          * Custom processing.
          *
-         * @param schemaName schema name
+         * @param databaseName database name
          * @param rowMap row
          * @param aliasMap alias
          */
         @Override
-        protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+        protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         }
         
         /**

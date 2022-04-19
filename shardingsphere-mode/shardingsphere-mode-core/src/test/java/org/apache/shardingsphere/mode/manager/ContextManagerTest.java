@@ -85,7 +85,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(metaDataContexts.getMetaData("foo_schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaDataContexts.getMetaData("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test
@@ -112,16 +112,16 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertAddSchema() throws SQLException {
+    public void assertAddDatabase() throws SQLException {
         when(metaDataContexts.getMetaDataMap()).thenReturn(new LinkedHashMap<>());
-        contextManager.addSchema("foo_schema");
-        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("foo_schema"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_schema"));
+        contextManager.addDatabase("foo_db");
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("foo_db"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
     }
     
     @Test
-    public void assertAlterSchema() {
-        contextManager.alterSchema("foo_schema", Collections.singletonMap("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table",
+    public void assertAlterDatabase() {
+        contextManager.alterDatabase("foo_db", Collections.singletonMap("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table",
                 new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getDefaultSchema().containsTable("foo_table"));
         assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_schema"));
@@ -135,7 +135,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(FederationDatabaseMetaData.class))));
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerParserContext.class))));
         when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerPlannerContext.class))));
-        contextManager.deleteSchema("foo_schema");
+        contextManager.deleteDatabase("foo_schema");
         assertFalse(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("foo_schema"));
         assertFalse(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_schema"));
         assertFalse(contextManager.getMetaDataContexts().getOptimizerContext().getParserContexts().containsKey("foo_schema"));
@@ -146,10 +146,10 @@ public final class ContextManagerTest {
     public void assertAddResource() throws SQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereMetaData(
-                "foo_schema", resource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.emptyMap()))));
-        contextManager.addResource("foo_schema", createToBeAddedDataSourceProperties());
-        assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources());
+        when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", new ShardingSphereMetaData(
+                "foo_db", resource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.emptyMap()))));
+        contextManager.addResource("foo_db", createToBeAddedDataSourceProperties());
+        assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getResource().getDataSources());
     }
     
     private Map<String, DataSourceProperties> createToBeAddedDataSourceProperties() {

@@ -77,7 +77,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(databaseName)) {
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
             throw new SchemaNotExistedException(databaseName);
         }
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();

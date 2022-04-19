@@ -54,7 +54,8 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             for (String each : getIndexNames(sqlStatement)) {
                 tableMetaData.getIndexes().remove(each);
             }
-            post(schemaMetaData.getName(), tableMetaData);
+            //TODO Get real schema name
+            post(schemaMetaData.getName(), schemaMetaData.getName(), tableMetaData);
         }
     }
     
@@ -70,8 +71,8 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private void post(final String schemaName, final TableMetaData tableMetaData) {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaName);
+    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
+        SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
         event.getAlteredTables().add(tableMetaData);
         ShardingSphereEventBus.getInstance().post(event);
     }

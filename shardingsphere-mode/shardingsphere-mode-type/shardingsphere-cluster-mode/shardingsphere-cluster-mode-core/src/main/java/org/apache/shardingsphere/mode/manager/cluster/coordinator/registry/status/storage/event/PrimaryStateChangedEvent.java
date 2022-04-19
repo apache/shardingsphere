@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 @Getter
 public final class PrimaryStateChangedEvent implements GovernanceEvent {
     
-    private final QualifiedDatabase qualifiedSchema;
+    private final QualifiedDatabase qualifiedDatabase;
 }

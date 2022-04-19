@@ -108,7 +108,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         ProxyContext.getInstance().init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getSchemaName()).thenReturn(SCHEMA_NAME);
-        when(mockContextManager.getMetaDataContexts().getAllSchemaNames().contains(SCHEMA_NAME)).thenReturn(true);
+        when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(SCHEMA_NAME)).thenReturn(true);
         prepareTableMetaData();
     }
     

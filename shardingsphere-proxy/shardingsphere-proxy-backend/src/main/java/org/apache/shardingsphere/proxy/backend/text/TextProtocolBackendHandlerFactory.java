@@ -127,7 +127,7 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String schemaName = connectionSession.getSchemaName();
-        return Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().schemaExists(schemaName)
+        return Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().databaseExists(schemaName)
                 ? defaultDatabaseType : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
     }
     
@@ -147,13 +147,13 @@ public final class TextProtocolBackendHandlerFactory {
         return Optional.empty();
     }
     
-    private static Collection<ShardingSphereRule> getRules(final String schemaName) {
+    private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         MetaDataContexts contexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().schemaExists(schemaName)) {
+        if (Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)) {
             return contexts.getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getMetaData(databaseName).getRuleMetaData().getRules());
         result.addAll(contexts.getGlobalRuleMetaData().getRules());
         return result;
     }

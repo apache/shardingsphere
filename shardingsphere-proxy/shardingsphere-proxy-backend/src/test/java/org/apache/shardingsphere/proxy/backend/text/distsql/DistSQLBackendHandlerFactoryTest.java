@@ -273,10 +273,10 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-        when(result.getMetaData("schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
+        when(result.getMetaData("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     

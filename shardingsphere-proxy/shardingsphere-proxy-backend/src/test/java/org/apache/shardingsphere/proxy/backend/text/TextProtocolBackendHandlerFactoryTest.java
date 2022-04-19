@@ -77,14 +77,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Before
     public void setUp() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
-        when(connectionSession.getDefaultSchemaName()).thenReturn("schema");
+        when(connectionSession.getDefaultSchemaName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
-        when(metaDataContexts.getAllSchemaNames().contains("schema")).thenReturn(true);
-        when(metaDataContexts.getMetaDataMap().get("schema")).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getAllDatabaseNames().contains("db")).thenReturn(true);
+        when(metaDataContexts.getMetaDataMap().get("db")).thenReturn(shardingSphereMetaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -190,7 +190,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithSet() throws SQLException {
         String sql = "set @num=1";
         ProxyContext instance = ProxyContext.getInstance();
-        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(instance.getAllDatabaseNames()).thenReturn(Collections.singletonList("schema"));
         when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
@@ -223,8 +223,8 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithQuery() throws SQLException {
         String sql = "select * from t_order limit 1";
         ProxyContext instance = ProxyContext.getInstance();
-        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-        when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
+        when(instance.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
+        when(instance.getMetaData("db").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";

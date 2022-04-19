@@ -45,15 +45,15 @@ public final class SQLCheckEngine {
     /**
      * Check schema.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param rules rules
      * @param grantee grantee
      * @return check result
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final String schemaName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
+    public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(schemaName, grantee, entry.getKey());
+            boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
             }

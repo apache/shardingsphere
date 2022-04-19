@@ -31,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class DataSourceChangedEvent implements GovernanceEvent {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String schemaVersion;
     

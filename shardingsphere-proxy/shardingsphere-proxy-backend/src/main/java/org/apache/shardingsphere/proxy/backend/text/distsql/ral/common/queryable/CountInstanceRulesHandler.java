@@ -75,7 +75,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllSchemaNames().forEach(each ->
+        ProxyContext.getInstance().getAllDatabaseNames().forEach(each ->
                 addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each))
         );
         return dataMap.values();

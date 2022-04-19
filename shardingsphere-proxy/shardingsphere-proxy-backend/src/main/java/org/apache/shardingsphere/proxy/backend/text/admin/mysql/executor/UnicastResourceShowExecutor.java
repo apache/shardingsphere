@@ -72,12 +72,12 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         String originSchema = connectionSession.getSchemaName();
-        String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
-        if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
+        String databaseName = null == originSchema ? getFirstSchemaName() : originSchema;
+        if (!ProxyContext.getInstance().getMetaData(databaseName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            connectionSession.setCurrentSchema(schemaName);
+            connectionSession.setCurrentSchema(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
                     sqlStatement, connectionSession.getDefaultSchemaName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
@@ -90,11 +90,11 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     }
     
     private String getFirstSchemaName() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = schemaNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }

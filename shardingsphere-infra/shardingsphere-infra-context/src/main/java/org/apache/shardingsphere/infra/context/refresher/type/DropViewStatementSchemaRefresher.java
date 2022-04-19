@@ -42,7 +42,8 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
+        //TODO Get real schema name
+        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
         sqlStatement.getViews().forEach(each -> {
             schemaMetaData.getDefaultSchema().remove(each.getTableName().getIdentifier().getValue());
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());

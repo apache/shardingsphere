@@ -39,9 +39,9 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0", "role: primary\nstatus: enable\n", Type.ADDED));
         assertTrue(actual.isPresent());
         PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedSchema().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
+        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
     }
     
     @Test

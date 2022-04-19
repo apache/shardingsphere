@@ -84,10 +84,10 @@ public final class SchemaMetaDataPersistService {
     /**
      * Persist schema tables.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      */
-    public void persist(final String schemaName) {
-        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(schemaName, schemaName), "");
+    public void persist(final String databaseName) {
+        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, databaseName), "");
     }
     
     private void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema, final ShardingSphereSchema originalSchema) {

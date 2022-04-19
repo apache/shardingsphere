@@ -50,7 +50,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Test
     public void assertUpdateWithMetaDataAlteredEvent() {
-        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db");
+        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", "foo_db");
         TableMetaData tableMetaData = new TableMetaData();
         event.getAlteredTables().add(tableMetaData);
         event.getDroppedTables().add("foo_table");
