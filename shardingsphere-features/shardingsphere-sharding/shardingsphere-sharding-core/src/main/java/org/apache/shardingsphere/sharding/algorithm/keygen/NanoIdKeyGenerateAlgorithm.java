@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
 /**
- * NonaId key generate algorithm.
+ * NanoId key generate algorithm.
  */
 public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
