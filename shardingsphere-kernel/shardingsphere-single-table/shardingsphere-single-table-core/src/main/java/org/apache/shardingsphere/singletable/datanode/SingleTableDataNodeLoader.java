@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.singletable.rule;
+package org.apache.shardingsphere.singletable.datanode;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -30,8 +30,10 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.common.SchemaMetaD
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,31 +58,50 @@ public final class SingleTableDataNodeLoader {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
         boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, DataNode> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, Collection<DataNode>> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
-                Collection<DataNode> existDataNode = result.putIfAbsent(each.toLowerCase(), Collections.singletonList(dataNodeMap.get(each)));
+                Collection<DataNode> addedDataNodes = dataNodeMap.get(each);
+                Collection<DataNode> existDataNodes = result.getOrDefault(each.toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
+                existDataNodes.addAll(addedDataNodes);
+                result.putIfAbsent(each.toLowerCase(), existDataNodes);
                 if (checkDuplicateTable) {
-                    Preconditions.checkState(null == existDataNode, "Single table conflict, there are multiple tables `%s` existed.", each);
+                    Preconditions.checkState(!containsDuplicateTable(existDataNodes), "Single table conflict, there are multiple tables `%s` existed.", each);
                 }
             }
         }
         return result;
     }
     
-    private static Map<String, DataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
-        Collection<String> tables = loadAllTableNames(databaseType, dataSource);
-        Map<String, DataNode> result = new HashMap<>(tables.size(), 1);
-        for (String each : tables) {
-            if (!excludedTables.contains(each)) {
-                result.put(each, new DataNode(dataSourceName, each));
+    private static Map<String, Collection<DataNode>> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseType, dataSource);
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+        for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
+            for (String each : entry.getValue()) {
+                if (!excludedTables.contains(each)) {
+                    Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
+                    DataNode dataNode = new DataNode(dataSourceName, each);
+                    dataNode.setSchemaName(entry.getKey());
+                    dataNodes.add(dataNode);
+                    result.putIfAbsent(each, dataNodes);
+                }   
             }
         }
         return result;
     }
     
-    private static Collection<String> loadAllTableNames(final DatabaseType databaseType, final DataSource dataSource) {
+    private static boolean containsDuplicateTable(final Collection<DataNode> dataNodes) {
+        Collection<String> schemas = new HashSet<>(dataNodes.size(), 1);
+        for (DataNode each : dataNodes) {
+            if (!schemas.add(each.getSchemaName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static Map<String, Collection<String>> loadSchemaTableNames(final DatabaseType databaseType, final DataSource dataSource) {
         try {
-            return SchemaMetaDataLoader.loadAllTableNames(databaseType, dataSource);
+            return SchemaMetaDataLoader.loadSchemaTableNames(databaseType, dataSource);
         } catch (final SQLException ex) {
             throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
         }
