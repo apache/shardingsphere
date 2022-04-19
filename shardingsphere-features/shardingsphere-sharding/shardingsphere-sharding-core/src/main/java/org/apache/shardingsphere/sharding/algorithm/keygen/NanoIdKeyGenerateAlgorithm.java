@@ -17,17 +17,26 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import org.junit.Test;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
-public final class NonaIdKeyGenerateAlgorithmTest {
+/**
+ * NonaId key generate algorithm.
+ */
+public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    private final NonaIdKeyGenerateAlgorithm nonaIdKeyGenerateAlgorithm = new NonaIdKeyGenerateAlgorithm();
+    @Override
+    public void init() {
+    }
     
-    @Test
-    public void assertGenerateKey() {
-        assertThat(((String) nonaIdKeyGenerateAlgorithm.generateKey()).length(), is(21));
+    @Override
+    public Comparable<?> generateKey() {
+        return NanoIdUtils.randomNanoId();
+    }
+    
+    @Override
+    public String getType() {
+        return "NANOID";
     }
 }
