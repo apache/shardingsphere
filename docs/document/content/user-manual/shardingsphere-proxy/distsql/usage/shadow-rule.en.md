@@ -35,7 +35,7 @@ PASSWORD=root
 CREATE SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_1,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
 t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ```
 

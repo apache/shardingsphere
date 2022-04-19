@@ -48,7 +48,7 @@ public final class PostgreSQLAuthenticationHandler {
     public PostgreSQLLoginResult login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         String digest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
-        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
@@ -65,7 +65,7 @@ public final class PostgreSQLAuthenticationHandler {
     
     private Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().databaseExists(databaseName)) {
             result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());

@@ -35,15 +35,15 @@ public final class ShowVersionExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        String schemaName = "test";
-        MySQLServerInfo.setServerVersion(schemaName, "8.0.26");
+        String databaseName = "test";
+        MySQLServerInfo.setServerVersion(databaseName, "8.0.26");
         ShowVersionExecutor executor = new ShowVersionExecutor();
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getSchemaName()).thenReturn(schemaName);
+        when(connectionSession.getDatabaseName()).thenReturn(databaseName);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion(schemaName)));
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion(databaseName)));
         }
     }
 }

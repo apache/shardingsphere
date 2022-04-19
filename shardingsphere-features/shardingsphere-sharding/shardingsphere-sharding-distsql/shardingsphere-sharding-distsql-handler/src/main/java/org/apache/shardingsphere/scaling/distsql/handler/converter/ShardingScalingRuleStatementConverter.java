@@ -44,7 +44,7 @@ public final class ShardingScalingRuleStatementConverter {
         OutputConfiguration outputConfiguration = convertToOutputConfiguration(segment.getOutputSegment());
         ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
         ShardingSphereAlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyChecker());
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
         return new OnRuleAlteredActionConfiguration(inputConfiguration, outputConfiguration, streamChannel, completionDetector, dataConsistencyChecker);
     }
     

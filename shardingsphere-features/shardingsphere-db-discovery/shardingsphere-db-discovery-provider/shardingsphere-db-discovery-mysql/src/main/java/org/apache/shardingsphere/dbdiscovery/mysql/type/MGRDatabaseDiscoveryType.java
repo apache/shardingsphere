@@ -64,7 +64,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().stream().findFirst().get().getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
@@ -153,12 +153,12 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;
         }
-        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, groupName);
+        determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
     }
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -178,7 +178,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         return result;
     }
     
-    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
+    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getKey().equals(getPrimaryDataSource())) {
                 continue;
@@ -196,7 +196,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find data source urls", ex);
             }
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(),
                     new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
         }
     }

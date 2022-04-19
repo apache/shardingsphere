@@ -74,7 +74,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(connectionSession.getSchemaName()).thenReturn("schema");
+        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
@@ -106,7 +106,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
-        sqlStatement.setDatabaseName("schema");
+        sqlStatement.setDatabaseName("db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -123,7 +123,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        sqlStatement.setDatabaseName("schema");
+        sqlStatement.setDatabaseName("db");
         setGovernanceMetaDataContexts(true);
         try {
             DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
@@ -136,7 +136,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("schema", metaData);
+        return Collections.singletonMap("db", metaData);
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
@@ -147,8 +147,8 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        when(metaDataContexts.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(metaDataContexts.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(metaDataContexts.getMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return metaDataContexts;
     }
     

@@ -24,7 +24,7 @@ on:
   push:
     branches: [ master, dev ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/ci.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
@@ -35,7 +35,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/ci.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'

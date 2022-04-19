@@ -49,7 +49,7 @@ public final class ConnectionSession {
     private final DatabaseType databaseType;
     
     @Setter(AccessLevel.NONE)
-    private volatile String schemaName;
+    private volatile String databaseName;
     
     private volatile int connectionId;
     
@@ -92,39 +92,39 @@ public final class ConnectionSession {
     }
     
     /**
-     * Change schema of current channel.
+     * Change database of current channel.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      */
-    public void setCurrentSchema(final String schemaName) {
-        if (null != schemaName && schemaName.equals(this.schemaName)) {
+    public void setCurrentDatabase(final String databaseName) {
+        if (null != databaseName && databaseName.equals(this.databaseName)) {
             return;
         }
         if (transactionStatus.isInTransaction()) {
-            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+            throw new ShardingSphereException("Failed to switch database, please terminate current transaction.");
         }
         if (statementManager instanceof JDBCBackendStatement) {
-            ((JDBCBackendStatement) statementManager).setSchemaName(schemaName);
+            ((JDBCBackendStatement) statementManager).setSchemaName(databaseName);
         }
-        this.schemaName = schemaName;
+        this.databaseName = databaseName;
     }
     
     /**
-     * Get schema name.
+     * Get database name.
      *
-     * @return schema name
+     * @return database name
      */
-    public String getSchemaName() {
-        return null == SQLStatementSchemaHolder.get() ? schemaName : SQLStatementSchemaHolder.get();
+    public String getDatabaseName() {
+        return null == SQLStatementSchemaHolder.get() ? databaseName : SQLStatementSchemaHolder.get();
     }
     
     /**
-     * Get default schema name.
+     * Get default database name.
      *
-     * @return default schema name
+     * @return default database name
      */
-    public String getDefaultSchemaName() {
-        return schemaName;
+    public String getDefaultDatabaseName() {
+        return databaseName;
     }
     
     /**

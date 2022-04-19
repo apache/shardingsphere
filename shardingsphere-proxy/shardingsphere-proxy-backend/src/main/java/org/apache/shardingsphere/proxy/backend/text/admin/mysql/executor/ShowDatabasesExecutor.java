@@ -56,7 +56,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<Object> getSchemaNames(final ConnectionSession connectionSession) {
         Collection<Object> result = new LinkedList<>();
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+        for (String each : ProxyContext.getInstance().getAllDatabaseNames()) {
             if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
                 result.add(each);
             }

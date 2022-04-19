@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseBasedPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
@@ -36,30 +36,31 @@ import java.util.stream.Collectors;
  * Data source persist service.
  */
 @RequiredArgsConstructor
-public final class DataSourcePersistService implements SchemaBasedPersistService<Map<String, DataSourceProperties>> {
+public final class DataSourcePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean isOverwrite) {
-        if (!dataSourcePropsMap.isEmpty() && (isOverwrite || !isExisted(schemaName))) {
-            persist(schemaName, dataSourcePropsMap);
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean isOverwrite) {
+        if (!dataSourcePropsMap.isEmpty() && (isOverwrite || !isExisted(databaseName))) {
+            persist(databaseName, dataSourcePropsMap);
         }
     }
     
     @Override
-    public void persist(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        if (Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName))) {
-            repository.persist(SchemaMetaDataNode.getActiveVersionPath(schemaName), DEFAULT_VERSION);
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     @Override
-    public void persist(final String schemaName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+    public void persist(final String databaseName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
@@ -70,12 +71,12 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
         return isExisted(databaseName) ? getDataSourceProperties(repository.get(
-                SchemaMetaDataNode.getMetaDataDataSourcePath(databaseName, getSchemaActiveVersion(databaseName)))) : new LinkedHashMap<>();
+                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
     @Override
-    public Map<String, DataSourceProperties> load(final String schemaName, final String version) {
-        String yamlContent = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, version));
+    public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
+        String yamlContent = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
     }
     
@@ -92,37 +93,37 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getSchemaActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(databaseName, 
-                getSchemaActiveVersion(databaseName))));
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
+                getDatabaseActiveVersion(databaseName))));
     }
     
     /**
      * Append data source properties map.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
-    public void append(final String schemaName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
-        Map<String, DataSourceProperties> dataSourceConfigs = load(schemaName);
+    public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+        Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
         dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
-        persist(schemaName, dataSourceConfigs);
+        persist(databaseName, dataSourceConfigs);
     }
     
     /**
      * Drop data sources.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param toBeDroppedDataSourceNames data sources to be dropped
      */
-    public void drop(final String schemaName, final Collection<String> toBeDroppedDataSourceNames) {
-        Map<String, DataSourceProperties> dataSourcePropsMap = load(schemaName);
+    public void drop(final String databaseName, final Collection<String> toBeDroppedDataSourceNames) {
+        Map<String, DataSourceProperties> dataSourcePropsMap = load(databaseName);
         for (String each : toBeDroppedDataSourceNames) {
             dataSourcePropsMap.remove(each);
         }
-        persist(schemaName, dataSourcePropsMap);
+        persist(databaseName, dataSourcePropsMap);
     }
     
-    private String getSchemaActiveVersion(final String databaseName) {
-        return repository.get(SchemaMetaDataNode.getActiveVersionPath(databaseName));
+    private String getDatabaseActiveVersion(final String databaseName) {
+        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

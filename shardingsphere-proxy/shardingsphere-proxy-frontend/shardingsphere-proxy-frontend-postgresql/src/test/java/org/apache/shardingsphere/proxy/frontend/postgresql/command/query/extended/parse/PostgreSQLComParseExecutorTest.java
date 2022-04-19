@@ -23,9 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -45,14 +43,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -107,8 +102,8 @@ public final class PostgreSQLComParseExecutorTest {
         when(parsePacket.getSql()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        when(connectionSession.getSchemaName()).thenReturn("schema");
-        when(mockedContextManager.getMetaDataContexts().getMetaData("schema").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getDatabaseName()).thenReturn("db");
+        when(mockedContextManager.getMetaDataContexts().getMetaData("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(mockedContextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
@@ -117,12 +112,6 @@ public final class PostgreSQLComParseExecutorTest {
         assertTrue(actualPreparedStatement.getSqlStatement() instanceof PostgreSQLInsertStatement);
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
-    }
-    
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap("schema", metaData);
     }
     
     @After

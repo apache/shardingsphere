@@ -53,7 +53,7 @@ public final class RuleDefinitionBackendHandlerTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        when(result.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
         when(result.getMetaDataContexts().getMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         return result;
     }
@@ -61,7 +61,7 @@ public final class RuleDefinitionBackendHandlerTest {
     @Test
     public void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
-        connectionSession.setCurrentSchema("test");
+        connectionSession.setCurrentDatabase("test");
         ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));

@@ -88,8 +88,8 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        when(connectionSession.getSchemaName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultSchemaName()).thenReturn("logic_db");
+        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);

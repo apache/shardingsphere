@@ -79,9 +79,9 @@ public final class CountInstanceRulesTest {
         when(ruleMetaData.getConfigurations()).thenReturn(ruleConfiguration);
         when(shardingSphereMetaData1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData2.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Arrays.asList("schema_1", "schema_2"));
-        when(contextManager.getMetaDataContexts().getMetaData("schema_1")).thenReturn(shardingSphereMetaData1);
-        when(contextManager.getMetaDataContexts().getMetaData("schema_2")).thenReturn(shardingSphereMetaData2);
+        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
+        when(contextManager.getMetaDataContexts().getMetaData("db_1")).thenReturn(shardingSphereMetaData1);
+        when(contextManager.getMetaDataContexts().getMetaData("db_2")).thenReturn(shardingSphereMetaData2);
         ProxyContext.getInstance().init(contextManager);
     }
     

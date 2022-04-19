@@ -100,7 +100,7 @@ public final class ImportSchemaConfigurationHandlerTest {
         validatorField.setAccessible(true);
         validatorField.set(importSchemaConfigurationHandler, validator);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(feature));
+        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList(feature));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());

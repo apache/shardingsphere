@@ -47,24 +47,24 @@ public final class MySQLServerInfo {
     /**
      * Set server version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param serverVersion server version
      */
-    public static void setServerVersion(final String schemaName, final String serverVersion) {
-        SERVER_VERSIONS.put(schemaName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
+    public static void setServerVersion(final String databaseName, final String serverVersion) {
+        SERVER_VERSIONS.put(databaseName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
     }
     
     /**
      * Get current server version by schemaName.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return server version
      */
-    public static String getServerVersion(final String schemaName) {
-        if (schemaName == null) {
+    public static String getServerVersion(final String databaseName) {
+        if (databaseName == null) {
             return getDefaultServerVersion();
         }
-        return SERVER_VERSIONS.getOrDefault(schemaName, getDefaultServerVersion());
+        return SERVER_VERSIONS.getOrDefault(databaseName, getDefaultServerVersion());
     }
     
     /**

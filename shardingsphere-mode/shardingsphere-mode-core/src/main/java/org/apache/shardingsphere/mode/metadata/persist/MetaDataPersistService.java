@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
@@ -55,7 +55,7 @@ public final class MetaDataPersistService {
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
     
-    private final SchemaRulePersistService schemaRuleService;
+    private final DatabaseRulePersistService schemaRuleService;
     
     private final GlobalRulePersistService globalRuleService;
     
@@ -63,17 +63,17 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final SchemaVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
-        schemaRuleService = new SchemaRulePersistService(repository);
+        schemaRuleService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        schemaVersionPersistService = new SchemaVersionPersistService(repository);
+        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
     /**

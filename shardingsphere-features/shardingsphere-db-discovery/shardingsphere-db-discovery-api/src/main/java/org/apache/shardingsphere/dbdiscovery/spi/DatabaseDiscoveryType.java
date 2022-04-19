@@ -32,30 +32,30 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     /**
      * Check database discovery configuration.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    void checkDatabaseDiscoveryConfiguration(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
+    void checkDatabaseDiscoveryConfiguration(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
     /**
      * Update primary data source.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
      * @param groupName group name
      */
-    void updatePrimaryDataSource(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
+    void updatePrimaryDataSource(String databaseName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
     
     /**
      * Update member state.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSourceMap data source map
      * @param groupName group name
      */
-    void updateMemberState(String schemaName, Map<String, DataSource> dataSourceMap, String groupName);
+    void updateMemberState(String databaseName, Map<String, DataSource> dataSourceMap, String groupName);
     
     /**
      * Get primary data source.

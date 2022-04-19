@@ -112,8 +112,8 @@ public final class ProxySQLExecutor {
      * @throws SQLException SQL exception
      */
     public List<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules();
+        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         return execute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys);
@@ -142,7 +142,7 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getSchemaName());
+        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getLogicSQL(), new RawSQLExecutorCallback());
@@ -159,13 +159,13 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getSchemaName());
+        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         return jdbcExecutor.execute(executionContext.getLogicSQL(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
         Optional<ExecuteResult> executeResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());

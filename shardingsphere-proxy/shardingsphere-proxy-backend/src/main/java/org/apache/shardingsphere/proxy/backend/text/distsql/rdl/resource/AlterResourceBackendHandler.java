@@ -60,12 +60,12 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
-        checkSQLStatement(schemaName, sqlStatement);
+    public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+        checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().alterResource(schemaName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().alterResource(databaseName, dataSourcePropsMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
