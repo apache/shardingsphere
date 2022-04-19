@@ -59,6 +59,6 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final PrimaryDataSourceChangedEvent event) {
-        repository.persist(StorageStatusNode.getStatusPath(event.getQualifiedSchema()), YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLED)));
+        repository.persist(StorageStatusNode.getStatusPath(event.getQualifiedDatabase()), YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLED)));
     }
 }

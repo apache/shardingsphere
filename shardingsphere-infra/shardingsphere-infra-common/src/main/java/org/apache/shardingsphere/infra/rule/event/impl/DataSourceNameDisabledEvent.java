@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 @Getter
 public final class DataSourceNameDisabledEvent implements DataSourceStatusChangedEvent {
     
-    private final QualifiedDatabase qualifiedSchema;
+    private final QualifiedDatabase qualifiedDatabase;
     
     private final boolean isDisabled;
 }

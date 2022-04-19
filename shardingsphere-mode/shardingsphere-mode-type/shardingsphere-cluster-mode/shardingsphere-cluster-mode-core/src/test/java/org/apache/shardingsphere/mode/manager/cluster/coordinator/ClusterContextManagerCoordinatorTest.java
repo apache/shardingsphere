@@ -199,7 +199,7 @@ public final class ClusterContextManagerCoordinatorTest {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
         verify(statusContainedRule, times(1)).updateStatus(argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent ->
-                        Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedSchema()) && argumentEvent.isDisabled()));
+                        Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedDatabase()) && argumentEvent.isDisabled()));
     }
     
     @Test

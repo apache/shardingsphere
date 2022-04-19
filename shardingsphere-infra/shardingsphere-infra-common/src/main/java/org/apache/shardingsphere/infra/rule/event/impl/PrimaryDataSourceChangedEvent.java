@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 @Getter
 public final class PrimaryDataSourceChangedEvent implements DataSourceStatusChangedEvent {
     
-    private final QualifiedDatabase qualifiedSchema;
+    private final QualifiedDatabase qualifiedDatabase;
 }
