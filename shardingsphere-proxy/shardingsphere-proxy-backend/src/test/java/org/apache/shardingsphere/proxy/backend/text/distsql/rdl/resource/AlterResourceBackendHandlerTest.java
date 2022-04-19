@@ -127,7 +127,7 @@ public final class AlterResourceBackendHandlerTest {
         when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
-        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
+        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     

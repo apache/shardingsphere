@@ -91,7 +91,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLCharacterSet mySQLCharacterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCharacterSet.getCharset());
         context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCharacterSet);
-        if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().schemaExists(packet.getDatabase())) {
+        if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();
         }

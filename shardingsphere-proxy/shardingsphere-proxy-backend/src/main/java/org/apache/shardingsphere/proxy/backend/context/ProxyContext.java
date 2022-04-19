@@ -64,7 +64,7 @@ public final class ProxyContext {
     }
     
     /**
-     * Check schema exists.
+     * Check database exists.
      *
      * @param databaseName database name
      * @return database exists or not

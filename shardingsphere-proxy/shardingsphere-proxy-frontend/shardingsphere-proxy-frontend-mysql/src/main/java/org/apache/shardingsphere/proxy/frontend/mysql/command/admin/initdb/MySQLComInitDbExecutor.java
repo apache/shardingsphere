@@ -45,17 +45,17 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        String schemaName = SQLUtil.getExactlyValue(packet.getSchema());
-        if (ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), connectionSession.getGrantee())) {
+        String databaseName = SQLUtil.getExactlyValue(packet.getSchema());
+        if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
             connectionSession.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
         throw new UnknownDatabaseException(packet.getSchema());
     }
     
-    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+    private Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
