@@ -95,7 +95,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(connectionSession.getSchemaName()).thenReturn("db");
+        when(connectionSession.getDatabaseName()).thenReturn("db");
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

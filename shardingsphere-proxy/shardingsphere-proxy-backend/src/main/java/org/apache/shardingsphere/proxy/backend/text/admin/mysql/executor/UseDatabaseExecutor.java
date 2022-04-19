@@ -43,7 +43,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     public void execute(final ConnectionSession connectionSession) {
         String databaseName = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
-            connectionSession.setCurrentSchema(databaseName);
+            connectionSession.setCurrentDatabase(databaseName);
             return;
         }
         throw new UnknownDatabaseException(databaseName);

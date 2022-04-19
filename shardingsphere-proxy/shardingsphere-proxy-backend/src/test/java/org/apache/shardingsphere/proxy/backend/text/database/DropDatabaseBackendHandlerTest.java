@@ -86,27 +86,27 @@ public final class DropDatabaseBackendHandlerTest {
     public void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
     public void assertExecuteDropCurrentDatabase() {
-        when(connectionSession.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getDatabaseName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession).setCurrentSchema(null);
+        verify(connectionSession).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
     public void assertExecuteDropOtherDatabase() {
-        when(connectionSession.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getDatabaseName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }

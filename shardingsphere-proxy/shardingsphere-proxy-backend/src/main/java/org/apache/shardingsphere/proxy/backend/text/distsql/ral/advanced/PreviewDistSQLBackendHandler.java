@@ -109,7 +109,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementSchemaHolder::set);
         }
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
@@ -158,7 +158,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
     }
     
     private String getDatabaseName() {
-        String result = !Strings.isNullOrEmpty(connectionSession.getSchemaName()) ? connectionSession.getSchemaName() : connectionSession.getDefaultSchemaName();
+        String result = !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) ? connectionSession.getDatabaseName() : connectionSession.getDefaultDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

@@ -97,8 +97,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName(), dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayTransactionOption(each);
         }

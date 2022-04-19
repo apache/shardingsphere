@@ -65,7 +65,7 @@ public final class JDBCBackendTransactionManagerTest {
     @Before
     public void setUp() {
         setTransactionContexts();
-        when(connectionSession.getSchemaName()).thenReturn("schema");
+        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -83,7 +83,7 @@ public final class JDBCBackendTransactionManagerTest {
     private TransactionContexts mockTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
-        when(result.getEngines().get("schema")).thenReturn(transactionManagerEngine);
+        when(result.getEngines().get("db")).thenReturn(transactionManagerEngine);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
         return result;
     }

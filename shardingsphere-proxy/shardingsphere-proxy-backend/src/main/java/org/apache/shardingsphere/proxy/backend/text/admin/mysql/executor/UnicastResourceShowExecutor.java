@@ -71,25 +71,25 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        String originSchema = connectionSession.getSchemaName();
-        String databaseName = null == originSchema ? getFirstSchemaName() : originSchema;
+        String originDatabase = connectionSession.getDatabaseName();
+        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
         if (!ProxyContext.getInstance().getMetaData(databaseName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            connectionSession.setCurrentSchema(databaseName);
+            connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
-                    sqlStatement, connectionSession.getDefaultSchemaName());
+                    sqlStatement, connectionSession.getDefaultDatabaseName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
-            connectionSession.setCurrentSchema(originSchema);
+            connectionSession.setCurrentDatabase(originDatabase);
             databaseCommunicationEngine.close();
         }
     }
     
-    private String getFirstSchemaName() {
+    private String getFirstDatabaseName() {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();

@@ -55,7 +55,7 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> imple
     
     private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
         Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
-        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getSchemaName();
+        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
     private void checkDatabase(final String databaseName) {

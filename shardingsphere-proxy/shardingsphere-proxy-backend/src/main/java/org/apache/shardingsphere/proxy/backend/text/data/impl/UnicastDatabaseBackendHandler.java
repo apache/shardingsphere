@@ -52,36 +52,36 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public Future<ResponseHeader> executeFuture() {
-        String originSchema = connectionSession.getSchemaName();
-        String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
-        if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
+        String originDatabase = connectionSession.getDatabaseName();
+        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
+        if (!ProxyContext.getInstance().getMetaData(databaseName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
-        connectionSession.setCurrentSchema(schemaName);
+        connectionSession.setCurrentDatabase(databaseName);
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
         return ((Future<ResponseHeader>) databaseCommunicationEngine.execute()).eventually(unused -> {
-            connectionSession.setCurrentSchema(originSchema);
+            connectionSession.setCurrentDatabase(databaseName);
             return Future.succeededFuture();
         });
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originSchema = connectionSession.getDefaultSchemaName();
-        String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
-        if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
+        String originDatabase = connectionSession.getDefaultDatabaseName();
+        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
+        if (!ProxyContext.getInstance().getMetaData(databaseName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            connectionSession.setCurrentSchema(schemaName);
+            connectionSession.setCurrentDatabase(databaseName);
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             return (ResponseHeader) databaseCommunicationEngine.execute();
         } finally {
-            connectionSession.setCurrentSchema(originSchema);
+            connectionSession.setCurrentDatabase(databaseName);
         }
     }
     
-    private String getFirstSchemaName() {
+    private String getFirstDatabaseName() {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();

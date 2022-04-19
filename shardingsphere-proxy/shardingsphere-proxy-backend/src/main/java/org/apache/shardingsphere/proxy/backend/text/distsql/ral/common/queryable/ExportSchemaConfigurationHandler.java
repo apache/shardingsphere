@@ -226,7 +226,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (null == result) {
             throw new NoDatabaseSelectedException();
         }

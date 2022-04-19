@@ -55,7 +55,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         event.getAlteredTables().add(tableMetaData);
         event.getDroppedTables().add("foo_table");
         schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).persist("foo_db", tableMetaData);
-        verify(persistService).delete("foo_db", "foo_table");
+        verify(persistService).persist("foo_db", "foo_schema", tableMetaData);
+        verify(persistService).delete("foo_db", "foo_schema", "foo_table");
     }
 }

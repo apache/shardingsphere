@@ -26,8 +26,8 @@ public final class QualifiedDatabaseTest {
     
     @Test
     public void assertNewQualifiedDatabaseWithDatabaseNameAndDataSourceName() {
-        QualifiedDatabase actual = new QualifiedDatabase("test_schema.test_group_name.test_ds");
-        assertThat(actual.getDatabaseName(), is("test_schema"));
+        QualifiedDatabase actual = new QualifiedDatabase("test_db.test_group_name.test_ds");
+        assertThat(actual.getDatabaseName(), is("test_db"));
         assertThat(actual.getGroupName(), is("test_group_name"));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }

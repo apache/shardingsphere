@@ -49,7 +49,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     public ResponseHeader execute() {
         check(sqlStatement, connectionSession.getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
-            connectionSession.setCurrentSchema(null);
+            connectionSession.setCurrentDatabase(null);
         }
         ProxyContext.getInstance().getContextManager().deleteDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
@@ -66,7 +66,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(connectionSession.getSchemaName()) && connectionSession.getSchemaName().equals(databaseName);
+        return !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) && connectionSession.getDatabaseName().equals(databaseName);
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {

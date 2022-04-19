@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTablesExecutorTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -80,7 +80,7 @@ public final class ShowTablesExecutorTest {
         when(metaData.getDefaultSchema()).thenReturn(schema);
         when(metaData.isComplete()).thenReturn(true);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap(String.format(SCHEMA_PATTERN, 0), metaData);
+        return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), metaData);
     }
     
     @Test
@@ -162,7 +162,7 @@ public final class ShowTablesExecutorTest {
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

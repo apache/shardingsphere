@@ -92,12 +92,12 @@ public final class JDBCBackendConnectionTest {
     public void setUp() throws ReflectiveOperationException {
         setContextManager();
         setBackendDataSource();
-        when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         backendConnection = spy(new JDBCBackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
-        backendStatement.setSchemaName(connectionSession.getSchemaName());
+        backendStatement.setSchemaName(connectionSession.getDatabaseName());
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     

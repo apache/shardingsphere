@@ -61,17 +61,6 @@ public final class SchemaMetaDataPersistService {
     /**
      * Persist table meta data.
      *
-     * @param schemaName schema name
-     * @param tableMetaData table meta data
-     */
-    public void persist(final String schemaName, final TableMetaData tableMetaData) {
-        repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(schemaName, schemaName, tableMetaData.getName().toLowerCase()),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
-    }
-    
-    /**
-     * Persist table meta data.
-     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableMetaData table meta data
@@ -120,16 +109,6 @@ public final class SchemaMetaDataPersistService {
      */
     public void delete(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
-    }
-    
-    /**
-     * Delete table meta data.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
-     */
-    public void delete(final String schemaName, final String tableName) {
-        repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(schemaName, schemaName, tableName));
     }
     
     /**

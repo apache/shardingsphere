@@ -43,7 +43,7 @@ public final class SQLCheckEngine {
     }
     
     /**
-     * Check schema.
+     * Check database.
      *
      * @param databaseName database name
      * @param rules rules

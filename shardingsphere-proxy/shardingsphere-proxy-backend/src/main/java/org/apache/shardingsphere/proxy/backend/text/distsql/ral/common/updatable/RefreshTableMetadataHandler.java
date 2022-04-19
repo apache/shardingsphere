@@ -42,7 +42,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String databaseName = connectionSession.getSchemaName();
+        String databaseName = connectionSession.getDatabaseName();
         checkDatabase(databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
             contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());

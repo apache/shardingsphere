@@ -61,7 +61,7 @@ public final class RuleDefinitionBackendHandlerTest {
     @Test
     public void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
-        connectionSession.setCurrentSchema("test");
+        connectionSession.setCurrentDatabase("test");
         ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
