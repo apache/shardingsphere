@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
-* Authority rule configuration for YAML.
+* Authority configuration for YAML.
  */
 @Getter
 @Setter
