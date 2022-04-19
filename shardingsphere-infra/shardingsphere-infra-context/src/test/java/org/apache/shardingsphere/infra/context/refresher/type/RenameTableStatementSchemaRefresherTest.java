@@ -114,9 +114,9 @@ public final class RenameTableStatementSchemaRefresherTest {
     @SneakyThrows
     private void refreshRenameTableStatement(final int renameStatementCount) {
         Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
-        for (Integer i = 0; i < renameStatementCount; i++) {
-            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(oriTableNamePrefix + i.toString())));
-            SimpleTableSegment newSimpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(newTableNamePrefix + i.toString())));
+        for (int i = 0; i < renameStatementCount; i++) {
+            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(oriTableNamePrefix + i)));
+            SimpleTableSegment newSimpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(newTableNamePrefix + i)));
             RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 1);
             renameTableDefinitionSegment.setTable(simpleTableSegment);
             renameTableDefinitionSegment.setRenameTable(newSimpleTableSegment);
