@@ -49,7 +49,7 @@ public final class LockNodeTest {
     
     @Test
     public void assertGenerateGlobalSchemaLocksName() {
-        assertThat(LockNode.generateGlobalSchemaLocksName("schema", "127.0.0.1@3307"), is("/lock/global/schema/locks/schema-127.0.0.1@3307"));
+        assertThat(LockNode.generateGlobalSchemaLocksName("schema"), is("/lock/global/schema/locks/schema"));
     }
     
     @Test
@@ -59,7 +59,7 @@ public final class LockNodeTest {
     
     @Test
     public void assertGenerateGlobalSchemaLockReleasedNodePath() {
-        assertThat(LockNode.generateGlobalSchemaLockReleasedNodePath("schema", "127.0.0.1@3307"), is("/lock/global/schema/locks/schema-127.0.0.1@3307/leases"));
+        assertThat(LockNode.generateGlobalSchemaLockReleasedNodePath("schema"), is("/lock/global/schema/locks/schema/leases"));
     }
     
     @Test

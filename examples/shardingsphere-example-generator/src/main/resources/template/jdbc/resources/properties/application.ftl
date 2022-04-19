@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 <#if mode!="memory">
-    <#include "mode/spring-boot-starter/${mode}.ftl" />
+    <#include "../mode/spring-boot-starter/${mode}.ftl" />
 </#if>
 <#if framework?contains("mybatis")>
 

@@ -85,11 +85,10 @@ public final class LockNode {
      * Generate global schema locks name.
      *
      * @param schema schema
-     * @param instanceId instance id
      * @return global schema locks name
      */
-    public static String generateGlobalSchemaLocksName(final String schema, final String instanceId) {
-        return getGlobalSchemaLocksNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, instanceId);
+    public static String generateGlobalSchemaLocksName(final String schema) {
+        return getGlobalSchemaLocksNodePath() + "/" + schema;
     }
     
     /**
@@ -107,11 +106,10 @@ public final class LockNode {
      * Generate global schema Lock released node path.
      *
      * @param schema schema
-     * @param instanceId instance id
      * @return global schema Lock released name
      */
-    public static String generateGlobalSchemaLockReleasedNodePath(final String schema, final String instanceId) {
-        return getGlobalSchemaLocksNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, instanceId) + "/leases";
+    public static String generateGlobalSchemaLockReleasedNodePath(final String schema) {
+        return getGlobalSchemaLocksNodePath() + "/" + schema + "/leases";
     }
     
     /**
