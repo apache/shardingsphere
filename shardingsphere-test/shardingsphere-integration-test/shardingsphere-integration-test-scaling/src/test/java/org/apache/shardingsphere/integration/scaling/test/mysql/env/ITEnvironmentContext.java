@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.config.SourceConfiguration;
@@ -59,7 +60,7 @@ public final class ITEnvironmentContext {
         Map<String, YamlTableRuleConfiguration> sourceTableRules = createSourceTableRules();
         scalingConfiguration = createScalingConfiguration(sourceTableRules);
         sourceDataSource = SourceConfiguration.createHostDataSource(sourceTableRules);
-        targetDataSource = TargetConfiguration.createHostDataSource();
+        targetDataSource = PipelineDataSourceFactory.newInstance(TargetConfiguration.getHostConfiguration());
     }
     
     @SneakyThrows

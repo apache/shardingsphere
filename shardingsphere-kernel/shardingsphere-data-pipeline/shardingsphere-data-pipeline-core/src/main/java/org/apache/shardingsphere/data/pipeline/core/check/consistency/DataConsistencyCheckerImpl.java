@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -64,44 +63,35 @@ import java.util.concurrent.TimeUnit;
 /**
  * Data consistency checker implementation.
  */
-@Getter
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
-    
     private final JobConfiguration jobConfig;
-    
-    private final RuleAlteredContext ruleAlteredContext;
-    
-    private final String jobId;
     
     private final Collection<String> logicTableNames;
     
     public DataConsistencyCheckerImpl(final JobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
-        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        jobId = jobConfig.getHandleConfig().getJobId();
         logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-countCheck-%d");
+    public Map<String, DataConsistencyCountCheckResult> checkCount() {
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
             jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
-        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
+        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
+            Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>();
             for (String each : logicTableNames) {
                 result.put(each, countCheck(each, sourceDataSource, targetDataSource, executor));
             }
             return result;
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("count check failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("Count check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -115,16 +105,16 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         return jobId.substring(0, 6);
     }
     
-    private DataConsistencyCheckResult countCheck(
+    private DataConsistencyCountCheckResult countCheck(
             final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
         try {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
             long sourceCount = sourceFuture.get();
             long targetCount = targetFuture.get();
-            return new DataConsistencyCheckResult(sourceCount, targetCount);
+            return new DataConsistencyCountCheckResult(sourceCount, targetCount);
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("count check failed for table '%s'", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for table '%s'", table), ex);
         }
     }
     
@@ -135,12 +125,12 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("count for table '%s' failed", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", table), ex);
         }
     }
     
     @Override
-    public Map<String, Boolean> checkRecordsContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
+    public Map<String, DataConsistencyContentCheckResult> checkContent(final DataConsistencyCalculateAlgorithm dataConsistencyCalculator) {
         Collection<String> supportedDatabaseTypes = dataConsistencyCalculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
@@ -149,17 +139,17 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
-        Map<String, Boolean> result = new HashMap<>();
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
+        Map<String, DataConsistencyContentCheckResult> result = new HashMap<>();
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm inputRateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
-        try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
+        JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
+        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
             logicTableNames.forEach(each -> {
                 //TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("could not get metadata for table '%s'", each));
+                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s'", each));
                 }
             });
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
@@ -172,7 +162,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                 DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = dataConsistencyCalculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = dataConsistencyCalculator.calculate(targetParameter).iterator();
-                boolean calculateResultsEquals = true;
+                boolean contentMatched = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
                     if (null != inputRateLimitAlgorithm) {
                         inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
@@ -181,15 +171,15 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
                     Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
                     Object sourceCalculatedResult = sourceFuture.get();
                     Object targetCalculatedResult = targetFuture.get();
-                    calculateResultsEquals = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
-                    if (!calculateResultsEquals) {
+                    contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
+                    if (!contentMatched) {
                         break;
                     }
                 }
-                result.put(each, calculateResultsEquals);
+                result.put(each, new DataConsistencyContentCheckResult(contentMatched));
             }
         } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("data check failed", ex);
+            throw new PipelineDataConsistencyCheckFailedException("Data check failed", ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -199,16 +189,16 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private void checkDatabaseTypeSupportedOrNot(final Collection<String> supportedDatabaseTypes, final String databaseType) {
         if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new PipelineDataConsistencyCheckFailedException("database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
+            throw new PipelineDataConsistencyCheckFailedException("Database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
         }
     }
     
     private Map<String, TableMetaData> getTableMetaDataMap(final String schemaName) {
         ContextManager contextManager = PipelineContext.getContextManager();
-        Preconditions.checkNotNull(contextManager, "contextManager null");
+        Preconditions.checkNotNull(contextManager, "ContextManager null");
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
         if (null == metaData) {
-            throw new RuntimeException("Can not get metaData by schemaName " + schemaName);
+            throw new RuntimeException("Can not get meta data by schema name " + schemaName);
         }
         return metaData.getDefaultSchema().getTables();
     }

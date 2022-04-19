@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.util.Map;
 
 /**
- * Data consistency checker interface.
+ * Data consistency checker.
  */
 public interface DataConsistencyChecker {
     
@@ -32,7 +33,7 @@ public interface DataConsistencyChecker {
      *
      * @return records count check result. key is logic table name, value is check result.
      */
-    Map<String, DataConsistencyCheckResult> checkRecordsCount();
+    Map<String, DataConsistencyCountCheckResult> checkCount();
     
     /**
      * Check whether each table's records content is valid.
@@ -40,5 +41,5 @@ public interface DataConsistencyChecker {
      * @param calculator data consistency calculate algorithm
      * @return records content check result. key is logic table name, value is check result.
      */
-    Map<String, Boolean> checkRecordsContent(DataConsistencyCalculateAlgorithm calculator);
+    Map<String, DataConsistencyContentCheckResult> checkContent(DataConsistencyCalculateAlgorithm calculator);
 }

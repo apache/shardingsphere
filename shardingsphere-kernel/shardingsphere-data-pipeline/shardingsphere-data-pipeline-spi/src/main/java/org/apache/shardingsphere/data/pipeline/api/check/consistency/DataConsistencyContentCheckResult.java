@@ -22,14 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Data consistency check result.
+ * Data consistency content check result.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
-public final class DataConsistencyCheckResult {
+@ToString
+public final class DataConsistencyContentCheckResult {
     
-    private final DataConsistencyCountCheckResult countCheckResult;
-    
-    private final DataConsistencyContentCheckResult contentCheckResult;
+    private final boolean matched;
 }

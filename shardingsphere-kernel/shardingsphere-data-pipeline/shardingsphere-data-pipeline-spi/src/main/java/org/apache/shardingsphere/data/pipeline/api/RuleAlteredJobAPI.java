@@ -147,10 +147,10 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * Aggregate data consistency check results.
      *
      * @param jobId job id
-     * @param checkResultMap check result map
+     * @param checkResults check results
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
     
     /**
      * Switch job source schema's configuration to job target configuration.
