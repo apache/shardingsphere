@@ -274,7 +274,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck0(jobConfig, ruleAlteredContext.getDataConsistencyCalculateAlgorithm());
+        return dataConsistencyCheck(jobConfig, ruleAlteredContext.getDataConsistencyCalculateAlgorithm());
     }
     
     @Override
@@ -283,15 +283,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         JobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
         verifyDataConsistencyCheck(jobConfig);
-        return dataConsistencyCheck0(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, new Properties()));
+        return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, new Properties()));
     }
     
-    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
-        verifyManualMode(jobConfig);
-        verifySourceWritingStopped(jobConfig);
-    }
-    
-    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobConfig);
         Map<String, DataConsistencyCountCheckResult> countCheckResult = dataConsistencyChecker.checkCount();
@@ -304,6 +299,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
+    }
+    
+    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
+        verifyManualMode(jobConfig);
+        verifySourceWritingStopped(jobConfig);
     }
     
     @Override
