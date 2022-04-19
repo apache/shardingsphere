@@ -141,7 +141,7 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-# 
+#
 #rules:
 #- !SHARDING
 #  tables:
