@@ -31,16 +31,16 @@ public final class AlterViewStatementHandlerTest {
     
     @Test
     public void assertGetSelectStatementWithSelectStatementForMySQL() {
-        MySQLAlterViewStatement createViewStatement = new MySQLAlterViewStatement();
-        createViewStatement.setSelect(new MySQLSelectStatement());
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(createViewStatement);
+        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
+        alterViewStatement.setSelect(new MySQLSelectStatement());
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertTrue(selectStatement.isPresent());
     }
     
     @Test
     public void assertGetSelectStatementWithoutSelectStatementForMySQL() {
-        MySQLAlterViewStatement createViewStatement = new MySQLAlterViewStatement();
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(createViewStatement);
+        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertFalse(selectStatement.isPresent());
     }
 }
