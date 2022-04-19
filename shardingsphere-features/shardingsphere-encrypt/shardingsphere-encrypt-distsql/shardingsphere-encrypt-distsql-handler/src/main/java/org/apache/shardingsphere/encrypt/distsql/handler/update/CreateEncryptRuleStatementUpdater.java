@@ -59,12 +59,12 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         // TODO check resource
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+    private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
             if (!toBeCreatedDuplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleException("encrypt", schemaName, toBeCreatedDuplicateRuleNames);
+                throw new DuplicateRuleException("encrypt", databaseName, toBeCreatedDuplicateRuleNames);
             }
         }
     }

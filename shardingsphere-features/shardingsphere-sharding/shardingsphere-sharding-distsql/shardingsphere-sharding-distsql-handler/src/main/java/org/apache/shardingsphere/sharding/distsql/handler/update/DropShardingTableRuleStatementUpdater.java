@@ -42,18 +42,18 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String schemaName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeDroppedShardingTableNames(schemaName, sqlStatement, currentRuleConfig);
-        checkBindingTables(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeDroppedShardingTableNames(databaseName, sqlStatement, currentRuleConfig);
+        checkBindingTables(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", databaseName);
         }
     }
     
@@ -61,7 +61,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         return sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private void checkToBeDroppedShardingTableNames(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
+    private void checkToBeDroppedShardingTableNames(final String databaseName, final DropShardingTableRuleStatement sqlStatement, 
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (sqlStatement.isContainsExistClause()) {
             return;
@@ -69,7 +69,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);
         Collection<String> notExistedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
-            throw new RequiredRuleMissedException("sharding", schemaName, notExistedTableNames);
+            throw new RequiredRuleMissedException("sharding", databaseName, notExistedTableNames);
         }
     }
     
@@ -80,11 +80,11 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         return result;
     }
     
-    private void checkBindingTables(final String schemaName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
+    private void checkBindingTables(final String databaseName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
         Collection<String> bindingTables = getBindingTables(currentRuleConfig);
         Collection<String> usedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(bindingTables::contains).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
-            throw new RuleInUsedException("Sharding", schemaName, usedTableNames);
+            throw new RuleInUsedException("Sharding", databaseName, usedTableNames);
         }
     }
     

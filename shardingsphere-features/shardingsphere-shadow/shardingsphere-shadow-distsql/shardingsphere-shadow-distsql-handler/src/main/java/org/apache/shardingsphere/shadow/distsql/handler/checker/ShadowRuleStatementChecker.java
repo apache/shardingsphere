@@ -41,12 +41,12 @@ public class ShadowRuleStatementChecker {
     /**
      * Check if the configuration exists.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param configuration configuration
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration configuration) throws DistSQLException {
-        DistSQLException.predictionThrow(null != configuration, () -> new RequiredRuleMissedException(SHADOW, schemaName));
+    public static void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration configuration) throws DistSQLException {
+        DistSQLException.predictionThrow(null != configuration, () -> new RequiredRuleMissedException(SHADOW, databaseName));
     }
     
     /**
@@ -54,12 +54,12 @@ public class ShadowRuleStatementChecker {
      *
      * @param resources resource being checked
      * @param metaData meta rules
-     * @param schemaName schema name
+     * @param databaseName database name
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereMetaData metaData, final String schemaName) throws DistSQLException {
+    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereMetaData metaData, final String databaseName) throws DistSQLException {
         Collection<String> notExistedResources = metaData.getResource().getNotExistedResources(resources);
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResources));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
     /**

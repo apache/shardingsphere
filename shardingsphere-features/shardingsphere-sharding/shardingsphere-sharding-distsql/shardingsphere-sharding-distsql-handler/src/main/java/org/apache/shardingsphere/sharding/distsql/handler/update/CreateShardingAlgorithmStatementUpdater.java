@@ -46,17 +46,17 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkDuplicate(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getName();
+        checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithm(sqlStatement);
     }
     
-    private void checkDuplicate(final String schemaName, final CreateShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicate(final String databaseName, final CreateShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
-        checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", databaseName, duplicated));
         if (currentRuleConfig != null) {
-            checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+            checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", databaseName, duplicated));
         }
     }
     
