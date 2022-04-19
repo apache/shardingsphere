@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.job.check;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckerImpl;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
@@ -37,7 +36,7 @@ public final class EnvironmentCheckerFactory {
      * @return data consistency checker
      */
     public static DataConsistencyChecker newInstance(final JobConfiguration jobConfig) {
-        return new DataConsistencyCheckerImpl(jobConfig);
+        return new DataConsistencyChecker(jobConfig);
     }
     
     /**

@@ -52,7 +52,6 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 
 import java.sql.SQLException;
@@ -294,7 +293,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getHandleConfig().getJobId();
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobConfig);
+        DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobConfig);
         Map<String, DataConsistencyCountCheckResult> countCheckResult = dataConsistencyChecker.checkCount();
         Map<String, DataConsistencyContentCheckResult> contentCheckResult = countCheckResult.values().stream().allMatch(DataConsistencyCountCheckResult::isMatched)
                 ? dataConsistencyChecker.checkContent(calculator) : Collections.emptyMap();
@@ -313,11 +312,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
-            boolean recordsCountMatched = entry.getValue().getCountCheckResult().isMatched();
-            boolean recordsContentMatched = entry.getValue().getContentCheckResult().isMatched();
-            if (!recordsContentMatched || !recordsCountMatched) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
-                        jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
+            DataConsistencyCheckResult checkResult = entry.getValue();
+            boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
+            boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
+            if (!isCountMatched || !isContentMatched) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, countMatched: {}, contentMatched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
                 return false;
             }
         }

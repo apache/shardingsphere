@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsisten
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DataConsistencyCheckerImplTest {
+public final class DataConsistencyCheckerTest {
     
     @BeforeClass
     public static void beforeClass() {
@@ -56,7 +55,7 @@ public final class DataConsistencyCheckerImplTest {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
+        DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobContext.getJobConfig());
         Map<String, DataConsistencyCountCheckResult> countCheckResults = dataConsistencyChecker.checkCount();
         assertTrue(countCheckResults.get("t_order").isMatched());
         assertThat(countCheckResults.get("t_order").getSourceRecordsCount(), is(countCheckResults.get("t_order").getTargetRecordsCount()));
@@ -79,7 +78,7 @@ public final class DataConsistencyCheckerImplTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertCheckDatabaseTypeSupported() {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
+        DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobContext.getJobConfig());
         Method method = dataConsistencyChecker.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", Collection.class, String.class);
         method.setAccessible(true);
         method.invoke(dataConsistencyChecker, Arrays.asList("MySQL", "PostgreSQL"), "H2");
