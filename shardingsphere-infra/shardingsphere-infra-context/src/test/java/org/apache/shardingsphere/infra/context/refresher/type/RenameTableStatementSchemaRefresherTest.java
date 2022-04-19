@@ -51,15 +51,19 @@ public final class RenameTableStatementSchemaRefresherTest {
     
     @Test
     public void assertRefresh() throws SQLException {
-        RenameTableStatement sqlStatement = mock(RenameTableStatement.class);
-        when(sqlStatement.getRenameTables()).thenReturn(
-                Arrays.asList(createRenameTableDefinitionSegment("tbl_0", "new_tbl_0"), createRenameTableDefinitionSegment("tbl_1", "new_tbl_1")));
         RenameTableLister listener = new RenameTableLister(2);
         ShardingSphereEventBus.getInstance().register(listener);
-        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(),
-                new FederationDatabaseMetaData("foo_database", Collections.emptyMap()), new HashMap<>(), Collections.singleton("foo_ds"), sqlStatement, mock(ConfigurationProperties.class));
+        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()), 
+                new HashMap<>(), Collections.singleton("foo_ds"), createRenameTableStatement(), mock(ConfigurationProperties.class));
         assertThat(listener.getActualCount(), is(listener.getRenameCount()));
         ShardingSphereEventBus.getInstance().unregister(listener);
+    }
+    
+    private RenameTableStatement createRenameTableStatement() {
+        RenameTableStatement result = mock(RenameTableStatement.class);
+        when(result.getRenameTables()).thenReturn(
+                Arrays.asList(createRenameTableDefinitionSegment("tbl_0", "new_tbl_0"), createRenameTableDefinitionSegment("tbl_1", "new_tbl_1")));
+        return result;
     }
     
     
