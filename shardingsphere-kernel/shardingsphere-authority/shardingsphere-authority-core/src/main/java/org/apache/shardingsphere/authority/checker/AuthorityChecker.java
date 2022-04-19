@@ -56,16 +56,16 @@ import java.util.function.BiPredicate;
 public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
-    public boolean check(final String schemaName, final Grantee grantee, final AuthorityRule authorityRule) {
+    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return true;
         }
-        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
+        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee, 
-                                final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
+                                final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
@@ -73,8 +73,8 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (!privileges.isPresent()) {
             return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
         }
-        if (null != currentSchema && !privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
-            return new SQLCheckResult(false, String.format("Unknown database '%s'", currentSchema));
+        if (null != currentDatabase && !privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent()) {
+            return new SQLCheckResult(false, String.format("Unknown database '%s'", currentDatabase));
         }
         PrivilegeType privilegeType = getPrivilege(sqlStatement);
         String errorMessage = Objects.isNull(privilegeType) ? "" : String.format("Access denied for operation %s", privilegeType.name());

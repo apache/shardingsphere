@@ -47,7 +47,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() {
         String databaseName = SQLUtil.getExactlyValue(packet.getSchema());
         if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
-            connectionSession.setCurrentSchema(packet.getSchema());
+            connectionSession.setCurrentDatabase(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
         throw new UnknownDatabaseException(packet.getSchema());
