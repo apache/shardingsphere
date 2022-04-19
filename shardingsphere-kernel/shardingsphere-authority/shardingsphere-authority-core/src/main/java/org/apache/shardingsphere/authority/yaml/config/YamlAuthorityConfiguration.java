@@ -51,11 +51,11 @@ public final class YamlAuthorityConfiguration implements YamlRuleConfiguration {
     }
     
     /**
-     *  Covert to YamlAuthorityRuleConfiguration.
+     *  Convert to yaml authority rule configuration.
      *  TODO YamlAuthorityRuleConfiguration will be removed later
-     * @return YamlAuthorityRuleConfiguration
+     * @return yaml authority rule configuration
      */
-    public YamlAuthorityRuleConfiguration convert() {
+    public YamlAuthorityRuleConfiguration convertYamlAuthorityRuleConfiguration() {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
         result.setUsers(users.stream().map(Objects::toString).collect(Collectors.toCollection(LinkedList::new)));
         result.setProvider(privilege);

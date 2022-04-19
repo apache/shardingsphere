@@ -75,9 +75,10 @@ public final class ProxyConfigurationLoader {
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
         // TODO use SPI with pluggable
         boolean containsGovernance = null != result.getMode() && "Cluster".equals(result.getMode().getType());
+        // TODO Add temporary code for authority configuration
         if (null != result.getAuthority()) {
             result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
-            result.getRules().add(result.getAuthority().convert());
+            result.getRules().add(result.getAuthority().convertYamlAuthorityRuleConfiguration());
         }
         YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(ruleConfig -> ruleConfig instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
         Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
