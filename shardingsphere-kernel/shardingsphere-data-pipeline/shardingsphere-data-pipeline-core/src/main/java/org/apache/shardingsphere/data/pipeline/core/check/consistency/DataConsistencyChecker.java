@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -47,10 +47,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -63,7 +65,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Data consistency checker.
  */
-@Slf4j
 public final class DataConsistencyChecker {
     
     private final JobConfiguration jobConfig;
@@ -76,11 +77,23 @@ public final class DataConsistencyChecker {
     }
     
     /**
-     * Check whether each table's records count is valid.
-     *
-     * @return records count check result. key is logic table name, value is check result.
+     * Check data consistency.
+     * 
+     * @param calculator data consistency calculate algorithm
+     * @return checked result. key is logic table name, value is check result.
      */
-    public Map<String, DataConsistencyCountCheckResult> checkCount() {
+    public Map<String, DataConsistencyCheckResult> check(final DataConsistencyCalculateAlgorithm calculator) {
+        Map<String, DataConsistencyCountCheckResult> countCheckResult = checkCount();
+        Map<String, DataConsistencyContentCheckResult> contentCheckResult = countCheckResult.values().stream().allMatch(DataConsistencyCountCheckResult::isMatched)
+                ? checkContent(calculator) : Collections.emptyMap();
+        Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>(countCheckResult.size());
+        for (Entry<String, DataConsistencyCountCheckResult> entry : countCheckResult.entrySet()) {
+            result.put(entry.getKey(), new DataConsistencyCheckResult(entry.getValue(), contentCheckResult.getOrDefault(entry.getKey(), new DataConsistencyContentCheckResult(false))));
+        }
+        return result;
+    }
+    
+    private Map<String, DataConsistencyCountCheckResult> checkCount() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdPrefix(jobConfig.getHandleConfig().getJobId()) + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
@@ -133,13 +146,7 @@ public final class DataConsistencyChecker {
         }
     }
     
-    /**
-     * Check whether each table's records content is valid.
-     *
-     * @param calculator data consistency calculate algorithm
-     * @return records content check result. key is logic table name, value is check result.
-     */
-    public Map<String, DataConsistencyContentCheckResult> checkContent(final DataConsistencyCalculateAlgorithm calculator) {
+    private Map<String, DataConsistencyContentCheckResult> checkContent(final DataConsistencyCalculateAlgorithm calculator) {
         Collection<String> supportedDatabaseTypes = calculator.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());

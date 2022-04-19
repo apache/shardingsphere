@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCalculateAlgorithm;
@@ -29,14 +28,9 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -51,36 +45,26 @@ public final class DataConsistencyCheckerTest {
     }
     
     @Test
-    public void assertCountAndDataCheck() {
+    public void assertCountAndDataCheck() throws SQLException {
+        Map<String, DataConsistencyCheckResult> actual = new DataConsistencyChecker(createJobConfiguration()).check(new FixtureDataConsistencyCalculateAlgorithm());
+        assertTrue(actual.get("t_order").getCountCheckResult().isMatched());
+        assertThat(actual.get("t_order").getCountCheckResult().getSourceRecordsCount(), is(actual.get("t_order").getCountCheckResult().getTargetRecordsCount()));
+        assertTrue(actual.get("t_order").getContentCheckResult().isMatched());
+    }
+    
+    private JobConfiguration createJobConfiguration() throws SQLException {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-        DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobContext.getJobConfig());
-        Map<String, DataConsistencyCountCheckResult> countCheckResults = dataConsistencyChecker.checkCount();
-        assertTrue(countCheckResults.get("t_order").isMatched());
-        assertThat(countCheckResults.get("t_order").getSourceRecordsCount(), is(countCheckResults.get("t_order").getTargetRecordsCount()));
-        Map<String, DataConsistencyContentCheckResult> contentCheckResults = dataConsistencyChecker.checkContent(new FixtureDataConsistencyCalculateAlgorithm());
-        assertTrue(contentCheckResults.get("t_order").isMatched());
+        return jobContext.getJobConfig();
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) {
-        DataSource dataSource = new PipelineDataSourceManager().getDataSource(dataSourceConfig);
-        try (Connection connection = dataSource.getConnection();
+    private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {
+        try (Connection connection = new PipelineDataSourceManager().getDataSource(dataSourceConfig).getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
-    }
-    
-    @Test(expected = InvocationTargetException.class)
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertCheckDatabaseTypeSupported() {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
-        DataConsistencyChecker dataConsistencyChecker = new DataConsistencyChecker(jobContext.getJobConfig());
-        Method method = dataConsistencyChecker.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", Collection.class, String.class);
-        method.setAccessible(true);
-        method.invoke(dataConsistencyChecker, Arrays.asList("MySQL", "PostgreSQL"), "H2");
     }
 }
