@@ -52,10 +52,10 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<String> result = getPrimaryDataSourceURLS(dataSourceMap);
-        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for schemaName `%s`", schemaName);
-        Preconditions.checkState(1 == result.size(), "More than one primary data source for schemaName `%s`", schemaName);
+        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for databaseName `%s`", databaseName);
+        Preconditions.checkState(1 == result.size(), "More than one primary data source for databaseName `%s`", databaseName);
     }
     
     private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -87,24 +87,24 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getKey().equals(getPrimaryDataSource())) {
                 continue;
             }
-            determineDatasourceState(schemaName, entry.getKey(), entry.getValue(), groupName);
+            determineDatasourceState(databaseName, entry.getKey(), entry.getValue(), groupName);
         }
     }
     
-    private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource, final String groupName) {
+    private void determineDatasourceState(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
             if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
                         new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
             } else {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
                         new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED, replicationDelayMilliseconds)));
             }
         } catch (SQLException ex) {

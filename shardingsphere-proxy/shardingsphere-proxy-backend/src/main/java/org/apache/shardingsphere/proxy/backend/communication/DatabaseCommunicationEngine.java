@@ -88,9 +88,9 @@ public abstract class DatabaseCommunicationEngine<T> {
         this.metaData = metaData;
         this.logicSQL = logicSQL;
         this.backendConnection = backendConnection;
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
+        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
     }
@@ -219,7 +219,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema(backendConnection.getConnectionSession().getSchemaName())) {
+        if (isLockedSchema(backendConnection.getConnectionSession().getDatabaseName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
@@ -232,6 +232,6 @@ public abstract class DatabaseCommunicationEngine<T> {
         if (sqlStatement instanceof SelectStatement) {
             return;
         }
-        throw new SchemaLockedException(backendConnection.getConnectionSession().getSchemaName());
+        throw new SchemaLockedException(backendConnection.getConnectionSession().getDatabaseName());
     }
 }

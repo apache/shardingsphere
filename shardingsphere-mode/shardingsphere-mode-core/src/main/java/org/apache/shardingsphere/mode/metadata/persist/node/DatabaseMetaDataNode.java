@@ -78,12 +78,12 @@ public final class DatabaseMetaDataNode {
     /**
      * Get rule path.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version rule version                  
      * @return rule path
      */
-    public static String getRulePath(final String schemaName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version, RULE_NODE);
+    public static String getRulePath(final String databaseName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
     }
     
     /**

@@ -120,7 +120,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName(),
+                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName(),
                         ((DataSourceNameDisabledEvent) event).isDisabled());
             }
         }

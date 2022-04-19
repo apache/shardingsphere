@@ -78,7 +78,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComDescribeExecutorTest {
     
-    private static final String SCHEMA_NAME = "postgres";
+    private static final String DATABASE_NAME = "postgres";
     
     private static final String TABLE_NAME = "t_order";
     
@@ -107,8 +107,8 @@ public final class PostgreSQLComDescribeExecutorTest {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ProxyContext.getInstance().init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(connectionSession.getSchemaName()).thenReturn(SCHEMA_NAME);
-        when(mockContextManager.getMetaDataContexts().getAllSchemaNames().contains(SCHEMA_NAME)).thenReturn(true);
+        when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
+        when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
         prepareTableMetaData();
     }
     
@@ -119,7 +119,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getMetaData(DATABASE_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
     }
     
     @Test

@@ -76,10 +76,10 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<RuleConfiguration> load(final String schemaName, final String version) {
-        String yamlContent = repository.get(DatabaseMetaDataNode.getRulePath(schemaName, version));
+    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
+        String yamlContent = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode
-                .getRulePath(schemaName, getDatabaseActiveVersion(schemaName))), Collection.class, true));
+                .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
     }
     
     @Override

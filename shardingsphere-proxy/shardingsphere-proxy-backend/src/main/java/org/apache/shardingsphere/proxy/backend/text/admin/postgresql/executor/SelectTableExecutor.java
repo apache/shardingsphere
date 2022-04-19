@@ -51,18 +51,18 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     }
     
     @Override
-    protected void initSchemaData(final String schemaName) {
-        tableNames = new ArrayList<>(ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().getAllTableNames());
+    protected void initDatabaseData(final String databaseName) {
+        tableNames = new ArrayList<>(ProxyContext.getInstance().getMetaData(databaseName).getDefaultSchema().getAllTableNames());
     }
     
     @Override
-    protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     
     @Override
-    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         if (actualTableName.isEmpty()) {
             actualTableName = aliasMap.getOrDefault(REL_NAME, aliasMap.getOrDefault(TABLE_NAME, aliasMap.getOrDefault(NAME, aliasMap.getOrDefault(REF_NAME, ""))));
         }

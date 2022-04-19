@@ -50,12 +50,12 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Test
     public void assertUpdateWithMetaDataAlteredEvent() {
-        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db");
+        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", "foo_schema");
         TableMetaData tableMetaData = new TableMetaData();
         event.getAlteredTables().add(tableMetaData);
         event.getDroppedTables().add("foo_table");
         schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).persist("foo_db", tableMetaData);
-        verify(persistService).delete("foo_db", "foo_table");
+        verify(persistService).persist("foo_db", "foo_schema", tableMetaData);
+        verify(persistService).delete("foo_db", "foo_schema", "foo_table");
     }
 }

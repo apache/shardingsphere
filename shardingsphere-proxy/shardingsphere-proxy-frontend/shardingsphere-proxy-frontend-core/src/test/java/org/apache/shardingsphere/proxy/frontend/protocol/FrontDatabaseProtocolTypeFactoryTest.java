@@ -66,7 +66,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertTrue(configuredDatabaseType.isEmpty());
-        assertTrue(metaDataContexts.getAllSchemaNames().contains(DefaultSchema.LOGIC_NAME));
+        assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultSchema.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getName(), is("MySQL"));
@@ -82,7 +82,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertThat(configuredDatabaseType, is("PostgreSQL"));
-        assertTrue(metaDataContexts.getAllSchemaNames().contains(DefaultSchema.LOGIC_NAME));
+        assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultSchema.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getName(), is("PostgreSQL"));

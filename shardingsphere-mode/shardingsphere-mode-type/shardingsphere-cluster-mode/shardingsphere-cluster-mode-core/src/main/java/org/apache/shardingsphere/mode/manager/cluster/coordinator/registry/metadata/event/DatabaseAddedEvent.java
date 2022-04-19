@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Schema deleted event.
+ * database added event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaDeletedEvent implements GovernanceEvent {
+public final class DatabaseAddedEvent implements GovernanceEvent {
     
-    private final String schemaName;
+    private final String databaseName;
 }

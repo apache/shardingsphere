@@ -63,7 +63,7 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final DatabaseVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -73,7 +73,7 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        schemaVersionPersistService = new DatabaseVersionPersistService(repository);
+        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
     /**

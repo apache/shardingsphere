@@ -86,20 +86,20 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
-    private void alterResourcesConfig(final String schemaName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
+    private void alterResourcesConfig(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
         Map<String, DataSourceProperties> toBeUpdatedResourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> each : yamlDataSourceMap.entrySet()) {
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(each.getValue(), schemaName, each.getKey(),
+            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(each.getValue(), databaseName, each.getKey(),
                     false));
             toBeUpdatedResourcePropsMap.put(each.getKey(), dataSourceProps);
         }
         try {
             validator.validate(toBeUpdatedResourcePropsMap);
-            Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().keySet());
+            Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().keySet());
             Collection<String> toBeDroppedResourceNames = currentResourceNames.stream().filter(each -> !toBeUpdatedResourcePropsMap.containsKey(each)).collect(Collectors.toSet());
-            ProxyContext.getInstance().getContextManager().addResource(schemaName, toBeUpdatedResourcePropsMap);
+            ProxyContext.getInstance().getContextManager().addResource(databaseName, toBeUpdatedResourcePropsMap);
             if (toBeDroppedResourceNames.size() > 0) {
-                ProxyContext.getInstance().getContextManager().dropResource(schemaName, toBeDroppedResourceNames);
+                ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
             }
         } catch (final SQLException ex) {
             throw new InvalidResourcesException(toBeUpdatedResourcePropsMap.keySet());
@@ -145,7 +145,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
     }
     
     private void checkDatabaseName(final String databaseName) {
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(databaseName)) {
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
             throw new SchemaNotExistedException(databaseName);
         }
     }

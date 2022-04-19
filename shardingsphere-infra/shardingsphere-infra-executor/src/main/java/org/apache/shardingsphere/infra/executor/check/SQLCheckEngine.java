@@ -43,17 +43,17 @@ public final class SQLCheckEngine {
     }
     
     /**
-     * Check schema.
+     * Check database.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param rules rules
      * @param grantee grantee
      * @return check result
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final String schemaName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
+    public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(schemaName, grantee, entry.getKey());
+            boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
             }
@@ -67,15 +67,15 @@ public final class SQLCheckEngine {
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param rules rules
-     * @param currentSchema current schema
+     * @param currentDatabase current database
      * @param metaDataMap meta data map
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
-                             final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
+                             final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentSchema, metaDataMap, entry.getKey());
+            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentDatabase, metaDataMap, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }

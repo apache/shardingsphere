@@ -93,17 +93,17 @@ public final class AlterResourceBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
-        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
+        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test(expected = DuplicateResourceException.class)
     public void assertExecuteWithDuplicateResourceNames() throws DistSQLException {
-        alterResourceBackendHandler.execute("test_schema", createAlterResourceStatementWithDuplicateResourceNames());
+        alterResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -111,11 +111,11 @@ public final class AlterResourceBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
-        alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("not_existed"));
+        alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("not_existed"));
     }
     
     @Test(expected = InvalidResourcesException.class)
@@ -123,11 +123,11 @@ public final class AlterResourceBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
-        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
+        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     

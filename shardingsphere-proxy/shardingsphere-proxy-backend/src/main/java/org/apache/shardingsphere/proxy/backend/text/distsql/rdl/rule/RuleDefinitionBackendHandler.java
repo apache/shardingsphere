@@ -149,7 +149,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                               final RuleDefinitionAlterPreprocessor preprocessor) {
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         if (metaDataPersistService.isPresent()) {
-            Optional<String> newVersion = metaDataPersistService.get().getSchemaVersionPersistService().createNewVersion(shardingSphereMetaData.getName());
+            Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(shardingSphereMetaData.getName());
             if (!newVersion.isPresent()) {
                 throw new RuntimeException(String.format("Unable to get a new version for schema: %s", shardingSphereMetaData.getName()));
             }

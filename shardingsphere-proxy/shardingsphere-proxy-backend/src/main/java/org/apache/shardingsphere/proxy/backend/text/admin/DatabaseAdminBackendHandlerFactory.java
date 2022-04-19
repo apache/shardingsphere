@@ -76,7 +76,7 @@ public final class DatabaseAdminBackendHandlerFactory {
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext, sql, connectionSession.getSchemaName());
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext, sql, connectionSession.getDatabaseName());
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     

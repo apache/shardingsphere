@@ -17,36 +17,18 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import com.google.common.base.Splitter;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Qualified schema.
- */
-@RequiredArgsConstructor
-@Getter
-public final class QualifiedSchema {
+public final class QualifiedDatabaseTest {
     
-    private static final String DELIMITER = ".";
-    
-    private final String schemaName;
-    
-    private final String groupName;
-    
-    private final String dataSourceName;
-    
-    public QualifiedSchema(final String value) {
-        List<String> values = Splitter.on(DELIMITER).splitToList(value);
-        schemaName = values.get(0);
-        groupName = values.get(1);
-        dataSourceName = values.get(2);
-    }
-    
-    @Override
-    public String toString() {
-        return String.join(DELIMITER, schemaName, groupName, dataSourceName);
+    @Test
+    public void assertNewQualifiedDatabaseWithDatabaseNameAndDataSourceName() {
+        QualifiedDatabase actual = new QualifiedDatabase("test_db.test_group_name.test_ds");
+        assertThat(actual.getDatabaseName(), is("test_db"));
+        assertThat(actual.getGroupName(), is("test_group_name"));
+        assertThat(actual.getDataSourceName(), is("test_ds"));
     }
 }
