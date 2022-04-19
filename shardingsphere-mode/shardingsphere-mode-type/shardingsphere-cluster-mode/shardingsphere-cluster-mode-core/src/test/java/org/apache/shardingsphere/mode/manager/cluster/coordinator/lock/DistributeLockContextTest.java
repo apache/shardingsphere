@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.junit.Test;
 
@@ -83,8 +83,7 @@ public final class DistributeLockContextTest {
         Field computeNodeInstancesDeclaredField = DistributeLockContext.class.getDeclaredField("computeNodeInstances");
         computeNodeInstancesDeclaredField.setAccessible(true);
         computeNodeInstancesDeclaredField.set(distributeLockContext, Arrays.asList(new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"))));
-        distributeLockContext.renew(new LockedEvent("schema1-127.0.0.1@3308"));
-        assertNotNull(distributeLockContext.getSchemaLock("schema1"));
+        distributeLockContext.renew(new SchemaLockedEvent("schema1-127.0.0.1@3308"));
     }
     
     @Test
