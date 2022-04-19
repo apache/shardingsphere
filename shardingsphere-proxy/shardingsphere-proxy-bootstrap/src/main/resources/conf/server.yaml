@@ -20,7 +20,7 @@
 # If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-#
+
 #mode:
 #  type: Cluster
 #  repository:

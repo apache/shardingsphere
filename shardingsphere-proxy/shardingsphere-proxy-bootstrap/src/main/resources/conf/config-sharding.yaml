@@ -119,7 +119,7 @@
 # If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
 #
 ######################################################################################################
-#
+
 #databaseName: sharding_db
 #
 #dataSources:
