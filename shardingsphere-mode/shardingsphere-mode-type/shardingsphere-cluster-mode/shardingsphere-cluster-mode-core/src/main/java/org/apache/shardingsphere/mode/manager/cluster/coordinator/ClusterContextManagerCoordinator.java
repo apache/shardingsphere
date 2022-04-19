@@ -87,12 +87,12 @@ public final class ClusterContextManagerCoordinator {
     /**
      * Renew to persist meta data.
      *
-     * @param event schema added event
+     * @param event database added event
      * @throws SQLException SQL exception
      */
     @Subscribe
     public synchronized void renew(final DatabaseAddedEvent event) throws SQLException {
-        persistSchema(event.getDatabaseName());
+        persistDatabase(event.getDatabaseName());
         contextManager.addDatabase(event.getDatabaseName());
     }
     
@@ -304,7 +304,7 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
-    private void persistSchema(final String databaseName) {
+    private void persistDatabase(final String databaseName) {
         if (!metaDataPersistService.getDataSourceService().isExisted(databaseName)) {
             metaDataPersistService.getDataSourceService().persist(databaseName, new LinkedHashMap<>());
         }

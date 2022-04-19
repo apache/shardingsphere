@@ -187,7 +187,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRuleConfigurationsChanged() {
         when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(Boolean.TRUE);
         assertThat(contextManager.getMetaDataContexts().getMetaData("db"), is(metaData));
-        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", "0", new LinkedList<>());
+        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("db", "0", new LinkedList<>());
         coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData("db"), not(metaData));
     }
@@ -322,7 +322,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewSchemaVersionChangedEvent() {
         when(metaDataPersistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
         when(metaDataPersistService.getSchemaRuleService().load("db", "1")).thenReturn(Collections.emptyList());
-        SchemaVersionChangedEvent schemaVersionChangedEvent = new SchemaVersionChangedEvent("schema", "1");
+        SchemaVersionChangedEvent schemaVersionChangedEvent = new SchemaVersionChangedEvent("db", "1");
         Map<String, DataSource> dataSourceMap = initContextManager();
         coordinator.renew(schemaVersionChangedEvent);
         assertThat(contextManager.getDataSourceMap("db").get("ds_0"), is(dataSourceMap.get("ds_0")));

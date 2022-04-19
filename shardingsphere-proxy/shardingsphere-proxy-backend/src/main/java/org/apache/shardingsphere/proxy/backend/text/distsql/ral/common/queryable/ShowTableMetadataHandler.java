@@ -61,30 +61,30 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
-        if (null == schemaName) {
+        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
+        if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+            throw new SchemaNotExistedException(databaseName);
         }
-        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema();
+        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(databaseName).getDefaultSchema();
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
-                .map(each -> buildTableRows(schemaName, schema, each)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private Collection<List<Object>> buildTableRows(final String schemaName, final ShardingSphereSchema schema, final String tableName) {
+    private Collection<List<Object>> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
         Collection<List<Object>> result = new LinkedList<>();
-        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(schemaName, tableName, "COLUMN", each))
+        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each))
                 .collect(Collectors.toCollection(LinkedList::new));
         Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(each -> each.getName())
-                .map(each -> buildRow(schemaName, tableName, "INDEX", each)).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toCollection(LinkedList::new));
         result.addAll(columnRows);
         result.addAll(indexRows);
         return result;
     }
     
-    private List<Object> buildRow(final String schemaName, final String tableName, final String type, final String name) {
-        return new ArrayList<>(Arrays.asList(schemaName, tableName, type, name));
+    private List<Object> buildRow(final String databaseName, final String tableName, final String type, final String name) {
+        return new ArrayList<>(Arrays.asList(databaseName, tableName, type, name));
     }
 }

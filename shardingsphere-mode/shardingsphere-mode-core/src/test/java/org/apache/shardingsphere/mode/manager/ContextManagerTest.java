@@ -121,12 +121,12 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterDatabase() {
-        contextManager.alterDatabase("foo_db", Collections.singletonMap("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table",
+        contextManager.alterDatabase("foo_db", Collections.singletonMap("foo_db", new ShardingSphereSchema(Collections.singletonMap("foo_table",
                 new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
-        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getDefaultSchema().containsTable("foo_table"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_schema"));
-        Map<String, FederationSchemaMetaData> schemas = contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get("foo_schema").getSchemas();
-        assertTrue(schemas.get("foo_schema").getTables().containsKey("foo_table"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getDefaultSchema().containsTable("foo_table"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
+        Map<String, FederationSchemaMetaData> schemas = contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get("foo_db").getSchemas();
+        assertTrue(schemas.get("foo_db").getTables().containsKey("foo_table"));
     }
     
     @Test

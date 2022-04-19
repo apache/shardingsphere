@@ -74,8 +74,8 @@ public final class ProxyContextTest {
                 metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        assertTrue(ProxyContext.getInstance().schemaExists("schema"));
-        assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
+        assertTrue(ProxyContext.getInstance().databaseExists("db"));
+        assertFalse(ProxyContext.getInstance().databaseExists("db_1"));
     }
     
     @Test(expected = NoDatabaseSelectedException.class)
@@ -124,7 +124,7 @@ public final class ProxyContextTest {
                 metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
+        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(metaDataMap.keySet()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -138,6 +138,6 @@ public final class ProxyContextTest {
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        return Collections.singletonMap("schema", metaData);
+        return Collections.singletonMap("db", metaData);
     }
 }
