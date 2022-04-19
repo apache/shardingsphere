@@ -58,14 +58,19 @@ public final class TableMetaDataBuilder {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
-                Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each))
-                        .filter(each -> !tableMetaDataMap.containsKey(each)).collect(Collectors.toList());
+                Collection<String> needLoadTables = getNeedLoadTables(tableNames, tableMetaDataMap, rule);
                 if (!needLoadTables.isEmpty()) {
                     tableMetaDataMap.putAll(builder.load(needLoadTables, rule, materials));
                 }
             }
         }
         return decorate(tableMetaDataMap, materials);
+    }
+    
+    private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Map<String, TableMetaData> tableMetaDataMap, final TableContainedRule rule) {
+        Collection<String> ruleTables = rule.getTables();
+        return tableNames.stream().filter(ruleTables::contains)
+                .filter(each -> !tableMetaDataMap.containsKey(each)).collect(Collectors.toList());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
