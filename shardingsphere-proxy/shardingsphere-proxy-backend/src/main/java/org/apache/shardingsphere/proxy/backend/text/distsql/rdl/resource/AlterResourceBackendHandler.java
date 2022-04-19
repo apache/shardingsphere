@@ -75,15 +75,15 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+    private void checkSQLStatement(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
-        checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
-        checkDatabase(schemaName, sqlStatement);
+        checkResourceNameExisted(databaseName, toBeAlteredResourceNames);
+        checkDatabase(databaseName, sqlStatement);
     }
     
-    private void checkDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+    private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
@@ -102,10 +102,10 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return resourceNames.stream().filter(each -> resourceNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
     
-    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
+        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResourceNames));
+        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {

@@ -113,7 +113,7 @@ public final class DropResourceBackendHandlerTest {
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [test0] do not exist in schema test."));
+            assertThat(ex.getMessage(), is("Resources [test0] do not exist in database test."));
         }
     }
     
