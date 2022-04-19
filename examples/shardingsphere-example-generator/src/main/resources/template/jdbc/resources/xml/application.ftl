@@ -28,6 +28,8 @@
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xmlns:database-discovery="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
        xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
+       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
+       xmlns:cluster="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -48,6 +50,10 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
                            ">
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 
@@ -117,6 +123,10 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
+    
+<#if mode!="memory">
+    <#include "../mode/spring-namespace/config/${mode}.ftl" />
+</#if>
 <#assign ruleRefs="">
 <#list feature?split(",") as item>
     <#assign ruleRefs += toCamel(item) + "Rule" />
@@ -125,6 +135,11 @@
     </#if>
 </#list>
     <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1, ds_2" rule-refs="${ruleRefs}">
+        <#if mode?contains("cluster")>
+            <#include "../mode/spring-namespace/cluster.ftl" />
+        <#elseif mode?contains("standalone")>
+            <#include "../mode/spring-namespace/standalone.ftl" />
+        </#if>
         <props>
             <prop key="sql-show">true</prop>
         </props>
