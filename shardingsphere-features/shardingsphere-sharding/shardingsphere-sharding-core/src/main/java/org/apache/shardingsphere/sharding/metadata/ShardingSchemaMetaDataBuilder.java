@@ -77,7 +77,7 @@ public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaD
         for (SchemaMetaData each : schemaMetaData) {
             Map<String, TableMetaData> tables = new LinkedHashMap<>(each.getTables().size(), 1);
             for (Entry<String, TableMetaData> entry : each.getTables().entrySet()) {
-                Optional<TableRule> tableRule = rule.findTableRule(entry.getKey());
+                Optional<TableRule> tableRule = rule.findTableRuleByActualTable(entry.getKey());
                 TableMetaData tableMetaData = entry.getValue();
                 if (tableRule.isPresent()) {
                     tables.put(tableRule.get().getLogicTable(), createTableMetaData(rule, tableRule.get(), tableMetaData));
@@ -150,7 +150,7 @@ public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaD
         Collection<IndexMetaData> result = new HashSet<>();
         for (Entry<String, IndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
-                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
+                getLogicIndex(entry.getValue().getName(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
             }
         }
         return result;

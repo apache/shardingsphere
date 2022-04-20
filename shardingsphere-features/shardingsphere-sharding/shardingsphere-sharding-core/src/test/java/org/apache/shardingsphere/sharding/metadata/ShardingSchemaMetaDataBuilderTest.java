@@ -117,11 +117,11 @@ public class ShardingSchemaMetaDataBuilderTest {
         ResultSet resultSet = createColumnResultSetForPostgreSQL();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
+        when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"))).thenReturn(preparedStatement);
         ResultSet indexResultSet = createPostgreSQLIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
-        when(connection.prepareStatement(startsWith("SELECT tablename, indexname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
+        when(connection.prepareStatement(startsWith("SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
@@ -209,7 +209,6 @@ public class ShardingSchemaMetaDataBuilderTest {
         when(result.getString("table_name")).thenReturn("t_order_0");
         when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
         when(result.getString("udt_name")).thenReturn("INT");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         return result;
     }
     
@@ -280,7 +279,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("ID"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("PWD_CIPHER"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("PWD_PLAIN"));
-        assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER_T_ORDER_0"));
+        assertThat(tableMetaData.getIndexes().values().iterator().next().getName(), is("ORDER_INDEX_T_ORDER"));
     }
     
     private ShardingRule createShardingRuleForOracle() {
@@ -330,7 +329,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)).getName(), is("pwd_plain"));
         IndexMetaData indexMetaData = tableMetaData.getIndexes().values().iterator().next();
-        assertThat(indexMetaData.getName(), is("order_index_t_order_t_order_0"));
+        assertThat(indexMetaData.getName(), is("order_index_t_order"));
     }
     
     @Test
