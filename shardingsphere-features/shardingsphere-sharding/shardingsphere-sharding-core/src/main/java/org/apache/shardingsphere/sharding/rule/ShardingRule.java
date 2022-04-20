@@ -279,16 +279,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        String shardingColumn = this.defaultShardingColumn;
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
+            shardingColumn = ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
+        } else if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
+            shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
         }
-        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            String shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
-            if (StringUtils.isNotEmpty(shardingColumn)) {
-                return shardingColumn;
-            }
-        }
-        return StringUtils.defaultString(defaultShardingColumn, "");
+        return StringUtils.defaultString(shardingColumn, "");
     }
     
     @Override
