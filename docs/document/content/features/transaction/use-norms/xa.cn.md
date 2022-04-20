@@ -6,7 +6,7 @@ weight = 2
 ## 支持项
 
 * 支持 Savepoint 嵌套事务；
-* PostgreSQL/Opengauss 事务块内，SQL 执行出现异常，执行 Commit，事务自动回滚；
+* PostgreSQL/OpenGauss 事务块内，SQL 执行出现异常，执行 Commit，事务自动回滚；
 * 支持数据分片后的跨库事务；
 * 两阶段提交保证操作的原子性和数据的强一致性；
 * 服务宕机重启后，提交/回滚中的事务可自动恢复；

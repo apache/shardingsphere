@@ -6,7 +6,7 @@ weight = 2
 ## Supported
 
 * Support Savepoint;
-* PostgreSQL/Opengauss, in the transaction block, the SQL execution is abnormal，then run `Commit`，transactions are automatically rollback;
+* PostgreSQL/OpenGauss, in the transaction block, the SQL execution is abnormal，then run `Commit`，transactions are automatically rollback;
 * Support cross-database transactions after sharding;
 * Operation atomicity and high data consistency in 2PC transactions;
 * When service is down and restarted, commit and rollback transactions can be recovered automatically;
