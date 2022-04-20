@@ -20,6 +20,9 @@ package org.apache.shardingsphere.singletable.metadata;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -34,13 +37,16 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -61,16 +67,20 @@ public final class SingleTableSchemaBuilderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
+    @Mock
+    private ConfigurationProperties props;
+    
     @Test
     public void assertBuildOfSingleTables() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        // ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-        // new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
-        // assertThat(schema.getTables().size(), is(2));
-        // assertActualOfSingleTables(schema.getTables().values());
+        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.values().iterator().next().getTables().size(), is(2));
+        assertActualOfSingleTables(actual.values().iterator().next().getTables().values());
     }
     
     @SneakyThrows(SQLException.class)

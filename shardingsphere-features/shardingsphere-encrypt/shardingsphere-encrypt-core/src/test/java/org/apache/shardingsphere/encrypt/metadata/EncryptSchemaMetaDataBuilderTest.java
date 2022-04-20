@@ -172,7 +172,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptSchemaMetaDataBuilder loader = getEncryptMetaDataBuilder(encryptRule, rules);
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
-        Collection<SchemaMetaData> actual = loader.build(Collections.singleton(TABLE_NAME), 
+        Collection<SchemaMetaData> actual = loader.build(Collections.singleton(TABLE_NAME),
                 encryptRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props));
         TableMetaData tableMetaData = actual.iterator().next().getTables().values().iterator().next();
         List<String> columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());

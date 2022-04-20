@@ -31,7 +31,7 @@ public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchema
     
     @Override
     public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = Collections.singletonMap("t_order_new", 
+        Map<String, TableMetaData> tableMetaDataMap = Collections.singletonMap("t_order_new",
                 new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return Collections.singletonList(new SchemaMetaData("sharding_db", tableMetaDataMap));
     }
