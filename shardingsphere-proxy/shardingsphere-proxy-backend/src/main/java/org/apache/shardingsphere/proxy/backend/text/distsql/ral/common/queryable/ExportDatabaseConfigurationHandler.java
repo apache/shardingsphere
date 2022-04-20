@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -53,9 +53,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Export schema configuration handler.
+ * Export database configuration handler.
  */
-public final class ExportSchemaConfigurationHandler extends QueryableRALBackendHandler<ExportSchemaConfigurationStatement, ExportSchemaConfigurationHandler> {
+public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement, ExportDatabaseConfigurationHandler> {
     
     private static final String RESULT = "result";
     
@@ -100,7 +100,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     }
     
     @Override
-    public ExportSchemaConfigurationHandler init(final HandlerParameter<ExportSchemaConfigurationStatement> parameter) {
+    public ExportDatabaseConfigurationHandler init(final HandlerParameter<ExportDatabaseConfigurationStatement> parameter) {
         connectionSession = parameter.getConnectionSession();
         return super.init(parameter);
     }

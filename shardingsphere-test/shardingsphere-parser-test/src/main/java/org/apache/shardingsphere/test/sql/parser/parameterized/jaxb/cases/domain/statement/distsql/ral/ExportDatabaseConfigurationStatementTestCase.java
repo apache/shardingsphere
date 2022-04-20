@@ -25,12 +25,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Export schema configuration statement test case.
+ * Export database configuration statement test case.
  */
 @Getter
 @Setter
-public final class ExportSchemaConfigurationStatementTestCase extends SQLParserTestCase {
+public final class ExportDatabaseConfigurationStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "schema")
-    private ExpectedSchema schema;
+    @XmlElement(name = "database")
+    private ExpectedSchema database;
 }

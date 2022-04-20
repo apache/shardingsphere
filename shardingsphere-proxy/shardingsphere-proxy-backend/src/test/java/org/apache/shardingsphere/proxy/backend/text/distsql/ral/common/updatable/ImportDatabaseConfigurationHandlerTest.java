@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ImportSchemaConfigurationHandlerTest {
+public final class ImportDatabaseConfigurationHandlerTest {
     
     private final String shardingFilePath = "/conf/import/config-sharding.yaml";
     
@@ -83,7 +83,7 @@ public final class ImportSchemaConfigurationHandlerTest {
     @Mock
     private DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker;
     
-    private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
+    private ImportDatabaseConfigurationHandler importDatabaseConfigurationHandler;
     
     private final Map<String, String> featureMap = new HashMap<>();
     
@@ -95,10 +95,10 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     private void init(final String feature) throws Exception {
-        importSchemaConfigurationHandler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(featureMap.get(feature)), mockConnectionSession()));
-        Field validatorField = importSchemaConfigurationHandler.getClass().getDeclaredField("validator");
+        importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler().init(getParameter(createSqlStatement(featureMap.get(feature)), mockConnectionSession()));
+        Field validatorField = importDatabaseConfigurationHandler.getClass().getDeclaredField("validator");
         validatorField.setAccessible(true);
-        validatorField.set(importSchemaConfigurationHandler, validator);
+        validatorField.set(importDatabaseConfigurationHandler, validator);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList(feature));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -109,44 +109,44 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     @Test
-    public void assertImportSchemaExecutorForSharding() throws Exception {
+    public void assertImportDatabaseExecutorForSharding() throws Exception {
         init(sharding);
-        Field shardingRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
+        Field shardingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
         shardingRuleConfigurationImportCheckerField.setAccessible(true);
-        shardingRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, shardingRuleConfigurationImportChecker);
+        shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations();
         assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
+        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
-    public void assertImportSchemaExecutorForReadwriteSplitting() throws Exception {
+    public void assertImportDatabaseExecutorForReadwriteSplitting() throws Exception {
         init(readwriteSplitting);
-        Field readwriteSplittingRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
+        Field readwriteSplittingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
         readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
-        readwriteSplittingRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
+        readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations();
         assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
+        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
-    public void assertImportSchemaExecutorForDatabaseDiscovery() throws Exception {
+    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws Exception {
         init(databaseDiscovery);
-        Field databaseDiscoveryRuleConfigurationImportCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
+        Field databaseDiscoveryRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
         databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
-        databaseDiscoveryRuleConfigurationImportCheckerField.set(importSchemaConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
+        databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
         Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery);
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseDiscovery).getRuleMetaData().getConfigurations();
         assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
+        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
@@ -169,15 +169,15 @@ public final class ImportSchemaConfigurationHandlerTest {
         return result;
     }
     
-    private ImportSchemaConfigurationStatement createSqlStatement(final String importFilePath) {
-        return new ImportSchemaConfigurationStatement(Objects.requireNonNull(ImportSchemaConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
+    private ImportDatabaseConfigurationStatement createSqlStatement(final String importFilePath) {
+        return new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
     }
     
     private ConnectionSession mockConnectionSession() {
         return mock(ConnectionSession.class);
     }
     
-    private RALBackendHandler.HandlerParameter<ImportSchemaConfigurationStatement> getParameter(final ImportSchemaConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new RALBackendHandler.HandlerParameter<ImportSchemaConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+    private RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement> getParameter(final ImportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
+        return new RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
     }
 }

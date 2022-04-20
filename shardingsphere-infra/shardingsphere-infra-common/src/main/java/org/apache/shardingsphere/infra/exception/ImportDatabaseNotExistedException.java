@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Import schema configuration statement.
+ * Import database does not exist exception.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ImportSchemaConfigurationStatement extends UpdatableRALStatement {
+public final class ImportDatabaseNotExistedException extends DistSQLException {
     
-    private final String filePath;
+    private static final long serialVersionUID = 4803138422791056535L;
     
-    /**
-     * Get file path.
-     * 
-     * @return file path
-     */
-    public Optional<String> getFilePath() {
-        return Optional.ofNullable(filePath);
+    public ImportDatabaseNotExistedException(final String fileName) {
+        super(1106, String.format("Property `databaseName` in file `%s` is required.", fileName));
     }
 }
