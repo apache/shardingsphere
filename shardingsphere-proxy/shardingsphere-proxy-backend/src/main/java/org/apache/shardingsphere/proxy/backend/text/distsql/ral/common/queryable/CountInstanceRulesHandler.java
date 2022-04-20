@@ -75,9 +75,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllSchemaNames().forEach(each ->
-                addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each))
-        );
+        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each)));
         return dataMap.values();
     }
     
@@ -121,8 +119,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         if (!(ruleConfiguration instanceof ShardingRuleConfiguration)) {
             return;
         }
-        addData(dataMap, SHARDING_TABLE,
-            () -> ((ShardingRuleConfiguration) ruleConfiguration).getTables().size() + ((ShardingRuleConfiguration) ruleConfiguration).getAutoTables().size());
+        addData(dataMap, SHARDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getTables().size() + ((ShardingRuleConfiguration) ruleConfiguration).getAutoTables().size());
         addData(dataMap, SHARDING_BINDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBindingTableGroups().size());
         addData(dataMap, SHARDING_BROADCAST_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBroadcastTables().size());
         addData(dataMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) ruleConfiguration).getScaling().size());

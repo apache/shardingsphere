@@ -112,10 +112,10 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String schemaName = getSchemaName();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
+        String databaseName = getDatabaseName();
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(databaseName);
         StringBuilder result = new StringBuilder();
-        configItem(ZERO, "schemaName", schemaName, result);
+        configItem(ZERO, "databaseName", databaseName, result);
         getDataSourcesConfig(metaData, result);
         getRulesConfig(metaData.getRuleMetaData().getConfigurations(), result);
         if (!sqlStatement.getFilePath().isPresent()) {
@@ -225,12 +225,12 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
         return result.toString();
     }
     
-    private String getSchemaName() {
-        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
+    private String getDatabaseName() {
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (null == result) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(result)) {
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
             throw new SchemaNotExistedException(result);
         }
         return result;

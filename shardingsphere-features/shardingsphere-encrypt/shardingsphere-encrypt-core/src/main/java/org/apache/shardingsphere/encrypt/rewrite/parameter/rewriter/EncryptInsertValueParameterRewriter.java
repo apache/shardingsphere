@@ -67,13 +67,13 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, tableName, columnName, encryptRule);
-            encryptRule.findEncryptor(tableName, columnName).ifPresent(
-                encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, encryptContext));
+            encryptRule.findEncryptor(tableName, columnName)
+                    .ifPresent(encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, encryptContext));
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, 
-                                     final EncryptAlgorithm encryptAlgorithm, final EncryptContext encryptContext) {
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext,
+                                     final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {

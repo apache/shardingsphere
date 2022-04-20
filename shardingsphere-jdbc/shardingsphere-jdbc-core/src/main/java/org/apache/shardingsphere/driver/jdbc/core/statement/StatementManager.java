@@ -52,7 +52,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
         Statement result = cachedStatements.get(new CacheKey(executionUnit, connectionMode));
         if (null == result) {
             String sql = executionUnit.getSqlUnit().getSql();
-            result = option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) 
+            result = option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                     : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
             cachedStatements.put(new CacheKey(executionUnit, connectionMode), result);
         }
@@ -71,7 +71,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class CacheKey {
-    
+        
         private final ExecutionUnit executionUnit;
         
         private final ConnectionMode connectionMode;

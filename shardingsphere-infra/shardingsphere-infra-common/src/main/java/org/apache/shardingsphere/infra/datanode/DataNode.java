@@ -21,6 +21,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
 public final class DataNode {
     
@@ -39,6 +41,8 @@ public final class DataNode {
     private final String dataSourceName;
     
     private final String tableName;
+    
+    private String schemaName;
     
     /**
      * Constructs a data node with well-formatted string.
@@ -69,12 +73,13 @@ public final class DataNode {
         }
         DataNode dataNode = (DataNode) object;
         return Objects.equal(dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
-                && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase());
+                && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase())
+                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == dataNode.schemaName ? null : dataNode.schemaName.toUpperCase());
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase());
+        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
     }
     
     /**

@@ -161,8 +161,9 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     }
     
     private String getLoadRoleTableGrantsSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL,
-            tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL
+                : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL,
+                        tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override

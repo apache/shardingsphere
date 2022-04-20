@@ -139,7 +139,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     
-    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand, 
+    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand,
                                                              final ShorthandProjectionSegment segment) {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {

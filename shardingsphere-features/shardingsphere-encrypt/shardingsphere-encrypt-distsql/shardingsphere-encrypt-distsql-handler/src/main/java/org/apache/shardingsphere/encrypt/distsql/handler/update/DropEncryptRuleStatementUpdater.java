@@ -37,19 +37,19 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getName();
+        checkToBeDroppedEncryptTableNames(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement,
+    private void checkToBeDroppedEncryptTableNames(final String databaseName, final DropEncryptRuleStatement sqlStatement,
                                                    final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
-        DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", schemaName));
+        DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", databaseName));
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedTableNames.isEmpty(), () -> new RequiredRuleMissedException("Encrypt", schemaName, notExistedTableNames));
+        DistSQLException.predictionThrow(notExistedTableNames.isEmpty(), () -> new RequiredRuleMissedException("Encrypt", databaseName, notExistedTableNames));
     }
     
     @Override

@@ -44,7 +44,7 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
-        contextManager.getMetaDataContexts().getAllSchemaNames()
+        contextManager.getMetaDataContexts().getAllDatabaseNames()
                 .forEach(each -> setDatabaseVersion(each, contextManager.getDataSourceMap(each)));
     }
     
@@ -58,15 +58,15 @@ public final class ShardingSphereProxyVersion {
         return result;
     }
     
-    private static void setDatabaseVersion(final String schemaName, final Map<String, DataSource> dataSources) {
+    private static void setDatabaseVersion(final String databaseName, final Map<String, DataSource> dataSources) {
         Optional<DataSource> dataSource = dataSources.values().stream().findFirst();
         if (!dataSource.isPresent()) {
             return;
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
-        log.info("{}, schema name is `{}`", databaseServerInfo.toString(), schemaName);
+        log.info("{}, database name is `{}`", databaseServerInfo, databaseName);
         DatabaseProtocolFrontendEngineFactory
                 .newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()))
-                .setDatabaseVersion(schemaName, databaseServerInfo.getDatabaseVersion());
+                .setDatabaseVersion(databaseName, databaseServerInfo.getDatabaseVersion());
     }
 }

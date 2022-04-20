@@ -347,8 +347,8 @@
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_column_regex_match">
-                    <algorithm algorithm-name="COLUMN_REGEX_MATCH">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                    <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
                             <property key="column" value="user_id"/>
@@ -356,8 +356,8 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_note_algorithm">
-                    <algorithm algorithm-name="SIMPLE_NOTE">
+                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                    <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
                             <property key="foo" value="bar"/>
@@ -371,8 +371,8 @@
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_column_regex_match">
-                    <algorithm algorithm-name="COLUMN_REGEX_MATCH">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                    <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
                             <property key="column" value="user_id"/>
@@ -380,8 +380,8 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_note_algorithm">
-                    <algorithm algorithm-name="SIMPLE_NOTE">
+                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                    <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
                             <property key="foo" value="bar"/>
@@ -420,7 +420,7 @@
     </create-default-sharding-strategy>
     
     <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
-        <shadow-algorithm algorithm-id="simple_note_algorithm">
+        <shadow-algorithm algorithm-id="simple_hint_algorithm">
             <algorithm algorithm-name="HINT">
                 <properties>
                     <property key="shadow" value="true"/>

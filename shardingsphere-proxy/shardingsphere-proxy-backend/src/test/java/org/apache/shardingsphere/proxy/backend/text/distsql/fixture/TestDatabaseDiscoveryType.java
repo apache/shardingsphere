@@ -26,16 +26,16 @@ import java.util.Map;
 public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
+    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap,
                                         final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
     }
     
     @Override

@@ -65,7 +65,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> parameters = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()
-                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
             Object parameter = parameters.get(i);
             if (parameter instanceof TypeUnspecifiedSQLParameter) {

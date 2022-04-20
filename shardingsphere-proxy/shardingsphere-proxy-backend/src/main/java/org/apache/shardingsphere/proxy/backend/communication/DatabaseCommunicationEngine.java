@@ -88,9 +88,9 @@ public abstract class DatabaseCommunicationEngine<T> {
         this.metaData = metaData;
         this.logicSQL = logicSQL;
         this.backendConnection = backendConnection;
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
+        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
     }
@@ -104,8 +104,8 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        metadataRefreshEngine.refresh(sqlStatement, 
-            () -> executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        metadataRefreshEngine.refresh(sqlStatement, () -> executionContext.getRouteContext().getRouteUnits().stream()
+                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
     protected QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -144,7 +144,8 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size() : queryResultSample.getMetaData().getColumnCount();
+                ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
+                : queryResultSample.getMetaData().getColumnCount();
     }
     
     protected boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
@@ -219,7 +220,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema(backendConnection.getConnectionSession().getSchemaName())) {
+        if (isLockedSchema(backendConnection.getConnectionSession().getDatabaseName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
@@ -232,6 +233,6 @@ public abstract class DatabaseCommunicationEngine<T> {
         if (sqlStatement instanceof SelectStatement) {
             return;
         }
-        throw new SchemaLockedException(backendConnection.getConnectionSession().getSchemaName());
+        throw new SchemaLockedException(backendConnection.getConnectionSession().getDatabaseName());
     }
 }

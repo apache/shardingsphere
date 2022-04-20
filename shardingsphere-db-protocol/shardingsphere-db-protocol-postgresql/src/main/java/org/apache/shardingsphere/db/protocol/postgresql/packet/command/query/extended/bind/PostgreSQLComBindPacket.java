@@ -77,7 +77,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 continue;
             }
             Object parameterValue = isTextParameterValue(parameterFormats, parameterIndex)
-                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
+                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex))
+                    : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
             result.add(parameterValue);
         }
         return result;
@@ -97,7 +98,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         String value = payload.getByteBuf().readCharSequence(parameterValueLength, payload.getCharset()).toString();
         return getTextParameters(value, parameterType);
     }
-
+    
     private Object getTextParameters(final String textValue, final PostgreSQLColumnType parameterType) {
         switch (parameterType) {
             case POSTGRESQL_TYPE_UNSPECIFIED:

@@ -51,12 +51,12 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkDuplicateDiscoveryType(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getName();
+        checkDuplicateDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
         checkInvalidDiscoverType(sqlStatement);
     }
     
-    private void checkDuplicateDiscoveryType(final String schemaName, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
+    private void checkDuplicateDiscoveryType(final String databaseName, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
                                              final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig) {
             return;
@@ -64,7 +64,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
         Collection<String> existRuleNames = currentRuleConfig.getDiscoveryTypes().keySet();
         Collection<String> duplicateRuleNames = sqlStatement.getTypes().stream().map(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName).filter(existRuleNames::contains).collect(Collectors.toSet());
         duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, schemaName, duplicateRuleNames));
+        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryTypeStatement sqlStatement) {

@@ -158,15 +158,15 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 if (((DataSourceNameDisabledEvent) event).isDisabled()) {
-                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
+                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName());
                 } else {
-                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
+                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName());
                 }
             }
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedSchema().getGroupName())) {
-                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedSchema().getDataSourceName());
+                if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getGroupName())) {
+                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
                 }
             }
         }
@@ -191,9 +191,10 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + databaseName + "-" + entry.getValue().getGroupName(),
-                    each -> new HeartbeatJob(databaseName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
-                                .execute(null), entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
+                String jobName = entry.getValue().getDatabaseDiscoveryType().getType() + "-" + databaseName + "-" + entry.getValue().getGroupName();
+                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(),
+                        entry.getValue().getDisabledDataSourceNames()).execute(null),
+                        entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
                 modeScheduleContext.get().startCronJob(job);
             }
         }

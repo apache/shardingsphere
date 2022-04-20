@@ -73,10 +73,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws DistSQLException {
+    protected ResponseHeader execute(final String databaseName, final T sqlStatement) throws DistSQLException {
         RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
-        ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
+        ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName());
@@ -146,14 +146,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void prepareScaling(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
-                              final RuleDefinitionAlterPreprocessor preprocessor) {
+                                final RuleDefinitionAlterPreprocessor preprocessor) {
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         if (metaDataPersistService.isPresent()) {
-            Optional<String> newVersion = metaDataPersistService.get().getSchemaVersionPersistService().createNewVersion(shardingSphereMetaData.getName());
+            Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(shardingSphereMetaData.getName());
             if (!newVersion.isPresent()) {
                 throw new RuntimeException(String.format("Unable to get a new version for schema: %s", shardingSphereMetaData.getName()));
             }
-            metaDataPersistService.get().getSchemaRuleService().persist(shardingSphereMetaData.getName(), newVersion.get(), buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement, 
+            metaDataPersistService.get().getSchemaRuleService().persist(shardingSphereMetaData.getName(), newVersion.get(), buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement,
                     updater, currentRuleConfig, preprocessor));
             ShardingSphereEventBus.getInstance().post(new SchemaVersionPreparedEvent(newVersion.get(), shardingSphereMetaData.getName()));
         }
@@ -164,9 +164,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                 shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
     
-    private Collection<RuleConfiguration> buildAlteredRuleConfigurations(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, 
-                                                final RuleConfiguration currentRuleConfig, 
-                                                final RuleDefinitionAlterPreprocessor preprocessor) {
+    private Collection<RuleConfiguration> buildAlteredRuleConfigurations(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater,
+                                                                         final RuleConfiguration currentRuleConfig,
+                                                                         final RuleDefinitionAlterPreprocessor preprocessor) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
         updater.updateCurrentRuleConfiguration(alteredRuleConfig, toBeAlteredRuleConfig);

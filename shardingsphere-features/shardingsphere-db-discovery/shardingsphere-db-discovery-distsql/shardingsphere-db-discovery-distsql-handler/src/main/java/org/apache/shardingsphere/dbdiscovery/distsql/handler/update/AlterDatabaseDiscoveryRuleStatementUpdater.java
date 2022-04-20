@@ -60,31 +60,31 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData.getResource());
+        String databaseName = shardingSphereMetaData.getName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
         checkDiscoverTypeAndHeartbeat(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("database discovery", schemaName));
+    private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("database discovery", databaseName));
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
+    private void checkToBeAlteredRules(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                        final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException("database discovery", schemaName, notExistedRuleNames));
+        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException("database discovery", databaseName, notExistedRuleNames));
     }
     
     private Collection<String> getToBeAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws DistSQLException {
+    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws DistSQLException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResources));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -120,7 +120,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        //TODO DistSQL update rule config need to sync scheduler module cron.
+        // TODO DistSQL update rule config need to sync scheduler module cron.
     }
     
     private void dropRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {

@@ -59,12 +59,12 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         // TODO check resource
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+    private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
             if (!toBeCreatedDuplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleException("encrypt", schemaName, toBeCreatedDuplicateRuleNames);
+                throw new DuplicateRuleException("encrypt", databaseName, toBeCreatedDuplicateRuleNames);
             }
         }
     }
@@ -82,8 +82,8 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> notExistedEncryptors = encryptors.stream().filter(
-            each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+        Collection<String> notExistedEncryptors = encryptors.stream()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedEncryptors.isEmpty()) {
             throw new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors);
         }

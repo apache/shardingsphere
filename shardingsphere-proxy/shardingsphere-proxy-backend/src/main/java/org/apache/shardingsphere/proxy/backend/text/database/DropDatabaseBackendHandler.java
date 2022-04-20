@@ -49,24 +49,24 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     public ResponseHeader execute() {
         check(sqlStatement, connectionSession.getGrantee());
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
-            connectionSession.setCurrentSchema(null);
+            connectionSession.setCurrentDatabase(null);
         }
-        ProxyContext.getInstance().getContextManager().deleteSchema(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().deleteDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
-        String schemaName = sqlStatement.getDatabaseName();
-        if (!SQLCheckEngine.check(schemaName, getRules(schemaName), grantee)) {
-            throw new UnknownDatabaseException(schemaName);
+        String databaseName = sqlStatement.getDatabaseName();
+        if (!SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
+            throw new UnknownDatabaseException(databaseName);
         }
-        if (!sqlStatement.isContainsExistClause() && !ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new DBDropNotExistsException(schemaName);
+        if (!sqlStatement.isContainsExistClause() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+            throw new DBDropNotExistsException(databaseName);
         }
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(connectionSession.getSchemaName()) && connectionSession.getSchemaName().equals(databaseName);
+        return !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) && connectionSession.getDatabaseName().equals(databaseName);
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {

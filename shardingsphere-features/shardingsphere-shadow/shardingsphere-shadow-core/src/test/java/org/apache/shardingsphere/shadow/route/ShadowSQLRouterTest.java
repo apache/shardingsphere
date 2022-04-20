@@ -61,12 +61,6 @@ public final class ShadowSQLRouterTest {
         assertNotNull(routeContext);
     }
     
-//    @Test
-//    public void assertDecorateRouteContext() {
-//        router.decorateRouteContext(createRouteContext(), mock(LogicSQL.class), mock(ShardingSphereMetaData.class), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()),
-//                mock(ConfigurationProperties.class));
-//    }
-    
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(createDataSources());

@@ -64,7 +64,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "USE test";
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     private SchemaAssignedDatabaseBackendHandler schemaAssignedDatabaseBackendHandler;
     
@@ -86,7 +86,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
@@ -102,7 +102,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
             when(metaData.isComplete()).thenReturn(true);
             when(metaData.hasDataSource()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }

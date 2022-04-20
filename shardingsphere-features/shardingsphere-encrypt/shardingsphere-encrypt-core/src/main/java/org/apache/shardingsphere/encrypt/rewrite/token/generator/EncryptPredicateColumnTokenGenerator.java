@@ -79,9 +79,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName
-                -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName))).orElseGet(()
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(each.getIdentifier().getValue()))));
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName)))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(each.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }
         return result;

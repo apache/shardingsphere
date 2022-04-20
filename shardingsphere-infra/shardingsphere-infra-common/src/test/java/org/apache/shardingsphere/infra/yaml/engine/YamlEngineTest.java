@@ -49,9 +49,8 @@ public final class YamlEngineTest {
         URL url = getClass().getClassLoader().getResource("yaml/fixture-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
+        try (FileReader fileReader = new FileReader(url.getFile());
+             BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
                 yamlContent.append(line).append(System.lineSeparator());
@@ -91,9 +90,8 @@ public final class YamlEngineTest {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
+        try (FileReader fileReader = new FileReader(url.getFile());
+             BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
                 yamlContent.append(line).append(System.lineSeparator());

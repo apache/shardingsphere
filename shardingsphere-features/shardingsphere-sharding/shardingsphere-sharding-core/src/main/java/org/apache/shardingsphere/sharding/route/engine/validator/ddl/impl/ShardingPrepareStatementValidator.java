@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator<PrepareStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().isEmpty()) {
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");

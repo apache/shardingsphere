@@ -28,11 +28,10 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Collection;
 import java.util.Map;
@@ -73,10 +72,7 @@ public final class DistributeLockContext implements LockContext {
         }
         for (String each : allGlobalLock) {
             Optional<String> schemaLock = LockNode.parseGlobalSchemaLocksNodePath(each);
-            if (schemaLock.isPresent()) {
-                String[] schemaInstanceId = LockNodeUtil.parseSchemaLockName(schemaLock.get());
-                globalLocks.put(schemaInstanceId[0], crateGlobalLock(schemaInstanceId[1]));
-            }
+            schemaLock.ifPresent(schema -> globalLocks.put(schema, crateGlobalLock()));
         }
     }
     
@@ -87,13 +83,13 @@ public final class DistributeLockContext implements LockContext {
         if (null != result) {
             return result;
         }
-        result = crateGlobalLock(getCurrentInstanceId());
+        result = crateGlobalLock();
         globalLocks.put(schemaName, result);
         return result;
     }
     
-    private ShardingSphereGlobalLock crateGlobalLock(final String ownerInstanceId) {
-        return new ShardingSphereDistributeGlobalLock(lockRegistryService, currentInstance, computeNodeInstances, ownerInstanceId);
+    private ShardingSphereGlobalLock crateGlobalLock() {
+        return new ShardingSphereDistributeGlobalLock(lockRegistryService, currentInstance, computeNodeInstances);
     }
     
     private String getCurrentInstanceId() {
@@ -123,25 +119,17 @@ public final class DistributeLockContext implements LockContext {
         return Optional.ofNullable(globalLocks.get(schemaName));
     }
     
-    private boolean isSameInstanceId(final String instanceId) {
-        return getCurrentInstanceId().equals(instanceId);
-    }
-    
     /**
      * Locked event.
      *
      * @param event locked event
      */
     @Subscribe
-    public synchronized void renew(final LockedEvent event) {
+    public synchronized void renew(final SchemaLockedEvent event) {
         String schema = event.getSchema();
-        String ownerInstanceId = event.getOwnerInstanceId();
-        if (isSameInstanceId(ownerInstanceId)) {
-            return;
-        }
         ShardingSphereGlobalLock globalLock = globalLocks.get(schema);
         if (null == globalLock) {
-            globalLock = crateGlobalLock(ownerInstanceId);
+            globalLock = crateGlobalLock();
             globalLocks.put(schema, globalLock);
         }
         globalLock.ackLock(schema, getCurrentInstanceId());
@@ -153,20 +141,9 @@ public final class DistributeLockContext implements LockContext {
      * @param event lock released event
      */
     @Subscribe
-    public synchronized void renew(final LockReleasedEvent event) {
+    public synchronized void renew(final SchemaLockReleasedEvent event) {
         String schema = event.getSchema();
-        String ownerInstanceId = event.getOwnerInstanceId();
-        if (isSameInstanceId(ownerInstanceId)) {
-            ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schema);
-            if (null == shardingSphereGlobalLock) {
-                return;
-            }
-            shardingSphereGlobalLock.releaseLockedState(schema);
-            return;
-        }
-        getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> {
-            shardingSphereGlobalLock.releaseAckLock(schema, getCurrentInstanceId());
-        });
+        getGlobalLock(schema).ifPresent(lock -> lock.releaseAckLock(schema, getCurrentInstanceId()));
     }
     
     /**

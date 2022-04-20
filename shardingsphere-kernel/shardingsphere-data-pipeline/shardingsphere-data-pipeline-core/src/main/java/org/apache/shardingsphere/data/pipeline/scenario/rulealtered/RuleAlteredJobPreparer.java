@@ -129,14 +129,14 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void prepareTarget(final JobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
-        DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
-        if (null == dataSourcePreparer) {
+        Optional<DataSourcePreparer> dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
+        if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
         PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
-        dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
@@ -171,8 +171,8 @@ public final class RuleAlteredJobPreparer {
         jobContext.getIncrementalTasks().add(incrementalTask);
     }
     
-    private IngestPosition<?> getIncrementalPosition(
-            final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) throws SQLException {
+    private IngestPosition<?> getIncrementalPosition(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig,
+                                                     final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
             Optional<IngestPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
             if (positionOptional.isPresent()) {

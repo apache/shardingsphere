@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
 public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<SingleTableRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials)
-            throws SQLException {
-        Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).collect(Collectors.toSet());
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<String> ruleTables = rule.getTables();
+        Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
         if (needLoadTables.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -61,14 +61,15 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     @Override
     public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final SingleTableRule rule, final SchemaBuilderMaterials materials) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
+        Collection<String> ruleTables = rule.getTables();
         for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+            result.put(entry.getKey(), ruleTables.contains(entry.getKey()) ? decorate(entry.getKey(), entry.getValue()) : entry.getValue());
         }
         return result;
     }
     
-    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
-        return rule.getTables().contains(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData), getConstraint(tableMetaData)) : tableMetaData;
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
+        return new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData), getConstraint(tableMetaData));
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
@@ -76,8 +77,8 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     }
     
     private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
-        return tableMetaData.getConstrains().values().stream().map(each 
-            -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
+        return tableMetaData.getConstrains().values().stream()
+                .map(each -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
     }
     
     @Override

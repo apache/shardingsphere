@@ -29,13 +29,16 @@ import java.util.Collection;
 @Getter
 public final class SchemaAlteredEvent {
     
+    private final String databaseName;
+    
     private final String schemaName;
     
     private final Collection<TableMetaData> alteredTables = new ArrayList<>();
     
     private final Collection<String> droppedTables = new ArrayList<>();
     
-    public SchemaAlteredEvent(final String schemaName) {
+    public SchemaAlteredEvent(final String databaseName, final String schemaName) {
+        this.databaseName = databaseName;
         this.schemaName = schemaName;
     }
 }

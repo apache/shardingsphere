@@ -51,7 +51,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
-        return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSources.entrySet().stream().collect(Collectors
+                .toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

@@ -44,8 +44,7 @@ public final class ShardingParameterRewriterBuilderTest {
         when(routeContext.isSingleRouting()).thenReturn(false);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder 
-                = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mock(ShardingSphereSchema.class), statementContext);
+        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mock(ShardingSphereSchema.class), statementContext);
         Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters();
         assertThat(actual.size(), is(1));
         ParameterRewriter parameterRewriter = actual.iterator().next();
@@ -60,8 +59,7 @@ public final class ShardingParameterRewriterBuilderTest {
         when(routeContext.isSingleRouting()).thenReturn(true);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder
-                = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mock(ShardingSphereSchema.class), statementContext);
+        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mock(ShardingSphereSchema.class), statementContext);
         Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters();
         assertThat(actual.size(), is(0));
     }

@@ -50,10 +50,8 @@ public final class YamlEngine {
      * @throws IOException IO Exception
      */
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)
-        ) {
+        try (FileInputStream fileInputStream = new FileInputStream(yamlFile);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
             return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }

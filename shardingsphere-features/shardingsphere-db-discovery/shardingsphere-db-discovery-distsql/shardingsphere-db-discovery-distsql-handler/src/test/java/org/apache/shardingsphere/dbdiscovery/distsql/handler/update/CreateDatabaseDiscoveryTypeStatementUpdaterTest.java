@@ -72,7 +72,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdaterTest {
         Collection<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments = Collections.singletonList(
                 new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("mgr", new Properties())));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryTypeStatement(databaseDiscoveryTypeSegments),
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(), 
+                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(),
                         Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("mgr", new Properties()))));
     }
     
@@ -87,8 +87,8 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdaterTest {
     public void assertBuildAndUpdate() throws DistSQLException {
         Collection<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("MGR", new Properties())));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryTypeStatement(discoveryTypeSegments), null);
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration
-                = (DatabaseDiscoveryRuleConfiguration) updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration =
+                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
         DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfiguration);
         assertThat(currentConfiguration.getDiscoveryTypes().size(), is(1));

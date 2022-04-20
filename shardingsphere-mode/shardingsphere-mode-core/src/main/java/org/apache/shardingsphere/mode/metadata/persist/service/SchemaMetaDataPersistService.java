@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
@@ -61,33 +61,22 @@ public final class SchemaMetaDataPersistService {
     /**
      * Persist table meta data.
      *
-     * @param schemaName schema name
-     * @param tableMetaData table meta data
-     */
-    public void persist(final String schemaName, final TableMetaData tableMetaData) {
-        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, schemaName, tableMetaData.getName().toLowerCase()),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
-    }
-    
-    /**
-     * Persist table meta data.
-     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableMetaData table meta data
      */
     public void persist(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
-        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableMetaData.getName().toLowerCase()),
+        repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableMetaData.getName().toLowerCase()),
                 YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
     }
     
     /**
      * Persist schema tables.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      */
-    public void persist(final String schemaName) {
-        repository.persist(SchemaMetaDataNode.getMetaDataTablesPath(schemaName, schemaName), "");
+    public void persist(final String databaseName) {
+        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, databaseName), "");
     }
     
     private void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema, final ShardingSphereSchema originalSchema) {
@@ -109,27 +98,17 @@ public final class SchemaMetaDataPersistService {
     }
     
     private void persistTables(final String databaseName, final String schemaName, final Map<String, TableMetaData> tables) {
-        tables.forEach((key, value) -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key),
+        tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key),
                 YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
     }
     
     /**
-     * Delete schema.
+     * Delete database.
      *
-     * @param schemaName schema name to be deleted
+     * @param databaseName database name to be deleted
      */
-    public void delete(final String schemaName) {
-        repository.delete(SchemaMetaDataNode.getSchemaNamePath(schemaName));
-    }
-    
-    /**
-     * Delete table meta data.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
-     */
-    public void delete(final String schemaName, final String tableName) {
-        repository.delete(SchemaMetaDataNode.getTableMetaDataPath(schemaName, schemaName, tableName));
+    public void delete(final String databaseName) {
+        repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     /**
@@ -140,7 +119,7 @@ public final class SchemaMetaDataPersistService {
      * @param tableName table name
      */
     public void delete(final String databaseName, final String schemaName, final String tableName) {
-        repository.delete(SchemaMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName));
+        repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName));
     }
     
     /**
@@ -151,13 +130,13 @@ public final class SchemaMetaDataPersistService {
      * @return Loaded schema
      */
     public Optional<ShardingSphereSchema> load(final String databaseName, final String schemaName) {
-        Collection<String> tables = repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataTablesPath(databaseName, schemaName));
+        Collection<String> tables = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName));
         if (tables.isEmpty()) {
             return Optional.empty();
         }
         ShardingSphereSchema schema = new ShardingSphereSchema();
         tables.forEach(each -> {
-            String content = repository.get(SchemaMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
+            String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
             TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
             schema.getTables().put(each, tableMetaData);
         });
@@ -169,7 +148,7 @@ public final class SchemaMetaDataPersistService {
      *
      * @return all database names
      */
-    public Collection<String> loadAllNames() {
-        return repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataNodePath());
+    public Collection<String> loadAllDatabaseNames() {
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNodePath());
     }
 }

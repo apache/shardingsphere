@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 
 /**
  * Disabled state event.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 @Getter
 public final class DisabledStateChangedEvent implements GovernanceEvent {
     
-    private final QualifiedSchema qualifiedSchema;
+    private final QualifiedDatabase qualifiedSchema;
     
     private final boolean disabled;
 }

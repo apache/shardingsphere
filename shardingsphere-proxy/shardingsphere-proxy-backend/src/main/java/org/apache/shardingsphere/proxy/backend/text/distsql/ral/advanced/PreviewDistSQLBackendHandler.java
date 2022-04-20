@@ -99,24 +99,25 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String schemaName = getSchemaName();
-        String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType());
+        String databaseName = getDatabaseName();
+        String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), previewedStatement, schemaName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), previewedStatement, databaseName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementSchemaHolder::set);
         }
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
-                ? getFederationExecutionUnits(logicSQL, schemaName, metaDataContexts) : executionContext.getExecutionUnits();
+                ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
+                : executionContext.getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toCollection(LinkedList::new));
     }
     
@@ -129,7 +130,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaDataMap());
-        DatabaseType databaseType = metaDataContexts.getMetaData(getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = metaDataContexts.getMetaData(getDatabaseName()).getResource().getDatabaseType();
         FederationExecutor executor = FederationExecutorFactory.newInstance(schemaName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false));
         executor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType), context);
@@ -154,15 +155,15 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) connectionSession.getBackendConnection(),
-                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys), metaData.getMetaData(getSchemaName()).getRuleMetaData().getRules());
+                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys), metaData.getMetaData(getDatabaseName()).getRuleMetaData().getRules());
     }
     
-    private String getSchemaName() {
-        String result = !Strings.isNullOrEmpty(connectionSession.getSchemaName()) ? connectionSession.getSchemaName() : connectionSession.getDefaultSchemaName();
+    private String getDatabaseName() {
+        String result = !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) ? connectionSession.getDatabaseName() : connectionSession.getDefaultDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(result)) {
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
             throw new SchemaNotExistedException(result);
         }
         return result;

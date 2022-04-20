@@ -93,15 +93,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
-        Optional<String> schemaName = metaDataContexts.getAllSchemaNames().stream().findFirst();
+        Optional<String> databaseName = metaDataContexts.getAllDatabaseNames().stream().findFirst();
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
-                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType()) : Optional.empty();
-        if (!schemaName.isPresent() || !fileGenerator.isPresent()) {
+                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType())
+                : Optional.empty();
+        if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
                 new DataSourceProvidedDatabaseConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
         Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
@@ -125,7 +126,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+                ? parameter.getDatabaseConfigs().keySet()
+                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);

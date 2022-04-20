@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 @Getter
 public final class DataSourceDisabledEvent implements DataSourceStatusChangedEvent {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String groupName;
     

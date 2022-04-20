@@ -75,7 +75,7 @@ show variables like '%binlog%';
 
 执行以下命令，查看该用户是否有迁移权限：
 ```
-SHOW GRANTS 'user';
+SHOW GRANTS FOR 'user';
 ```
 
 示例结果：

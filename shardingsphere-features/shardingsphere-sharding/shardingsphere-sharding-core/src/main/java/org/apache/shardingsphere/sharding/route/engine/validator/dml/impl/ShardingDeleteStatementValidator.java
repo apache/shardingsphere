@@ -35,13 +35,13 @@ import java.util.List;
 public final class ShardingDeleteStatementValidator extends ShardingDMLStatementValidator<DeleteStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateMultipleTable(shardingRule, sqlStatementContext);
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         if (DeleteStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
