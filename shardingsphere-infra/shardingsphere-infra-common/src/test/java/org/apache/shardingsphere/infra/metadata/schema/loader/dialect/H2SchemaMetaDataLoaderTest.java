@@ -42,18 +42,29 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLTableMetaDataLoaderTest {
+public final class H2SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION FROM information_schema.columns WHERE TABLE_SCHEMA=? ORDER BY ORDINAL_POSITION")
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
+                        + "ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
+                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
+                .executeQuery())
+                        .thenReturn(indexResultSet);
+        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE").executeQuery()).thenReturn(primaryKeys);
+        ResultSet generatedInfo = mockGeneratedInfoResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
+                        + " INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
+                .executeQuery()).thenReturn(generatedInfo);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
@@ -62,13 +73,24 @@ public final class MySQLTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl') "
-                        + "ORDER BY ORDINAL_POSITION")
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
+                        + "AND TABLE_NAME IN ('tbl') ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
+                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
+        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE AND TABLE_NAME IN ('tbl')")
+                .executeQuery())
+                        .thenReturn(primaryKeys);
+        ResultSet generatedInfo = mockGeneratedInfoResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
+                        + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
+                .executeQuery())
+                        .thenReturn(generatedInfo);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
@@ -81,7 +103,7 @@ public final class MySQLTableMetaDataLoaderTest {
     
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, false);
         when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
         when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
@@ -89,13 +111,30 @@ public final class MySQLTableMetaDataLoaderTest {
     
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
+        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
+        when(result.getString("EXTRA")).thenReturn("auto_increment", "");
+        when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
+        return result;
+    }
+    
+    private ResultSet mockPrimaryKeysMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
+        return result;
+    }
+    
+    private ResultSet mockGeneratedInfoResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
+        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
         return result;
     }
     
@@ -108,7 +147,7 @@ public final class MySQLTableMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         assertTrue(result.isPresent());
         return result.get();
     }
@@ -117,13 +156,10 @@ public final class MySQLTableMetaDataLoaderTest {
         assertThat(schemaMetaDataList.size(), is(1));
         assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
-        assertThat(actualTableMetaData.getColumns().size(), is(5));
+        assertThat(actualTableMetaData.getColumns().size(), is(2));
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(3)), is(new ColumnMetaData("geo", -2, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(4)), is(new ColumnMetaData("t_year", 91, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, true)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }

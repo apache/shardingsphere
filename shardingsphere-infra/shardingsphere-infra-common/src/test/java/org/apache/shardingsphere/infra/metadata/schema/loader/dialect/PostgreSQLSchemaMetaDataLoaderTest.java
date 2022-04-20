@@ -44,27 +44,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLTableMetaDataLoaderTest {
+public final class PostgreSQLSchemaMetaDataLoaderTest {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
-            + "FROM information_schema.columns WHERE table_schema = ?";
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"
+            + " FROM information_schema.columns WHERE table_schema IN ('public')";
     
-    private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN ('tbl')";
+    private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
-            + " JOIN information_schema.key_column_usage kc"
-            + " ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
-            + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema = ?";
+    private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN ('tbl') ORDER BY ordinal_position";
     
-    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
+    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
+            + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
+            + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema IN ('public')";
+    
+    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN ('public')";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(BASIC_TABLE_META_DATA_SQL).executeQuery()).thenReturn(resultSet);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet tableResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
@@ -74,11 +77,20 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
+    private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn("public");
+        return result;
+    }
+    
     @Test
     public void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(resultSet);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet tableResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();

@@ -42,29 +42,24 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class H2TableMetaDataLoaderTest {
+public final class SQLServerSchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
-                        + "ORDER BY ORDINAL_POSITION")
+                "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
+                        + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
+                        + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+                        + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+                        + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id ORDER BY col.column_id")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
-                .executeQuery())
-                        .thenReturn(indexResultSet);
-        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE").executeQuery()).thenReturn(primaryKeys);
-        ResultSet generatedInfo = mockGeneratedInfoResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
-                        + " INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
-                .executeQuery()).thenReturn(generatedInfo);
+                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
+                        + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
+                .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
@@ -73,24 +68,18 @@ public final class H2TableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
-                        + "AND TABLE_NAME IN ('tbl') ORDER BY ORDINAL_POSITION")
+                "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
+                        + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
+                        + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+                        + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+                        + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
+                        + " WHERE obj.name IN ('tbl') ORDER BY col.column_id")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
+                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
+                        + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE AND TABLE_NAME IN ('tbl')")
-                .executeQuery())
-                        .thenReturn(primaryKeys);
-        ResultSet generatedInfo = mockGeneratedInfoResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
-                        + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
-                .executeQuery())
-                        .thenReturn(generatedInfo);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
     }
     
@@ -114,27 +103,10 @@ public final class H2TableMetaDataLoaderTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
-        return result;
-    }
-    
-    private ResultSet mockPrimaryKeysMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id");
-        return result;
-    }
-    
-    private ResultSet mockGeneratedInfoResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
+        when(result.getString("COLUMN_KEY")).thenReturn("1", "");
+        when(result.getString("IS_IDENTITY")).thenReturn("1", "");
+        when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", "utf8");
         return result;
     }
     
@@ -147,7 +119,7 @@ public final class H2TableMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         assertTrue(result.isPresent());
         return result.get();
     }
@@ -158,8 +130,8 @@ public final class H2TableMetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, true)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }
