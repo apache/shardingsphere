@@ -43,7 +43,8 @@ public final class PaginationValueSQLConverter implements SQLSegmentConverter<Pa
     @Override
     public Optional<SqlNode> convertToSQLNode(final PaginationValueSegment segment) {
         return Optional.of(segment instanceof NumberLiteralPaginationValueSegment
-                ? getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment) : getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
+                ? getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment)
+                : getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
     }
     
     private SqlNode getLiteralSQLNode(final NumberLiteralPaginationValueSegment segment) {

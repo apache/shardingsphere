@@ -56,7 +56,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         return result;
     }
     
-    private void route(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final SingleTableRule rule, 
+    private void route(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final SingleTableRule rule,
                        final ConfigurationProperties props, final RouteContext routeContext) {
         Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, schema, rule, routeContext);
         if (singleTableNames.isEmpty()) {
@@ -66,20 +66,20 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(routeContext, rule);
     }
     
-    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, 
+    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema,
                                                    final SingleTableRule rule, final RouteContext routeContext) {
         Collection<String> result = sqlStatementContext.getTablesContext().getTableNames();
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtil.getTableNamesFromMetaData(schema, ((IndexAvailable) sqlStatementContext).getIndexes());
         }
-        return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result); 
+        return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result);
     }
     
-    private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,  
+    private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,
                                         final RouteContext routeContext, final ConfigurationProperties props, final Collection<String> singleTableNames) {
         boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
-        boolean allTablesInSameDataSource = sqlFederationEnabled 
-                ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames) 
+        boolean allTablesInSameDataSource = sqlFederationEnabled
+                ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames)
                 : rule.isAllTablesInSameDataSource(routeContext, singleTableNames);
         Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");
     }

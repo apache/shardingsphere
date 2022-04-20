@@ -144,7 +144,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                                 final EncryptContext encryptContext, final InsertValueContext insertValueContext, final Object originalValue) {
         if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
+                    ? new DerivedLiteralExpressionSegment(originalValue)
+                    : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
     }
@@ -161,7 +162,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private boolean isAddLiteralExpressionSegment(final InsertValueContext insertValueContext, final int columnIndex) {
         return insertValueContext.getParameters().isEmpty()
-               || insertValueContext.getValueExpressions().get(columnIndex) instanceof LiteralExpressionSegment;
+                || insertValueContext.getValueExpressions().get(columnIndex) instanceof LiteralExpressionSegment;
     }
     
     private int getParameterIndexCount(final InsertValue insertValueToken) {
@@ -174,7 +175,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void setCipherColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex, 
+    private void setCipherColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
                                  final EncryptContext encryptContext, final ExpressionSegment valueExpression, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(

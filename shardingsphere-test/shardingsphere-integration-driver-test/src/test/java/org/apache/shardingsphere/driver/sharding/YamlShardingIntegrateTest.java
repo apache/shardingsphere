@@ -47,10 +47,10 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<Object[]> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
+            {"/yaml/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
+            {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
+            {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
+            {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     

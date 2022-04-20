@@ -110,19 +110,18 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
         
         @Override
         protected void waitUntilReady() {
-            Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
-                () -> {
-                    getRateLimiter().doWhenReady(() -> {
-                        try (Connection unused = connectionSupplier.call()) {
-                            log.info("Container ready");
-                            // CHECKSTYLE:OFF
-                        } catch (final Exception ex) {
-                            // CHECKSTYLE:ON
-                            throw new RuntimeException("Not Ready yet.", ex);
-                        }
-                    });
-                    return true;
+            Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, () -> {
+                getRateLimiter().doWhenReady(() -> {
+                    try (Connection unused = connectionSupplier.call()) {
+                        log.info("Container ready");
+                        // CHECKSTYLE:OFF
+                    } catch (final Exception ex) {
+                        // CHECKSTYLE:ON
+                        throw new RuntimeException("Not Ready yet.", ex);
+                    }
                 });
+                return true;
+            });
         }
     }
 }

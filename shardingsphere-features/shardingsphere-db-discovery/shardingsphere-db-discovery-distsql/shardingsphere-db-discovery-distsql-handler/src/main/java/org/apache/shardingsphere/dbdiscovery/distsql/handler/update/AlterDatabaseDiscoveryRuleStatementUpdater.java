@@ -120,7 +120,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        //TODO DistSQL update rule config need to sync scheduler module cron.
+        // TODO DistSQL update rule config need to sync scheduler module cron.
     }
     
     private void dropRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {

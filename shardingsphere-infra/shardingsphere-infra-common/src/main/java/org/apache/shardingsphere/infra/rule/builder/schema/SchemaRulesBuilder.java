@@ -117,7 +117,7 @@ public final class SchemaRulesBuilder {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
-
+    
     private static void checkDataSourceAggregations(final Map<String, DataSourceProperties> dataSourceProperties) {
         for (Entry<String, DataSourceProperties> sourcePropertiesEntry : dataSourceProperties.entrySet()) {
             for (Entry<String, DataSourceProperties> targetPropertiesEntry : dataSourceProperties.entrySet()) {
@@ -125,7 +125,7 @@ public final class SchemaRulesBuilder {
             }
         }
     }
-
+    
     private static void doCheckDataSourceAggregations(final DataSourceProperties sourceProperties, final DataSourceProperties targetProperties) {
         if (sourceProperties.equals(targetProperties)) {
             return;

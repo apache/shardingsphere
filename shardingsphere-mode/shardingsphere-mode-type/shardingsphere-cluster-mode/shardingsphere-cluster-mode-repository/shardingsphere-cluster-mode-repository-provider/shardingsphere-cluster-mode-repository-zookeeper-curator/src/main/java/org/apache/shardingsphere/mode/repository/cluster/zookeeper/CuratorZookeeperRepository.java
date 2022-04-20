@@ -87,8 +87,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
         builder.connectString(config.getServerLists())
-            .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
-            .namespace(config.getNamespace());
+                .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
+                .namespace(config.getNamespace());
         if (0 != timeToLiveSeconds) {
             builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }
@@ -98,18 +98,18 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
-                .aclProvider(new ACLProvider() {
-                    
-                    @Override
-                    public List<ACL> getDefaultAcl() {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                    
-                    @Override
-                    public List<ACL> getAclForPath(final String path) {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                });
+                    .aclProvider(new ACLProvider() {
+                        
+                        @Override
+                        public List<ACL> getDefaultAcl() {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                        
+                        @Override
+                        public List<ACL> getAclForPath(final String path) {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                    });
         }
         return builder.build();
     }
@@ -320,11 +320,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO wait 500ms, close cache before close client, or will throw exception
-     * Because of asynchronous processing, may cause client to close
-     * first and cache has not yet closed the end.
-     * Wait for new version of Curator to fix this.
-     * BUG address: https://issues.apache.org/jira/browse/CURATOR-157
+    /*
+     * TODO wait 500ms, close cache before close client, or will throw exception Because of asynchronous processing, may cause client to close first and cache has not yet closed the end. Wait for new
+     * version of Curator to fix this. BUG address: https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {

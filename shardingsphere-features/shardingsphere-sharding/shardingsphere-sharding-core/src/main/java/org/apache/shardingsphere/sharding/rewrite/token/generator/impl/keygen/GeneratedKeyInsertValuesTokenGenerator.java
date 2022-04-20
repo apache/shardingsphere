@@ -60,7 +60,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
             DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
-                    ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
+                    ? new DerivedLiteralExpressionSegment(generatedValues.next())
+                    : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
         }

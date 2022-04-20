@@ -46,6 +46,6 @@ public interface MetaDataRefresher<T extends SQLStatement> extends StatelessType
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereMetaData schemaMetaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners, 
+    void refresh(ShardingSphereMetaData schemaMetaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
                  Collection<String> logicDataSourceNames, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

@@ -46,9 +46,8 @@ public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest 
         URL url = getClass().getClassLoader().getResource("yaml/shadow-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
+        try (FileReader fileReader = new FileReader(url.getFile());
+             BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
                 yamlContent.append(line).append(System.lineSeparator());
