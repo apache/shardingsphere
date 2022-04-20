@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
+package org.apache.shardingsphere.infra.expr;
 
 import groovy.lang.Closure;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.junit.Test;
 
 import java.util.Collections;
