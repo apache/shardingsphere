@@ -72,7 +72,7 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;
 
 dropShardingBindingTableRules
@@ -217,4 +217,8 @@ algorithmProperty
 
 existClause
     : IF EXISTS
+    ;
+
+withUnusedAlgorithmsClause
+    : WITH UNUSED ALGORITHMS
     ;
