@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class ShardingDropIndexStatementValidator extends ShardingDDLStatementValidator<DropIndexStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             return;
@@ -52,7 +52,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(table -> table.getTableName().getIdentifier().getValue());

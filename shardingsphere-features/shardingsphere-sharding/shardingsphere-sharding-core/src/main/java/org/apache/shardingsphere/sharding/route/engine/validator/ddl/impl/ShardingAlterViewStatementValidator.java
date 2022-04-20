@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class ShardingAlterViewStatementValidator extends ShardingDDLStatementValidator<AlterViewStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
         if (selectStatement.isPresent()) {
@@ -48,7 +48,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

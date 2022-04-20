@@ -45,8 +45,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
             CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH,
             MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT,
             MillisecondSnowflakeId.DEFAULT_MACHINE_BIT,
-            MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT
-    );
+            MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT);
     
     @Test
     public void assertGenerateKey() {

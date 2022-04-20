@@ -57,8 +57,8 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     private void checkAlgorithm(final String databaseName, final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) throws DistSQLException {
         DistSQLException.predictionThrow(ShardingStrategyType.contain(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
-        DistSQLException.predictionThrow(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType()).isValid(sqlStatement.getShardingColumn()),
-            () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        DistSQLException.predictionThrow(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType()).isValid(sqlStatement.getShardingColumn()), () -> new InvalidAlgorithmConfigurationException(
+                sqlStatement.getStrategyType()));
         DistSQLException.predictionThrow(isAlgorithmDefinitionExists(sqlStatement), () -> new RequiredAlgorithmMissedException());
         if (null == sqlStatement.getShardingAlgorithmName() && null != sqlStatement.getAlgorithmSegment()) {
             return;
@@ -73,13 +73,14 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     private void checkExist(final String databaseName, final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Optional<ShardingStrategyConfiguration> strategyConfiguration = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
-        DistSQLException.predictionThrow(strategyConfiguration.isPresent(),
-            () -> new RequiredRuleMissedException(String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
+        DistSQLException.predictionThrow(strategyConfiguration.isPresent(), () -> new RequiredRuleMissedException(
+                String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
         ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
-                ? currentRuleConfig.getDefaultTableShardingStrategy() : currentRuleConfig.getDefaultDatabaseShardingStrategy();
+                ? currentRuleConfig.getDefaultTableShardingStrategy()
+                : currentRuleConfig.getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
     

@@ -98,19 +98,19 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment(
                 "readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");
-        DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), 
+        DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                 Collections.singletonMap("discovery_type_name", null));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), configuration);
     }
     
     @Test
     public void assertBuild() {
-        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
+        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"),
                 "discovery_type_name", "heartbeat_name");
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("mgr", new Properties());
         DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration 
-                = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration =
+                updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         assertThat(databaseDiscoveryRuleConfiguration.getDataSources().size(), is(2));
         assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
@@ -122,12 +122,12 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdate() {
-        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
+        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"),
                 "discovery_type_name", "heartbeat_name");
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("mgr", new Properties());
         DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
-        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig 
-                = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
+        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig =
+                updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         updater.updateCurrentRuleConfiguration(currentConfiguration, toBeCreatedRuleConfig);
         assertThat(currentConfiguration.getDataSources().size(), is(2));

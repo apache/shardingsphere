@@ -84,7 +84,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param backendConnection backend connection
      * @return binary protocol backend handler
      */
-    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, 
+    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql,
                                                                                final List<Object> parameters, final BackendConnection<?> backendConnection) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);

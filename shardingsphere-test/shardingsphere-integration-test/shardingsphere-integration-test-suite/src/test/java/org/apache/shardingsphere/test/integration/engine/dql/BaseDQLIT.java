@@ -58,7 +58,8 @@ public abstract class BaseDQLIT extends SingleITCase {
     public final void init() throws Exception {
         fillDataOnlyOnce();
         expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
-                ? getExpectedDataSourceMap().values().iterator().next() : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
+                ? getExpectedDataSourceMap().values().iterator().next()
+                : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
@@ -105,7 +106,7 @@ public abstract class BaseDQLIT extends SingleITCase {
         assertFalse("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
     }
     
-    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData, 
+    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData,
                            final ResultSet expectedResultSet, final ResultSetMetaData expectedMetaData) throws SQLException {
         for (int i = 0; i < actualMetaData.getColumnCount(); i++) {
             try {

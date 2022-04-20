@@ -52,7 +52,7 @@ public final class TableMetaData {
         this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
-    public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, 
+    public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList,
                          final Collection<IndexMetaData> indexMetaDataList, final Collection<ConstraintMetaData> constraintMetaDataList) {
         this.name = name;
         columns = getColumns(columnMetaDataList);

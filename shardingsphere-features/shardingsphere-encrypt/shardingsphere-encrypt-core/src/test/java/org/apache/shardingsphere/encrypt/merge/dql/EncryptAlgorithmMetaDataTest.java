@@ -72,7 +72,7 @@ public final class EncryptAlgorithmMetaDataTest {
     @Mock
     private ProjectionsContext projectionsContext;
     
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<?, ?> encryptAlgorithm;
     
     @Before
     public void setUp() {
@@ -82,7 +82,7 @@ public final class EncryptAlgorithmMetaDataTest {
         when(columnProjection.getName()).thenReturn("id");
         when(columnProjection.getExpression()).thenReturn("id");
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()), EncryptAlgorithm.class);
     }
     
     @Test
@@ -121,8 +121,6 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertFindEncryptor() {
-        Map<String, String> columnTableNames = new HashMap<>();
-        columnTableNames.put(columnProjection.getExpression(), "t_order");
         when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("t_order", "id");
@@ -132,8 +130,6 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertIsQueryWithCipherColumn() {
-        Map<String, String> columnTableNames = new HashMap<>();
-        columnTableNames.put(columnProjection.getExpression(), "t_order");
         when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
         assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order"));

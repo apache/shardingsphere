@@ -115,7 +115,7 @@ public final class OpenGaussTableMetaDataLoader implements DialectTableMetaDataL
         boolean isPrimaryKey = primaryKeys.contains(tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
-        //TODO user defined collation which deterministic is false
+        // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive);
     }

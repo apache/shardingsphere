@@ -62,7 +62,7 @@ public class ShardingRuleSpringBootConfiguration {
      * @return sharding rule configuration
      */
     @Bean
-    public RuleConfiguration shardingRuleConfiguration(final ObjectProvider<Map<String, ShardingAlgorithm>> shardingAlgorithmProvider, 
+    public RuleConfiguration shardingRuleConfiguration(final ObjectProvider<Map<String, ShardingAlgorithm>> shardingAlgorithmProvider,
                                                        final ObjectProvider<Map<String, KeyGenerateAlgorithm>> keyGenerateAlgorithmProvider) {
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = Optional.ofNullable(shardingAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
         Map<String, KeyGenerateAlgorithm> keyGenerateAlgorithmMap = Optional.ofNullable(keyGenerateAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());

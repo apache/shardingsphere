@@ -91,7 +91,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, 
+    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates,
                                                                                             final List<Object> parameters, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {

@@ -68,9 +68,9 @@ public final class TransactionBackendHandlerFactory {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
         }
         if (tclStatement instanceof RollbackStatement) {
-            return ((RollbackStatement) tclStatement).getSavepointName().isPresent() 
+            return ((RollbackStatement) tclStatement).getSavepointName().isPresent()
                     ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
-                    : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession); 
+                    : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && OperationScope.GLOBAL != ((SetTransactionStatement) tclStatement).getScope()) {
             return new TransactionSetHandler((SetTransactionStatement) tclStatement, connectionSession);

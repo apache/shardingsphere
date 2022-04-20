@@ -47,7 +47,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintSkipEncryptRewrite() 
+        if (((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintSkipEncryptRewrite()
                 || !containsEncryptTable(encryptRule, sqlStatementContext)) {
             return;
         }
@@ -58,7 +58,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
                     sqlRewriteContext.getSchemaName(), sqlRewriteContext.getSchema(), sqlStatementContext, encryptConditions).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
-        Collection<SQLTokenGenerator> sqlTokenGenerators = new EncryptTokenGenerateBuilder(encryptRule, 
+        Collection<SQLTokenGenerator> sqlTokenGenerators = new EncryptTokenGenerateBuilder(encryptRule,
                 sqlStatementContext, encryptConditions, sqlRewriteContext.getSchemaName()).getSQLTokenGenerators();
         sqlRewriteContext.addSQLTokenGenerators(sqlTokenGenerators);
     }

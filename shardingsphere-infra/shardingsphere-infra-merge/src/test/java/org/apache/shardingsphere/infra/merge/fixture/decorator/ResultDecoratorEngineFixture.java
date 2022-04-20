@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 public final class ResultDecoratorEngineFixture implements ResultDecoratorEngine<DecoratorRuleFixture> {
     
     @Override
-    public ResultDecorator newInstance(final DatabaseType databaseType, final String schemaName, final ShardingSphereSchema schema, 
+    public ResultDecorator newInstance(final DatabaseType databaseType, final String schemaName, final ShardingSphereSchema schema,
                                        final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         return new ResultDecoratorFixture();
     }

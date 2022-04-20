@@ -69,7 +69,7 @@ public final class TableAssert {
                     String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
-
+    
     /**
      * Assert actual table segment is correct with expected table.
      *

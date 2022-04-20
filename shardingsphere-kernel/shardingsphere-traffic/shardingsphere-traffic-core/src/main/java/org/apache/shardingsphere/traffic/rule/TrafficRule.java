@@ -85,7 +85,7 @@ public final class TrafficRule implements GlobalRule {
         return result;
     }
     
-    private Collection<TrafficStrategyRule> createTrafficStrategyRules(final Collection<TrafficStrategyConfiguration> trafficStrategies, 
+    private Collection<TrafficStrategyRule> createTrafficStrategyRules(final Collection<TrafficStrategyConfiguration> trafficStrategies,
                                                                        final Map<String, TrafficAlgorithm> trafficAlgorithms, final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers) {
         Collection<TrafficStrategyRule> noneTransactionStrategyRules = new LinkedList<>();
         Collection<TrafficStrategyRule> result = new LinkedList<>();
@@ -146,8 +146,9 @@ public final class TrafficRule implements GlobalRule {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext 
-                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties() : new SQLHintProperties(new Properties());
+            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext
+                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
+                    : new SQLHintProperties(new Properties());
             return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {

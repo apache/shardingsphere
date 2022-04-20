@@ -43,8 +43,8 @@ public final class YamlRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return YamlRuleConfigurationSwapperFactory.newInstanceMapByRuleConfigurations(ruleConfigs).entrySet().stream().map(
-            entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
+        return YamlRuleConfigurationSwapperFactory.newInstanceMapByRuleConfigurations(ruleConfigs).entrySet().stream()
+                .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
     /**
@@ -64,15 +64,15 @@ public final class YamlRuleConfigurationSwapperEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs, 
+    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
                                                                    final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
-        return yamlRuleConfigs.stream().filter(
-            each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
+        return yamlRuleConfigs.stream()
+                .filter(each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
     }
     
     /**
      * Get YAML shortcuts.
-     * 
+     *
      * @return YAML shortcuts
      */
     @SuppressWarnings("rawtypes")

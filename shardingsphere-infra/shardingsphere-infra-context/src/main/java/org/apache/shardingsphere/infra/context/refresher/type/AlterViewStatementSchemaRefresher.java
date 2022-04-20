@@ -48,10 +48,10 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = AlterViewStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        //TODO Get real schema name
+        // TODO Get real schema name
         SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
@@ -67,7 +67,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         ShardingSphereEventBus.getInstance().post(event);
     }
     
-    private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, 
+    private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String viewName) {
         schemaMetaData.getDefaultSchema().remove(viewName);
         schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(viewName));
@@ -75,7 +75,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
-    private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+    private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String viewName, final ConfigurationProperties props) throws SQLException {
         if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));

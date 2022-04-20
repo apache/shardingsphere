@@ -36,7 +36,7 @@ import java.util.List;
 public final class ShardingCreateIndexStatementValidator extends ShardingDDLStatementValidator<CreateIndexStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
@@ -47,7 +47,7 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }
