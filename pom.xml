@@ -103,6 +103,7 @@
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
         
         <cosid.version>1.8.6</cosid.version>
+        <jnanoid.version>2.0.0</jnanoid.version>
         <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
         
         <slf4j.version>1.7.7</slf4j.version>
@@ -578,6 +579,11 @@
                 <groupId>me.ahoo.cosid</groupId>
                 <artifactId>cosid-core</artifactId>
                 <version>${cosid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aventrix.jnanoid</groupId>
+                <artifactId>jnanoid</artifactId>
+                <version>${jnanoid.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
