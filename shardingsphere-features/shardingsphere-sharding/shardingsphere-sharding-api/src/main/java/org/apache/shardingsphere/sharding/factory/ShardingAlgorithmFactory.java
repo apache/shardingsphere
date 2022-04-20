@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.factory;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -28,6 +30,7 @@ import java.util.Properties;
 /**
  * Sharding algorithm factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingAlgorithmFactory {
     
     static {
