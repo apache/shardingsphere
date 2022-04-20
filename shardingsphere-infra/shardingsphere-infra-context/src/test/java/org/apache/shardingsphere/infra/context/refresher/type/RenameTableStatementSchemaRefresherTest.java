@@ -66,7 +66,6 @@ public final class RenameTableStatementSchemaRefresherTest {
         return result;
     }
     
-    
     private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final String originTableName, final String newTableName) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(0, 1);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue(originTableName))));
