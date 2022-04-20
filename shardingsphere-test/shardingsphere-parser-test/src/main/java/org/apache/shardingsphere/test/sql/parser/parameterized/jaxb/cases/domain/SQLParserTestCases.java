@@ -362,7 +362,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-table")
     private final List<CreateTableStatementTestCase> createTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-edition")
     private final List<CreateEditionStatementTestCase> createEditionTestCases = new LinkedList<>();
     

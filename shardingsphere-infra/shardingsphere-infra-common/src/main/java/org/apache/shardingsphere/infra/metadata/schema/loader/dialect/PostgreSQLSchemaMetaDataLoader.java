@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema" 
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"
             + " FROM information_schema.columns WHERE table_schema IN (%s)";
     
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
@@ -83,7 +83,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         return result;
     }
     
-    private Map<String, Map<String, Collection<ColumnMetaData>>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, 
+    private Map<String, Map<String, Collection<ColumnMetaData>>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
                                                                                        final Collection<String> schemaNames) throws SQLException {
         Map<String, Map<String, Collection<ColumnMetaData>>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(dataSource, tables);
@@ -138,7 +138,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
         String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam) 
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
                 : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

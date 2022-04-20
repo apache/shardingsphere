@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SingleTableMetaDataBuilderTest {
+public final class SingleTableScemaMetaDataBuilderTest {
     
     static {
         ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
@@ -120,8 +120,8 @@ public final class SingleTableMetaDataBuilderTest {
     @Test
     public void testLoad() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
-        SingleTableMetaDataBuilder builder = (SingleTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(singleTableRule);
-        Collection<SchemaMetaData> actual = builder.build(Collections.singleton("tbl"), 
+        SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(singleTableRule);
+        Collection<SchemaMetaData> actual = builder.build(Collections.singleton("tbl"),
                 singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
         assertFalse(actual.isEmpty());
         assertThat(actual.size(), is(1));

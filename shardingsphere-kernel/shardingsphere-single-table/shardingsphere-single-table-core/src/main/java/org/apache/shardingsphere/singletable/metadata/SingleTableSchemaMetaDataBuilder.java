@@ -40,13 +40,12 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data builder for single.
+ * Schema meta data builder for single table.
  */
-public final class SingleTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<SingleTableRule> {
+public final class SingleTableSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<SingleTableRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials)
-            throws SQLException {
+    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> ruleTables = rule.getTables();
         Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
         if (needLoadTables.isEmpty()) {

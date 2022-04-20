@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.metadata.ShardingTableMetaDataBuilder
+org.apache.shardingsphere.sharding.metadata.ShardingSchemaMetaDataBuilder

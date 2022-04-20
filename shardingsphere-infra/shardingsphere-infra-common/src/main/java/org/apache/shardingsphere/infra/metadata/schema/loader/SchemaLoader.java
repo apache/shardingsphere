@@ -52,7 +52,7 @@ public final class SchemaLoader {
      */
     public static Map<String, ShardingSphereSchema> load(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules), 
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
                 new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props)));
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {

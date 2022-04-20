@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Schema meta data builder with related rule.
+ * Schema meta data builder for ShardingSphere rule.
  * 
  * @param <T> type of ShardingSphere rule
  */

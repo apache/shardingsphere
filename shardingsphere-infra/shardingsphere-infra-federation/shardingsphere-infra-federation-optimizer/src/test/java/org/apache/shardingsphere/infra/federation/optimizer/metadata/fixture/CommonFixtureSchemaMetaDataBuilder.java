@@ -15,41 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<DataNodeContainedFixtureRule> {
+public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
-            Map<String, TableMetaData> result = new LinkedHashMap<>();
-            for (String tableName : tableNames) {
-                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-            }
-//            return result;
-        }
-        return Collections.emptyList();
+    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = Collections.singletonMap("t_order_new", 
+                new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return Collections.singletonList(new SchemaMetaData("sharding_db", tableMetaDataMap));
     }
     
     @Override
     public int getOrder() {
-        return 2;
+        return 1;
     }
     
     @Override
-    public Class<DataNodeContainedFixtureRule> getTypeClass() {
-        return DataNodeContainedFixtureRule.class;
+    public Class<CommonFixtureRule> getTypeClass() {
+        return CommonFixtureRule.class;
     }
 }

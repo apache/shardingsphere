@@ -68,7 +68,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
             }
-//            result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
+            // result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
         }
         return result;
     }

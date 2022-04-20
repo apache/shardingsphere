@@ -49,9 +49,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data builder for sharding.
+ * Schema meta data builder for sharding.
  */
-public final class ShardingTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<ShardingRule> {
+public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<ShardingRule> {
     
     @Override
     public Collection<SchemaMetaData> build(final Collection<String> tableNames, final ShardingRule rule, final SchemaBuilderMaterials materials) throws SQLException {

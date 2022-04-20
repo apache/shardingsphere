@@ -19,27 +19,37 @@ package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public final class CommonFixtureTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
+public final class DataNodeContainedFixtureRuleBasedSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<DataNodeContainedFixtureRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
+            Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+            for (String tableName : tableNames) {
+                tableMetaDataMap.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+            }
+            return Collections.singletonList(new SchemaMetaData("sharding_db", tableMetaDataMap));
+        }
         return Collections.emptyList();
     }
     
     @Override
     public int getOrder() {
-        return 1;
+        return 2;
     }
     
     @Override
-    public Class<CommonFixtureRule> getTypeClass() {
-        return CommonFixtureRule.class;
+    public Class<DataNodeContainedFixtureRule> getTypeClass() {
+        return DataNodeContainedFixtureRule.class;
     }
 }

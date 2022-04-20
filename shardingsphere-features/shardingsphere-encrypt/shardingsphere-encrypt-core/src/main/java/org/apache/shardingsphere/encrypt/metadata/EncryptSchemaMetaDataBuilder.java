@@ -41,9 +41,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data builder for encrypt.
+ * Schema meta data builder for encrypt.
  */
-public final class EncryptTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<EncryptRule> {
+public final class EncryptSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<EncryptRule> {
     
     @Override
     public Collection<SchemaMetaData> build(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {

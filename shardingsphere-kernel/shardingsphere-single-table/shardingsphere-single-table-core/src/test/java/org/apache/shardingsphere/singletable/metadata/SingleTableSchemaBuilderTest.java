@@ -67,10 +67,10 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-//        ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-//                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
-//        assertThat(schema.getTables().size(), is(2));
-//        assertActualOfSingleTables(schema.getTables().values());
+        // ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+        // new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
+        // assertThat(schema.getTables().size(), is(2));
+        // assertActualOfSingleTables(schema.getTables().values());
     }
     
     @SneakyThrows(SQLException.class)

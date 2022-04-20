@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
+package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
-public final class CommonFixtureTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
+public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
     
     @Override
     public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-//        return Collections.singletonMap("t_order_new", new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return Collections.emptyList();
     }
     

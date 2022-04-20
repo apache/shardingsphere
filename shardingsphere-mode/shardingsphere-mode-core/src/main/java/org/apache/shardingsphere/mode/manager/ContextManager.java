@@ -350,7 +350,7 @@ public final class ContextManager implements AutoCloseable {
             alterDatabase(databaseName, schemas);
             if (metaDataContexts.getMetaDataPersistService().isPresent()) {
                 for (ShardingSphereSchema each : schemas.values()) {
-                    metaDataContexts.getMetaDataPersistService().get().getSchemaMetaDataService().persist(databaseName, databaseName, each);       
+                    metaDataContexts.getMetaDataPersistService().get().getSchemaMetaDataService().persist(databaseName, databaseName, each);
                 }
             }
         } catch (final SQLException ex) {
@@ -399,8 +399,8 @@ public final class ContextManager implements AutoCloseable {
         SchemaMetaData schemaMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
         if (schemaMetaData.getTables().containsKey(tableName)) {
             metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
-            metaDataContexts.getMetaDataPersistService().ifPresent(optional ->
-                    optional.getSchemaMetaDataService().persist(databaseName, databaseName, metaDataContexts.getMetaData(databaseName).getDefaultSchema()));
+            metaDataContexts.getMetaDataPersistService()
+                    .ifPresent(optional -> optional.getSchemaMetaDataService().persist(databaseName, databaseName, metaDataContexts.getMetaData(databaseName).getDefaultSchema()));
         }
     }
     
