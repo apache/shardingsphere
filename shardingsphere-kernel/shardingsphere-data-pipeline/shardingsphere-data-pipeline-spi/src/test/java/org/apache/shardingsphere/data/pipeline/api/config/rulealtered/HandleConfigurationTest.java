@@ -31,7 +31,6 @@ public final class HandleConfigurationTest {
 
     private static final String TABLE_NAME = "tableName1,tableName2";
 
-
     @Test
     public void assertGetJobShardingCountByNull() {
         HandleConfiguration handleConfiguration = new HandleConfiguration();
