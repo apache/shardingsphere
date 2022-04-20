@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -60,8 +61,9 @@ public final class SchemaBuilderTest {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
         Collection<String> tableNames = rules.stream().filter(rule -> rule instanceof TableContainedRule)
                 .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
-        ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
+        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props));
+        assertThat(actual.size(), is(1));
+        ShardingSphereSchema schema = new ShardingSphereSchema(actual.values().iterator().next().getTables());
         assertThat(schema.getTables().keySet().size(), is(2));
         assertSchemaOfShardingTables(schema.getTables().values());
     }

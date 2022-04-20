@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Dialect table meta data loader.
+ * Schema meta data.
  */
-public interface DialectTableMetaDataLoader extends StatelessTypedSPI {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class SchemaMetaData {
     
-    /**
-     * Load table meta data.
-     *
-     * @param dataSource data source
-     * @param tables tables
-     * @return table meta data map
-     * @throws SQLException SQL exception
-     */
-    Map<String, TableMetaData> load(DataSource dataSource, Collection<String> tables) throws SQLException;
+    private final String name;
+    
+    private final Map<String, TableMetaData> tables;
 }

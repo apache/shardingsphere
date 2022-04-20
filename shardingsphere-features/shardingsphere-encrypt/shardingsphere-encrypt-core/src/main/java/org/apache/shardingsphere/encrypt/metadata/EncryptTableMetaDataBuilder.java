@@ -22,12 +22,13 @@ import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.util.TableMetaDataUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,33 +38,35 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Table meta data builder for encrypt.
  */
-public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<EncryptRule> {
+public final class EncryptTableMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<EncryptRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
         if (needLoadTables.isEmpty()) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
         Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
         if (tableMetaDataLoaderMaterials.isEmpty()) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
-        Collection<TableMetaData> tableMetaDataList = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return tableMetaDataList.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Collection<SchemaMetaData> schemaMetaDataList = SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
+        return decorate(schemaMetaDataList, rule);
     }
     
-    @Override
-    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+    private Collection<SchemaMetaData> decorate(final Collection<SchemaMetaData> schemaMetaDataList, final EncryptRule rule) {
+        Collection<SchemaMetaData> result = new LinkedList<>();
+        for (SchemaMetaData each : schemaMetaDataList) {
+            Map<String, TableMetaData> tables = new LinkedHashMap<>(each.getTables().size(), 1);
+            for (Entry<String, TableMetaData> entry : each.getTables().entrySet()) {
+                tables.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+            }
+            result.add(new SchemaMetaData(each.getName(), tables));
         }
         return result;
     }

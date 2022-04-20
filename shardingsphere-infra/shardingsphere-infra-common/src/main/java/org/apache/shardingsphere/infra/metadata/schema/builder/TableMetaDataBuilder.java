@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -29,8 +29,10 @@ import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
 public final class TableMetaDataBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
     }
     
     /**
@@ -52,30 +54,20 @@ public final class TableMetaDataBuilder {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Map<String, TableMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
+    public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
+        Collection<SchemaMetaData> schemaMetaData = new LinkedList<>();
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
-                RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
+                RuleBasedSchemaMetaDataBuilder<TableContainedRule> builder = entry.getValue();
                 Collection<String> ruleTables = rule.getTables();
-                Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).filter(each -> !tableMetaDataMap.containsKey(each)).collect(Collectors.toList());
+                Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains)
+                        .filter(each -> schemaMetaData.stream().noneMatch(schema -> schema.getTables().containsKey(each))).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    tableMetaDataMap.putAll(builder.load(needLoadTables, rule, materials));
+                    schemaMetaData.addAll(builder.build(needLoadTables, rule, materials));
                 }
             }
         }
-        return decorate(tableMetaDataMap, materials);
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>(tableMetaDataMap);
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
-            if (entry.getKey() instanceof TableContainedRule) {
-                result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
-            }
-        }
-        return result;
+        return schemaMetaData.stream().collect(Collectors.toMap(SchemaMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

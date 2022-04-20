@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
@@ -29,9 +30,9 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -117,15 +118,16 @@ public final class SQLServerTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
+    private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         assertTrue(result.isPresent());
         return result.get();
     }
     
-    private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
-        assertThat(actual.size(), is(1));
-        TableMetaData actualTableMetaData = actual.get("tbl");
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+        assertThat(schemaMetaDataList.size(), is(1));
+        assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
+        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, true, true)));

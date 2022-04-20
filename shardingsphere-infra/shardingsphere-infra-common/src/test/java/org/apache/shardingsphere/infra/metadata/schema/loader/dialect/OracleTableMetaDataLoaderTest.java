@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
@@ -29,9 +30,9 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -79,9 +80,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -98,9 +99,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -117,9 +118,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -136,9 +137,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -155,9 +156,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -174,9 +175,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Map<String, TableMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.get("tbl");
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
@@ -224,16 +225,18 @@ public final class OracleTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
+    private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
         assertTrue(result.isPresent());
         return result.get();
     }
     
-    private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
-        assertThat(actual.get("tbl").getIndexes().size(), is(1));
-        assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+        assertThat(schemaMetaDataList.size(), is(1));
+        assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
+        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(3));
+        assertThat(actualTableMetaData.getIndexes().size(), is(1));
+        assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }
