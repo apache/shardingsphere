@@ -28,12 +28,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingKeyGeneratorStatement;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -70,7 +68,7 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
     
     private void checkKeyGeneratorAlgorithm(final CreateShardingKeyGeneratorStatement sqlStatement) throws DistSQLException {
         Collection<String> notExistedKeyGeneratorAlgorithms = sqlStatement.getKeyGeneratorSegments().stream().map(ShardingKeyGeneratorSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !KeyGenerateAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedKeyGeneratorAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", notExistedKeyGeneratorAlgorithms));
     }
     
