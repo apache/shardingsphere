@@ -279,7 +279,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
-        String shardingColumn = this.defaultShardingColumn;
+        String shardingColumn = defaultShardingColumn;
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
             shardingColumn = ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
         }
