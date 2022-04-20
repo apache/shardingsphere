@@ -123,7 +123,7 @@ public enum SQLVisitorRule {
     DROP_DIRECTORY("DropDirectory", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
-
+    
     CREATE_EDITION("CreateEdition", SQLStatementType.DDL),
     
     ALTER_EVENT("AlterEvent", SQLStatementType.DDL),
