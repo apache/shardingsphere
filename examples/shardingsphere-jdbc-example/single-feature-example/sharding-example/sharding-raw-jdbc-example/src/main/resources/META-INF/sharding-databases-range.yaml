@@ -24,15 +24,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/sharding_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
-    password: root
+    password:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/sharding_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
-    password: root
+    password:
 
 rules:
 - !SHARDING
@@ -58,6 +58,7 @@ rules:
     - t_address
   defaultDatabaseStrategy:
     standard:
+      shardingColumn: user_id
       shardingAlgorithmName: standard-test-db
   defaultTableStrategy:
     none:
@@ -72,4 +73,4 @@ rules:
       type: SNOWFLAKE
 
 props:
-  sql-show: true
+  sql-show: false
