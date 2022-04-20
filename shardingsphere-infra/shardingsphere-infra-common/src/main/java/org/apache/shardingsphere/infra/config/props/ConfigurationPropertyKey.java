@@ -135,7 +135,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     private final Class<?> type;
     
-    private final boolean requireReboot;
+    private final boolean rebootRequired;
     
     /**
      * Get property key names.
