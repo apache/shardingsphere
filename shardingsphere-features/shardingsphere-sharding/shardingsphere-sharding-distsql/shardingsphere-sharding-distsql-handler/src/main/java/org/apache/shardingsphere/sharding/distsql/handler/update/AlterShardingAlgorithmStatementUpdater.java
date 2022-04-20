@@ -29,13 +29,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -67,8 +65,7 @@ public final class AlterShardingAlgorithmStatementUpdater implements RuleDefinit
     private void checkAlgorithmType(final AlterShardingAlgorithmStatement sqlStatement) throws DistSQLException {
         Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName).collect(Collectors.toCollection(LinkedList::new));
-        Collection<String> invalidAlgorithmNames = requireNames.stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+        Collection<String> invalidAlgorithmNames = requireNames.stream().filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidAlgorithmNames));
     }
     

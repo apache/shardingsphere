@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -43,10 +41,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingTableNodesQueryResultSetTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-    }
     
     @Test
     public void assertGetRowData() {
