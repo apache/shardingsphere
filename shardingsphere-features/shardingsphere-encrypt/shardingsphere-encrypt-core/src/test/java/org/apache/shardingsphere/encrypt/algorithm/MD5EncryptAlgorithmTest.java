@@ -38,11 +38,11 @@ public final class MD5EncryptAlgorithmTest {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()), EncryptAlgorithm.class);
     }
     
     @Test

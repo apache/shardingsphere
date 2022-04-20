@@ -80,10 +80,11 @@ public final class EncryptMergedResultTest {
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNotNullCiphertext() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
         when(encryptAlgorithm.decrypt("VALUE", encryptContext)).thenReturn("ORIGINAL_VALUE");
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
@@ -92,9 +93,10 @@ public final class EncryptMergedResultTest {
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("ORIGINAL_VALUE"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNullCiphertext() throws SQLException {
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
         when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);

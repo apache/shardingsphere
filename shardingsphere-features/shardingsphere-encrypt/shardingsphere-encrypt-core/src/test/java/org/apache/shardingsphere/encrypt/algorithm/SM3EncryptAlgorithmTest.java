@@ -38,7 +38,7 @@ public final class SM3EncryptAlgorithmTest {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
