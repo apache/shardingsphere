@@ -20,50 +20,43 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class HandleConfigurationTest {
-
-    private static final String TABLE_NAME_1 = "tableName1";
-
-    private static final String TABLE_NAME_2 = "tableName2";
-
-    private static final String TABLE_NAME = "tableName1,tableName2";
-
+    
     @Test
     public void assertGetJobShardingCountByNull() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.getJobShardingCount();
-        assertThat(handleConfiguration.getJobShardingCount(), is(0));
+        assertThat(new HandleConfiguration().getJobShardingCount(), is(0));
     }
-
+    
     @Test
     public void assertGetJobShardingCount() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setJobShardingDataNodes(Lists.newArrayList("node1", "node2"));
-        handleConfiguration.getJobShardingCount();
-        assertThat(handleConfiguration.getJobShardingCount(), is(2));
+        HandleConfiguration handleConfig = new HandleConfiguration();
+        handleConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
+        assertThat(handleConfig.getJobShardingCount(), is(2));
     }
-
+    
     @Test
     public void assertSplitLogicTableNames() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setLogicTables(TABLE_NAME);
-        assertThat(handleConfiguration.splitLogicTableNames(), is(Lists.newArrayList(TABLE_NAME_1, TABLE_NAME_2)));
+        HandleConfiguration handleConfig = new HandleConfiguration();
+        handleConfig.setLogicTables("foo_tbl,bar_tbl");
+        assertThat(handleConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
     }
-
+    
     @Test
-    public void assertGetJobIdDigestBySuperLong() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setJobId("jobIdExceed");
-        assertThat(handleConfiguration.getJobIdDigest(), is("jobIdE"));
+    public void assertGetJobIdDigestByLongName() {
+        HandleConfiguration handleConfig = new HandleConfiguration();
+        handleConfig.setJobId("abcdefg");
+        assertThat(handleConfig.getJobIdDigest(), is("abcdef"));
     }
-
+    
     @Test
-    public void assertGetJobIdDigest() {
+    public void assertGetJobIdDigestByShortName() {
         HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setJobId("jobId");
-        assertThat(handleConfiguration.getJobIdDigest(), is("jobId"));
+        handleConfiguration.setJobId("abcdef");
+        assertThat(handleConfiguration.getJobIdDigest(), is("abcdef"));
     }
 }
