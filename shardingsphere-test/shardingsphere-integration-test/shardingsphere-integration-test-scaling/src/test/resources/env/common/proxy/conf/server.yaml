@@ -15,12 +15,17 @@
 # limitations under the License.
 #
 
-it.env.type=${it.env}
-it.env.value=scaling
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+    provider:
+      type: ALL_PRIVILEGES_PERMITTED
 
-db.host.docker=mysql:3306
-db.host.host=127.0.0.1:13306
-db.username=root
-db.password=123456
-scaling.retry=30
-scaling.waitMs=1000
+props:
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-hint-enabled: true
+  sql-show: false
+  sql-federation-enabled: true

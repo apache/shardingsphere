@@ -20,8 +20,8 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
+import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,8 +39,8 @@ public final class IntegrationTestEnvironment {
     
     @SneakyThrows
     private IntegrationTestEnvironment() {
-        props = loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
+        props = loadProperties("env/it-env.properties");
+        isEnvironmentPrepared = false;
     }
     
     private Properties loadProperties(final String propsFileName) {

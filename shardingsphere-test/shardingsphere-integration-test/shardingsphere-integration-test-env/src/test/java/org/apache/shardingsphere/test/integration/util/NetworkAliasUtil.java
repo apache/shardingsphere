@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.test.integration.util;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.concurrent.TimeUnit;
-
-/**
- * Execute util.
- */
-@RequiredArgsConstructor
-public final class ExecuteUtil {
-    
-    private final Executor executor;
-    
-    private final int retryCount;
-    
-    private final long waitMs;
+public final class NetworkAliasUtil {
     
     /**
-     * Execute.
+     * Get network alias with scenario.
      *
-     * @return execute result
+     * @param containerType container type, such as "zk", "db"
+     * @param scenario scenario
+     * @return network alias
      */
-    public boolean execute() {
-        int count = 0;
-        while (!executor.execute() && retryCount > count) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(waitMs);
-            } catch (final InterruptedException ignored) {
-            }
-            count++;
-        }
-        return retryCount > count;
+    public static String getNetworkAliasWithScenario(final String containerType, final String scenario) {
+        return String.join(".", containerType.toLowerCase(), scenario, "host");
+    }
+    
+    /**
+     * Get network alias.
+     *
+     * @param containerType container type
+     * @return network alias
+     */
+    public static String getNetworkAlias(final String containerType) {
+        return String.join(".", containerType.toLowerCase(), "host");
     }
 }

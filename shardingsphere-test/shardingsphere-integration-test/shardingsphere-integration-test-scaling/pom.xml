@@ -41,6 +41,12 @@
             <artifactId>shardingsphere-jdbc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-integration-test-env</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -50,6 +56,11 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+    
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
         </dependency>
     </dependencies>
     

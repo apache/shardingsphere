@@ -15,38 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.integration.scaling.test.mysql.container.storage;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
-import java.util.concurrent.TimeUnit;
+import javax.sql.DataSource;
+import java.util.Map;
 
-/**
- * Execute util.
- */
-@RequiredArgsConstructor
-public final class ExecuteUtil {
+public class PostgreSQLContainer implements StorageContainer {
     
-    private final Executor executor;
+    @Override
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return null;
+    }
     
-    private final int retryCount;
+    @Override
+    public Map<String, DataSource> getExpectedDataSourceMap() {
+        return null;
+    }
     
-    private final long waitMs;
-    
-    /**
-     * Execute.
-     *
-     * @return execute result
-     */
-    public boolean execute() {
-        int count = 0;
-        while (!executor.execute() && retryCount > count) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(waitMs);
-            } catch (final InterruptedException ignored) {
-            }
-            count++;
-        }
-        return retryCount > count;
+    @Override
+    public void start() {
+        
     }
 }
