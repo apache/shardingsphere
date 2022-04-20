@@ -45,6 +45,15 @@ rules:
         keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      databaseStrategy:
+        hint:
+          shardingAlgorithmName: hint-test
+      tableStrategy:
+        hint:
+          shardingAlgorithmName: hint-test
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
