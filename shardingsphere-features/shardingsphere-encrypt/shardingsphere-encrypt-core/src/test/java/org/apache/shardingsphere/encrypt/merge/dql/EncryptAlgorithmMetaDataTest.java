@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Der
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Before;
@@ -82,7 +82,7 @@ public final class EncryptAlgorithmMetaDataTest {
         when(columnProjection.getName()).thenReturn("id");
         when(columnProjection.getExpression()).thenReturn("id");
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()), EncryptAlgorithm.class);
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()));
     }
     
     @Test
