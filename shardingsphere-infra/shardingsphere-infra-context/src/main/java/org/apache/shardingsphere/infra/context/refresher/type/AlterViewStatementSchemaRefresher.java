@@ -51,7 +51,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        //TODO Get real schema name
+        // TODO Get real schema name
         SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {

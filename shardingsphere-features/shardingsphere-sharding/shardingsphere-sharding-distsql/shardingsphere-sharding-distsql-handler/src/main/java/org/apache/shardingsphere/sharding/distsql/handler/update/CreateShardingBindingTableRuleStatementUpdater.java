@@ -68,7 +68,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
         return result;
     }
     
-    private void checkToBeCreatedDuplicateBindingTables(final String databaseName, 
+    private void checkToBeCreatedDuplicateBindingTables(final String databaseName,
                                                         final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> toBeCreatedBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet());
