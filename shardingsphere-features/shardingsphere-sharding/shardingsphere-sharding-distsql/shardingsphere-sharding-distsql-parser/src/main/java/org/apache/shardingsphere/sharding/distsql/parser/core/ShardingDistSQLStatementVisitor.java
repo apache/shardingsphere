@@ -136,7 +136,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlterShardingAlgorithm(final AlterShardingAlgorithmContext ctx) {
-        return new AlterShardingAlgorithmStatement(ctx.shardingAlgorithmDefinition().stream().map(this::buildAlgorithmSegment).collect(Collectors.toCollection(LinkedList::new)));
+        return new AlterShardingAlgorithmStatement(ctx.shardingAlgorithmDefinition().stream().map(this::buildAlgorithmSegment).collect(Collectors.toList()));
     }
     
     @Override
@@ -155,23 +155,20 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<BindingTableRuleSegment> createBindingTableRuleSegment(final List<BindTableRulesDefinitionContext> contexts) {
-        return contexts.stream().map(each -> Joiner.on(",").join(each.tableName().stream().map(t -> getIdentifierValue(t)).collect(Collectors.toList())))
-                .map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
+        return contexts.stream().map(each -> Joiner.on(",").join(each.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList())))
+                .map(BindingTableRuleSegment::new).collect(Collectors.toList());
     }
     
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
-        return new CreateShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new CreateShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterShardingTableRule(final AlterShardingTableRuleContext ctx) {
         List<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream().map(each -> (AbstractTableRuleSegment) visit(each))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        if (tableRuleSegments.isEmpty()) {
-            return new EmptyTableRuleSegment();
-        }
-        return new AlterShardingTableRuleStatement(tableRuleSegments);
+        return tableRuleSegments.isEmpty() ? new EmptyTableRuleSegment() : new AlterShardingTableRuleStatement(tableRuleSegments);
     }
     
     @Override
@@ -190,7 +187,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlterShardingBroadcastTableRules(final AlterShardingBroadcastTableRulesContext ctx) {
-        return new AlterShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new AlterShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
@@ -271,8 +268,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
-        Collection<String> tableNames = null == ctx.tableName() ? Collections.emptyList()
-                : ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> tableNames = null == ctx.tableName() ? Collections.emptyList() : ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new DropShardingBroadcastTableRulesStatement(null != ctx.existsClause(), tableNames);
     }
     
@@ -366,11 +362,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getResources(final ResourcesContext ctx) {
-        return ctx.resource().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.resource().stream().map(this::getIdentifierValue).collect(Collectors.toList());
     }
     
     private Collection<String> getDataNodes(final DataNodesContext ctx) {
-        return ctx.dataNode().stream().map(each -> getIdentifierValueForDataNodes(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.dataNode().stream().map(this::getIdentifierValueForDataNodes).collect(Collectors.toList());
     }
     
     @Override
@@ -409,7 +405,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingAlgorithm(final CreateShardingAlgorithmContext ctx) {
-        return new CreateShardingAlgorithmStatement(ctx.shardingAlgorithmDefinition().stream().map(this::buildAlgorithmSegment).collect(Collectors.toCollection(LinkedList::new)));
+        return new CreateShardingAlgorithmStatement(ctx.shardingAlgorithmDefinition().stream().map(this::buildAlgorithmSegment).collect(Collectors.toList()));
     }
     
     private ShardingAlgorithmSegment buildAlgorithmSegment(final ShardingAlgorithmDefinitionContext ctx) {
@@ -433,12 +429,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingKeyGenerator(final CreateShardingKeyGeneratorContext ctx) {
-        return new CreateShardingKeyGeneratorStatement(ctx.keyGeneratorDefinition().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
+        return new CreateShardingKeyGeneratorStatement(ctx.keyGeneratorDefinition().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterShardingKeyGenerator(final AlterShardingKeyGeneratorContext ctx) {
-        return new AlterShardingKeyGeneratorStatement(ctx.keyGeneratorDefinition().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toCollection(LinkedList::new)));
+        return new AlterShardingKeyGeneratorStatement(ctx.keyGeneratorDefinition().stream().map(this::buildShardingKeyGeneratorSegment).collect(Collectors.toList()));
     }
     
     private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment(final KeyGeneratorDefinitionContext ctx) {

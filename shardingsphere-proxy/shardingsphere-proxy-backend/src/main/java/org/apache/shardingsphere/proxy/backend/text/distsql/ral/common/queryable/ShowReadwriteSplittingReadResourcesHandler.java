@@ -121,7 +121,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Map<String, StorageNodeDataSource> disabledResources) {
-        return allReadResources.stream().map(each -> buildRow(each, disabledResources.get(each))).collect(Collectors.toCollection(LinkedList::new));
+        return allReadResources.stream().map(each -> buildRow(each, disabledResources.get(each))).collect(Collectors.toList());
     }
     
     private LinkedList<String> deconstructString(final String str) {

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -51,8 +50,7 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
     }
     
     private void checkDuplicate(final String databaseName, final CreateShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> keyGeneratorNames = sqlStatement.getKeyGeneratorSegments().stream()
-                .map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> keyGeneratorNames = sqlStatement.getKeyGeneratorSegments().stream().map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toList());
         checkDuplicateInput(keyGeneratorNames, duplicated -> new DuplicateKeyGeneratorException("sharding", databaseName, duplicated));
         if (null != currentRuleConfig) {
             checkExist(keyGeneratorNames, currentRuleConfig.getKeyGenerators().keySet(), duplicated -> new DuplicateKeyGeneratorException("sharding", databaseName, duplicated));

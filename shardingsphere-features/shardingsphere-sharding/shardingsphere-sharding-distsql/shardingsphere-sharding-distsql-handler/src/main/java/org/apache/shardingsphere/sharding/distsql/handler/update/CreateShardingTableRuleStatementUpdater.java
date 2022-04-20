@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableR
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
@@ -35,7 +34,6 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     static {
         // TODO consider about register once only
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
