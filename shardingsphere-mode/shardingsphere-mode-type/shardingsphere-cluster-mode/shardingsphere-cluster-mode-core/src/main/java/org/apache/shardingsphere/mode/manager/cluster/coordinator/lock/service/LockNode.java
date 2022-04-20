@@ -38,6 +38,8 @@ public final class LockNode {
     
     private static final String LOCK_SCOPE_GLOBAL = "global";
     
+    private static final String LOCK_TOKEN = "token";
+    
     private static final String LOCK_LEVEL_SCHEMA = "schema";
     
     private static final String LOCKS_NODE = "locks";
@@ -110,6 +112,15 @@ public final class LockNode {
      */
     public static String generateGlobalSchemaLockReleasedNodePath(final String schema) {
         return getGlobalSchemaLocksNodePath() + "/" + schema + "/leases";
+    }
+    
+    /**
+     * Get lock token node path.
+     *
+     * @return lock token node path
+     */
+    public static String generateLockTokenNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_TOKEN);
     }
     
     /**
