@@ -1185,10 +1185,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${session.executionRootDirectory}/dev-support/shardingsphere_eclipse_formatter.xml</file>
+                            <file>src/resources/shardingsphere_eclipse_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>${session.executionRootDirectory}/dev-support/license-header</file>
+                            <file>src/resources/license-header</file>
                         </licenseHeader>
                     </java>
                 </configuration>
