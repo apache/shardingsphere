@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +50,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         }
         if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
-            LinkedList<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+            Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toList());
             DistSQLException.predictionThrow(notExistRules.isEmpty(), () -> new RequiredRuleMissedException("Broadcast", databaseName, notExistRules));
         }
     }

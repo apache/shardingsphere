@@ -64,7 +64,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -112,7 +111,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()), null != ctx.existClause());
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()), null != ctx.existClause());
     }
     
     @Override
@@ -123,15 +122,13 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     @Override
     public ASTNode visitCreateDatabaseDiscoveryHeartbeat(final CreateDatabaseDiscoveryHeartbeatContext ctx) {
         return new CreateDatabaseDiscoveryHeartbeatStatement(ctx.heartbeatDefinition().stream()
-                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties())))
-                .collect(Collectors.toCollection(LinkedList::new)));
+                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties()))).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterDatabaseDiscoveryHeartbeat(final AlterDatabaseDiscoveryHeartbeatContext ctx) {
         return new AlterDatabaseDiscoveryHeartbeatStatement(ctx.heartbeatDefinition().stream()
-                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties())))
-                .collect(Collectors.toCollection(LinkedList::new)));
+                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties()))).collect(Collectors.toList()));
     }
     
     @Override
@@ -145,7 +142,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     private Collection<DatabaseDiscoveryTypeSegment> buildAlgorithmEntry(final List<DatabaseDiscoveryTypeDefinitionContext> ctx) {
-        return ctx.stream().map(each -> (DatabaseDiscoveryTypeSegment) visit(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.stream().map(each -> (DatabaseDiscoveryTypeSegment) visit(each)).collect(Collectors.toList());
     }
     
     @Override
@@ -182,14 +179,12 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
-        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
-                null != ctx.existClause());
+        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toList()), null != ctx.existClause());
     }
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryHeartbeat(final DropDatabaseDiscoveryHeartbeatContext ctx) {
-        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
-                null != ctx.existClause());
+        return new DropDatabaseDiscoveryHeartbeatStatement(ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toList()), null != ctx.existClause());
     }
     
     private Properties getProperties(final PropertiesContext ctx) {

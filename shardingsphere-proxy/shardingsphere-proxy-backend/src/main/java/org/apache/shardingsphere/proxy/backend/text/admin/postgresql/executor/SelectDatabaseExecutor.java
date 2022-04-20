@@ -66,8 +66,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     private void addDefaultRow() {
-        LinkedList<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream()
-                .filter(each -> !hasDatasource(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> !hasDatasource(each)).collect(Collectors.toList());
         schemaWithoutDataSource.forEach(each -> getRows().addLast(getDefaultRowData(each)));
     }
     

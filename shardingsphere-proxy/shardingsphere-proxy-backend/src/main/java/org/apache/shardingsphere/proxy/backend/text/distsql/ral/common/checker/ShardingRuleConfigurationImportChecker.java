@@ -80,8 +80,8 @@ public final class ShardingRuleConfigurationImportChecker {
     }
     
     private void checkLogicTables(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
-        Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
+        Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         Collection<String> allLogicTables = new LinkedList<>();
         allLogicTables.addAll(tablesLogicTables);
         allLogicTables.addAll(autoTablesLogicTables);

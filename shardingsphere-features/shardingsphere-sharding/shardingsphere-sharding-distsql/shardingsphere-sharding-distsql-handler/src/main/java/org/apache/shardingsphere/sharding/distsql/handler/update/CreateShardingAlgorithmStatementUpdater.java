@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,8 +49,7 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     }
     
     private void checkDuplicate(final String databaseName, final CreateShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
-                .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream().map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toList());
         checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", databaseName, duplicated));
         if (currentRuleConfig != null) {
             checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", databaseName, duplicated));

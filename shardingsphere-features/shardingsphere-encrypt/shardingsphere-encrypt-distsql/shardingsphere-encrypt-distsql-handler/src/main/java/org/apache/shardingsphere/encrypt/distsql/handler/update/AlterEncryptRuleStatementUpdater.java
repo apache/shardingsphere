@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -75,12 +74,12 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     
     private void checkDataType(final AlterEncryptRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream()
-                .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
-        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toCollection(LinkedList::new));
+        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toList());
     }
     
     private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
