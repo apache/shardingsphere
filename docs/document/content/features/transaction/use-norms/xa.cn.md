@@ -6,7 +6,7 @@ weight = 2
 ## 支持项
 
 * 支持 Savepoint 嵌套事务；
-* PostgreSQL/OpenGauss 事务块内，SQL 执行出现异常，执行 Commit，事务自动回滚；
+* PostgreSQL/OpenGauss 事务块内，SQL 执行出现异常，执行 `Commit`，事务自动回滚；
 * 支持数据分片后的跨库事务；
 * 两阶段提交保证操作的原子性和数据的强一致性；
 * 服务宕机重启后，提交/回滚中的事务可自动恢复；
@@ -15,7 +15,7 @@ weight = 2
 ## 不支持项
 
 * 服务宕机后，在其它机器上恢复提交/回滚中的数据；
-* MySQL 事务块内，SQL 执行出现异常，执行 Commit，数据保持一致。
+* MySQL 事务块内，SQL 执行出现异常，执行 `Commit`，数据保持一致。
 
 ## 通过 XA 语句控制的分布式事务
 * 通过 XA START 可以手动开启 XA 事务，注意该事务完全由用户管理，ShardingSphere 只负责将语句转发至后端数据库；
