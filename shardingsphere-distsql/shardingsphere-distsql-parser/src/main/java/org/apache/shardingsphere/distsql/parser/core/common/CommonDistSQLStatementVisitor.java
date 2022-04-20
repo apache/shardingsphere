@@ -126,7 +126,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -207,7 +206,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             ip = getIdentifierValue(ctx.instanceId().ip());
             port = getIdentifierValue(ctx.instanceId().port());
         }
-        LinkedList<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new LabelInstanceStatement(ctx.RELABEL() != null, ip, port, labels);
     }
     
@@ -222,7 +221,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             ip = getIdentifierValue(ctx.instanceId().ip());
             port = getIdentifierValue(ctx.instanceId().port());
         }
-        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new UnlabelInstanceStatement(ip, port, labels);
     }
     
@@ -407,12 +406,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitCreateTrafficRule(final CreateTrafficRuleContext ctx) {
-        return new CreateTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toCollection(LinkedList::new)));
+        return new CreateTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterTrafficRule(final AlterTrafficRuleContext ctx) {
-        return new AlterTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toCollection(LinkedList::new)));
+        return new AlterTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -462,7 +461,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         if (null == labelDefinition) {
             return Collections.emptyList();
         }
-        return labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        return labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
     }
     
     @Override

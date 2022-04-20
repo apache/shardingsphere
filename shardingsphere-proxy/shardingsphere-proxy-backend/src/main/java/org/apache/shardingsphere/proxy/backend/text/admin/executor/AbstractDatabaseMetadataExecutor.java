@@ -135,14 +135,13 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
     private MergedResult createMergedResult() {
-        List<MemoryQueryResultDataRow> resultDataRows = rows.stream()
-                .map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toCollection(LinkedList::new));
+        List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
         return new TransparentMergedResult(new RawMemoryQueryResult(queryResultMetaData, resultDataRows));
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
         List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
-                .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toCollection(LinkedList::new));
+                .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);
     }
     

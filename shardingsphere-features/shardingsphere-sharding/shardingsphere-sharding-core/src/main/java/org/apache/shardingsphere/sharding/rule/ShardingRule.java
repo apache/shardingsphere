@@ -605,7 +605,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return sharding rule table names
      */
     public Collection<String> getShardingRuleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(each -> isShardingTable(each) || isBroadcastTable(each)).collect(Collectors.toList());
     }
     
     /**

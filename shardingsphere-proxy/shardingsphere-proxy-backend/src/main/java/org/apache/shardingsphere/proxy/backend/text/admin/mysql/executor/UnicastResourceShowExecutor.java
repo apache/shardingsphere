@@ -103,10 +103,10 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        LinkedList<RawQueryResultColumnMetaData> raws = ((QueryResponseHeader) responseHeader).getQueryHeaders().stream().map(QueryHeader::getColumnLabel)
+        List<RawQueryResultColumnMetaData> columns = ((QueryResponseHeader) responseHeader).getQueryHeaders().stream().map(QueryHeader::getColumnLabel)
                 .map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 100, 0))
-                .collect(Collectors.toCollection(LinkedList::new));
-        return new RawQueryResultMetaData(raws);
+                .collect(Collectors.toList());
+        return new RawQueryResultMetaData(columns);
     }
     
     private QueryResult createQueryResult() throws SQLException {

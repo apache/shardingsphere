@@ -113,8 +113,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static Collection<String> getRequiredResources(final Collection<AbstractTableRuleSegment> rules) {
         return rules.stream().map(AbstractTableRuleSegment::getDataSourceNodes).flatMap(Collection::stream)
-                .map(ShardingTableRuleStatementChecker::parseDateSource).map(ShardingTableRuleStatementChecker::getDataSourceNames)
-                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .map(ShardingTableRuleStatementChecker::parseDateSource).map(ShardingTableRuleStatementChecker::getDataSourceNames).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private static Collection<String> parseDateSource(final String dateSource) {
@@ -136,7 +135,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkShardingTables(final String schemaName, final Collection<AbstractTableRuleSegment> rules,
                                             final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        LinkedList<String> requiredShardingTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> requiredShardingTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
         Set<String> duplicatedShardingTables = getDuplicate(requiredShardingTables);
         DistSQLException.predictionThrow(duplicatedShardingTables.isEmpty(), () -> new DuplicateRuleException("sharding", schemaName, duplicatedShardingTables));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
@@ -183,7 +182,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkAutoTableRule(final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        Collection<AutoTableRuleSegment> autoTableRules = rules.stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
+        Collection<AutoTableRuleSegment> autoTableRules = rules.stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
         Optional<AlgorithmSegment> anyAutoTableRule = autoTableRules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).filter(Objects::nonNull).findAny();
         if (anyAutoTableRule.isPresent()) {
             checkShardingAlgorithms(autoTableRules);
@@ -191,7 +190,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) throws DistSQLException {
-        LinkedList<AutoTableRuleSegment> incompleteShardingRules = rules.stream().filter(each -> !each.isCompleteShardingAlgorithm()).collect(Collectors.toCollection(LinkedList::new));
+        Collection<AutoTableRuleSegment> incompleteShardingRules = rules.stream().filter(each -> !each.isCompleteShardingAlgorithm()).collect(Collectors.toList());
         DistSQLException.predictionThrow(incompleteShardingRules.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding"));
         Collection<String> invalidShardingAlgorithms = rules.stream().map(each -> each.getShardingAlgorithmSegment().getName()).distinct()
                 .filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
@@ -199,7 +198,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkTableRule(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<AbstractTableRuleSegment> rules) throws DistSQLException {
-        Collection<TableRuleSegment> tableRules = rules.stream().map(each -> (TableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
+        Collection<TableRuleSegment> tableRules = rules.stream().map(each -> (TableRuleSegment) each).collect(Collectors.toList());
         Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).findAny();
         if (anyTableRule.isPresent()) {
@@ -211,7 +210,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> currentAlgorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isInvalidStrategy(currentAlgorithms, each))
-                .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
+                .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(schemaName, invalidAlgorithms));
     }
     
