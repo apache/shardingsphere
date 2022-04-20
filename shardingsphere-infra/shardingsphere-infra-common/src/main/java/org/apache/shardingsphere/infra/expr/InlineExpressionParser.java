@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.support;
+package org.apache.shardingsphere.infra.expr;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;

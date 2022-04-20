@@ -22,7 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 

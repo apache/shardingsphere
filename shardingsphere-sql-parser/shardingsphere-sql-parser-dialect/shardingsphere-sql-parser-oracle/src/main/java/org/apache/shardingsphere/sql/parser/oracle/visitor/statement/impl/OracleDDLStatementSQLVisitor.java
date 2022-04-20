@@ -395,7 +395,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropView(final DropViewContext ctx) {
         return new OracleDropViewStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateEdition(final CreateEditionContext ctx) {
         return new OracleCreateEditionStatement();
