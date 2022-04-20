@@ -73,5 +73,6 @@ execute
     | dropTrigger
     | alterView
     | alterTrigger
+    | createEdition
     ) SEMI_?
     ;
