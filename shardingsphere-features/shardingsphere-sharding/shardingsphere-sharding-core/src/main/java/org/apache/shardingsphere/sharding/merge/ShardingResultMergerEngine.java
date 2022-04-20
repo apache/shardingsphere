@@ -40,7 +40,7 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
                                     final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new ShardingDQLResultMerger(databaseType);
-        } 
+        }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new ShardingDALResultMerger(schemaName, shardingRule);
         }

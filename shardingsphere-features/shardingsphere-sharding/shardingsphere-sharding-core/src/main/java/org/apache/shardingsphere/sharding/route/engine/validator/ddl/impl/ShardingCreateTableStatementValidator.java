@@ -36,7 +36,7 @@ import java.util.List;
 public final class ShardingCreateTableStatementValidator extends ShardingDDLStatementValidator<CreateTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (!CreateTableStatementHandler.containsNotExistClause(sqlStatementContext.getSqlStatement())) {
             validateTableNotExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
@@ -44,7 +44,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {

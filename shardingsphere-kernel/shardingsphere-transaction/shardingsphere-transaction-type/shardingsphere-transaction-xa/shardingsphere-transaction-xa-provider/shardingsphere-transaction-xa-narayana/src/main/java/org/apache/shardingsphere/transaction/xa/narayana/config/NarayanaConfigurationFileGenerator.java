@@ -186,7 +186,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword,
-            final String recoveryStoreDataSource, final Properties props) {
+                                          final String recoveryStoreDataSource, final Properties props) {
         props.setProperty("recoveryStoreUrl", recoveryStoreUrl);
         props.setProperty("recoveryStoreUser", recoveryStoreUser);
         props.setProperty("recoveryStorePassword", recoveryStorePassword);

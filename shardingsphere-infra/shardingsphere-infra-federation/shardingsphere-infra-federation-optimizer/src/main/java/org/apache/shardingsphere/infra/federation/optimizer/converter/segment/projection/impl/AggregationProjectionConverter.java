@@ -78,7 +78,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         if (segment.getAlias().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{new SqlBasicCall(convertOperator(segment.getType().name()),
                     new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier),
-                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
+                SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
         }
         return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()),
                 new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier));

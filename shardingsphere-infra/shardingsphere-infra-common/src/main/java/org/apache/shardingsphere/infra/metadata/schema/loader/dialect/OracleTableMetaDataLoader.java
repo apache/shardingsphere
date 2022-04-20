@@ -101,8 +101,8 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         dataTypes.put("NUMBER", Types.NUMERIC);
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys, final DatabaseMetaData metaData)
-            throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
+                                              final DatabaseMetaData metaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
         boolean primaryKey = primaryKeys.contains(columnName);

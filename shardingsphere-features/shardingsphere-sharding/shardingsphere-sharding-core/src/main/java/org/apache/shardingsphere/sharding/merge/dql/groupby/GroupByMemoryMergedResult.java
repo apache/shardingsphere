@@ -57,7 +57,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema, 
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
                                               final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
@@ -81,8 +81,9 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
-            Map<AggregationProjection, AggregationUnit> map = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(), 
-                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
+            Map<AggregationProjection, AggregationUnit> map = Maps
+                    .toMap(selectStatementContext.getProjectionsContext()
+                            .getAggregationProjections(), input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
             aggregationMap.put(groupByValue, map);
         }
     }
@@ -108,7 +109,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         return (Comparable<?>) result;
     }
     
-    private void setAggregationValueToMemoryRow(final SelectStatementContext selectStatementContext, 
+    private void setAggregationValueToMemoryRow(final SelectStatementContext selectStatementContext,
                                                 final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) {
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
             for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
@@ -126,7 +127,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         return result;
     }
     
-    private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult, 
+    private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult,
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();

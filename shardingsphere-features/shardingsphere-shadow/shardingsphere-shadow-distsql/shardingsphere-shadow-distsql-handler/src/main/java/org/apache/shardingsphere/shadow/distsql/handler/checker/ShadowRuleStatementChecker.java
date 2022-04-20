@@ -81,7 +81,7 @@ public class ShadowRuleStatementChecker {
      * @param thrower thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkRulesExist(final Collection<String> requireRules, final Collection<String> currentRules, 
+    public static void checkRulesExist(final Collection<String> requireRules, final Collection<String> currentRules,
                                        final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDifferent(requireRules, currentRules, thrower);
     }
@@ -94,7 +94,7 @@ public class ShadowRuleStatementChecker {
      * @param thrower thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAlgorithmExist(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
+    public static void checkAlgorithmExist(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms,
                                            final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDifferent(requireAlgorithms, currentAlgorithms, thrower);
     }
@@ -119,7 +119,7 @@ public class ShadowRuleStatementChecker {
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules, 
+    public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules,
                                          final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> identical = getIdentical(requireRules, currentRules);
         DistSQLException.predictionThrow(identical.isEmpty(), () -> thrower.apply(identical));
@@ -133,7 +133,7 @@ public class ShadowRuleStatementChecker {
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules, 
+    public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules,
                                          final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> different = getDifferent(requireRules, currentRules);
         DistSQLException.predictionThrow(different.isEmpty(), () -> thrower.apply(different));

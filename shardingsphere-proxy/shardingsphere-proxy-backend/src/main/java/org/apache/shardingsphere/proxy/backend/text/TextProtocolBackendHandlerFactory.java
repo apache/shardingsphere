@@ -115,7 +115,8 @@ public final class TextProtocolBackendHandlerFactory {
             return databaseOperateHandler.get();
         }
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
-                ? sqlStatementContext.getTablesContext().getDatabaseName().get() : connectionSession.getDatabaseName();
+                ? sqlStatementContext.getTablesContext().getDatabaseName().get()
+                : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
@@ -128,7 +129,8 @@ public final class TextProtocolBackendHandlerFactory {
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
-                ? defaultDatabaseType : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
+                ? defaultDatabaseType
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {

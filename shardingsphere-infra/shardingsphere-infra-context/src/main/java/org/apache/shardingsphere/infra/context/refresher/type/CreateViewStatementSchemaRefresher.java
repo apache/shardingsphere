@@ -59,7 +59,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
             schemaMetaData.getDefaultSchema().put(viewName, viewMetaData);
             database.put(viewMetaData);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-            //TODO Get real schema name
+            // TODO Get real schema name
             SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
             event.getAlteredTables().add(viewMetaData);
             ShardingSphereEventBus.getInstance().post(event);

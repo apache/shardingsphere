@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 public final class AlterShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBroadcastTableRulesStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(shardingSphereMetaData.getName(), currentRuleConfig);
     }

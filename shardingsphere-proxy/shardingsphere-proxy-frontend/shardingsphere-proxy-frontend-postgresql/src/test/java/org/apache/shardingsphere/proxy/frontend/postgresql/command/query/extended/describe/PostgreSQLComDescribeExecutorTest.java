@@ -216,8 +216,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new PostgreSQLColumnDescription("id", 1, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("k", 2, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("c", 3, Types.CHAR, 60, "int4"),
-                new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4")
-        );
+                new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4"));
         for (int i = 0; i < expectedColumnDescriptions.size(); i++) {
             PostgreSQLColumnDescription expectedColumnDescription = expectedColumnDescriptions.get(i);
             PostgreSQLColumnDescription actualColumnDescription = actualColumnDescriptions.get(i);

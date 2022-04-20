@@ -100,10 +100,11 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingSphereTransactionManager transactionManager
-                = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
+        ShardingSphereTransactionManager transactionManager =
+                ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
         boolean isDataSourceAggregation = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().containsKey("data-source-aggregation-enabled")
-                ? ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED) : false;
+                ? ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED)
+                : false;
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         if (isDataSourceAggregation) {
             String databaseName = GlobalDataSourceRegistry.getInstance().getDataSourceSchema().get(schemaName + "." + dataSourceName);

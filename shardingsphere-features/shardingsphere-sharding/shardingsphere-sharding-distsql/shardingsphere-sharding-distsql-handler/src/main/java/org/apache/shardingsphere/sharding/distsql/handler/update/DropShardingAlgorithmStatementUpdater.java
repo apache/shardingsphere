@@ -66,8 +66,8 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         }
     }
     
-    private void checkShardingAlgorithmsInUsed(final String databaseName, final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig)
-            throws AlgorithmInUsedException {
+    private void checkShardingAlgorithmsInUsed(final String databaseName, final DropShardingAlgorithmStatement sqlStatement,
+                                               final ShardingRuleConfiguration currentRuleConfig) throws AlgorithmInUsedException {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed(currentRuleConfig);
         Collection<String> usedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
         if (!usedAlgorithms.isEmpty()) {

@@ -44,8 +44,7 @@ import java.util.stream.Collectors;
 public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<SingleTableRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials)
-            throws SQLException {
+    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> ruleTables = rule.getTables();
         Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
         if (needLoadTables.isEmpty()) {
@@ -78,8 +77,8 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     }
     
     private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
-        return tableMetaData.getConstrains().values().stream().map(each 
-            -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
+        return tableMetaData.getConstrains().values().stream()
+                .map(each -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
     }
     
     @Override

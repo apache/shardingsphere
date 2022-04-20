@@ -80,7 +80,7 @@ public final class DatabaseAdminBackendHandlerFactory {
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
-    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatementContext<?> sqlStatementContext, 
+    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatementContext<?> sqlStatementContext,
                                                                                final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         if (executor instanceof DatabaseAdminQueryExecutor) {
             return new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor);

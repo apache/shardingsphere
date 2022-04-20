@@ -129,7 +129,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms, final ShadowRule shadowRule,
-                                                        final ShadowOperationType shadowOperationType) {
+                                                     final ShadowOperationType shadowOperationType) {
         Iterator<Optional<ShadowColumnCondition>> iterator = getShadowColumnConditionIterator();
         ShadowDetermineCondition shadowDetermineCondition;
         while (iterator.hasNext()) {

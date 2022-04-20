@@ -49,9 +49,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
+        try (FileReader fileReader = new FileReader(url.getFile());
+             BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
                 yamlContent.append(line).append(System.lineSeparator());
@@ -69,8 +68,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertYamlShardingConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
-            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
         assertTrue(shardingRuleConfig.isPresent());
         assertThat(shardingRuleConfig.get().getTables().size(), is(4));
         assertTUser(shardingRuleConfig.get());

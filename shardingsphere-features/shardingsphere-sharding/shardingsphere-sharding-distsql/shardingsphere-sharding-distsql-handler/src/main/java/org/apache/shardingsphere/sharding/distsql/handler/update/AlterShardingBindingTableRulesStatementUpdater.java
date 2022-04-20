@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class AlterShardingBindingTableRulesStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBindingTableRulesStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String databaseName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
@@ -53,7 +53,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         }
     }
     
-    private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement, 
+    private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());

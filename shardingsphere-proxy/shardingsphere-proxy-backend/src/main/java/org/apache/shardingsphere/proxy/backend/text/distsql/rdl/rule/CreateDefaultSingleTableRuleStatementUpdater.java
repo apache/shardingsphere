@@ -43,8 +43,8 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     
     private void checkResourceExist(final String databaseName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> resourceNames = metaData.getResource().getDataSources().keySet();
-        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
-            () -> new RequiredResourceMissedException(databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
+        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
+                databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
     private void checkDefaultResourceDuplicate(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {

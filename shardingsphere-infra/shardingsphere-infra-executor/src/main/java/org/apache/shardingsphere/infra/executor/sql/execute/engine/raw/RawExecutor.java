@@ -61,7 +61,7 @@ public final class RawExecutor {
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections
-                .singletonList(new UpdateResult(0, 0L)) : results;
+                    .singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
             ExecuteProcessEngine.clean();
         }
