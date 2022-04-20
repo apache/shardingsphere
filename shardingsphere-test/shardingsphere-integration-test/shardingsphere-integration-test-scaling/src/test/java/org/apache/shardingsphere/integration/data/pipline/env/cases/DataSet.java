@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.env.cases;
+package org.apache.shardingsphere.integration.data.pipline.env.cases;
 
 import lombok.Getter;
 

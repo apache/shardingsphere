@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql;
+package org.apache.shardingsphere.integration.data.pipline;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.DataImporter;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
+import org.apache.shardingsphere.integration.data.pipline.env.ITEnvironmentContext;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.fixture.DataImporter;
+import org.apache.shardingsphere.integration.data.pipline.util.ExecuteUtil;
+import org.apache.shardingsphere.integration.data.pipline.util.ScalingUtil;
 import org.junit.Ignore;
 import org.junit.Test;
 

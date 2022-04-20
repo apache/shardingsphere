@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.env;
+package org.apache.shardingsphere.integration.data.pipline.env;
 
 import com.google.gson.Gson;
 import lombok.Getter;
@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineCo
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.config.SourceConfiguration;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.config.TargetConfiguration;
+import org.apache.shardingsphere.integration.data.pipline.env.cases.DataSet;
+import org.apache.shardingsphere.integration.data.pipline.env.cases.Type;
+import org.apache.shardingsphere.integration.data.pipline.env.config.SourceConfiguration;
+import org.apache.shardingsphere.integration.data.pipline.env.config.TargetConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
 import javax.sql.DataSource;

@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.integration.data.pipline.container.database;
 
-/**
- * Executor.
- */
-public interface Executor {
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
+
+// TODO not complete yet
+public class PostgreSQLContainer extends DockerDatabaseContainer {
     
-    /**
-     * Execute.
-     *
-     * @return execute result
-     */
-    boolean execute();
+    public PostgreSQLContainer(final String dockerImageName) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
+    }
+    
+    @Override
+    public void start() {
+        
+    }
+    
+    @Override
+    protected int getPort() {
+        return 5432;
+    }
 }

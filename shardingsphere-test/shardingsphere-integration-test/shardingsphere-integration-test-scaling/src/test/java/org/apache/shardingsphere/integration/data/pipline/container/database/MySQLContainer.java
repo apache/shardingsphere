@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.container.storage;
+package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.integration.scaling.test.mysql.engine.base.DockerDatabaseContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
 
-public class MySQLContainer extends DockerDatabaseContainer implements StorageContainer {
+public class MySQLContainer extends DockerDatabaseContainer {
     
     public MySQLContainer(final String dockerImageName) {
         super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dockerImageName);
@@ -32,7 +31,7 @@ public class MySQLContainer extends DockerDatabaseContainer implements StorageCo
     protected void configure() {
         super.configure();
         withExposedPorts(3306);
-        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=123456", "MYSQL_ROOT_HOST=%", "MYSQL_DATABASE=test"));
+        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%", "MYSQL_DATABASE=test"));
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci");
     }
     

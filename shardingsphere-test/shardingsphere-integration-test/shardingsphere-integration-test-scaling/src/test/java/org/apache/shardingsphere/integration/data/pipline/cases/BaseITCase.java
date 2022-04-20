@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.engine.base;
+package org.apache.shardingsphere.integration.data.pipline.cases;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.scaling.test.mysql.container.ComposedContainer;
-import org.junit.AfterClass;
+import org.apache.shardingsphere.integration.data.pipline.container.ComposedContainer;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.junit.Before;
 
 import javax.sql.DataSource;
-import java.util.Map;
+import java.util.List;
+import java.util.Properties;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
@@ -35,11 +39,9 @@ public abstract class BaseITCase {
     @Getter(AccessLevel.NONE)
     private final ComposedContainer composedContainer;
     
-    private Map<String, DataSource> actualDataSourceMap;
-    
-    private Map<String, DataSource> expectedDataSourceMap;
-    
     private String databaseNetworkAlias;
+    
+    private ClusterPersistRepository clusterPersistRepository;
     
     public BaseITCase(final DatabaseType databaseType) {
         composedContainer = new ComposedContainer(databaseType);
@@ -49,13 +51,28 @@ public abstract class BaseITCase {
     public void setUp() {
         composedContainer.start();
         targetDataSource = composedContainer.getTargetDataSource();
-        actualDataSourceMap = composedContainer.getActualDataSourceMap();
-        expectedDataSourceMap = composedContainer.getExpectedDataSourceMap();
+        GovernanceContainer governanceContainer = composedContainer.getGovernanceContainer();
         databaseNetworkAlias = composedContainer.getDatabaseNetworkAlias();
+        clusterPersistRepository = new CuratorZookeeperRepository();
+        clusterPersistRepository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "it_db", governanceContainer.getServerLists(), new Properties()));
+        System.out.println(clusterPersistRepository.get("/"));
     }
     
-    @AfterClass
-    public static void closeContainers() {
-        
+    /**
+     * Query actual source database name.
+     *
+     * @return actual source database name list
+     */
+    public List<String> listSourceDatabaseName() {
+        return composedContainer.listSourceDatabaseName();
+    }
+    
+    /**
+     * Query actual target database name.
+     *
+     * @return actual target database name list
+     */
+    public List<String> listTargetDatabaseName() {
+        return composedContainer.listTargetDatabaseName();
     }
 }

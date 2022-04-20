@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.fixture;
+package org.apache.shardingsphere.integration.data.pipline.fixture;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.DataSet;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.cases.Type;
+import org.apache.shardingsphere.integration.data.pipline.env.ITEnvironmentContext;
+import org.apache.shardingsphere.integration.data.pipline.env.cases.DataSet;
+import org.apache.shardingsphere.integration.data.pipline.env.cases.Type;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

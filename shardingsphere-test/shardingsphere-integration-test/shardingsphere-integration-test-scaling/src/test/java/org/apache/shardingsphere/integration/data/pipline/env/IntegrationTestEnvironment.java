@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.env;
+package org.apache.shardingsphere.integration.data.pipline.env;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
+import org.apache.shardingsphere.integration.data.pipline.util.ExecuteUtil;
+import org.apache.shardingsphere.integration.data.pipline.util.ScalingUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +36,6 @@ public final class IntegrationTestEnvironment {
     
     private final Properties props;
     
-    @SneakyThrows
     private IntegrationTestEnvironment() {
         props = loadProperties("env/it-env.properties");
         isEnvironmentPrepared = false;

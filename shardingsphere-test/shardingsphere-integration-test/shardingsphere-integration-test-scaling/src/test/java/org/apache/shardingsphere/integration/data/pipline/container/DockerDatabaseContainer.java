@@ -15,39 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.engine.base;
+package org.apache.shardingsphere.integration.data.pipline.container;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.testcontainers.containers.BindMode;
 
-import javax.sql.DataSource;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Docker storage container.
  */
 @Getter
-public abstract class DockerDatabaseContainer extends DockerITContainer implements StorageContainer {
+public abstract class DockerDatabaseContainer extends DockerITContainer {
     
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> actualDataSourceMap;
+    private final List<String> sourceDatabaseNames;
     
-    private final Map<String, DataSource> expectedDataSourceMap;
+    private final List<String> targetDatabaseNames;
     
     public DockerDatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
-        actualDataSourceMap = new LinkedHashMap<>();
-        expectedDataSourceMap = new LinkedHashMap<>();
+        sourceDatabaseNames = new LinkedList<>();
+        targetDatabaseNames = new LinkedList<>();
     }
     
     @Override
@@ -58,19 +54,8 @@ public abstract class DockerDatabaseContainer extends DockerITContainer implemen
     @Override
     @SneakyThrows
     protected void postStart() {
-        Lists.newArrayList("ds_src_0", "ds_src_1").forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        Lists.newArrayList("ds_dst_2", "ds_dst_3", "ds_dst_4").forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
-    }
-    
-    private DataSource createDataSource(final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
-        result.setUsername("root");
-        result.setPassword("123456");
-        result.setMaximumPoolSize(4);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        sourceDatabaseNames.addAll(Lists.newArrayList("ds_0", "ds_1"));
+        targetDatabaseNames.addAll(Lists.newArrayList("ds_2", "ds_3", "ds_4"));
     }
     
     protected abstract int getPort();

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.container;
+package org.apache.shardingsphere.integration.data.pipline.container;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.scaling.test.mysql.container.storage.DatabaseContainerFactory;
+import org.apache.shardingsphere.integration.data.pipline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
-import java.util.Map;
+import java.util.List;
 
-public class ComposedContainer implements Startable {
+public final class ComposedContainer implements Startable {
     
     private final ITContainers containers;
     
+    @Getter
     private final GovernanceContainer governanceContainer;
     
-    private final StorageContainer databaseContainer;
+    private final DockerDatabaseContainer databaseContainer;
     
     private final ShardingSphereProxyContainer proxyContainer;
     
@@ -76,8 +76,8 @@ public class ComposedContainer implements Startable {
      *
      * @return actual data source map
      */
-    public Map<String, DataSource> getActualDataSourceMap() {
-        return databaseContainer.getActualDataSourceMap();
+    public List<String> listSourceDatabaseName() {
+        return databaseContainer.getSourceDatabaseNames();
     }
     
     /**
@@ -85,7 +85,7 @@ public class ComposedContainer implements Startable {
      *
      * @return expected data source map
      */
-    public Map<String, DataSource> getExpectedDataSourceMap() {
-        return databaseContainer.getExpectedDataSourceMap();
+    public List<String> listTargetDatabaseName() {
+        return databaseContainer.getTargetDatabaseNames();
     }
 }

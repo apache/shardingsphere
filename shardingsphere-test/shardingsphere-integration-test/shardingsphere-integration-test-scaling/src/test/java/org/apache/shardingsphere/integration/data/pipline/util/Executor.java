@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.container.storage;
+package org.apache.shardingsphere.integration.data.pipline.util;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-
-import javax.sql.DataSource;
-import java.util.Map;
-
-public class PostgreSQLContainer implements StorageContainer {
+/**
+ * Executor.
+ */
+public interface Executor {
     
-    @Override
-    public Map<String, DataSource> getActualDataSourceMap() {
-        return null;
-    }
-    
-    @Override
-    public Map<String, DataSource> getExpectedDataSourceMap() {
-        return null;
-    }
-    
-    @Override
-    public void start() {
-        
-    }
+    /**
+     * Execute.
+     *
+     * @return execute result
+     */
+    boolean execute();
 }

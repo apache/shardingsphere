@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.container.storage;
+package org.apache.shardingsphere.integration.data.pipline.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.database.MySQLContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.database.PostgreSQLContainer;
 
 /**
  * Storage container factory.
@@ -34,12 +36,12 @@ public final class DatabaseContainerFactory {
      * @param databaseType database type
      * @return new instance of storage container
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType) {
+    public static DockerDatabaseContainer newInstance(final DatabaseType databaseType) {
         switch (databaseType.getName()) {
             case "MySQL":
                 return new MySQLContainer("mysql:5.7");
             case "PostgreSQL":
-                return new PostgreSQLContainer();
+                return new PostgreSQLContainer("postgres:12.6");
             default:
                 throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getName()));
         }

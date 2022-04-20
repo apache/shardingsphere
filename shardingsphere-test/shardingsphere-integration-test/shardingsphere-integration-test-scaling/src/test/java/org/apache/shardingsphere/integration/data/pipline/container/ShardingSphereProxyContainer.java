@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.container;
+package org.apache.shardingsphere.integration.data.pipline.container;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer {
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String schemaName) {
-        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
+        super("Scaling-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.schemaName = schemaName;
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.integration.data.pipline.util;
 
 import com.google.gson.JsonElement;
 import lombok.AccessLevel;

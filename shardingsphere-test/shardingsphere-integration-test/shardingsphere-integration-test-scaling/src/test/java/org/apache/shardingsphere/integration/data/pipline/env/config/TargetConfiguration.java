@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
+package org.apache.shardingsphere.integration.data.pipline.env.config;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
 
 import java.util.Properties;
 
