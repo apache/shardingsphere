@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -36,9 +37,8 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRu
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Arrays;
@@ -194,7 +194,7 @@ public final class ShardingTableRuleStatementChecker {
         LinkedList<AutoTableRuleSegment> incompleteShardingRules = rules.stream().filter(each -> !each.isCompleteShardingAlgorithm()).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(incompleteShardingRules.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding"));
         Collection<String> invalidShardingAlgorithms = rules.stream().map(each -> each.getShardingAlgorithmSegment().getName()).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
     }
     
