@@ -36,7 +36,6 @@ public final class HandleConfigurationTest {
         HandleConfiguration handleConfiguration = new HandleConfiguration();
         handleConfiguration.getJobShardingCount();
         assertThat(handleConfiguration.getJobShardingCount(), is(0));
-
     }
 
     @Test
@@ -45,7 +44,6 @@ public final class HandleConfigurationTest {
         handleConfiguration.setJobShardingDataNodes(Lists.newArrayList("node1", "node2"));
         handleConfiguration.getJobShardingCount();
         assertThat(handleConfiguration.getJobShardingCount(), is(2));
-
     }
 
     @Test
