@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+
+import java.util.Optional;
 
 /**
- * Import schema does not exist exception.
+ * Export database configuration statement.
  */
-@Getter
-public final class ImportSchemaNotExistedException extends DistSQLException {
+@RequiredArgsConstructor
+public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromSchemaAvailable {
     
-    private static final long serialVersionUID = 4803138422791056535L;
+    private final SchemaSegment database;
     
-    public ImportSchemaNotExistedException(final String fileName) {
-        super(1106, String.format("Property `schemaName` in file `%s` is required.", fileName));
+    @Getter
+    private final Optional<String> filePath;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(database);
     }
 }

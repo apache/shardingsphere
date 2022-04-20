@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportSchemaConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportDatabaseConfigurationStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -30,20 +30,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Import schema configuration statement assert.
+ * Import database configuration statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImportSchemaConfigurationStatementAssert {
+public final class ImportDatabaseConfigurationStatementAssert {
     
     /**
-     * Assert import schema configuration statement is correct with expected parser result.
+     * Assert import database configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual import schema configuration statement statement
-     * @param expected expected import configuration schema statement statement test case
+     * @param actual actual import database configuration statement statement
+     * @param expected expected import configuration database statement statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ImportSchemaConfigurationStatement actual,
-                                final ImportSchemaConfigurationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ImportDatabaseConfigurationStatement actual,
+                                final ImportDatabaseConfigurationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

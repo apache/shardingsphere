@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ImportResourceNotExistedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.exception.ImportSchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.ImportDatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -72,9 +72,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Import schema configuration handler.
+ * Import database configuration handler.
  */
-public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendHandler<ImportSchemaConfigurationStatement, ImportSchemaConfigurationHandler> {
+public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement, ImportDatabaseConfigurationHandler> {
     
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
     
@@ -106,13 +106,13 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         }
     }
     
-    private void alterRulesConfig(final String schemaName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
+    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
         if (null == yamlRuleConfigurations || yamlRuleConfigurations.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(schemaName);
+        ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigurations) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
@@ -141,7 +141,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
         shardingSphereMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> op.getSchemaRuleService().persist(schemaName, toBeUpdatedRuleConfigs));
+        metaDataPersistService.ifPresent(op -> op.getSchemaRuleService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
     
     private void checkDatabaseName(final String databaseName) {
@@ -151,7 +151,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
     }
     
     @Override
-    protected void update(final ContextManager contextManager, final ImportSchemaConfigurationStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager, final ImportDatabaseConfigurationStatement sqlStatement) throws DistSQLException {
         if (!sqlStatement.getFilePath().isPresent()) {
             return;
         }
@@ -166,7 +166,7 @@ public final class ImportSchemaConfigurationHandler extends UpdatableRALBackendH
             throw new ShardingSphereException(ex);
         }
         String databaseName = yamlConfig.getDatabaseName();
-        DistSQLException.predictionThrow(!Strings.isNullOrEmpty(databaseName), () -> new ImportSchemaNotExistedException(yamlFile.getName()));
+        DistSQLException.predictionThrow(!Strings.isNullOrEmpty(databaseName), () -> new ImportDatabaseNotExistedException(yamlFile.getName()));
         checkDatabaseName(databaseName);
         DistSQLException.predictionThrow(null != yamlConfig.getDataSources() && !yamlConfig.getDataSources().isEmpty(), () -> new ImportResourceNotExistedException(yamlFile.getName()));
         alterResourcesConfig(databaseName, yamlConfig.getDataSources());

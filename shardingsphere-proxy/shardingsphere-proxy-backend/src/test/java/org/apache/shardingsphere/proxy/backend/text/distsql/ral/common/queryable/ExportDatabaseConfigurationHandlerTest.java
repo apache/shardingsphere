@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportSchemaConfigurationHandlerTest {
+public final class ExportDatabaseConfigurationHandlerTest {
     
     @Before
     public void init() {
@@ -71,8 +71,8 @@ public final class ExportSchemaConfigurationHandlerTest {
     }
     
     @Test
-    public void assertExportSchemaExecutor() throws SQLException {
-        ExportSchemaConfigurationHandler handler = new ExportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+    public void assertExportDatabaseExecutor() throws SQLException {
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -128,15 +128,15 @@ public final class ExportSchemaConfigurationHandlerTest {
         return result;
     }
     
-    private ExportSchemaConfigurationStatement createSqlStatement() {
-        return new ExportSchemaConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
+    private ExportDatabaseConfigurationStatement createSqlStatement() {
+        return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
     }
     
     private ConnectionSession mockConnectionSession() {
         return mock(ConnectionSession.class);
     }
     
-    private HandlerParameter<ExportSchemaConfigurationStatement> getParameter(final ExportSchemaConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<ExportSchemaConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+    private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<ExportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
     }
 }

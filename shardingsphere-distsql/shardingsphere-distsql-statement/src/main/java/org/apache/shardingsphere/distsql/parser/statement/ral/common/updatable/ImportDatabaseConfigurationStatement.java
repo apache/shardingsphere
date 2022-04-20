@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Optional;
 
 /**
- * Import schema configuration statement test case.
+ * Import database configuration statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ImportSchemaConfigurationStatementTestCase extends SQLParserTestCase {
+public final class ImportDatabaseConfigurationStatement extends UpdatableRALStatement {
     
-    @XmlElement(name = "filePath")
-    private String filePath;
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     * 
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
 }
