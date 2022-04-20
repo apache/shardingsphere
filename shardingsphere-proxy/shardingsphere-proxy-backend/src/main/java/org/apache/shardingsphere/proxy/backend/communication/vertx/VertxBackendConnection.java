@@ -62,7 +62,8 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     @Override
     public List<Future<? extends SqlClient>> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {
         return connectionSession.getTransactionStatus().isInTransaction()
-                ? getConnectionsWithTransaction(dataSourceName, connectionSize) : getConnectionsWithoutTransaction(dataSourceName);
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize)
+                : getConnectionsWithoutTransaction(dataSourceName);
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {

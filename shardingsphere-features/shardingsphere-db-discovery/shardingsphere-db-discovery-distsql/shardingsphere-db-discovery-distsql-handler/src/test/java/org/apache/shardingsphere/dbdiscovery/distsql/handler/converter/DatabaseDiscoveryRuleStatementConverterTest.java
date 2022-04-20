@@ -61,10 +61,10 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
         Properties properties = new Properties();
         properties.put("key", "value");
         final Collection<AbstractDatabaseDiscoverySegment> ruleSegments = new LinkedList<>();
-        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment
-                = new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("mgr", properties), properties);
-        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment
-                = new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
+        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
+                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("mgr", properties), properties);
+        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
+                new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
         ruleSegments.add(databaseDiscoveryConstructionSegment);
         ruleSegments.add(databaseDiscoveryDefinitionSegment);
         return ruleSegments;

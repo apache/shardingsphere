@@ -64,7 +64,7 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     private SQLParserRuleConfiguration buildWithCurrentRuleConfiguration(final SQLParserRuleConfiguration ruleConfiguration) {
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
-        result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled() 
+        result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled()
                 : sqlStatement.getSqlCommentParseEnable());
         result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? ruleConfiguration.getParseTreeCache()
                 : buildCacheOption(ruleConfiguration.getParseTreeCache(), sqlStatement.getParseTreeCache()));

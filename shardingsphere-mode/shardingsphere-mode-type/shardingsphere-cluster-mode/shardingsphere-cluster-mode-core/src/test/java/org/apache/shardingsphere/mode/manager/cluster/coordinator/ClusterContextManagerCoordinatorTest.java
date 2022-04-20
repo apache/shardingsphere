@@ -198,8 +198,8 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(statusContainedRule));
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.ds_0"), true);
         coordinator.renew(event);
-        verify(statusContainedRule, times(1)).updateStatus(argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent ->
-                        Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedSchema()) && argumentEvent.isDisabled()));
+        verify(statusContainedRule, times(1)).updateStatus(
+                argThat((ArgumentMatcher<DataSourceNameDisabledEvent>) argumentEvent -> Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedSchema()) && argumentEvent.isDisabled()));
     }
     
     @Test

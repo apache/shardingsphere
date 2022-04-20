@@ -67,7 +67,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         }
     }
     
-    private void checkToBeDroppedInUsed(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
+    private void checkToBeDroppedInUsed(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement,
                                         final ShardingSphereMetaData shardingSphereMetaData) throws RuleInUsedException {
         Collection<String> resourceBeUsed = shardingSphereMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class).stream()
                 .map(ResourceRequiredRuleConfiguration::getRequiredResource).flatMap(Collection::stream).collect(Collectors.toSet());
@@ -86,8 +86,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     private void dropRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig
-                = currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
+        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig =
+                currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
         dataSourceRuleConfig.ifPresent(op -> {
             currentRuleConfig.getDataSources().remove(op);
             if (isLoadBalancerNotInUse(currentRuleConfig, op.getLoadBalancerName())) {

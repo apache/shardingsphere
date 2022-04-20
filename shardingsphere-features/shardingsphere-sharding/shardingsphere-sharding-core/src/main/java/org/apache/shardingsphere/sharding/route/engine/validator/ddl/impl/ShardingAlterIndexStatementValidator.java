@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class ShardingAlterIndexStatementValidator extends ShardingDDLStatementValidator<AlterIndexStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
@@ -50,7 +50,7 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

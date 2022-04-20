@@ -37,8 +37,7 @@ public final class PostgreSQLTextTimestampUtils {
                     + "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
                     + "[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]"
                     + "[ ]"
-                    + "[XXXXX][XXXX][XXX][XX][X]"
-    );
+                    + "[XXXXX][XXXX][XXX][XX][X]");
     
     /**
      * Parse timestamp in PostgreSQL text format.

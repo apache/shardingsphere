@@ -48,7 +48,7 @@ public final class ExpressionProjectionConverter implements SQLSegmentConverter<
         Optional<SqlNode> exprSqlNode = new ExpressionConverter().convertToSQLNode(segment.getExpr());
         if (exprSqlNode.isPresent() && segment.getAlias().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{exprSqlNode.get(),
-                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
+                SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
         }
         return exprSqlNode;
     }

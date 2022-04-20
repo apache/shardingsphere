@@ -47,7 +47,7 @@ public final class DatabaseLoader {
      * @return loaded database
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.put(databaseName, SchemaLoader.load(dataSourceMap, rules, props));

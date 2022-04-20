@@ -66,8 +66,7 @@ public final class OrderByStreamMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
-                new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC)
-        )));
+                new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);

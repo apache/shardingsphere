@@ -182,9 +182,8 @@ public final class DataSetEnvironmentManager {
         
         @Override
         public Void call() throws SQLException {
-            try (
-                    Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
                 for (SQLValueGroup each : sqlValueGroups) {
                     setParameters(preparedStatement, each);
                     preparedStatement.addBatch();

@@ -58,8 +58,7 @@ public final class PostgreSQLTextTimestampUtilsTest {
                 new Object[]{"2021-10-12 23:23:23.123456", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
                 new Object[]{"2021-10-12 23:23:23.123456 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
                 new Object[]{"2021-10-12 23:23:23.123456 -08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
-                new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")}
-        );
+                new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")});
     }
     
     @Test

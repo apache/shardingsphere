@@ -103,7 +103,7 @@ public final class ReactiveProxySQLExecutor {
     }
     
     private Future<List<ExecuteResult>> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
-                                                                 final int maxConnectionsSizePerQuery) throws SQLException {
+                                                           final int maxConnectionsSizePerQuery) throws SQLException {
         VertxBackendStatement statementManager = (VertxBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         DriverExecutionPrepareEngine<VertxExecutionUnit, Future<? extends SqlClient>> prepareEngine = new DriverExecutionPrepareEngine<>(
                 TYPE, maxConnectionsSizePerQuery, backendConnection, statementManager, new VertxExecutionContext(), rules);

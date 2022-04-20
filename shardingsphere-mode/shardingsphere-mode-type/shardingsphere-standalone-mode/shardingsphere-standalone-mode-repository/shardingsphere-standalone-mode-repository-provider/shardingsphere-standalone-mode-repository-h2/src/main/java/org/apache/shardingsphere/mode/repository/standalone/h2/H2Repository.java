@@ -148,23 +148,20 @@ public final class H2Repository implements StandalonePersistRepository {
     }
     
     private void insert(final String key, final String value, final String parent) throws SQLException {
-        try (PreparedStatement statement =
-                     connection.prepareStatement("INSERT INTO REPOSITORY VALUES('" + UUID.randomUUID() + "','" + key + "','" + value + "','" + parent + "')")) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO REPOSITORY VALUES('" + UUID.randomUUID() + "','" + key + "','" + value + "','" + parent + "')")) {
             statement.executeUpdate();
         }
     }
     
     private void update(final String key, final String value) throws SQLException {
-        try (PreparedStatement statement =
-                     connection.prepareStatement("UPDATE REPOSITORY SET value = '" + value + "' WHERE key = '" + key + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE REPOSITORY SET value = '" + value + "' WHERE key = '" + key + "'")) {
             statement.executeUpdate();
         }
     }
     
     @Override
     public void delete(final String key) {
-        try (PreparedStatement statement =
-                     connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = '" + key + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = '" + key + "'")) {
             statement.executeUpdate();
         } catch (final SQLException ex) {
             log.error("Delete h2 data by key: {} failed", key, ex);

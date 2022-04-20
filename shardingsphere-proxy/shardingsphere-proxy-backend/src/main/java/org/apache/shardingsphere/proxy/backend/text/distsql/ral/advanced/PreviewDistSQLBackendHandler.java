@@ -116,7 +116,8 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
-                ? getFederationExecutionUnits(logicSQL, schemaName, metaDataContexts) : executionContext.getExecutionUnits();
+                ? getFederationExecutionUnits(logicSQL, schemaName, metaDataContexts)
+                : executionContext.getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toCollection(LinkedList::new));
     }
     

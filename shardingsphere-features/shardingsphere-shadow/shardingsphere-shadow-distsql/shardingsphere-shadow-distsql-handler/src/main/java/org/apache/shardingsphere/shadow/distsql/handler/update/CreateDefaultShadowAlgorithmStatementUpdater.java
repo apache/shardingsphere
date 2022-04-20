@@ -45,15 +45,15 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateDefaultShadowAlgorithmStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateDefaultShadowAlgorithmStatement sqlStatement,
                                   final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = metaData.getName();
         checkAlgorithmExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkAlgorithmExist(final String schemaName, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()),
-            () -> new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getAlgorithmName())));
+        DistSQLException.predictionThrow(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()), () -> new RequiredAlgorithmMissedException(
+                schemaName, Collections.singleton(sqlStatement.getAlgorithmName())));
     }
     
     @Override

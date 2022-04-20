@@ -30,7 +30,7 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, 
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap,
                                         final Collection<String> disabledDataSourceNames, final String groupName) {
     }
     

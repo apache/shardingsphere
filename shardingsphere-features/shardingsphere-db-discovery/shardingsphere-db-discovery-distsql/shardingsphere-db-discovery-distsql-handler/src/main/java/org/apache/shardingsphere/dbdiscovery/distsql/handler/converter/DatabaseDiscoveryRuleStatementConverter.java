@@ -64,16 +64,16 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         ShardingSphereAlgorithmConfiguration discoveryType = new ShardingSphereAlgorithmConfiguration(segment.getDiscoveryType().getName(), segment.getDiscoveryType().getProps());
         String heartbeatName = getName(segment.getName(), "heartbeat");
         DatabaseDiscoveryHeartBeatConfiguration heartbeatConfiguration = new DatabaseDiscoveryHeartBeatConfiguration(segment.getDiscoveryHeartbeat());
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
         configuration.getDataSources().add(dataSourceRuleConfiguration);
         configuration.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
         configuration.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfiguration);
     }
     
     private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration configuration, final DatabaseDiscoveryConstructionSegment segment) {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
         configuration.getDataSources().add(dataSourceRuleConfiguration);
     }
     
