@@ -71,30 +71,30 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        String originSchema = connectionSession.getSchemaName();
-        String schemaName = null == originSchema ? getFirstSchemaName() : originSchema;
-        if (!ProxyContext.getInstance().getMetaData(schemaName).hasDataSource()) {
+        String originDatabase = connectionSession.getDatabaseName();
+        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
+        if (!ProxyContext.getInstance().getMetaData(databaseName).hasDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
-            connectionSession.setCurrentSchema(schemaName);
+            connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
-                    sqlStatement, connectionSession.getDefaultSchemaName());
+                    sqlStatement, connectionSession.getDefaultDatabaseName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
-            connectionSession.setCurrentSchema(originSchema);
+            connectionSession.setCurrentDatabase(originDatabase);
             databaseCommunicationEngine.close();
         }
     }
     
-    private String getFirstSchemaName() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
+    private String getFirstDatabaseName() {
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = schemaNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }

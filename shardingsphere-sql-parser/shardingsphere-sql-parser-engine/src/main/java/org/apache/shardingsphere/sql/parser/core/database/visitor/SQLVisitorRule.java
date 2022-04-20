@@ -124,6 +124,8 @@ public enum SQLVisitorRule {
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
     
+    CREATE_EDITION("CreateEdition", SQLStatementType.DDL),
+    
     ALTER_EVENT("AlterEvent", SQLStatementType.DDL),
     
     DROP_EVENT("DropEvent", SQLStatementType.DDL),

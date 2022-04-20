@@ -40,7 +40,7 @@ public interface FederationExecutor extends AutoCloseable {
      * @return result set
      * @throws SQLException SQL exception
      */
-    ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+    ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            JDBCExecutorCallback<? extends ExecuteResult> callback, FederationContext federationContext) throws SQLException;
     
     /**

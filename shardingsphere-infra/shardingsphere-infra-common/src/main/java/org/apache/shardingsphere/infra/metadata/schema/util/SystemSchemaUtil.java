@@ -34,16 +34,16 @@ public class SystemSchemaUtil {
      * 
      * @param databaseType databaseType
      * @param schemaNames schema names
-     * @param sessionSchemaName session schema name
+     * @param sessionDatabaseName session database name
      * @return whether sql statement contains system schema or not
      */
-    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final String sessionSchemaName) {
+    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final String sessionDatabaseName) {
         for (String each : schemaNames) {
             if (!databaseType.getSystemSchemas().contains(each)) {
                 continue;
             }
             return true;
         }
-        return databaseType.getSystemSchemas().contains(sessionSchemaName);
+        return databaseType.getSystemSchemas().contains(sessionDatabaseName);
     }
 }

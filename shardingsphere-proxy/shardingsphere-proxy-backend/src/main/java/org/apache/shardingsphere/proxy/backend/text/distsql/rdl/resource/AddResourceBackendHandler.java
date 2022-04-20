@@ -55,12 +55,12 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
-        checkSQLStatement(schemaName, sqlStatement);
+    public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) throws DistSQLException {
+        checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().addResource(databaseName, dataSourcePropsMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -70,11 +70,11 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
+    private void checkSQLStatement(final String databaseName, final AddResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().containsKey(each.getName())) {
                 duplicateDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());

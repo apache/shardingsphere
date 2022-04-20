@@ -82,7 +82,7 @@ public final class EncryptConditionEngine {
      * @param tablesContext tables context
      * @return encrypt conditions
      */
-    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments, 
+    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments,
                                                                 final Collection<ColumnSegment> columnSegments, final TablesContext tablesContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnSegment(columnSegments, schema);
@@ -142,7 +142,8 @@ public final class EncryptConditionEngine {
             return Optional.empty();
         }
         return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
-                ? Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue)) : Optional.empty();
+                ? Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue))
+                : Optional.empty();
     }
     
     private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {

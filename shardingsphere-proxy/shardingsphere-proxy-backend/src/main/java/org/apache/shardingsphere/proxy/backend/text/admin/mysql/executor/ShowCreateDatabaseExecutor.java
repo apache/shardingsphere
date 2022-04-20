@@ -63,12 +63,12 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
         mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getSchemaName()));
     }
     
-    private QueryResult getQueryResult(final String schemaName) {
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+    private QueryResult getQueryResult(final String databaseName) {
+        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
+            throw new SchemaNotExistedException(databaseName);
         }
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        rows.add(new MemoryQueryResultDataRow(Arrays.asList(schemaName, String.format(CREATE_DATABASE_PATTERN, schemaName))));
+        rows.add(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     

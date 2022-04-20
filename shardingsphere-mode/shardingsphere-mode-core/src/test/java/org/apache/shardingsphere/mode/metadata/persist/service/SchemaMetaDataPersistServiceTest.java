@@ -103,8 +103,8 @@ public final class SchemaMetaDataPersistServiceTest {
     @Test
     public void assertPersistTableMetaData() {
         TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new SchemaMetaDataPersistService(repository).persist("foo_db", tableMetaData);
-        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_db/tables/foo_table"), anyString());
+        new SchemaMetaDataPersistService(repository).persist("foo_db", "foo_schema", tableMetaData);
+        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

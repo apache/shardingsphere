@@ -43,10 +43,10 @@ public final class StandaloneContextManagerBuilderTextTest {
     @Test
     public void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
-            .databaseConfigs(Collections.singletonMap("foo_schema", 
-                    new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
-            .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
-            .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
+                .databaseConfigs(Collections.singletonMap("foo_schema",
+                        new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
+                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
+                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertNotNull(actual.getMetaDataContexts().getMetaDataMap().get("foo_schema"));
         assertNotNull(actual.getMetaDataContexts().getExecutorEngine());
         assertTrue(actual.getMetaDataContexts().getMetaDataPersistService().isPresent());

@@ -60,7 +60,8 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     @Override
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
         List<ShardingCondition> result = null == sqlStatementContext.getInsertSelectContext()
-                ? createShardingConditionsWithInsertValues(sqlStatementContext, parameters) : createShardingConditionsWithInsertSelect(sqlStatementContext, parameters);
+                ? createShardingConditionsWithInsertValues(sqlStatementContext, parameters)
+                : createShardingConditionsWithInsertSelect(sqlStatementContext, parameters);
         appendGeneratedKeyConditions(sqlStatementContext, result);
         return result;
     }

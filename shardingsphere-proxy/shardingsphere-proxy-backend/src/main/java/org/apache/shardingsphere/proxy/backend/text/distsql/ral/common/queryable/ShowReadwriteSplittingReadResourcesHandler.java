@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -73,17 +73,17 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
-        if (null == schemaName) {
+        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+            throw new SchemaNotExistedException(databaseName);
         }
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
         Collection<String> allReadResources = getAllReadResources(metaData);
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getMetaDataPersistService().orElse(null));
         return buildRows(allReadResources, persistentReadResources);
     }
     
@@ -105,15 +105,15 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2, LinkedHashMap::new));
     }
     
-    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String schemaName, final MetaDataPersistService persistService) {
+    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataPersistService persistService) {
         if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
             return Collections.emptyMap();
         }
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
         storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
-            QualifiedSchema qualifiedSchema = new QualifiedSchema(entry.getKey());
-            if (schemaName.equalsIgnoreCase(qualifiedSchema.getSchemaName())) {
+            QualifiedDatabase qualifiedSchema = new QualifiedDatabase(entry.getKey());
+            if (databaseName.equalsIgnoreCase(qualifiedSchema.getDatabaseName())) {
                 result.put(qualifiedSchema.getDataSourceName(), entry.getValue());
             }
         });

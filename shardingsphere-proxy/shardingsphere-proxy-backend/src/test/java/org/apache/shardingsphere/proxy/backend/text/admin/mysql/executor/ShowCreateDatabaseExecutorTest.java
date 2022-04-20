@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowCreateDatabaseExecutorTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -66,7 +66,7 @@ public final class ShowCreateDatabaseExecutorTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }
@@ -74,13 +74,13 @@ public final class ShowCreateDatabaseExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement();
-        statement.setSchemaName("schema_0");
+        statement.setSchemaName("db_0");
         ShowCreateDatabaseExecutor showCreateDatabaseExecutor = new ShowCreateDatabaseExecutor(statement);
         showCreateDatabaseExecutor.execute(mockConnectionSession());
         assertThat(showCreateDatabaseExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         int count = 0;
         while (showCreateDatabaseExecutor.getMergedResult().next()) {
-            assertThat(showCreateDatabaseExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            assertThat(showCreateDatabaseExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
             count++;
         }
     }
@@ -88,7 +88,7 @@ public final class ShowCreateDatabaseExecutorTest {
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

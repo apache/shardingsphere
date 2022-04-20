@@ -73,7 +73,7 @@ public final class MySQLMultiStatementsHandlerTest {
     @Test
     public void assertExecute() throws SQLException {
         final String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
-        when(connectionSession.getSchemaName()).thenReturn("");
+        when(connectionSession.getDatabaseName()).thenReturn("");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);

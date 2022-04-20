@@ -40,7 +40,7 @@ public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSpher
     private final Properties props;
     
     @Override
-    public final T getObject() {
+    public T getObject() {
         T result = TypedSPIRegistry.getRegisteredService(objectType, type, props);
         if (result instanceof ShardingSphereAlgorithmPostProcessor) {
             ((ShardingSphereAlgorithmPostProcessor) result).init();

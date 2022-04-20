@@ -57,8 +57,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
-            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream()
+                .filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
     }
     
@@ -83,7 +83,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
-                connectionSession.setCurrentSchema(authResult.getDatabase());
+                connectionSession.setCurrentDatabase(authResult.getDatabase());
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF

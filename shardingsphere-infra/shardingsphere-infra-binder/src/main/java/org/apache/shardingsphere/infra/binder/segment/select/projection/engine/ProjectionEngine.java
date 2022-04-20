@@ -166,8 +166,8 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
-        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each
-            -> createProjection(subSelectStatement.getFrom(), each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
+                .filter(Objects::nonNull).collect(Collectors.toList());
         return getColumnProjections(projections);
     }
     

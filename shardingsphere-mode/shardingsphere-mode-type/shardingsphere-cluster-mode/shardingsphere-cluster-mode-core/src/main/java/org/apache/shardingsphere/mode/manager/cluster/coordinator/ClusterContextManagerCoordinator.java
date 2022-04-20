@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -40,8 +40,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
@@ -87,23 +87,23 @@ public final class ClusterContextManagerCoordinator {
     /**
      * Renew to persist meta data.
      *
-     * @param event schema added event
+     * @param event database added event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
-        persistSchema(event.getSchemaName());
-        contextManager.addSchema(event.getSchemaName());
+    public synchronized void renew(final DatabaseAddedEvent event) throws SQLException {
+        persistDatabase(event.getDatabaseName());
+        contextManager.addDatabase(event.getDatabaseName());
     }
     
     /**
-     * Renew to delete schema.
+     * Renew to delete database.
      *
-     * @param event schema delete event
+     * @param event database delete event
      */
     @Subscribe
-    public synchronized void renew(final SchemaDeletedEvent event) {
-        contextManager.deleteSchema(event.getSchemaName());
+    public synchronized void renew(final DatabaseDeletedEvent event) {
+        contextManager.deleteDatabase(event.getDatabaseName());
     }
     
     /**
@@ -123,7 +123,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterSchema(event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterDatabase(event.getDatabaseName(), event.getChangedTableMetaData(), event.getDeletedTable());
     }
     
     /**
@@ -133,8 +133,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (metaDataPersistService.getSchemaVersionPersistService().isActiveVersion(event.getSchemaName(), event.getSchemaVersion())) {
-            contextManager.alterRuleConfiguration(event.getSchemaName(), event.getRuleConfigurations());
+        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getSchemaVersion())) {
+            contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
             buildSpecialRules();
         }
     }
@@ -146,8 +146,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        if (metaDataPersistService.getSchemaVersionPersistService().isActiveVersion(event.getSchemaName(), event.getSchemaVersion())) {
-            contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
+        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getSchemaVersion())) {
+            contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
             buildSpecialRules();
         }
     }
@@ -159,8 +159,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
-        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedSchema = event.getQualifiedSchema();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -174,8 +174,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
-        QualifiedSchema qualifiedSchema = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getSchemaName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedSchema = event.getQualifiedDatabase();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -265,9 +265,9 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaVersionChangedEvent event) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = metaDataPersistService.getDataSourceService().load(event.getSchemaName(), event.getActiveVersion());
-        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getSchemaRuleService().load(event.getSchemaName(), event.getActiveVersion());
-        contextManager.alterDataSourceAndRuleConfiguration(event.getSchemaName(), dataSourcePropertiesMap, ruleConfigs);
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = metaDataPersistService.getDataSourceService().load(event.getDatabaseName(), event.getActiveVersion());
+        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getSchemaRuleService().load(event.getDatabaseName(), event.getActiveVersion());
+        contextManager.alterDataSourceAndRuleConfiguration(event.getDatabaseName(), dataSourcePropertiesMap, ruleConfigs);
     }
     
     /**
@@ -304,12 +304,12 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
-    private void persistSchema(final String schemaName) {
-        if (!metaDataPersistService.getDataSourceService().isExisted(schemaName)) {
-            metaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+    private void persistDatabase(final String databaseName) {
+        if (!metaDataPersistService.getDataSourceService().isExisted(databaseName)) {
+            metaDataPersistService.getDataSourceService().persist(databaseName, new LinkedHashMap<>());
         }
-        if (!metaDataPersistService.getSchemaRuleService().isExisted(schemaName)) {
-            metaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        if (!metaDataPersistService.getSchemaRuleService().isExisted(databaseName)) {
+            metaDataPersistService.getSchemaRuleService().persist(databaseName, new LinkedList<>());
         }
     }
     
@@ -327,6 +327,6 @@ public final class ClusterContextManagerCoordinator {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.DISABLED.name().toLowerCase().equals(entry.getValue().getStatus()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        disableDataSources.forEach((key, value) -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(key), true)));
+        disableDataSources.forEach((key, value) -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase(key), true)));
     }
 }

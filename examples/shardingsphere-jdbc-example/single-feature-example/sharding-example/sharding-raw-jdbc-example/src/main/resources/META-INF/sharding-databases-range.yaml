@@ -58,6 +58,7 @@ rules:
     - t_address
   defaultDatabaseStrategy:
     standard:
+      shardingColumn: user_id
       shardingAlgorithmName: standard-test-db
   defaultTableStrategy:
     none:

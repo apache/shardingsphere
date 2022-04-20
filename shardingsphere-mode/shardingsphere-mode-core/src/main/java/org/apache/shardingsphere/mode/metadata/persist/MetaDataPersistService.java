@@ -63,7 +63,7 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final DatabaseVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -73,7 +73,7 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        schemaVersionPersistService = new DatabaseVersionPersistService(repository);
+        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
     /**
@@ -124,11 +124,12 @@ public final class MetaDataPersistService {
     public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
         return databaseConfigs.containsKey(databaseName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources())
+                : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(
-            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
+                                                              final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();

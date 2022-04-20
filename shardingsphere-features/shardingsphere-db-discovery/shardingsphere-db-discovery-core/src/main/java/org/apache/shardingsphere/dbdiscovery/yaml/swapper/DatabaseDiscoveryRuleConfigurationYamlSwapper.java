@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
  * Database discovery rule configuration YAML swapper.
  */
 public final class DatabaseDiscoveryRuleConfigurationYamlSwapper
-        implements YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, DatabaseDiscoveryRuleConfiguration> {
+        implements
+            YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, DatabaseDiscoveryRuleConfiguration> {
     
     private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
     

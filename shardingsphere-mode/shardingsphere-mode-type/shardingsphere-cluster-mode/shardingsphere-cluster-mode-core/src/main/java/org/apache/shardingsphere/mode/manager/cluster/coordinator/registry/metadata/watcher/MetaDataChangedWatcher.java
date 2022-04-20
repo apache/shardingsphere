@@ -33,8 +33,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -67,8 +67,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (isLogicSchemaChanged(event)) {
-            return buildLogicSchemaChangedEvent(event);
+        if (isLogicDatabaseChanged(event)) {
+            return buildLogicDatabaseChangedEvent(event);
         } else if (isTableMetaDataChanged(event)) {
             return buildTableMetaDataChangedEvent(event);
         } else if (DataChangedEvent.Type.UPDATED == event.getType()) {
@@ -77,24 +77,25 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return Optional.empty();
     }
     
-    private boolean isLogicSchemaChanged(final DataChangedEvent event) {
+    private boolean isLogicDatabaseChanged(final DataChangedEvent event) {
         return DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent();
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey());
+        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(event.getKey());
         Optional<String> tableName = DatabaseMetaDataNode.getTableName(event.getKey());
-        return databaseName.isPresent() && tableName.isPresent()
+        return databaseName.isPresent() && tableName.isPresent() && schemaName.isPresent()
                 && !SystemSchemaBuilderRule.isSystemTable(databaseName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
     }
     
-    private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildLogicDatabaseChangedEvent(final DataChangedEvent event) {
         String databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).get();
         if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
-            return Optional.of(new SchemaAddedEvent(databaseName));
+            return Optional.of(new DatabaseAddedEvent(databaseName));
         }
         if (DataChangedEvent.Type.DELETED == event.getType()) {
-            return Optional.of(new SchemaDeletedEvent(databaseName));
+            return Optional.of(new DatabaseDeletedEvent(databaseName));
         }
         return Optional.empty();
     }
@@ -119,17 +120,17 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     @SuppressWarnings("unchecked")
-    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final String schemaVersion, final DataChangedEvent event) {
+    private DataSourceChangedEvent createDataSourceChangedEvent(final String databaseName, final String schemaVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
         Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
                         Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceChangedEvent(schemaName, schemaVersion, dataSourcePropertiesMap);
+        return new DataSourceChangedEvent(databaseName, schemaVersion, dataSourcePropertiesMap);
     }
     
-    private GovernanceEvent createRuleChangedEvent(final String schemaName, final String schemaVersion, final DataChangedEvent event) {
-        return new RuleConfigurationsChangedEvent(schemaName, schemaVersion, getRuleConfigurations(event.getValue()));
+    private GovernanceEvent createRuleChangedEvent(final String databaseName, final String schemaVersion, final DataChangedEvent event) {
+        return new RuleConfigurationsChangedEvent(databaseName, schemaVersion, getRuleConfigurations(event.getValue()));
     }
     
     @SuppressWarnings("unchecked")
@@ -142,10 +143,11 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     private Optional<GovernanceEvent> buildTableMetaDataChangedEvent(final DataChangedEvent event) {
         String databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey()).get();
+        String schemaName = DatabaseMetaDataNode.getSchemaName(event.getKey()).get();
         String tableName = DatabaseMetaDataNode.getTableName(event.getKey()).get();
         if (DataChangedEvent.Type.DELETED == event.getType()) {
-            return Optional.of(new SchemaChangedEvent(databaseName, null, tableName));
+            return Optional.of(new SchemaChangedEvent(databaseName, schemaName, null, tableName));
         }
-        return Optional.of(new SchemaChangedEvent(databaseName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null));
+        return Optional.of(new SchemaChangedEvent(databaseName, schemaName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null));
     }
 }

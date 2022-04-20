@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 
-import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
@@ -53,14 +51,5 @@ public final class TargetConfiguration {
     
     private static StandardPipelineDataSourceConfiguration getConfiguration(final String host) {
         return new StandardPipelineDataSourceConfiguration(String.format(TARGET_JDBC_URL, host), ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
-    }
-    
-    /**
-     * Create host standard pipeline data source.
-     *
-     * @return data source
-     */
-    public static DataSource createHostDataSource() {
-        return new PipelineDataSourceFactory().newInstance(getHostConfiguration());
     }
 }

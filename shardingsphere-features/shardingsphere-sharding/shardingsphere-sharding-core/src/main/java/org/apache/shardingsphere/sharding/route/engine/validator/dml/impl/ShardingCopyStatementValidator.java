@@ -42,7 +42,7 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
                              final List<Object> parameters, final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

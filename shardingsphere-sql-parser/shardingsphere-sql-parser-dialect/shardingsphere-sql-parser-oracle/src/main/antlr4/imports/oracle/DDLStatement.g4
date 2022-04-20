@@ -23,6 +23,10 @@ createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
     ;
 
+createEdition
+    : CREATE EDITION editionName (AS CHILD OF editionName)?
+    ;
+
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;

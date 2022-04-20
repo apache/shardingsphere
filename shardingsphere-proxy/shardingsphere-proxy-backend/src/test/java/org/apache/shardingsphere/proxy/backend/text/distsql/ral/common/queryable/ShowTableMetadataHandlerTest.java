@@ -49,24 +49,24 @@ public final class ShowTableMetadataHandlerTest {
     @Test
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList("schema_name"));
+        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("db_name"));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(contextManager.getMetaDataContexts().getMetaData("schema_name")).thenReturn(shardingSphereMetaData);
+        when(contextManager.getMetaDataContexts().getMetaData("db_name")).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
         ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
         handler.execute();
         handler.next();
         ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(4));
-        assertThat(data.get(0), is("schema_name"));
+        assertThat(data.get(0), is("db_name"));
         assertThat(data.get(1), is("t_order"));
         assertThat(data.get(2), is("COLUMN"));
         assertThat(data.get(3), is("order_id"));
         handler.next();
         data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(4));
-        assertThat(data.get(0), is("schema_name"));
+        assertThat(data.get(0), is("db_name"));
         assertThat(data.get(1), is("t_order"));
         assertThat(data.get(2), is("INDEX"));
         assertThat(data.get(3), is("primary"));
@@ -81,7 +81,7 @@ public final class ShowTableMetadataHandlerTest {
     }
     
     private ShowTableMetadataStatement createSqlStatement() {
-        return new ShowTableMetadataStatement(Collections.singleton("t_order"), new SchemaSegment(0, 0, new IdentifierValue("schema_name")));
+        return new ShowTableMetadataStatement(Collections.singleton("t_order"), new SchemaSegment(0, 0, new IdentifierValue("db_name")));
     }
     
     private ConnectionSession mockConnectionSession() {

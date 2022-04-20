@@ -124,9 +124,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         if (unspecifiedTypeParameterIndexes.isEmpty()) {
             return;
         }
-        String schemaName = connectionSession.getSchemaName();
+        String databaseName = connectionSession.getDatabaseName();
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getDefaultSchema().get(logicTableName);
+        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(databaseName).getDefaultSchema().get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {
@@ -171,11 +171,11 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             return;
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String schemaName = connectionSession.getSchemaName();
+        String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), preparedStatement.getSqlStatement(), schemaName);
+                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), preparedStatement.getSqlStatement(), databaseName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();

@@ -78,12 +78,12 @@ public final class DatabaseMetaDataNode {
     /**
      * Get rule path.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param version rule version                  
      * @return rule path
      */
-    public static String getRulePath(final String schemaName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version, RULE_NODE);
+    public static String getRulePath(final String databaseName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
     }
     
     /**
@@ -142,9 +142,9 @@ public final class DatabaseMetaDataNode {
      * @return schema name
      */
     public static Optional<String> getSchemaName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)(/tables)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**

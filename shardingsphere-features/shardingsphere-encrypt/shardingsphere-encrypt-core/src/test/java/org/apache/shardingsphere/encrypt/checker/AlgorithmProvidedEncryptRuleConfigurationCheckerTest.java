@@ -48,7 +48,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     
     private AlgorithmProvidedEncryptRuleConfiguration createValidConfiguration() {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm<?, ?> encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(result.getEncryptors()).thenReturn(Collections.singletonMap("type1", encryptAlgorithm));
         return result;
     }

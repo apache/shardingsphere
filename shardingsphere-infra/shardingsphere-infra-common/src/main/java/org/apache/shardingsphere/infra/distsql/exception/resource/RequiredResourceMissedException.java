@@ -26,11 +26,11 @@ public final class RequiredResourceMissedException extends ResourceDefinitionVio
     
     private static final long serialVersionUID = 1704331180489268L;
     
-    public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    public RequiredResourceMissedException(final String databaseName, final Collection<String> resourceNames) {
+        super(1102, String.format("Resources %s do not exist in database %s.", resourceNames, databaseName));
     }
     
-    public RequiredResourceMissedException(final String schemaName) {
-        super(1102, String.format("There are no resources in the schema %s.", schemaName));
+    public RequiredResourceMissedException(final String databaseName) {
+        super(1102, String.format("There are no resources in the database %s.", databaseName));
     }
 }
