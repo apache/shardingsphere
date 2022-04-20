@@ -1,0 +1,12 @@
+ComposeClassStaticMethodAroundAdviceTest.java text eol=crlf
+ComposeConstructorAdviceTest.java text eol=crlf
+AuthorityRuleBuilderTest.java text eol=crlf
+DefaultAuthorityRuleConfigurationBuilderTest.java text eol=crlf
+AuthorityRuleConfigurationYamlSwapperTest.java text eol=crlf
+ShowProcedureCodeStatementAssert.java text eol=crlf
+ShowCollationStatementTestCase.java text eol=crlf
+ShowEventsStatementTestCase.java text eol=crlf
+ShowOpenTablesStatementTestCase.java text eol=crlf
+ShowProcedureCodeStatementTestCase.java text eol=crlf
+ShowVariablesStatementTestCase.java text eol=crlf
+FrontendChannelLimitationInboundHandler.java text eol=crlf
