@@ -70,8 +70,8 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithNotExist() throws DistSQLException {
-        List<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments
-                = Collections.singletonList(new DatabaseDiscoveryTypeSegment("discovery_type_1", new AlgorithmSegment("mgr", new Properties())));
+        List<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments =
+                Collections.singletonList(new DatabaseDiscoveryTypeSegment("discovery_type_1", new AlgorithmSegment("mgr", new Properties())));
         updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(databaseDiscoveryTypeSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                         Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("mgr", new Properties()))));
@@ -79,10 +79,9 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
-        Set<DatabaseDiscoveryTypeSegment> discoveryTypeSegments
-                = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments), 
-                new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), 
+        Set<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments),
+                new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                         Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("mgr", new Properties()))));
     }
     
@@ -96,8 +95,8 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdaterTest {
         properties.put("key", "value_1");
         Set<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("MGR", properties)));
         updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments), currentRuleConfiguration);
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration
-                = (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration =
+                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
         DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfiguration);
         assertThat(currentConfiguration.getDiscoveryTypes().size(), is(1));

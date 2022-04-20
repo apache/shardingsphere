@@ -53,7 +53,8 @@ public final class ExecutionContextBuilder {
      */
     public static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? build(metaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext) : build((RouteSQLRewriteResult) sqlRewriteResult);
+                ? build(metaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext)
+                : build((RouteSQLRewriteResult) sqlRewriteResult);
     }
     
     private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
@@ -61,7 +62,7 @@ public final class ExecutionContextBuilder {
         if (instanceDataSourceNames.isEmpty()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(new ExecutionUnit(instanceDataSourceNames.iterator().next(), 
+        return Collections.singletonList(new ExecutionUnit(instanceDataSourceNames.iterator().next(),
                 new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getGenericTableRouteMappers(sqlStatementContext))));
     }
     

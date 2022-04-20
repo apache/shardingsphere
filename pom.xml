@@ -158,6 +158,7 @@
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
+        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
     </properties>
     
     <dependencyManagement>
@@ -1174,6 +1175,29 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <file>src/resources/shardingsphere_eclipse_formatter.xml</file>
+                        </eclipse>
+                        <licenseHeader>
+                            <file>src/resources/license-header</file>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>

@@ -71,7 +71,8 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
+                    ? RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class)
+                    : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
         }
     }
@@ -83,7 +84,8 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
+                    ? RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class)
+                    : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
         }
     }

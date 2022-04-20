@@ -55,7 +55,8 @@ public final class GeneratedKeyContextEngine {
     public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> parameters) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNames, optional)
-                ? findGeneratedKey(insertColumnNames, valueExpressions, parameters, optional) : new GeneratedKeyContext(optional, true));
+                ? findGeneratedKey(insertColumnNames, valueExpressions, parameters, optional)
+                : new GeneratedKeyContext(optional, true));
     }
     
     private Optional<String> findGenerateKeyColumn(final String tableName) {
@@ -89,7 +90,7 @@ public final class GeneratedKeyContextEngine {
         return 0;
     }
     
-    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, 
+    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions,
                                                  final List<Object> parameters, final String generateKeyColumnName) {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (ExpressionSegment each : findGenerateKeyExpressions(insertColumnNames, valueExpressions, generateKeyColumnName)) {
@@ -114,7 +115,7 @@ public final class GeneratedKeyContextEngine {
     }
     
     private int findGenerateKeyIndex(final List<String> insertColumnNames, final String generateKeyColumnName) {
-        return insertColumnNames.isEmpty() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
+        return insertColumnNames.isEmpty() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName)
                 : insertColumnNames.indexOf(generateKeyColumnName);
     }
 }

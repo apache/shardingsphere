@@ -100,7 +100,8 @@ public final class RuleAlteredContext {
         sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLockAlgorithm.class);
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyCalculator();
         dataConsistencyCalculateAlgorithm = null != dataConsistencyChecker
-                ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps()) : null;
+                ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps())
+                : null;
         checkoutLockAlgorithm = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLockAlgorithm.class);
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();

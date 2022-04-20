@@ -192,8 +192,8 @@ public final class EncryptTableMetaDataBuilderTest {
         loadByH2(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
-    private void loadByH2(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
-            throws SQLException {
+    private void loadByH2(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
+                          final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getName()).thenReturn("H2");
         Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType,
                 Collections.singletonMap("logic_db", dataSource), rules, props));
@@ -207,8 +207,8 @@ public final class EncryptTableMetaDataBuilderTest {
         loadByMySQL(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
-    private void loadByMySQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
-            throws SQLException {
+    private void loadByMySQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
+                             final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getName()).thenReturn("MySQL");
         Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType,
                 Collections.singletonMap("logic_db", dataSource), rules, props));
@@ -222,8 +222,8 @@ public final class EncryptTableMetaDataBuilderTest {
         loadByOracle(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
-    private void loadByOracle(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
-            throws SQLException {
+    private void loadByOracle(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
+                              final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getName()).thenReturn("Oracle");
         Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType,
                 Collections.singletonMap("logic_db", dataSource), rules, props));
@@ -237,8 +237,8 @@ public final class EncryptTableMetaDataBuilderTest {
         loadByPostgreSQL(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
-    private void loadByPostgreSQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
-            throws SQLException {
+    private void loadByPostgreSQL(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
+                                  final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getName()).thenReturn("PostgreSQL");
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
@@ -261,8 +261,8 @@ public final class EncryptTableMetaDataBuilderTest {
         loadBySQLServer(getEncryptMetaDataBuilder(encryptRule, rules), Collections.singleton(TABLE_NAME), rules, encryptRule);
     }
     
-    private void loadBySQLServer(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules, final EncryptRule encryptRule)
-            throws SQLException {
+    private void loadBySQLServer(final EncryptTableMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
+                                 final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getName()).thenReturn("SQLServer");
         Map<String, TableMetaData> actual = loader.load(tableNames, encryptRule, new SchemaBuilderMaterials(databaseType,
                 Collections.singletonMap("logic_db", dataSource), rules, props));

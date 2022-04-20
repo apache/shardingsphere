@@ -53,8 +53,8 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      */
     public String getQualifiedName() {
         return null == owner
-            ? identifier.getValueWithQuoteCharacters()
-            : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
+                ? identifier.getValueWithQuoteCharacters()
+                : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
     }
     
     /**
@@ -70,7 +70,7 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
-
+    
     @Override
     public int hashCode() {
         StringBuilder columnString = new StringBuilder();

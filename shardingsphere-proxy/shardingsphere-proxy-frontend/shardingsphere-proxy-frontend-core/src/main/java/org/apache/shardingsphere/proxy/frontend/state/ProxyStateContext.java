@@ -61,7 +61,7 @@ public final class ProxyStateContext {
      * @param databaseProtocolFrontendEngine database protocol frontend engine
      * @param connectionSession connection session
      */
-    public static void execute(final ChannelHandlerContext context, final Object message, 
+    public static void execute(final ChannelHandlerContext context, final Object message,
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
         ProxyContext.getInstance().getStateContext().ifPresent(optional -> STATES.get(optional.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, connectionSession));
     }

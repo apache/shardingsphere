@@ -39,7 +39,7 @@ public final class RC4EncryptAlgorithmTest {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {

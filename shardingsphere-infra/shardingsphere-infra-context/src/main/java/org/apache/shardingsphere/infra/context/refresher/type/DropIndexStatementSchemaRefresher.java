@@ -54,7 +54,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             for (String each : getIndexNames(sqlStatement)) {
                 tableMetaData.getIndexes().remove(each);
             }
-            //TODO Get real schema name
+            // TODO Get real schema name
             post(schemaMetaData.getName(), schemaMetaData.getName(), tableMetaData);
         }
     }

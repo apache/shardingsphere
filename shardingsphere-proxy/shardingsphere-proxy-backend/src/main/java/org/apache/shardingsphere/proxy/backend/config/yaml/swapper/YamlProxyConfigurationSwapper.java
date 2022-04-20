@@ -59,8 +59,8 @@ public final class YamlProxyConfigurationSwapper {
         boolean isDataSourceAggregation = yamlConfig.getServerConfiguration().getProps().containsKey("data-source-aggregation-enabled")
                 && (boolean) yamlConfig.getServerConfiguration().getProps().get("data-source-aggregation-enabled");
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : yamlConfig.getDatabaseConfigurations().entrySet()) {
-            Map<String, DataSourceConfiguration> databaseDataSourceConfigs
-                    = swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName(), isDataSourceAggregation);
+            Map<String, DataSourceConfiguration> databaseDataSourceConfigs =
+                    swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName(), isDataSourceAggregation);
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
             result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
         }

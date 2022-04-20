@@ -51,7 +51,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private static final String CASE_PATH = "scenario/mix/case";
     
-    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
                                            final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
@@ -96,7 +96,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     @Override
     protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
-
+    
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
         result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));

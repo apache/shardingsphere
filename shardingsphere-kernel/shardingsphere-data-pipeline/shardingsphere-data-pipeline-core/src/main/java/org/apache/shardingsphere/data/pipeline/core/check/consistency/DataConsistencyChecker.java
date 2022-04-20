@@ -79,14 +79,15 @@ public final class DataConsistencyChecker {
     
     /**
      * Check data consistency.
-     * 
+     *
      * @param calculator data consistency calculate algorithm
      * @return checked result. key is logic table name, value is check result.
      */
     public Map<String, DataConsistencyCheckResult> check(final DataConsistencyCalculateAlgorithm calculator) {
         Map<String, DataConsistencyCountCheckResult> countCheckResult = checkCount();
         Map<String, DataConsistencyContentCheckResult> contentCheckResult = countCheckResult.values().stream().allMatch(DataConsistencyCountCheckResult::isMatched)
-                ? checkData(calculator) : Collections.emptyMap();
+                ? checkData(calculator)
+                : Collections.emptyMap();
         Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>(countCheckResult.size());
         for (Entry<String, DataConsistencyCountCheckResult> entry : countCheckResult.entrySet()) {
             result.put(entry.getKey(), new DataConsistencyCheckResult(entry.getValue(), contentCheckResult.getOrDefault(entry.getKey(), new DataConsistencyContentCheckResult(false))));
@@ -98,9 +99,9 @@ public final class DataConsistencyChecker {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + jobConfig.getHandleConfig().getJobIdDigest() + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-            jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
+                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-            jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
+                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>(logicTableNames.size(), 1);
         try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
@@ -116,8 +117,8 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private DataConsistencyCountCheckResult checkCount(
-            final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
+    private DataConsistencyCountCheckResult checkCount(final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
+                                                       final ThreadPoolExecutor executor) {
         try {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
@@ -151,7 +152,7 @@ public final class DataConsistencyChecker {
              PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
             logicTableNames.forEach(each -> {
-                //TODO put to preparer
+                // TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
                     throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s'", each));
                 }
@@ -222,7 +223,7 @@ public final class DataConsistencyChecker {
         return metaData.getDefaultSchema().getTables();
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames, 
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames,
                                                              final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
         return new DataConsistencyCalculateParameter(sourceDataSource, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }

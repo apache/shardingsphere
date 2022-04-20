@@ -47,10 +47,11 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
                 Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "discoveryTypeName")),
-                Collections.singletonMap("ha_heartbeat", 
-                        new DatabaseDiscoveryHeartBeatConfiguration(new Properties())), Collections.singletonMap("discoveryTypeName", new TestDatabaseDiscoveryType()));
+                Collections.singletonMap("ha_heartbeat",
+                        new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("discoveryTypeName", new TestDatabaseDiscoveryType()));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())), 
+        assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 instanceOf(DatabaseDiscoveryRule.class));
     }
 }

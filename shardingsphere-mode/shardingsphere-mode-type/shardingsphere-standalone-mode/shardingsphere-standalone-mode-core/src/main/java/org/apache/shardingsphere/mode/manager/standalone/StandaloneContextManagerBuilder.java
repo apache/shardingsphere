@@ -72,7 +72,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getDatabaseConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
+                ? parameter.getDatabaseConfigs().keySet()
+                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
         for (String each : databaseNames) {
             if (databaseType.getSystemSchemas().contains(each)) {
@@ -113,8 +114,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private void setInstanceContext(final ContextManager contextManager) {
         contextManager.getMetaDataContexts().getMetaDataMap()
-            .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
-            .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+                .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+                        .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     
     @Override

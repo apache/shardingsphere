@@ -82,8 +82,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource ->
-                dataSource.getGroupName().equals(ruleName)).findAny();
+        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig =
+                currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getGroupName().equals(ruleName)).findAny();
         dataSourceRuleConfig.ifPresent(op -> {
             currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
         });
@@ -93,7 +93,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         return isExistRuleConfig(currentRuleConfig)
                 && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()),
-                sqlStatement.getRuleNames()).isEmpty();
+                        sqlStatement.getRuleNames()).isEmpty();
     }
     
     @Override

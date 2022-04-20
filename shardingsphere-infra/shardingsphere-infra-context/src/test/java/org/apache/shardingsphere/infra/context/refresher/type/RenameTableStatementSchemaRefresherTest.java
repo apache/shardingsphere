@@ -53,7 +53,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     public void assertRefresh() throws SQLException {
         RenameTableLister listener = new RenameTableLister(2);
         ShardingSphereEventBus.getInstance().register(listener);
-        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()), 
+        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
                 new HashMap<>(), Collections.singleton("foo_ds"), createRenameTableStatement(), mock(ConfigurationProperties.class));
         assertThat(listener.getActualCount(), is(listener.getRenameCount()));
         ShardingSphereEventBus.getInstance().unregister(listener);

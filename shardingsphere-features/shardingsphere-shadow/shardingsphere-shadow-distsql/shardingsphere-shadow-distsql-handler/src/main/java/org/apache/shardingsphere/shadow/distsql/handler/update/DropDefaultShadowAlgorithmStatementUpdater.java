@@ -52,8 +52,8 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     
     private void checkAlgorithm(final String databaseName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!sqlStatement.isContainsExistClause()) {
-            DistSQLException.predictionThrow(null != currentRuleConfig.getDefaultShadowAlgorithmName(),
-                () -> new RequiredAlgorithmMissedException(SHADOW, databaseName, Collections.singleton("default")));
+            DistSQLException.predictionThrow(null != currentRuleConfig.getDefaultShadowAlgorithmName(), () -> new RequiredAlgorithmMissedException(
+                    SHADOW, databaseName, Collections.singleton("default")));
         }
     }
     

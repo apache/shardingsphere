@@ -62,7 +62,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, String> tableNames;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
+    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();

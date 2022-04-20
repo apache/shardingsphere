@@ -59,7 +59,7 @@ public final class CreateShardingScalingRuleStatementAssert {
         }
     }
     
-    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual, 
+    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual,
                                                                final ExpectedShardingScalingRuleConfigurationSegment expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding scaling rule configuration segment should not exist."), actual);

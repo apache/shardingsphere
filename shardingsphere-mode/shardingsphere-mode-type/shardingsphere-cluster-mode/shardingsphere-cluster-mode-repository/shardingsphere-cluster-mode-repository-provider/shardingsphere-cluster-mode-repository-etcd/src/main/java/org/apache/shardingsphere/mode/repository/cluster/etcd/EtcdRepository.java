@@ -99,12 +99,13 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public void persist(final String key, final String value) {
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
     }
-
+    
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
         long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
-        client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
+        client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> {
+        }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
     
@@ -146,7 +147,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 return Type.IGNORED;
         }
     }
-
+    
     @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         try {
@@ -160,7 +161,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
             return false;
         }
     }
-
+    
     @Override
     public void releaseLock(final String key) {
         try {
@@ -180,7 +181,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public void close() {
         client.close();
     }
-
+    
     @Override
     public String getType() {
         return "etcd";

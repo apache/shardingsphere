@@ -52,7 +52,8 @@ public enum ShardingStrategyType {
         public boolean isValid(final String shardingColumn) {
             return null != shardingColumn && !shardingColumn.contains(",");
         }
-    }, NONE {
+    },
+    NONE {
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new NoneShardingStrategyConfiguration();
@@ -72,7 +73,8 @@ public enum ShardingStrategyType {
         public boolean isValid(final String shardingColumn) {
             return true;
         }
-    }, HINT {
+    },
+    HINT {
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new HintShardingStrategyConfiguration(shardingAlgorithmName);
@@ -92,7 +94,8 @@ public enum ShardingStrategyType {
         public boolean isValid(final String shardingColumn) {
             return true;
         }
-    }, COMPLEX {
+    },
+    COMPLEX {
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new ComplexShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);

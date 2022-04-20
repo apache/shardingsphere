@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public final class DropShardingTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String databaseName = shardingSphereMetaData.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
@@ -61,7 +61,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         return sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private void checkToBeDroppedShardingTableNames(final String databaseName, final DropShardingTableRuleStatement sqlStatement, 
+    private void checkToBeDroppedShardingTableNames(final String databaseName, final DropShardingTableRuleStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (sqlStatement.isContainsExistClause()) {
             return;

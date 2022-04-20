@@ -49,7 +49,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         checkTableInUsed(shardingRule, sqlStatementContext.getSqlStatement(), routeContext);
         for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {

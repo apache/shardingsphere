@@ -139,7 +139,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         private final int recordCount;
         
         private final Collection<Collection<Object>> records;
-    
+        
         @SneakyThrows
         @Override
         public boolean equals(final Object o) {
@@ -179,7 +179,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return true;
         }
-    
+        
         @Override
         public int hashCode() {
             return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordCount()).append(getRecords()).toHashCode();

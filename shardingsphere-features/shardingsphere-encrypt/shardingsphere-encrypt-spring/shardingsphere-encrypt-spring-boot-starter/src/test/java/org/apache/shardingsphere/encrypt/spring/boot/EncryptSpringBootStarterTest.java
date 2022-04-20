@@ -63,7 +63,7 @@ public class EncryptSpringBootStarterTest {
         assertEncryptTable(encryptRuleConfiguration.getTables().iterator().next());
     }
     
-    private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
+    private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {
         assertThat(encryptors.size(), is(2));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));

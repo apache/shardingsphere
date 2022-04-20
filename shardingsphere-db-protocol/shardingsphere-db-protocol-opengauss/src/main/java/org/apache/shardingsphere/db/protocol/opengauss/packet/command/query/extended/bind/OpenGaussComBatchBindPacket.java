@@ -97,7 +97,8 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
                 continue;
             }
             Object parameterValue = isTextParameterValue(parameterFormats, parameterIndex)
-                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
+                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex))
+                    : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
             result.add(parameterValue);
         }
         return result;

@@ -83,8 +83,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
                 new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, PostgreSQLComSyncPacket.class, PostgreSQLComSyncExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLComClosePacket.class, PostgreSQLComCloseExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.TERMINATE, PostgreSQLComTerminationPacket.class, PostgreSQLComTerminationExecutor.class),
-                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class)
-        );
+                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class));
         for (InputOutput inputOutput : inputOutputs) {
             Class<? extends PostgreSQLCommandPacket> commandPacketClass = inputOutput.getCommandPacketClass();
             if (null == commandPacketClass) {

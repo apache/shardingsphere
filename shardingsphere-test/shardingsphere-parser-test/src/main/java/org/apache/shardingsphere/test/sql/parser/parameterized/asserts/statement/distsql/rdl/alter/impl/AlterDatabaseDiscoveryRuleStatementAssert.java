@@ -74,7 +74,7 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
         }
     }
     
-    private static void assertDiscoveryDefinitionRule(final SQLCaseAssertContext assertContext, final Collection<AbstractDatabaseDiscoverySegment> actual, 
+    private static void assertDiscoveryDefinitionRule(final SQLCaseAssertContext assertContext, final Collection<AbstractDatabaseDiscoverySegment> actual,
                                                       final List<ExpectedDatabaseDiscoveryDefinitionRule> expected) {
         assertThat(assertContext.getText(String.format("Actual database discovery rule size should be %s , but it was %s", expected.size(),
                 actual.size())), actual.size(), is(expected.size()));

@@ -33,6 +33,7 @@ public final class LocalRulesCondition extends SpringBootCondition {
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDING_PREFIX)
-            ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere rule configuration in local file.");
+                ? ConditionOutcome.match()
+                : ConditionOutcome.noMatch("Can't find ShardingSphere rule configuration in local file.");
     }
 }

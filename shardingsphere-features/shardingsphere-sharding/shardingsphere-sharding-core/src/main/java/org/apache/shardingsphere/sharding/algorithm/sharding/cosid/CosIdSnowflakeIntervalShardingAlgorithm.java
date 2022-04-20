@@ -50,8 +50,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
                 MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT,
                 MillisecondSnowflakeId.DEFAULT_MACHINE_BIT,
                 MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT,
-                getZoneId()
-        );
+                getZoneId());
     }
     
     @Override

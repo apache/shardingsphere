@@ -40,7 +40,7 @@ public final class FederationExecutorFactory {
      * @param jdbcExecutor jdbc executor
      * @return new instance of federation executor
      */
-    public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext, 
+    public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext,
                                                  final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
         // TODO Consider about CustomizedFilterableExecutor
         return new OriginalFilterableExecutor(databaseName, schemaName, optimizerContext, props, jdbcExecutor);
