@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.cases.dataset;
+package org.apache.shardingsphere.integration.data.pipline.cases.command.mysql;
 
 import lombok.Data;
 
@@ -27,17 +27,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Data
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CommonSQLCommand {
+public final class MySQLCommand {
     
-    @XmlElement(name = "add-resource")
-    private String addResource;
+    @XmlElement(name = "create-table-order")
+    private String createTableOrder;
     
-    @XmlElement(name = "create-database")
-    private String createDatabase;
-    
-    @XmlElement(name = "use-database")
-    private String useDatabase;
-    
-    @XmlElement(name = "create-sharding-table-rule")
-    private String createShardingTableRule;
+    @XmlElement(name = "insert-order")
+    private String insertOrder;
 }

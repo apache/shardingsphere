@@ -56,9 +56,7 @@ public class ShardingSphereProxyLocalContainer {
      */
     @SneakyThrows
     public void waitProxyStarted(final DatabaseType databaseType) {
-        int retry = 0;
-        int maxRetry = 60;
-        while (retry < maxRetry) {
+        for (int retry = 0; retry < 60; retry++) {
             try (Connection connection = DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, "localhost", 3307, ""), "root", "root")) {
                 log.info("Container ready");
                 started = true;
@@ -67,7 +65,6 @@ public class ShardingSphereProxyLocalContainer {
             } catch (final Exception ignored) {
                 // CHECKSTYLE:ON
             }
-            retry++;
             TimeUnit.SECONDS.sleep(1);
         }
         throw new RuntimeException("Proxy not started");
@@ -77,21 +74,25 @@ public class ShardingSphereProxyLocalContainer {
      * Start proxy.
      */
     @SneakyThrows
-    public synchronized void start() {
+    public void start() {
         if (started) {
-            log.warn("Proxy already started");
             return;
         }
-        new Thread(() -> {
-            try {
-                YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load("/env/conf");
-                yamlConfig.getServerConfiguration().getMode().getRepository().getProps().setProperty("server-lists", serverList);
-                new BootstrapInitializer().init(yamlConfig, 3307);
-                new ShardingSphereProxy().start(3307);
-            } catch (final IOException | SQLException ex) {
-                throw new RuntimeException(ex);
+        synchronized (this) {
+            if (started) {
+                return;
             }
-        }).start();
-        waitProxyStarted(databaseType);
+            new Thread(() -> {
+                try {
+                    YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load("/env/conf");
+                    yamlConfig.getServerConfiguration().getMode().getRepository().getProps().setProperty("server-lists", serverList);
+                    new BootstrapInitializer().init(yamlConfig, 3307);
+                    new ShardingSphereProxy().start(3307);
+                } catch (final IOException | SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }).start();
+            waitProxyStarted(databaseType);
+        }
     }
 }

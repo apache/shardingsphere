@@ -27,6 +27,7 @@ import org.apache.shardingsphere.integration.data.pipline.container.compose.Base
 import org.apache.shardingsphere.integration.data.pipline.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.compose.LocalComposedContainer;
 import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
@@ -76,7 +77,7 @@ public abstract class BaseITCase {
      * @return database url
      */
     public String getDatabaseUrl() {
-        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), "docker")) {
+        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
             return Joiner.on(":").join("db.host", composedContainer.getDatabaseContainer().getPort());
         } else {
             return Joiner.on(":").join(composedContainer.getDatabaseContainer().getHost(), composedContainer.getDatabaseContainer().getFirstMappedPort());
