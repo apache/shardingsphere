@@ -1113,4 +1113,33 @@
             </assignment>
         </set>
     </update>
+
+    <update sql-case-id="update_with_force_index" parameters="'update', 1">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13"/>
+        </table>
+        <set start-index="37" stop-index="50" literal-stop-index="57">
+            <assignment start-index="41" stop-index="50" literal-stop-index="57">
+                <column name="status" start-index="41" stop-index="46" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                    <literal-expression value="update" start-index="50" stop-index="57" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="52" stop-index="69" literal-start-index="59" literal-stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="58" stop-index="69" literal-start-index="65" literal-stop-index="76">
+                    <left>
+                        <column name="order_id" start-index="58" stop-index="65" literal-start-index="65" literal-stop-index="72" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>
