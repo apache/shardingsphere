@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
@@ -94,7 +92,7 @@ public final class SchemaMetaDataLoader {
                 }
             }
         }
-        return databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? result : Collections.singletonList(connection.getSchema());
+        return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
     }
     
     private static boolean isSystemTable(final String table) {
