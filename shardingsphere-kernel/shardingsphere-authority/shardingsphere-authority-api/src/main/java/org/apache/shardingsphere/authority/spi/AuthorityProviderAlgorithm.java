@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * Authority provide algorithm.
 */
-public interface AuthorityProvideAlgorithm extends ShardingSphereAlgorithm {
+public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Initialize authority.
