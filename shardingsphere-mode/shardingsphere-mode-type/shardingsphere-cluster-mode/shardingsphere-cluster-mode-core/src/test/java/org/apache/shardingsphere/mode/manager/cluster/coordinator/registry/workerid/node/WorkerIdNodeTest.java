@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-public class WorkerIdNodeTest {
+public final class WorkerIdNodeTest {
 
     @Test
     public void assertGetWorkerIdGeneratorPath() {
