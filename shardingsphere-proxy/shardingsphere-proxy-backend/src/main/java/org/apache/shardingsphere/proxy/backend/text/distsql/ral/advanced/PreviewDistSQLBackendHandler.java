@@ -67,7 +67,6 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -118,7 +117,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
                 ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
                 : executionContext.getExecutionUnits();
-        return executionUnits.stream().map(this::buildRow).collect(Collectors.toCollection(LinkedList::new));
+        return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
     private List<Object> buildRow(final ExecutionUnit unit) {

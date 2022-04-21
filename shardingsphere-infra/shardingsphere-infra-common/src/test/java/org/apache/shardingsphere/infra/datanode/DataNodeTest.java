@@ -42,7 +42,7 @@ public final class DataNodeTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
-        new DataNode("ds_0.tbl_0.tbl_1");
+        new DataNode("ds_0.db_0.tbl_0.tbl_1");
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)

@@ -206,3 +206,7 @@ IF
 EXISTS
     : E X I S T S
     ;
+    
+WITH
+    : W I T H
+    ;

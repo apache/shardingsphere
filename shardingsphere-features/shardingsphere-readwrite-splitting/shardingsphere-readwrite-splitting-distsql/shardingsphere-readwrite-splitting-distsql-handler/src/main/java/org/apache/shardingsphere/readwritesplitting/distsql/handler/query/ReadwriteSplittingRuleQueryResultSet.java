@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -89,7 +88,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
                 dataSourceConfiguration.getAutoAwareDataSourceName().orElse(""),
                 getWriteDataSourceName(dataSourceConfiguration, exportDataSources),
                 getReadDataSourceNames(dataSourceConfiguration, exportDataSources),
-                loadBalancer.map(TypedSPIConfiguration::getType).orElse(""),
+                loadBalancer.map(ShardingSphereAlgorithmConfiguration::getType).orElse(""),
                 loadBalancer.map(each -> PropertiesConverter.convert(each.getProps())).orElse(""));
     }
     

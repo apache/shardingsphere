@@ -50,7 +50,8 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue,
+                LinkedHashMap::new));
     }
     
     /**
@@ -61,8 +62,8 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceProps.getInstance())) {
-                return GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceProps.getInstance());
+            if (GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().containsKey(dataSourceProps.getInstance())) {
+                return GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().get(dataSourceProps.getInstance());
             }
         }
         // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
@@ -78,7 +79,22 @@ public final class DataSourcePoolCreator {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
         if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceProps.getInstance(), result);
+            GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().put(dataSourceProps.getInstance(), result);
+        }
+        return result;
+    }
+    
+    /**
+     * Create data source.
+     *
+     * @param dataSourceName data source name
+     * @param dataSourceProps data source properties
+     * @return created data source
+     */
+    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps) {
+        DataSource result = create(dataSourceProps);
+        if (!GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
+            GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
         }
         return result;
     }

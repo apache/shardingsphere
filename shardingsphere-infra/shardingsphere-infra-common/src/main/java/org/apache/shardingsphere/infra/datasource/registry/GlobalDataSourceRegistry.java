@@ -36,7 +36,11 @@ public final class GlobalDataSourceRegistry {
     
     private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
     
-    private volatile Map<Instance, DataSource> cachedDataSources = new LinkedHashMap<>();
+    private volatile Map<Instance, DataSource> cachedInstanceDataSources = new LinkedHashMap<>();
+    
+    private volatile Map<String, DataSource> cachedDataSourceDataSources = new LinkedHashMap<>();
+    
+    private volatile Map<String, String> cachedDatabaseTables = new LinkedHashMap<>();
     
     private volatile Map<String, String> dataSourceSchema = new LinkedHashMap<>();
     

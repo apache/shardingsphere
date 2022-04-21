@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,7 +47,7 @@ public final class SingleTableQueryResultSet implements DistSQLResultSet {
         if (null != showSingleTableStatement.getTableName()) {
             singleTableRules = singleTableRules.filter(each -> showSingleTableStatement.getTableName().equals(each.getTableName()));
         }
-        data = singleTableRules.collect(Collectors.toCollection(LinkedList::new)).iterator();
+        data = singleTableRules.collect(Collectors.toList()).iterator();
     }
     
     @Override
