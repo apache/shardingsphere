@@ -349,10 +349,8 @@ public final class ContextManager implements AutoCloseable {
         try {
             Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName);
             alterDatabase(databaseName, schemas);
-            if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-                for (ShardingSphereSchema each : schemas.values()) {
-                    metaDataContexts.getMetaDataPersistService().get().getSchemaMetaDataService().persist(databaseName, databaseName, each);
-                }
+            for (ShardingSphereSchema each : schemas.values()) {
+                metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(databaseName, databaseName, each));
             }
         } catch (final SQLException ex) {
             log.error("Reload database:{} meta data failed", databaseName, ex);

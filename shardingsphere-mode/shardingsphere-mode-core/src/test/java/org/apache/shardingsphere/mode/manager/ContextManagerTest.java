@@ -60,7 +60,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -260,13 +259,14 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         SchemaMetaDataPersistService schemaMetaDataPersistService = mock(SchemaMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
+        when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         contextManager.reloadMetaData("foo_db");
-        verify(schemaMetaDataPersistService, times(0)).persist(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
+        verify(schemaMetaDataPersistService, times(1)).persist(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_db", "foo_table");
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db"));
         contextManager.reloadMetaData("foo_db", "foo_table", "foo_ds");
-        assertNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getDefaultSchema());
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getDefaultSchema());
         assertTrue(contextManager.getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }
     
