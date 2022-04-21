@@ -20,11 +20,14 @@ package org.apache.shardingsphere.integration.data.pipline.cases.mysql;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.cases.BaseITCase;
+import org.apache.shardingsphere.integration.data.pipline.cases.dataset.CommonSQLCommand;
+import org.apache.shardingsphere.integration.data.pipline.cases.dataset.mysql.MySQLCommand;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.xml.bind.JAXB;
 import java.sql.Connection;
-import java.util.Properties;
+import java.util.Objects;
 
 /**
  * MySQL auto rule scaling test case.
@@ -39,26 +42,27 @@ public final class MySQLAutoRuleScaling extends BaseITCase {
     @Before
     public void setUp() {
         super.setUp();
-        Properties initProps = new Properties();
-        initProps.load(getClass().getClassLoader().getResourceAsStream("env/mysql/rule_inti.properties"));
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            connection.createStatement().execute("CREATE DATABASE sharding_db;");
-            connection.createStatement().execute("USE sharding_db;");
+        CommonSQLCommand commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(getClass().getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
+        MySQLCommand mysqlCommand = JAXB.unmarshal(Objects.requireNonNull(getClass().getClassLoader().getResource("env/mysql/sql.xml")), MySQLCommand.class);
+        try (Connection connection = getProxyConnection()) {
+            connection.createStatement().execute(commonSQLCommand.getCreateDatabase());
+            connection.createStatement().execute(commonSQLCommand.getUseDatabase());
             int dbIndex = 0;
-            for (String value : listSourceDatabaseName()) {
-                connection.createStatement().execute(String.format(initProps.getProperty("add.resource.sql"), dbIndex, getDatabaseNetworkAlias(), value));
+            for (String dbName : listSourceDatabaseName()) {
+                connection.createStatement().execute(String.format(commonSQLCommand.getAddResource(), dbIndex, getDatabaseUrl(), dbName));
                 dbIndex++;
             }
             for (String value : listTargetDatabaseName()) {
-                connection.createStatement().execute(String.format(initProps.getProperty("add.resource.sql"), dbIndex, getDatabaseNetworkAlias(), value));
+                connection.createStatement().execute(String.format(commonSQLCommand.getAddResource(), dbIndex, getDatabaseUrl(), value));
                 dbIndex++;
             }
-            connection.createStatement().execute(initProps.getProperty("create.table.rule"));
-            connection.createStatement().execute(initProps.getProperty("create.table.sql"));
+            connection.createStatement().execute(commonSQLCommand.getCreateShardingTableRule());
+            connection.createStatement().execute(mysqlCommand.getCreateTableOrder());
         }
     }
     
     @Test
     public void test() {
+        
     }
 }

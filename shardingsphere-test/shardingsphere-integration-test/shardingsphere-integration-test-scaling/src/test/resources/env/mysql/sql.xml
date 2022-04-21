@@ -1,0 +1,46 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<command>
+    <create-table-order>
+        CREATE TABLE `t_order` (
+        `id` BIGINT NOT NULL COMMENT 'pk id',
+        `t_varchar` VARCHAR ( 255 ) NOT NULL,
+        `t_tinyint` TINYINT ( 1 ) NULL,
+        `t_int` INT NULL,
+        `t_timestamp` TIMESTAMP NULL,
+        `t_datetime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+        `t_binary` BINARY NULL,
+        `t_blob` BLOB NULL,
+        `t_decimal` DECIMAL ( 10, 2 ) NULL,
+        `t_char` CHAR ( 128 ) NULL,
+        `t_double` DOUBLE NULL,
+        `t_json` json NULL COMMENT 'json test',
+        PRIMARY KEY ( `id` ),
+        UNIQUE INDEX ( `t_varchar` ),
+        INDEX ( `t_int` )
+        );
+    </create-table-order>
+    
+    <create-table-orderitem>
+    
+    </create-table-orderitem>
+    
+    
+    <create-index-userid>
+        CREATE INDEX idx_userid ON t_order(user_id);
+    </create-index-userid>
+</command>

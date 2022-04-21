@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipline.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.database.MySQLContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.database.PostgreSQLContainer;
 
