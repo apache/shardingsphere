@@ -25,7 +25,7 @@
     </use-database>
     
     <add-resource>
-        ADD RESOURCE ds_%s (URL="jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false",USER=root,PASSWORD=root);
+        ADD RESOURCE ds_%s (URL="jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false&amp;rewriteBatchedStatements=true",USER=root,PASSWORD=root);
     </add-resource>
     
     <create-sharding-table-rule>
