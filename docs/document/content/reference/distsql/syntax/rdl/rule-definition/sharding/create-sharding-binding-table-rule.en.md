@@ -21,8 +21,8 @@ tableName ::=
 
 - Creating binding table rules can only use sharding tables
 - A sharding table can only have one binding table rule
-- The sharding table for creating binding table rules needs to use the same resources and the same actual tables
-- The sharding table for creating binding table rules needs to use the same sharding algorithm
+- The sharding table for creating binding table rules needs to use the same resources and the same actual tables. For example `ds_${0..1}.t_order_${0..1}` 与 `ds_${0..1}.t_order_item_${0..1}`
+- The sharding table for creating binding table rules needs to use the same sharding algorithm.  For example `t_order_{order_id % 2}` and `t_order_item_{order_item_id % 2}`
 
 ### Example
 
