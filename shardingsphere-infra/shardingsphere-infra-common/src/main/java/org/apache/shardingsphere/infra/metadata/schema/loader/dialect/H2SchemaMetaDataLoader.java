@@ -65,7 +65,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
@@ -75,7 +75,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
                 tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return Collections.singletonList(new SchemaMetaData("", tableMetaDataMap));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {

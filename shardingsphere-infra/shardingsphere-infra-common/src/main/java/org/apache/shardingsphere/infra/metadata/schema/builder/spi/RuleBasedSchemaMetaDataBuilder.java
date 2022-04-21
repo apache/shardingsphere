@@ -24,6 +24,7 @@ import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Schema meta data builder for ShardingSphere rule.
@@ -38,8 +39,19 @@ public interface RuleBasedSchemaMetaDataBuilder<T extends TableContainedRule> ex
      * @param tableNames tables name
      * @param rule ShardingSphere rule
      * @param materials SchemaBuilderMaterials materials
-     * @return schema meta data collection
+     * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    Collection<SchemaMetaData> build(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials) throws SQLException;
+    Map<String, SchemaMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials) throws SQLException;
+    
+    /**
+     * Decorate schema meta data.
+     *
+     * @param schemaMetaDataMap schema meta data map
+     * @param rule ShardingSphere rule
+     * @param materials SchemaBuilderMaterials materials
+     * @return schema meta data map
+     * @throws SQLException SQL exception
+     */
+    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, SchemaBuilderMaterials materials) throws SQLException;
 }

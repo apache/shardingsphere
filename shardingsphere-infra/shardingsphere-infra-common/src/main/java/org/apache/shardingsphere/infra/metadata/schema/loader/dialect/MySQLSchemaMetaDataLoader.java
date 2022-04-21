@@ -60,7 +60,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
             + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
@@ -70,7 +70,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList));
         }
-        return Collections.singletonList(new SchemaMetaData("", tableMetaDataMap));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

@@ -25,12 +25,18 @@ import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        return Collections.emptyList();
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return schemaMetaDataMap;
     }
     
     @Override

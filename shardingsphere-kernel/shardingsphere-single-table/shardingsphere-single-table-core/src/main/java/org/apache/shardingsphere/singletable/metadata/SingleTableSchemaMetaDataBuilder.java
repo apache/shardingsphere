@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -45,28 +44,28 @@ import java.util.stream.Collectors;
 public final class SingleTableSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<SingleTableRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> ruleTables = rule.getTables();
         Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
         if (needLoadTables.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
         Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
         if (tableMetaDataLoaderMaterials.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        Collection<SchemaMetaData> schemaMetaDataList = SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return decorate(schemaMetaDataList);
+        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
     }
     
-    private Collection<SchemaMetaData> decorate(final Collection<SchemaMetaData> schemaMetaDataList) {
-        Collection<SchemaMetaData> result = new LinkedList<>();
-        for (SchemaMetaData each : schemaMetaDataList) {
-            Map<String, TableMetaData> tables = new LinkedHashMap<>(each.getTables().size(), 1);
-            for (Entry<String, TableMetaData> entry : each.getTables().entrySet()) {
-                tables.put(entry.getKey(), decorate(entry.getKey(), entry.getValue()));
+    @Override
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
+            for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
+                tables.put(tableEntry.getKey(), decorate(tableEntry.getKey(), tableEntry.getValue()));
             }
-            result.add(new SchemaMetaData(each.getName(), tables));
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }

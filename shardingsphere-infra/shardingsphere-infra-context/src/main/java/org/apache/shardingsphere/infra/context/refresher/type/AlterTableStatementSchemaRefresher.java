@@ -81,7 +81,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaMetaData.getName());
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getName();
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaM
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,17 +62,17 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
-        Collection<SchemaMetaData> result = new LinkedList<>();
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> existedTables, final String defaultSchemaName) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.get(entry.getKey());
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
             }
-            // result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
+            tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
         }
-        return result;
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {

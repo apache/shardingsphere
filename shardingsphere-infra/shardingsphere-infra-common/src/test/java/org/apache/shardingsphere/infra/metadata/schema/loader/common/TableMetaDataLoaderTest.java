@@ -36,7 +36,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -104,12 +103,12 @@ public final class TableMetaDataLoaderTest {
     public void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Collection<SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), databaseType);
+        Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
+                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), databaseType);
         assertFalse(actual.isEmpty());
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.iterator().next().getTables().containsKey(TEST_TABLE));
-        TableMetaData tableMetaData = actual.iterator().next().getTables().get(TEST_TABLE);
+        assertTrue(actual.containsKey("sharding_db"));
+        assertTrue(actual.get("sharding_db").getTables().containsKey(TEST_TABLE));
+        TableMetaData tableMetaData = actual.get("sharding_db").getTables().get(TEST_TABLE);
         Map<String, ColumnMetaData> columnMetaDataMap = tableMetaData.getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
         assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, true, true);
@@ -128,9 +127,10 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        Collection<SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource)), mock(DatabaseType.class));
+        Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
+                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), mock(DatabaseType.class));
         assertFalse(actual.isEmpty());
-        assertTrue(actual.iterator().next().getTables().isEmpty());
+        assertTrue(actual.containsKey("sharding_db"));
+        assertTrue(actual.get("sharding_db").getTables().isEmpty());
     }
 }

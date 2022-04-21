@@ -32,15 +32,21 @@ import java.util.Map;
 public final class DataNodeContainedFixtureRuleBasedSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<DataNodeContainedFixtureRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
             for (String tableName : tableNames) {
                 tableMetaDataMap.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
             }
-            return Collections.singletonList(new SchemaMetaData("sharding_db", tableMetaDataMap));
+            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataMap));
         }
-        return Collections.emptyList();
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap,
+                                                final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return schemaMetaDataMap;
     }
     
     @Override

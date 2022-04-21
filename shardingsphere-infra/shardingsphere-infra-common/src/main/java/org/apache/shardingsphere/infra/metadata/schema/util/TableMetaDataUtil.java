@@ -55,7 +55,8 @@ public class TableMetaDataUtil {
                 addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey()))).collect(Collectors.toList());
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(),
+                materials.getDataSourceMap().get(entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
     private static void addOneActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {

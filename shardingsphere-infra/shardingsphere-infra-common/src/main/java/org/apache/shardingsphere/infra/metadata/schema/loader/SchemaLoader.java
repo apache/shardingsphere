@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.loader;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
@@ -44,16 +43,18 @@ public final class SchemaLoader {
     /**
      * Load schema.
      * 
+     * @param defaultSchemaName default schema name
+     * @param databaseType database type
      * @param dataSourceMap data source map
      * @param rules rules
      * @param props properties
      * @return loaded schema
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> load(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                         final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
-                new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props)));
+                new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props), defaultSchemaName));
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables()));

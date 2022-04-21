@@ -29,10 +29,8 @@ import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,19 +53,38 @@ public final class TableMetaDataBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        Collection<SchemaMetaData> schemaMetaData = new LinkedList<>();
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedSchemaMetaDataBuilder<TableContainedRule> builder = entry.getValue();
                 Collection<String> ruleTables = rule.getTables();
                 Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains)
-                        .filter(each -> schemaMetaData.stream().noneMatch(schema -> schema.getTables().containsKey(each))).collect(Collectors.toList());
+                        .filter(each -> result.values().stream().noneMatch(schema -> schema.getTables().containsKey(each))).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    schemaMetaData.addAll(builder.build(needLoadTables, rule, materials));
+                    mergeSchemaMetaDataMap(result, builder.load(needLoadTables, rule, materials).values());
                 }
             }
         }
-        return schemaMetaData.stream().collect(Collectors.toMap(SchemaMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return decorate(result, materials);
+    }
+    
+    private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
+        for (SchemaMetaData each : addedSchemaMetaDataList) {
+            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedHashMap<>()));
+            schemaMetaData.getTables().putAll(each.getTables());
+        }
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, materials.getRules()).entrySet()) {
+            if (!(entry.getKey() instanceof TableContainedRule)) {
+                continue;
+            }
+            result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
+        }
+        return result;
     }
 }

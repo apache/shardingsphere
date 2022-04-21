@@ -80,7 +80,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -99,7 +99,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -118,7 +118,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList());
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -137,7 +137,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -156,7 +156,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
@@ -175,7 +175,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());

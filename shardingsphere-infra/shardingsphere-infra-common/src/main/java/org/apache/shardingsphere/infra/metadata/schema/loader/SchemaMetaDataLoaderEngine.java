@@ -51,14 +51,14 @@ public final class SchemaMetaDataLoaderEngine {
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
     
     /**
-     * Load table meta data.
+     * Load schema meta data.
      *
      * @param materials table meta data load material
      * @param databaseType database type
-     * @return table meta data collection
+     * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    public static Collection<SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    public static Map<String, SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
         Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
@@ -71,25 +71,27 @@ public final class SchemaMetaDataLoaderEngine {
         return loadByDefault(materials, databaseType);
     }
     
-    private static Collection<SchemaMetaData> loadByDefault(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    private static Map<String, SchemaMetaData> loadByDefault(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
+        String defaultSchemaName = null;
         for (TableMetaDataLoaderMaterial each : materials) {
+            defaultSchemaName = each.getDefaultSchemaName();
             for (String tableName : each.getTableNames()) {
                 TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(optional -> result.put(tableName, optional));
             }
         }
-        return Collections.singletonList(new SchemaMetaData("", result));
+        return Collections.singletonMap(defaultSchemaName, new SchemaMetaData(defaultSchemaName, result));
     }
     
-    private static Collection<SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<TableMetaDataLoaderMaterial> materials) throws SQLException {
-        Collection<SchemaMetaData> result = new LinkedList<>();
+    private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<TableMetaDataLoaderMaterial> materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
         for (TableMetaDataLoaderMaterial each : materials) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getTableNames())));
+            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getTableNames(), each.getDefaultSchemaName())));
         }
         try {
             for (Future<Collection<SchemaMetaData>> each : futures) {
-                result.addAll(each.get());
+                mergeSchemaMetaDataMap(result, each.get());
             }
         } catch (final InterruptedException | ExecutionException ex) {
             if (ex.getCause() instanceof SQLException) {
@@ -98,5 +100,12 @@ public final class SchemaMetaDataLoaderEngine {
             throw new ShardingSphereException(ex);
         }
         return result;
+    }
+    
+    private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
+        for (SchemaMetaData each : addedSchemaMetaDataList) {
+            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedHashMap<>()));
+            schemaMetaData.getTables().putAll(each.getTables());
+        }
     }
 }

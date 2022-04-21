@@ -59,7 +59,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         if (!columnMetaDataMap.isEmpty()) {
@@ -69,7 +69,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
                 tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return Collections.singletonList(new SchemaMetaData("", tableMetaDataMap));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

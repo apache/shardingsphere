@@ -46,27 +46,27 @@ import java.util.stream.Collectors;
 public final class EncryptSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<EncryptRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.findEncryptTable(each).isPresent()).collect(Collectors.toList());
         if (needLoadTables.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
         Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
         if (tableMetaDataLoaderMaterials.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        Collection<SchemaMetaData> schemaMetaDataList = SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return decorate(schemaMetaDataList, rule);
+        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
     }
     
-    private Collection<SchemaMetaData> decorate(final Collection<SchemaMetaData> schemaMetaDataList, final EncryptRule rule) {
-        Collection<SchemaMetaData> result = new LinkedList<>();
-        for (SchemaMetaData each : schemaMetaDataList) {
-            Map<String, TableMetaData> tables = new LinkedHashMap<>(each.getTables().size(), 1);
-            for (Entry<String, TableMetaData> entry : each.getTables().entrySet()) {
-                tables.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+    @Override
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
+            for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
+                tables.put(tableEntry.getKey(), decorate(tableEntry.getKey(), tableEntry.getValue(), rule));
             }
-            result.add(new SchemaMetaData(each.getName(), tables));
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }

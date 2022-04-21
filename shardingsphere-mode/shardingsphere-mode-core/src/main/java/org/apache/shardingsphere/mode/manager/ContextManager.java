@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -368,7 +369,7 @@ public final class ContextManager implements AutoCloseable {
         try {
             SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                     metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), metaDataContexts.getMetaData(databaseName).getResource().getDataSources(),
-                    metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps());
+                    metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), databaseName);
             loadTableMetaData(databaseName, tableName, materials);
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of database:{} failed", tableName, databaseName, ex);
@@ -387,7 +388,7 @@ public final class ContextManager implements AutoCloseable {
             SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                     metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), Collections.singletonMap(dataSourceName,
                             metaDataContexts.getMetaData(databaseName).getResource().getDataSources().get(dataSourceName)),
-                    metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps());
+                    metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), databaseName);
             loadTableMetaData(databaseName, tableName, materials);
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of database:{} with data source:{} failed", tableName, databaseName, dataSourceName, ex);
@@ -407,7 +408,8 @@ public final class ContextManager implements AutoCloseable {
     private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName) throws SQLException {
         Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaDataMap().get(databaseName).getRuleMetaData().getRules();
-        return SchemaLoader.load(dataSourceMap, rules, metaDataContexts.getProps().getProps());
+        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+        return SchemaLoader.load(databaseName, databaseType, dataSourceMap, rules, metaDataContexts.getProps().getProps());
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {

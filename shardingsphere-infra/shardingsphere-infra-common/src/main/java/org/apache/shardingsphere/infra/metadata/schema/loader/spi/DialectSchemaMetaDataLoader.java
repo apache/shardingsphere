@@ -39,10 +39,11 @@ public interface DialectSchemaMetaDataLoader extends StatelessTypedSPI {
      *
      * @param dataSource data source
      * @param tables tables
+     * @param defaultSchemaName default schema name
      * @return schema meta data collection
      * @throws SQLException SQL exception
      */
-    Collection<SchemaMetaData> load(DataSource dataSource, Collection<String> tables) throws SQLException;
+    Collection<SchemaMetaData> load(DataSource dataSource, Collection<String> tables, String defaultSchemaName) throws SQLException;
     
     /**
      * Load schema names.

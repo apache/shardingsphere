@@ -30,10 +30,15 @@ import java.util.Map;
 public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
     
     @Override
-    public Collection<SchemaMetaData> build(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = Collections.singletonMap("t_order_new",
                 new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonList(new SchemaMetaData("sharding_db", tableMetaDataMap));
+        return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataMap));
+    }
+    
+    @Override
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return schemaMetaDataMap;
     }
     
     @Override

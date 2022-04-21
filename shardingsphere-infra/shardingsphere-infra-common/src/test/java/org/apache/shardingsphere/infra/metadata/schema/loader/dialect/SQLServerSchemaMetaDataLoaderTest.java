@@ -60,7 +60,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
     }
     
     @Test
@@ -80,7 +80,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
                         + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private DataSource mockDataSource() throws SQLException {

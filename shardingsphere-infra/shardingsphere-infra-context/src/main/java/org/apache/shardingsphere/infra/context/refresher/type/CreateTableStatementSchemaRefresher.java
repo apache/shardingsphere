@@ -55,17 +55,18 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
+        String databaseName = schemaMetaData.getName();
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
-        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getName();
+        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : databaseName;
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(tableMetaData -> {
             schemaMetaData.getDefaultSchema().put(tableName, tableMetaData);
             database.put(tableMetaData);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             // TODO Get real schema name
-            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+            SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, databaseName);
             event.getAlteredTables().add(tableMetaData);
             ShardingSphereEventBus.getInstance().post(event);
         });

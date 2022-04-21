@@ -64,7 +64,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String LOAD_FILTED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<SchemaMetaData> result = new LinkedList<>();
         Collection<String> schemaNames = loadSchemaNames(dataSource.getConnection(), DatabaseTypeRegistry.getActualDatabaseType(getType()));
         Map<String, Map<String, Collection<IndexMetaData>>> indexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
