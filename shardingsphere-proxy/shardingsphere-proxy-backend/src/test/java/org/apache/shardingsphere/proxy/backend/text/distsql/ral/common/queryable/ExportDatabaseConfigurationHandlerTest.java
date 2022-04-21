@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -129,7 +128,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
     }
     
     private ExportDatabaseConfigurationStatement createSqlStatement() {
-        return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
+        return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
     }
     
     private ConnectionSession mockConnectionSession() {

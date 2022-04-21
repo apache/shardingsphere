@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -33,11 +32,19 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     
     private final SchemaSegment database;
     
-    @Getter
-    private final Optional<String> filePath;
+    private final String filePath;
     
     @Override
     public Optional<SchemaSegment> getSchema() {
         return Optional.ofNullable(database);
+    }
+    
+    /**
+     * Get file path.
+     *
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
     }
 }

@@ -127,7 +127,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -466,7 +465,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitExportDatabaseConfiguration(final ExportDatabaseConfigurationContext ctx) {
-        return new ExportDatabaseConfigurationStatement(null == ctx.databaseName() ? null : (SchemaSegment) visit(ctx.databaseName()), Optional.ofNullable(getIdentifierValue(ctx.filePath())));
+        return new ExportDatabaseConfigurationStatement(null == ctx.databaseName() ? null : (SchemaSegment) visit(ctx.databaseName()), getIdentifierValue(ctx.filePath()));
     }
     
     @Override
