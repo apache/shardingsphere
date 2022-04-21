@@ -33,9 +33,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +42,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,11 +49,6 @@ import java.util.stream.Collectors;
  * Create readwrite-splitting rule statement updater.
  */
 public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
-    
-    static {
-        // TODO consider about register once only
-        ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
-    }
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement,
@@ -105,6 +97,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
         DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
         Collection<String> result = new LinkedHashSet<>();
         Optional<ExportableRule> exportableRule = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
@@ -119,7 +112,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     
     private void checkToBeCreatedLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !ReplicaLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         if (!notExistedLoadBalancers.isEmpty()) {
             throw new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers);
         }
