@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
-* Authority configuration for YAML.
+ * Authority configuration for YAML.
  */
 @Getter
 @Setter
@@ -51,8 +51,8 @@ public final class YamlAuthorityConfiguration implements YamlRuleConfiguration {
     }
     
     /**
-     *  Convert to yaml authority rule configuration.
-     *  TODO YamlAuthorityRuleConfiguration will be removed later
+     * Convert to yaml authority rule configuration.
+     *
      * @return yaml authority rule configuration
      */
     public YamlAuthorityRuleConfiguration convertYamlAuthorityRuleConfiguration() {
