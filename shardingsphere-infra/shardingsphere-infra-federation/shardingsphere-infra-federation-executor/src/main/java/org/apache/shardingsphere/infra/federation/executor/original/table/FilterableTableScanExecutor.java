@@ -147,10 +147,6 @@ public final class FilterableTableScanExecutor {
         return execute(schemaName, databaseType, logicSQL, metaData, context);
     }
     
-    private String getSchemaName(final DatabaseType databaseType) {
-        return databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "public" : executorContext.getSchemaName();
-    }
-    
     private AbstractEnumerable<Object[]> execute(final String schemaName, final DatabaseType databaseType, final LogicSQL logicSQL,
                                                  final ShardingSphereMetaData metaData, final ExecutionContext context) {
         try {
@@ -180,6 +176,10 @@ public final class FilterableTableScanExecutor {
             result.add(queryResult);
         }
         return result;
+    }
+    
+    private String getSchemaName(final DatabaseType databaseType) {
+        return databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "public" : executorContext.getSchemaName();
     }
     
     private Collection<Statement> getStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
