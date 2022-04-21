@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING TABLE RULE"
-weight = 1
+weight = 2
 +++
 
 ## 描述
@@ -29,7 +29,19 @@ algorithmDefinition ::=
   ('SHARDING_ALGORITHM' '=' algorithmName | 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  )
 
 propertyDefinition ::=
-    ( key  '=' value ) ( ',' key  '=' value )* 
+  ( key  '=' value ) ( ',' key  '=' value )* 
+    
+tableName ::=
+  identifier
+
+resourceName ::=
+  identifier
+
+columnName ::=
+  identifier
+
+algorithmName ::=
+  identifier
 ```
 
 ### 补充说明
