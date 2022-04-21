@@ -34,7 +34,8 @@ public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
     public Comparable<?> generateKey() {
-        return StringUtils.replace(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString(), "-", "");
+        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
     }
     
     @Override
