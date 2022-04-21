@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -37,15 +37,15 @@ import java.util.Optional;
 public final class AuthorityRule implements GlobalRule {
     
     static {
-        ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
+        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
     }
     
-    private final AuthorityProvideAlgorithm provider;
+    private final AuthorityProviderAlgorithm provider;
     
     private final Collection<ShardingSphereUser> users;
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> metaDataMap) {
-        provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
+        provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProviderAlgorithm.class);
         provider.init(metaDataMap, config.getUsers());
         users = config.getUsers();
     }

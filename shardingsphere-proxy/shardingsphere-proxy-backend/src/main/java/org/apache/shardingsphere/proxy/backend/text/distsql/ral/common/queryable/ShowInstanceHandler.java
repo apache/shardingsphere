@@ -81,7 +81,8 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     private Collection<List<Object>> buildInstanceRows(final InstanceContext instanceContext, final MetaDataPersistService persistService) {
         Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         return instances.isEmpty()
-                ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, instanceContext.getModeConfiguration().getType())).collect(Collectors.toList());
+                ? Collections.emptyList()
+                : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, instanceContext.getModeConfiguration().getType())).collect(Collectors.toList());
     }
     
     private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
