@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,6 +56,9 @@ public final class SchemaLoader {
                                                          final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
                 new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props), defaultSchemaName));
+        if (schemaMetaDataMap.isEmpty()) {
+            return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
+        }
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables()));
