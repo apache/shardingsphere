@@ -2055,6 +2055,13 @@ createDatabaseLink
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
     
+alterDatabaseLink
+    : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
+    | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
+    | dbLinkAuthentication
+    )
+    ;
+
 dropDatabaseLink
     : DROP PUBLIC? DATABASE LINK dbLink 
     ;
