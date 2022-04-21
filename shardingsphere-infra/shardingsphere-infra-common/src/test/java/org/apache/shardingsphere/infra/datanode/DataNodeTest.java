@@ -93,4 +93,35 @@ public final class DataNodeTest {
         DataNode dataNode = new DataNode(text);
         assertThat(dataNode.getFormattedTextLength(), is(text.length()));
     }
+
+    @Test
+    public void assertNewValidDataNodeIncludeInstance() {
+        DataNode dataNode = new DataNode("ds_0.db_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0.db_0"));
+        assertThat(dataNode.getTableName(), is("tbl_0"));
+    }
+
+    @Test
+    public void assertHashCodeIncludeInstance() {
+        assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("ds_0.db_0.tbl_0").hashCode()));
+    }
+
+    @Test
+    public void assertToStringIncludeInstance() {
+        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, tableName=tbl_0, schemaName=null)"));
+    }
+
+    @Test
+    public void assertFormatIncludeInstance() {
+        String expected = "ds_0.db_0.tbl_0";
+        DataNode dataNode = new DataNode(expected);
+        assertThat(dataNode.format(), is(expected));
+    }
+
+    @Test
+    public void assertFormattedTextLengthIncludeInstance() {
+        String text = "ds_0.db_0.tbl_0";
+        DataNode dataNode = new DataNode(text);
+        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
+    }
 }
