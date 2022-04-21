@@ -541,7 +541,6 @@
     <sql-case id="create_by_mysql_source_test_case839" value="CREATE VIEW v(x) AS VALUES ROW(1)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case840" value="CREATE VIEW v(x, y) AS VALUES ROW(1,2), ROW(2,4), ROW(3,6)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case841" value="CREATE VIEW v1 (a) AS SELECT f1 IN (SELECT f1 FROM t1) FROM t1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case842" value="CREATE VIEW v1 AS SELECT * FROM t1 FORCE KEY (PRIMARY,b) ORDER BY a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case843" value="CREATE VIEW v1 AS SELECT 1 FROM t1 GROUP BY SUBSTRING(1 FROM (SELECT 3 FROM t1 WHERE a &gt;= ANY(SELECT 1)))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case844" value="CREATE VIEW v1 AS SELECT 1 IN (1 LIKE 2,0) AS f" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case845" value="CREATE VIEW v1 AS SELECT GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a) FROM t1 AS a2345678901234567890123456789012345678901234 GROUP BY a WITH ROLLUP" db-types="MySQL"/>
@@ -901,16 +900,11 @@
     <sql-case id="select_by_mysql_source_test_case77" value="SELECT * FROM t1 JOIN LATERAL (SELECT a+t1.a from t2 GROUP BY a) AS dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case78" value="SELECT * FROM t1 LEFT JOIN ( t1 AS t2 LEFT JOIN t1 AS t3 ON TRUE ) ON TRUE, LATERAL ( SELECT SUM(t1.a), t2.a FROM t1 ) AS d1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case79" value="SELECT * FROM t1 LEFT JOIN ( t3, LATERAL ( SELECT * FROM t2 WHERE table_id = t3.id ) l1 ) ON TRUE" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case80" value="SELECT * FROM t1 LEFT JOIN t2 IGNORE INDEX(PRIMARY) ON t2.a = &apos;test1&apos; AND t2.b = &apos;20161213&apos; WHERE t1.a = &apos;test1&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case81" value="SELECT * FROM t1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case83" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case84" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case85" value="SELECT * FROM t1, LATERAL ( SELECT MAX(1) FROM t2 GROUP BY t1.f1 ) AS l1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case86" value="SELECT * FROM t1, t2, LATERAL ( SELECT pk, blobfield GROUP BY pk, blobfield WITH ROLLUP ) AS d1 ORDER BY t1.f1, t2.pk" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case87" value="SELECT * FROM t11 LEFT JOIN t12 force index (idx) ON t12.t12b = t11.t11b JOIN LATERAL (SELECT t12a) dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case88" value="SELECT * FROM v1 FORCE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case89" value="SELECT * FROM v1 IGNORE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case90" value="SELECT * FROM v1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case91" value="SELECT /*+ JOIN_PREFIX(tbl1, tbl2) */ * FROM t1 AS tbl1 LEFT JOIN t1 AS tbl3 ON FALSE WHERE tbl1.id NOT IN (SELECT id FROM t1 AS tbl2 JOIN LATERAL (SELECT 1 FROM t2 WHERE id = tbl2.id LIMIT 10) AS d1)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case92" value="SELECT /*+ SET_VAR(optimizer_switch = &apos;materialization=off,semijoin=off&apos;) */ * FROM t1 AS ta, lateral (select 1 WHERE ta.a IN (SELECT b FROM t2 AS tb                WHERE tb.b &gt;= SOME(SELECT SUM(tc.a) as sg FROM t1 as tc                                   GROUP BY tc.b                                   HAVING ta.a=tc.b))) dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case93" value="SELECT /*+ SET_VAR(time_zone = &apos;+04:00&apos;) */ TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL"/>
@@ -1237,7 +1231,6 @@
     <sql-case id="select_by_mysql_source_test_case632" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f1)=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case633" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f2)=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case634" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f2)=1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case635" value="SELECT a FROM t1 IGNORE INDEX FOR ORDER BY (PRIMARY,i2) ORDER BY a" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case636" value="SELECT a IN (SELECT a FROM t1) FROM t1 LIMIT 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case637" value="SELECT a IN (SELECT a FROM t2 WHERE a=FLOOR(COUNT(t1.a)/2)) AS s FROM t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case638" value="SELECT a as Department, b as Employees, SUM(c), GROUPING(a) as GP_A, GROUPING(b) as GP_B FROM t1 GROUP BY a,b WITH ROLLUP" db-types="MySQL"/>
@@ -1288,7 +1281,6 @@
     <sql-case id="select_by_mysql_source_test_case684" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case685" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case686" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12+00:00&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case687" value="SELECT col_datetime_3_key , COUNT( col_timestamp_5_key ) FROM t1 FORCE KEY (PRIMARY, col_datetime_5_not_null_key, col_datetime_6_key, col_time_5_key, col_time_2_key) WHERE (col_time_4_not_null_key NOT BETWEEN &apos;2002-01-01 21:50:38.023562&apos; AND &apos;20090504151448.022774&apos; AND col_time_1_not_null_key IN (&apos;2000-07-13 21:35:51.034786&apos;, &apos;2004-10-13 19:51:18.029716&apos;, &apos;2001-11-23 10:22:42.001689&apos;, &apos;2001-12-07 06:56:47.034426&apos;, &apos;20081109153313.042580&apos; ) ) AND (col_timestamp_4_key BETWEEN &apos;0000-00-00 00:00:00&apos; AND &apos;2008-06-16 10:42:11.032174&apos; OR col_time_not_null_key BETWEEN &apos;2007-02-13 14:29:42.008072&apos; AND &apos;2009-05-18 17:06:18.036503&apos; ) AND ( (col_datetime_key &lt;&gt; &apos;2004-09-06 19:57:07.024714&apos;) AND col_datetime_5_not_null_key NOT IN (&apos;20061212182915.005997&apos;, &apos;0000-00-00 00:00:00&apos;, &apos;20000920051358.001283&apos;, &apos;2000-09-03 00:07:36.061713&apos; ) ) AND (col_datetime_4_not_null_key IS NULL OR col_time_5_key BETWEEN &apos;20051201163954.001782&apos; AND &apos;0000-00-00 00:00:00&apos;) GROUP BY col_datetime_6_not_null_key" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case688" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null = MAKETIME(24, 60, 3 ) AND col_time_3 NOT IN ( col_datetime_5, UTC_DATE(), col_timestamp_5_key, ADDDATE(&apos;0000-00-00 00:00:00&apos;, DATEDIFF(&apos;2001-09-21&apos;,FROM_UNIXTIME(1018888192, CONCAT_WS(&apos;-&apos;,&apos;%s&apos;,&apos;%V&apos;,&apos;%u&apos;)))), col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case689" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null=MAKETIME(24,60, 3) AND col_time_3 NOT IN (col_datetime_5, UTC_DATE(), col_timestamp_5_key,  col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case690" value="SELECT col_time_5_key AS c1, col_time_key AS c2, col_timestamp AS c3 FROM t1 WHERE col_time_not_null NOT BETWEEN EXTRACT(YEAR_MONTH FROM &apos;0000-00-00 00:00:00&apos;) AND COALESCE (col_time_6_not_null_key, col_datetime_key) ORDER BY 1, 2" db-types="MySQL"/>
@@ -1431,8 +1423,6 @@
     <sql-case id="select_by_mysql_source_test_case845" value="select (select f from lateral (select max(t1.a) as f) as dt) as g from t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case846" value="select * from information_schema.views where TABLE_SCHEMA != &apos;sys&apos; and TABLE_NAME rlike &quot;v[0-4]{1}$&quot; order by table_name" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case847" value="select * from t1 as t0, lateral (select dt3.* from t1, lateral (select * from (select * from (select t0.a from t2) as dt limit 1) dt2) dt3) dt4" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case848" value="select * from t1 ignore index (primary) where tt like &apos;AA%&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case849" value="select * from t1 ignore index (primary) where tt like &apos;Aa%&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case850" value="select * from t1 where MATCH(a,b) AGAINST (&quot;indexes&quot; IN BOOLEAN MODE WITH QUERY EXPANSION)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case851" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case852" value="select * from t1, lateral (select * from (select * from (select t1.a from t2) as dt limit 1) dt2) dt3" db-types="MySQL"/>
@@ -1442,7 +1432,6 @@
     <sql-case id="select_by_mysql_source_test_case856" value="select * from t1, lateral (select t3.b from t3 where t3.a=t1.a) dt where dt.b=t1.a+9" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case857" value="select * from t1, lateral (with qn as (select t1.a) select (select max(a) from qn)) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case858" value="select * from t1, t2, lateral (select t1.a) as dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case859" value="select * from t2 left join t1 ignore index(primary) on t1.fooID = t2.fooID and t1.fooID = 30" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case860" value="select * from t2, t1, lateral (select t1.a) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case861" value="select * from t2, t1, lateral (select t1.a) as dt, lateral (select t1.a+1) as dt2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case862" value="select * from t2, t1, lateral (select t1.a) as dt, lateral (select t2.a) as dt2" db-types="MySQL"/>
@@ -1499,7 +1488,6 @@
     <sql-case id="select_by_mysql_source_test_case919" value="select _latin2&apos;B&apos; between _latin1&apos;a&apos; and _latin1&apos;b&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case920" value="select _latin2&apos;B&apos; in (_latin1&apos;a&apos;,_latin1&apos;b&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case923" value="select a, not(not(a)) from t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case924" value="select a.id, b.category as catid, b.state as stateid, b.county as countyid from t1 a, t2 b ignore index (primary) where (a.token =&apos;a71250b7ed780f6ef3185bfffe027983&apos;) and (a.count = b.id)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case925" value="select abs(3 &quot;three&quot;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case926" value="select abs(3 AS &quot;three&quot;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case927" value="select abs(3 AS three)" db-types="MySQL"/>
@@ -1686,8 +1674,6 @@
     <sql-case id="select_by_mysql_source_test_case1110" value="select row(10,2,3) IN (row(3,NULL,3), row(1,2,3), row(1,3,3))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1111" value="select straight_join * from t1, lateral (select t1.a) as dt, t2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1112" value="select straight_join * from t1, t2, lateral (select t1.a) as dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1113" value="select straight_join * from t1,t2 force index (primary) where t1.a=t2.a" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1114" value="select straight_join * from t1,t2 force index (primary) where t1.a=t2.a" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1115" value="select straight_join * from t2, t1, lateral (select t1.a) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1116" value="select strcmp(concat(utc_date(),&apos; &apos;,utc_time()),utc_timestamp())=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1117" value="select strcmp(date_format(date_sub(localtimestamp(), interval 3 hour),&quot;%T&quot;), utc_time())=0" db-types="MySQL"/>
@@ -2783,9 +2769,7 @@
     <sql-case id="explain_by_mysql_source_test_case17" value="EXPLAIN SELECT a FROM t1 FORCE INDEX (PRIMARY) IGNORE INDEX FOR GROUP BY (i2) IGNORE INDEX FOR ORDER BY (i2) USE INDEX (i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case18" value="EXPLAIN SELECT a FROM t1 FORCE INDEX FOR JOIN (i2) FORCE INDEX FOR GROUP BY (i2) GROUP BY a" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case19" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (PRIMARY) IGNORE INDEX FOR ORDER BY (i2)" db-types="MySQL"/>
-    <sql-case id="explain_by_mysql_source_test_case20" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (PRIMARY,i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case21" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (i2) USE INDEX ()" db-types="MySQL"/>
-    <sql-case id="explain_by_mysql_source_test_case22" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX FOR JOIN (PRIMARY,i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case23" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX FOR ORDER BY (PRIMARY) IGNORE INDEX FOR GROUP BY (i2) GROUP BY a" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case24" value="EXPLAIN SELECT a FROM t1 USE INDEX ()" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case25" value="EXPLAIN SELECT a FROM t1 USE INDEX () IGNORE INDEX (i2)" db-types="MySQL"/>
@@ -3846,8 +3830,6 @@
     <sql-case id="low_load_by_mysql_source_test_case44" value="load data infile &apos;../../std_data/words.dat&apos; into table t1 (a)" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case45" value="load data infile &apos;../../std_data/words.dat&apos; into table t1 (a) set b:= f1()" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case46" value="load data infile &apos;tmp1.txt&apos; into table t1 character set binary" db-types="MySQL"/>
-    <sql-case id="low_load_by_mysql_source_test_case47" value="load index into cache t1, t2 key (primary,b) ignore leaves" db-types="MySQL"/>
-    <sql-case id="low_load_by_mysql_source_test_case48" value="load index into cache t3, t2 key (primary,b)" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case49" value="load xml infile &apos;../../std_data/loadxml.dat&apos; into table t1 rows identified by &apos;&lt;row&gt;&apos;" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case50" value="load xml infile &apos;../../std_data/loadxml.dat&apos; into table t1 rows identified by &apos;&lt;row&gt;&apos; ignore 4 rows" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case51" value="load xml infile &apos;../../std_data/loadxml2.dat&apos; into table t1" db-types="MySQL"/>
