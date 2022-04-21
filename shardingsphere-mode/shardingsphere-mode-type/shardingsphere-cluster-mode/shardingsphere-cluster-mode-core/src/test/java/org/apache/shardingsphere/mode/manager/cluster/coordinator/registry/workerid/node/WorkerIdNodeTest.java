@@ -29,3 +29,4 @@ public class WorkerIdNodeTest {
         assertThat(WorkerIdNode.getWorkerIdGeneratorPath("instanceId"), is("/worker_id/instanceId"));
     }
 }
+
