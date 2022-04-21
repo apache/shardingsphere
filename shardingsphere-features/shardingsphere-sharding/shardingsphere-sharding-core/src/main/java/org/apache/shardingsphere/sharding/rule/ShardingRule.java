@@ -267,7 +267,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String originAlgorithmExpression = null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
         String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
         String shardingColumn = getShardingColumn(shardingStrategyConfig);
-        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "");
+        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "").replaceAll(" ", "");
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
