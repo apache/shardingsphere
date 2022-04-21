@@ -47,6 +47,7 @@ customKeyword
     | INNODB
     | REDO_LOG
     | LAST_VALUE
+    | PRIMARY
     ;
     
 literals

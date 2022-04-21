@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -35,6 +36,8 @@ import java.util.Properties;
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
     private YamlModeConfiguration mode;
+    
+    private YamlAuthorityConfiguration authority;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

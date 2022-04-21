@@ -110,6 +110,8 @@ public enum SQLVisitorRule {
     
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
+    ALTER_DATABASE_LINK("AlterDatabaseLink", SQLStatementType.DDL),
+    
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
