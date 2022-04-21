@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -48,14 +47,14 @@ public interface DialectSchemaMetaDataLoader extends StatelessTypedSPI {
     /**
      * Load schema names.
      *
-     * @param connection connection
+     * @param dataSource dataSource
      * @param databaseType database type
      * @return schema names collection
      * @throws SQLException SQL exception
      */
-    default Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
+    default Collection<String> loadSchemaNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         Collection<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getSchemas()) {
+        try (Connection connection = dataSource.getConnection(); ResultSet resultSet = connection.getMetaData().getSchemas()) {
             while (resultSet.next()) {
                 String schema = resultSet.getString("TABLE_SCHEM");
                 if (!databaseType.getSystemSchemas().contains(schema)) {
@@ -63,6 +62,6 @@ public interface DialectSchemaMetaDataLoader extends StatelessTypedSPI {
                 }
             }
         }
-        return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
+        return result;
     }
 }

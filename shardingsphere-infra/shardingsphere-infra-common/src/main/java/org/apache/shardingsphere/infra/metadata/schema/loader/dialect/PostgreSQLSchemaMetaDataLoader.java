@@ -66,7 +66,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<SchemaMetaData> result = new LinkedList<>();
-        Collection<String> schemaNames = loadSchemaNames(dataSource.getConnection(), DatabaseTypeRegistry.getActualDatabaseType(getType()));
+        Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeRegistry.getActualDatabaseType(getType()));
         Map<String, Map<String, Collection<IndexMetaData>>> indexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
         for (Entry<String, Map<String, Collection<ColumnMetaData>>> entry : loadColumnMetaDataMap(dataSource, tables, schemaNames).entrySet()) {
             String schemaName = entry.getKey();
