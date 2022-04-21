@@ -35,7 +35,6 @@ import org.w3c.dom.Element;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -87,7 +86,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private Collection<String> parseTableDataSourcesAttribute(final Element element) {
         String[] split = element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_TABLE_DATA_SOURCE_REFS_ATTRIBUTE).split(",");
-        return Arrays.stream(split).map(String::trim).collect(Collectors.toCollection(LinkedList::new));
+        return Arrays.stream(split).map(String::trim).collect(Collectors.toList());
     }
     
     private Collection<String> parseShadowAlgorithmNames(final Element element) {

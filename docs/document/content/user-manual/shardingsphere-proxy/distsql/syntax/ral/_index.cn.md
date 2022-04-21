@@ -13,8 +13,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 |:---------------------------------------------------- |:-------------------------------------------------------------- |:---------------------------------------------- |
 | SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | 针对当前连接，设置读写分离的路由策略（自动路由或强制到写库）              | SET READWRITE_SPLITTING HINT SOURCE = write    |
 | SET SHARDING HINT DATABASE_VALUE = yy                | 针对当前连接，设置 hint 仅对数据库分片有效，并添加分片值，yy：数据库分片值 | SET SHARDING HINT DATABASE_VALUE = 100         |
-| ADD SHARDING HINT DATABASE_VALUE tableName = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
-| ADD SHARDING HINT TABLE_VALUE tableName xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
+| ADD SHARDING HINT DATABASE_VALUE xx = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
+| ADD SHARDING HINT TABLE_VALUE xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
 | CLEAR HINT SETTINGS                                          | 针对当前连接，清除 hint 所有设置                                    | CLEAR HINT                                   |
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置     | CLEAR READWRITE_SPLITTING HINT                |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置     | SHOW READWRITE_SPLITTING HINT STATUS          |

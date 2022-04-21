@@ -68,12 +68,24 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
-        if (synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING) && isOwner.compareAndSet(false, true)) {
-            return acquire(lockName, timeout) ? synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)
-                    : isOwner.compareAndSet(true, false) && synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.UNLOCKED);
+        try {
+            if (acquireToken() && synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING) && isOwner.compareAndSet(false, true)) {
+                return acquire(lockName, timeout) ? synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)
+                        : isOwner.compareAndSet(true, false) && synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.UNLOCKED);
+            }
+            log.debug("innerTryLock locking, lockName={}", lockName);
+            return false;
+        } finally {
+            releaseToken();
         }
-        log.debug("innerTryLock locking, lockName={}", lockName);
-        return false;
+    }
+    
+    private boolean acquireToken() {
+        return lockService.tryGlobalLock(LockNode.generateLockTokenNodePath(), DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS);
+    }
+    
+    private void releaseToken() {
+        lockService.releaseGlobalLock(LockNode.generateLockTokenNodePath(), true);
     }
     
     private boolean acquire(final String lockName, final long timeout) {
