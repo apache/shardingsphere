@@ -15,31 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+package org.apache.shardingsphere.integration.data.pipline.util;
 
 /**
- * UUID key generate algorithm.
+ * Executor.
  */
-public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public interface Executor {
     
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public Comparable<?> generateKey() {
-        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
-    }
-    
-    @Override
-    public String getType() {
-        return "UUID";
-    }
+    /**
+     * Execute.
+     *
+     * @return execute result
+     */
+    boolean execute();
 }

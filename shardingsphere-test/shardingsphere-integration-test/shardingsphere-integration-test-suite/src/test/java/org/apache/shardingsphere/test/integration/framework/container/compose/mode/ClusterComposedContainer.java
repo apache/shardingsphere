@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.sto
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -45,13 +46,14 @@ public final class ClusterComposedContainer implements ComposedContainer {
     private final AdapterContainer adapterContainer;
     
     public ClusterComposedContainer(final ParameterizedArray parameterizedArray) {
-        containers = new ITContainers(parameterizedArray.getScenario());
+        String scenario = parameterizedArray.getScenario();
+        containers = new ITContainers(scenario);
         // TODO support other types of governance
-        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk", false);
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(
-                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName(), true);
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
-                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter(), true);
+        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), NetworkAliasUtil.getNetworkAlias("zk"));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario),
+                NetworkAliasUtil.getNetworkAliasWithScenario(parameterizedArray.getDatabaseType().getName(), scenario));
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario),
+                NetworkAliasUtil.getNetworkAliasWithScenario(parameterizedArray.getAdapter(), scenario));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

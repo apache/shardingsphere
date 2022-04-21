@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.integration.data.pipline.env.cases;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import lombok.Getter;
 
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * UUID key generate algorithm.
+ * Data set.
  */
-public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+@Getter
+@XmlRootElement(name = "dataset")
+public final class DataSet {
     
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public Comparable<?> generateKey() {
-        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
-    }
-    
-    @Override
-    public String getType() {
-        return "UUID";
-    }
+    @XmlElement(name = "type")
+    private final List<Type> types = new LinkedList<>();
 }

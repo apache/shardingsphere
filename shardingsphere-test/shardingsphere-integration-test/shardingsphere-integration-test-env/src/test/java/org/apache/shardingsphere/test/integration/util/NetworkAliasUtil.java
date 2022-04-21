@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.test.integration.util;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
-/**
- * UUID key generate algorithm.
- */
-public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class NetworkAliasUtil {
     
-    @Override
-    public void init() {
+    /**
+     * Get network alias with scenario.
+     *
+     * @param containerType container type, such as "zk", "db"
+     * @param scenario scenario
+     * @return network alias
+     */
+    public static String getNetworkAliasWithScenario(final String containerType, final String scenario) {
+        return String.join(".", containerType.toLowerCase(), scenario, "host");
     }
     
-    @Override
-    public Comparable<?> generateKey() {
-        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
-    }
-    
-    @Override
-    public String getType() {
-        return "UUID";
+    /**
+     * Get network alias.
+     *
+     * @param containerType container type
+     * @return network alias
+     */
+    public static String getNetworkAlias(final String containerType) {
+        return String.join(".", containerType.toLowerCase(), "host");
     }
 }

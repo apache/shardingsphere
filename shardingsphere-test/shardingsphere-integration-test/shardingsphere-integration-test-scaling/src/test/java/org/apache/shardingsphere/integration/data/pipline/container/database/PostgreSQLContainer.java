@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.integration.data.pipline.container.database;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
 
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
-/**
- * UUID key generate algorithm.
- */
-public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+// TODO not complete yet
+public class PostgreSQLContainer extends DockerDatabaseContainer {
     
-    @Override
-    public void init() {
+    public PostgreSQLContainer(final String dockerImageName) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
     }
     
     @Override
-    public Comparable<?> generateKey() {
-        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
+    public void start() {
+        
     }
     
     @Override
-    public String getType() {
-        return "UUID";
+    protected int getPort() {
+        return 5432;
     }
 }

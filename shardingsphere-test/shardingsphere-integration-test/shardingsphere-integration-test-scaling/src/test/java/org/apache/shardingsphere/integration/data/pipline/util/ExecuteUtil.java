@@ -15,31 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.integration.data.pipline.util;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
-import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Drop sharding table rule statement.
+ * Execute util.
  */
 @RequiredArgsConstructor
-@Getter
-public final class DropShardingTableRuleStatement extends DropRuleStatement implements ShardingSubjectSupplier {
+public final class ExecuteUtil {
     
-    private final Collection<TableNameSegment> tableNames;
+    private final Executor executor;
     
-    @Setter
-    private boolean dropUnusedAlgorithms;
+    private final int retryCount;
     
-    public DropShardingTableRuleStatement(final boolean containsExistsClause, final Collection<TableNameSegment> tableNames) {
-        setContainsExistClause(containsExistsClause);
-        this.tableNames = tableNames;
+    private final long waitMs;
+    
+    /**
+     * Execute.
+     *
+     * @return execute result
+     */
+    public boolean execute() {
+        int count = 0;
+        while (!executor.execute() && retryCount > count) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(waitMs);
+            } catch (final InterruptedException ignored) {
+            }
+            count++;
+        }
+        return retryCount > count;
     }
 }
