@@ -25,12 +25,10 @@ import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -82,7 +80,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !ReplicaLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }
