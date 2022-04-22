@@ -72,25 +72,25 @@ public final class MySQLAutoRuleScaling extends BaseITCase {
     
     private void initTableDataOfOrder(final Connection connection, final String insertSQL, final int batchSize) throws Exception {
         connection.setAutoCommit(false);
-        PreparedStatement pstmt = connection.prepareStatement(insertSQL);
+        PreparedStatement statement = connection.prepareStatement(insertSQL);
         for (int i = 1; i <= 5000; i++) {
-            pstmt.setLong(1, (Long) SNOWFLAKE_GENERATE.generateKey());
-            pstmt.setString(2, "varchar" + i);
-            pstmt.setByte(3, (byte) 1);
-            pstmt.setInt(4, 100);
+            statement.setLong(1, (Long) SNOWFLAKE_GENERATE.generateKey());
+            statement.setString(2, "varchar" + i);
+            statement.setByte(3, (byte) 1);
+            statement.setInt(4, 100);
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            pstmt.setTimestamp(5, timestamp);
-            pstmt.setTimestamp(6, timestamp);
-            pstmt.setBytes(7, "hello".getBytes(StandardCharsets.UTF_8));
-            pstmt.setBinaryStream(8, null);
-            pstmt.setBigDecimal(9, new BigDecimal("100.00"));
-            pstmt.setString(10, "test");
-            pstmt.setDouble(11, Math.random());
-            pstmt.setString(12, "{}");
-            pstmt.addBatch();
+            statement.setTimestamp(5, timestamp);
+            statement.setTimestamp(6, timestamp);
+            statement.setBytes(7, "hello".getBytes(StandardCharsets.UTF_8));
+            statement.setBinaryStream(8, null);
+            statement.setBigDecimal(9, new BigDecimal("100.00"));
+            statement.setString(10, "test");
+            statement.setDouble(11, Math.random());
+            statement.setString(12, "{}");
+            statement.addBatch();
             if (i % batchSize == 0) {
-                pstmt.executeBatch();
-                pstmt.clearParameters();
+                statement.executeBatch();
+                statement.clearParameters();
             }
         }
         connection.commit();

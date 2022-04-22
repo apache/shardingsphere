@@ -47,7 +47,7 @@ public abstract class BaseITCase {
     private ClusterPersistRepository clusterPersistRepository;
     
     public BaseITCase(final DatabaseType databaseType) {
-        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), "docker")) {
+        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
             composedContainer = new DockerComposedContainer(databaseType);
         } else {
             composedContainer = new LocalComposedContainer(databaseType);
