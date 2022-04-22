@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -58,22 +59,21 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-        String result = "";
+    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
                     if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
-                        return entry.getKey();
+                        return Optional.of(entry.getKey());
                     }
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source url", ex);
             }
         }
-        return result;
+        return Optional.empty();
     }
     
     @Override
