@@ -85,13 +85,14 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdaterTest {
     
     @Test
     public void assertBuildAndUpdate() throws DistSQLException {
-        Collection<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        Collection<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(
+                new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryTypeStatement(discoveryTypeSegments), null);
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration =
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
                 (DatabaseDiscoveryRuleConfiguration) updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
-        DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfiguration);
-        assertThat(currentConfiguration.getDiscoveryTypes().size(), is(1));
-        assertThat(currentConfiguration.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
+        DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        updater.updateCurrentRuleConfiguration(currentConfig, databaseDiscoveryRuleConfig);
+        assertThat(currentConfig.getDiscoveryTypes().size(), is(1));
+        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
     }
 }
