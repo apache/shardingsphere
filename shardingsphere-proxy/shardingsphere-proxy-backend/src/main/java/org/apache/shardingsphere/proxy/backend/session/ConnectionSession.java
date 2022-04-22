@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
@@ -115,7 +115,7 @@ public final class ConnectionSession {
      * @return database name
      */
     public String getDatabaseName() {
-        return null == SQLStatementSchemaHolder.get() ? databaseName : SQLStatementSchemaHolder.get();
+        return null == SQLStatementDatabaseHolder.get() ? databaseName : SQLStatementDatabaseHolder.get();
     }
     
     /**
