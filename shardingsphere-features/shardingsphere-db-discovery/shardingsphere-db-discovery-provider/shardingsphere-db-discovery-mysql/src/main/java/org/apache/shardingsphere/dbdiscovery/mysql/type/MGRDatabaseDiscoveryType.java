@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -49,8 +51,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
-    private static final String QUERY_MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
-    
     private static final String QUERY_GROUP_NAME = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
     
     private static final String QUERY_SINGLE_PRIMARY_MODE = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
@@ -70,7 +70,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
-            checkMemberCount(statement);
             checkServerGroupName(statement);
             checkSinglePrimaryMode(statement);
             checkDataSourceInReplicationGroup(statement, dataSourceMap);
@@ -88,16 +87,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
             while (resultSet.next()) {
                 if (!"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
                     throw new ShardingSphereConfigurationException("MGR plugin is not active.");
-                }
-            }
-        }
-    }
-    
-    private void checkMemberCount(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_COUNT)) {
-            while (resultSet.next()) {
-                if (resultSet.getInt(1) < 1) {
-                    throw new ShardingSphereConfigurationException("MGR member count < 1");
                 }
             }
         }
@@ -132,6 +121,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
                 memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
+        Preconditions.checkState(!memberDataSourceURLs.isEmpty(), "MGR member is empty.");
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             checkDataSourceInReplicationGroup(entry.getKey(), entry.getValue(), memberDataSourceURLs);
         }
@@ -148,6 +138,42 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         if (!isExisted) {
             throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
         }
+    }
+    
+    @Override
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstanceURLs(statement));
+        }
+    }
+    
+    private boolean queryIsPluginActive(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
+            return resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"));
+        }
+    }
+    
+    private boolean queryIsSinglePrimaryMode(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
+            return resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE"));
+        }
+    }
+    
+    private String queryGroupName(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
+            return resultSet.next() ? resultSet.getString("VARIABLE_VALUE") : "";
+        }
+    }
+    
+    private Collection<String> queryMemberInstanceURLs(final Statement statement) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
+            while (resultSet.next()) {
+                result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+            }
+        }
+        return result;
     }
     
     @Override

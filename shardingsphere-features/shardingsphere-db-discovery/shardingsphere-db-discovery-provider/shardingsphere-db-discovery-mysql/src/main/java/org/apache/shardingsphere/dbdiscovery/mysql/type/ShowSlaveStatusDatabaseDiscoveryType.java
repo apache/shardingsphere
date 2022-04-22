@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -57,6 +58,14 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
         Collection<String> primaryDataSourceURLS = getPrimaryDataSourceURLS(dataSourceMap);
         Preconditions.checkState(!primaryDataSourceURLS.isEmpty(), "Not found primary data source for database name `%s`", databaseName);
         Preconditions.checkState(1 == primaryDataSourceURLS.size(), "More than one primary data source for database name `%s`", databaseName);
+    }
+    
+    @Override
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            return new ShowSlaveStatusHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
+        }
     }
     
     private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {

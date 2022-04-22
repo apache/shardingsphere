@@ -39,6 +39,15 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     void checkHighlyAvailableStatus(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
     /**
+     * Load highly available status.
+     * 
+     * @param dataSource data source
+     * @return loaded highly available status
+     * @throws SQLException SQL exception
+     */
+    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
+    
+    /**
      * Determine primary data source.
      * 
      * @param dataSourceMap data source map

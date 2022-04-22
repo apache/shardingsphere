@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -56,6 +57,12 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     @Override
     public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         // TODO Check openGauss configuration
+    }
+    
+    @Override
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
+        // TODO Load OpenGaussHighlyAvailableStatus
+        return new OpenGaussHighlyAvailableStatus();
     }
     
     @Override
