@@ -18,9 +18,10 @@
     <create-table-order>
         CREATE TABLE `t_order` (
         `id` BIGINT NOT NULL COMMENT 'pk id',
+        `order_id` INT NOT NULL,
+        `user_id` INT NOT NULL,
         `t_varchar` VARCHAR ( 255 ) NOT NULL,
         `t_tinyint` TINYINT ( 1 ) NULL,
-        `order_id` INT NULL,
         `t_timestamp` TIMESTAMP NULL,
         `t_datetime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
         `t_binary` BINARY(255) NULL,
@@ -32,15 +33,16 @@
         PRIMARY KEY ( `id` ),
         UNIQUE INDEX ( `t_varchar` ),
         INDEX ( `order_id` )
-        );
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
     
     <insert-order>
         INSERT INTO `t_order` (
         `id`,
+        `order_id`,
+        `user_id`,
         `t_varchar`,
         `t_tinyint`,
-        `order_id`,
         `t_timestamp`,
         `t_datetime`,
         `t_binary`,
@@ -50,10 +52,20 @@
         `t_double`,
         `t_json`
         )
-        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);
     </insert-order>
     
     <create-table-orderitem>
-    
+        CREATE TABLE t_order_item (
+        item_id bigint NOT NULL,
+        order_id int NOT NULL,
+        user_id int NOT NULL,
+        status varchar(50) DEFAULT NULL,
+        PRIMARY KEY (item_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-orderitem>
+    
+    <insert-order-item>
+        INSERT INTO t_order_item(item_id, order_id, user_id, status) VALUES(?,?,?,?);
+    </insert-order-item>
 </command>
