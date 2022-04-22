@@ -61,8 +61,9 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<String> result = new ArrayList<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (Connection connection = entry.getValue().getConnection();
-                 Statement statement = connection.createStatement()) {
+            try (
+                    Connection connection = entry.getValue().getConnection();
+                    Statement statement = connection.createStatement()) {
                 String url = getPrimaryDataSourceURL(statement);
                 if (!url.isEmpty() && !result.contains(url)) {
                     result.add(url);
@@ -97,8 +98,9 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     private void determineDatasourceState(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
             if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,

@@ -77,8 +77,9 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             Set<String> primaryKeys = loadPrimaryKeys(connection);
             preparedStatement.setString(1, connection.getSchema());
@@ -128,8 +129,9 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

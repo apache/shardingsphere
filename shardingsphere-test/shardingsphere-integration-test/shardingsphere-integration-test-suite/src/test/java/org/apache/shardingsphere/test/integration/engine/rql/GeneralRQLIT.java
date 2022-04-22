@@ -47,8 +47,9 @@ public final class GeneralRQLIT extends BaseRQLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(getSQL())) {
+            try (
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(getSQL())) {
                 assertResultSet(resultSet);
             }
         }

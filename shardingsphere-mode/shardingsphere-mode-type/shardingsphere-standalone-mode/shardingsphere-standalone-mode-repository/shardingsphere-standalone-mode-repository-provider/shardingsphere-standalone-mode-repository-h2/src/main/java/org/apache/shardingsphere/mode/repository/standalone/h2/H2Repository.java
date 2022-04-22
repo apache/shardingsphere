@@ -82,8 +82,9 @@ public final class H2Repository implements StandalonePersistRepository {
     
     @Override
     public String get(final String key) {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = '" + key + "'");
-             ResultSet resultSet = statement.executeQuery()) {
+        try (
+                PreparedStatement statement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = '" + key + "'");
+                ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 return Optional.ofNullable(
                         Strings.emptyToNull(resultSet.getString("value"))).map(each -> each.replace("\"", "'")).orElse("");
@@ -96,8 +97,9 @@ public final class H2Repository implements StandalonePersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = '" + key + "'");
-             ResultSet resultSet = statement.executeQuery()) {
+        try (
+                PreparedStatement statement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = '" + key + "'");
+                ResultSet resultSet = statement.executeQuery()) {
             List<String> resultChildrenList = new ArrayList<>(10);
             while (resultSet.next()) {
                 String childrenKey = resultSet.getString("key");

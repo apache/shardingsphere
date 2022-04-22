@@ -92,8 +92,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueKeyValue, final int chunkSize) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setInt(2, chunkSize);
             Collection<Collection<Object>> records = new ArrayList<>(chunkSize);

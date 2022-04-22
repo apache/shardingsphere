@@ -79,8 +79,9 @@ public final class IntegrationTestEnvironment {
         String url = props.getProperty("proxy.url");
         String username = props.getProperty("proxy.username", "root");
         String password = props.getProperty("proxy.password", "root");
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
         } catch (final SQLException ignore) {
             return false;

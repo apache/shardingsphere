@@ -89,8 +89,9 @@ public final class BatchDMLIT extends BatchITCase {
                 return;
             default:
         }
-        try (Connection connection = getTargetDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
+        try (
+                Connection connection = getTargetDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
             for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }

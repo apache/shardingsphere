@@ -92,8 +92,9 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     }
     
     private WalPosition getWalPosition(final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
