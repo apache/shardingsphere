@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -63,9 +64,9 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
                  Statement statement = connection.createStatement()) {
-                String url = getPrimaryDataSourceURL(statement);
-                if (!url.isEmpty() && !result.contains(url)) {
-                    result.add(url);
+                Optional<String> url = loadPrimaryDataSourceURL(statement);
+                if (url.isPresent() && !result.contains(url.get())) {
+                    result.add(url.get());
                 }
             }
         }
@@ -73,16 +74,16 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     @Override
-    protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");
                 String masterPort = resultSet.getString("Master_Port");
                 if (null != masterHost && null != masterPort) {
-                    return String.format("%s:%s", masterHost, masterPort);
+                    return Optional.of(String.format("%s:%s", masterHost, masterPort));
                 }
             }
-            return "";
+            return Optional.empty();
         }
     }
     

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database discovery type.
@@ -41,9 +42,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * Determine primary data source.
      * 
      * @param dataSourceMap data source map
-     * @return primary data source name
+     * @return determined name of primary data source
      */
-    String determinePrimaryDataSource(Map<String, DataSource> dataSourceMap);
+    Optional<String> determinePrimaryDataSource(Map<String, DataSource> dataSourceMap);
     
     /**
      * Update member state.

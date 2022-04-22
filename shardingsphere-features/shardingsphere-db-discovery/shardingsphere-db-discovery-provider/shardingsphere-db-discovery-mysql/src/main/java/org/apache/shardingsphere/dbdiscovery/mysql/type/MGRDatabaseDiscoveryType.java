@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -65,7 +66,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().stream().findFirst().get().getConnection();
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkMemberCount(statement);
@@ -143,12 +144,12 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(PRIMARY_DATA_SOURCE)) {
             if (resultSet.next()) {
-                return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+                return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
-            return "";
+            return Optional.empty();
         }
     }
     

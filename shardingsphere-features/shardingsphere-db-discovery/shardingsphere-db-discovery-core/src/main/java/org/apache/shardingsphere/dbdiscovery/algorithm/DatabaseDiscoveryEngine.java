@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database discovery engine.
@@ -57,13 +58,13 @@ public final class DatabaseDiscoveryEngine {
      * @param groupName group name
      */
     public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        String newPrimaryDataSource = databaseDiscoveryType.determinePrimaryDataSource(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        if (newPrimaryDataSource.isEmpty()) {
+        Optional<String> newPrimaryDataSource = databaseDiscoveryType.determinePrimaryDataSource(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        if (!newPrimaryDataSource.isPresent()) {
             return;
         }
-        if (!newPrimaryDataSource.equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
-            databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSource);
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource)));
+        if (!newPrimaryDataSource.get().equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
+            databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSource.get());
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource.get())));
         }
     }
     
