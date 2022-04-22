@@ -33,7 +33,7 @@ tableName ::=
 CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
-#### 2.Create multiple binding table rule
+#### 2.Create multiple binding table rules
 
 ```sql
 -- Before creating binding table rules, you need to create  sharding table t_order,t_order_item,t_product,t_product_item
