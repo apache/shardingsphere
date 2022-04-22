@@ -123,7 +123,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterDatabase(event.getDatabaseName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterDatabase(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
     }
     
     /**
@@ -133,7 +133,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getSchemaVersion())) {
+        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
             buildSpecialRules();
         }
@@ -146,7 +146,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getSchemaVersion())) {
+        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
             buildSpecialRules();
         }
@@ -159,12 +159,12 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
-        QualifiedDatabase qualifiedSchema = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema, event.isDisabled())));
+                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
     
     /**
@@ -174,12 +174,12 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
-        QualifiedDatabase qualifiedSchema = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedSchema.getDatabaseName()).getRuleMetaData().getRules()
+        QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
+        contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema)));
+                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedDatabase)));
     }
     
     /**
@@ -266,7 +266,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final SchemaVersionChangedEvent event) {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = metaDataPersistService.getDataSourceService().load(event.getDatabaseName(), event.getActiveVersion());
-        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getSchemaRuleService().load(event.getDatabaseName(), event.getActiveVersion());
+        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(event.getDatabaseName(), event.getActiveVersion());
         contextManager.alterDataSourceAndRuleConfiguration(event.getDatabaseName(), dataSourcePropertiesMap, ruleConfigs);
     }
     
@@ -308,8 +308,8 @@ public final class ClusterContextManagerCoordinator {
         if (!metaDataPersistService.getDataSourceService().isExisted(databaseName)) {
             metaDataPersistService.getDataSourceService().persist(databaseName, new LinkedHashMap<>());
         }
-        if (!metaDataPersistService.getSchemaRuleService().isExisted(databaseName)) {
-            metaDataPersistService.getSchemaRuleService().persist(databaseName, new LinkedList<>());
+        if (!metaDataPersistService.getDatabaseRulePersistService().isExisted(databaseName)) {
+            metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, new LinkedList<>());
         }
     }
     
