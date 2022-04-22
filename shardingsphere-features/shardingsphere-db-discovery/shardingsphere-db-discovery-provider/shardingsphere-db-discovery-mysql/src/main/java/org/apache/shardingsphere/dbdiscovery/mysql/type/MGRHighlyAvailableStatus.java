@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
@@ -49,17 +50,18 @@ public final class MGRHighlyAvailableStatus implements HighlyAvailableStatus {
     private final Collection<String> memberInstanceURLs;
     
     @Override
-    public void validate(final Map<String, DataSource> dataSourceMap, final Properties props) throws SQLException {
-        Preconditions.checkState(pluginActive, "MGR plugin is not active.");
-        Preconditions.checkState(singlePrimaryMode, "MGR is not in single primary mode.");
-        Preconditions.checkState(props.getProperty("group-name", "").equals(groupName), "Group name `%s` in MGR is not same with configured one `%s`.", groupName, props.getProperty("group-name"));
-        Preconditions.checkState(!memberInstanceURLs.isEmpty(), "MGR member is empty.");
+    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) throws SQLException {
+        Preconditions.checkState(pluginActive, "MGR plugin is not active in database `%s`.", databaseName);
+        Preconditions.checkState(singlePrimaryMode, "MGR is not in single primary mode in database `%s`.", databaseName);
+        Preconditions.checkState(props.getProperty("group-name", "").equals(groupName), 
+                "Group name `%s` in MGR is not same with configured one `%s` in database `%s`.", groupName, props.getProperty("group-name"), databaseName);
+        Preconditions.checkState(!memberInstanceURLs.isEmpty(), "MGR member is empty in database `%s`.", databaseName);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            checkDataSourceInReplicationGroup(entry.getKey(), entry.getValue());
+            checkDataSourceInReplicationGroup(databaseName, entry.getKey(), entry.getValue());
         }
     }
     
-    private void checkDataSourceInReplicationGroup(final String name, final DataSource dataSource) throws SQLException {
+    private void checkDataSourceInReplicationGroup(final String databaseName, final String dataSourceName, final DataSource dataSource) throws SQLException {
         for (String each : memberInstanceURLs) {
             try (Connection connection = dataSource.getConnection()) {
                 if (connection.getMetaData().getURL().contains(each)) {
@@ -67,6 +69,6 @@ public final class MGRHighlyAvailableStatus implements HighlyAvailableStatus {
                 }
             }
         }
-        throw new ShardingSphereConfigurationException("%s is not in MGR replication group member", name);
+        throw new ShardingSphereConfigurationException("%s is not in MGR replication group member in database `%s`.", dataSourceName, databaseName);
     }
 }

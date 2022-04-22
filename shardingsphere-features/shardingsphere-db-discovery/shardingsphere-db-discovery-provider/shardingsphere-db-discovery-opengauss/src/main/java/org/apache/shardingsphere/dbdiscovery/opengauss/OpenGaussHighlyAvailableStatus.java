@@ -31,6 +31,6 @@ import java.util.Properties;
 public final class OpenGaussHighlyAvailableStatus implements HighlyAvailableStatus {
     
     @Override
-    public void validate(final Map<String, DataSource> dataSourceMap, final Properties props) {
+    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
     }
 }

@@ -30,9 +30,10 @@ public interface HighlyAvailableStatus {
     /**
      * Validate highly available status.
      * 
+     * @param databaseName database name
      * @param dataSourceMap data source map 
      * @param props properties of database discovery type
      * @throws SQLException SQL exception
      */
-    void validate(final Map<String, DataSource> dataSourceMap, Properties props) throws SQLException;
+    void validate(String databaseName, Map<String, DataSource> dataSourceMap, Properties props) throws SQLException;
 }

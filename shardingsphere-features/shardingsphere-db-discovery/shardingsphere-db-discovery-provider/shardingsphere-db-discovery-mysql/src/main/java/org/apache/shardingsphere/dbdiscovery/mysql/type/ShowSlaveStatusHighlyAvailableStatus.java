@@ -38,7 +38,7 @@ public final class ShowSlaveStatusHighlyAvailableStatus implements HighlyAvailab
     private final String primaryInstanceURL;
     
     @Override
-    public void validate(final Map<String, DataSource> dataSourceMap, final Properties props) {
-        Preconditions.checkState(null != primaryInstanceURL, "Can not load primary data source URL.");
+    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
+        Preconditions.checkState(null != primaryInstanceURL, "Can not load primary data source URL in database `%s`.", databaseName);
     }
 }

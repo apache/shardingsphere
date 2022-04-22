@@ -29,10 +29,6 @@ import static org.mockito.Mockito.mock;
 public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-    }
-    
-    @Override
     public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
         return mock(HighlyAvailableStatus.class);
     }

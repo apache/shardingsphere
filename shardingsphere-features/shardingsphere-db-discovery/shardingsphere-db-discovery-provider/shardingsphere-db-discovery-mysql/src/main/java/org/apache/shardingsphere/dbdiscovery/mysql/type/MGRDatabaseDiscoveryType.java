@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -63,82 +61,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     @Getter
     @Setter
     private Properties props = new Properties();
-    
-    @Override
-    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        checkDataSourceCount(dataSourceMap);
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection();
-             Statement statement = connection.createStatement()) {
-            checkPluginIsActive(statement);
-            checkServerGroupName(statement);
-            checkSinglePrimaryMode(statement);
-            checkDataSourceInReplicationGroup(statement, dataSourceMap);
-        }
-    }
-    
-    private void checkDataSourceCount(final Map<String, DataSource> dataSourceMap) {
-        if (dataSourceMap.isEmpty()) {
-            throw new ShardingSphereConfigurationException("No enough data source configured.");
-        }
-    }
-    
-    private void checkPluginIsActive(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            while (resultSet.next()) {
-                if (!"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
-                    throw new ShardingSphereConfigurationException("MGR plugin is not active.");
-                }
-            }
-        }
-    }
-    
-    private void checkServerGroupName(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
-            while (resultSet.next()) {
-                String serverGroupName = resultSet.getString("VARIABLE_VALUE");
-                String ruleGroupName = props.getProperty("group-name");
-                if (!serverGroupName.equals(ruleGroupName)) {
-                    throw new ShardingSphereConfigurationException("MGR group name is not consistent\n" + "serverGroupName: %s\nruleGroupName: %s", serverGroupName, ruleGroupName);
-                }
-            }
-        }
-    }
-    
-    private void checkSinglePrimaryMode(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            while (resultSet.next()) {
-                if (!"ON".equals(resultSet.getString("VARIABLE_VALUE"))) {
-                    throw new ShardingSphereConfigurationException("MGR is not in single primary mode");
-                }
-            }
-        }
-    }
-    
-    private void checkDataSourceInReplicationGroup(final Statement statement, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> memberDataSourceURLs = new LinkedList<>();
-        try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
-            while (resultSet.next()) {
-                memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
-            }
-        }
-        Preconditions.checkState(!memberDataSourceURLs.isEmpty(), "MGR member is empty.");
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            checkDataSourceInReplicationGroup(entry.getKey(), entry.getValue(), memberDataSourceURLs);
-        }
-    }
-    
-    private void checkDataSourceInReplicationGroup(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
-        boolean isExisted = false;
-        for (String each : memberDataSourceURLs) {
-            if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
-                isExisted = true;
-                break;
-            }
-        }
-        if (!isExisted) {
-            throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
-        }
-    }
     
     @Override
     public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
