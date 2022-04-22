@@ -43,7 +43,7 @@ import java.util.Properties;
 @Getter
 @Setter
 @Slf4j
-public final class MasterSlaveStatusDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     

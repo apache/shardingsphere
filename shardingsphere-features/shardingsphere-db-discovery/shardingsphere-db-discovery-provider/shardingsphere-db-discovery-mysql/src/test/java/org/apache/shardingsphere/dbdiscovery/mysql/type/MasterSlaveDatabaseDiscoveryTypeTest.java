@@ -35,11 +35,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MasterSlaveStatusDatabaseDiscoveryTypeTest {
+public final class MasterSlaveDatabaseDiscoveryTypeTest {
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MasterSlaveHighlyAvailableStatus actual = new MasterSlaveStatusDatabaseDiscoveryType().loadHighlyAvailableStatus(getDataSource(true, 3306));
+        MasterSlaveHighlyAvailableStatus actual = new MasterSlaveDatabaseDiscoveryType().loadHighlyAvailableStatus(getDataSource(true, 3306));
         assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
     }
     
@@ -48,7 +48,7 @@ public final class MasterSlaveStatusDatabaseDiscoveryTypeTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", getDataSource(false, 3306));
         dataSourceMap.put("ds_1", getDataSource(true, 3307));
-        Optional<String> actual = new MasterSlaveStatusDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new MasterSlaveDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_0"));
     }
