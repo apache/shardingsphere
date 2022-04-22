@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
 
 import org.junit.Test;
 
