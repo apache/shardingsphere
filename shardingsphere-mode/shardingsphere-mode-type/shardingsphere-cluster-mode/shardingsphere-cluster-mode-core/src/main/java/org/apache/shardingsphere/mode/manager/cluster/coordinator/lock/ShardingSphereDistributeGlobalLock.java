@@ -41,9 +41,11 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     private static final int CHECK_ACK_INTERVAL_MILLISECONDS = 1000;
     
-    private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
+    private static final long MAX_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     
-    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 2 * 100;
+    private static final long MIN_TRY_LOCK_TIMEOUT_MILLISECONDS = 200;
+    
+    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 50;
     
     private final LockRegistryService lockService;
     
@@ -59,18 +61,23 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean tryLock(final String lockName) {
-        return innerTryLock(lockName, DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS);
+        return innerTryLock(lockName, MAX_TRY_LOCK_TIMEOUT_MILLISECONDS);
     }
     
     @Override
-    public boolean tryLock(final String lockName, final long timeout) {
-        return innerTryLock(lockName, timeout);
+    public boolean tryLock(final String lockName, final long timeoutMillis) {
+        return innerTryLock(lockName, timeoutMillis);
     }
     
-    private boolean innerTryLock(final String lockName, final long timeout) {
+    private synchronized boolean innerTryLock(final String lockName, final long timeout) {
+        long actualTimeout = Math.max(timeout, MIN_TRY_LOCK_TIMEOUT_MILLISECONDS);
+        boolean isAcquired = acquireToken();
+        if (!isAcquired) {
+            return false;
+        }
         try {
-            if (acquireToken() && synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING) && isOwner.compareAndSet(false, true)) {
-                return acquire(lockName, timeout) ? synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)
+            if (synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING) && isOwner.compareAndSet(false, true)) {
+                return acquire(lockName, actualTimeout) ? synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)
                         : isOwner.compareAndSet(true, false) && synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.UNLOCKED);
             }
             log.debug("innerTryLock locking, lockName={}", lockName);
@@ -165,11 +172,6 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             }
         }
         return true;
-    }
-    
-    @Override
-    public long getDefaultTimeOut() {
-        return DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS;
     }
     
     @Override

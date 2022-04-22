@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Import database configuration statement.
+ * Alter database link statement test case.
  */
-@RequiredArgsConstructor
-public final class ImportDatabaseConfigurationStatement extends UpdatableRALStatement {
-    
-    private final String filePath;
-    
-    /**
-     * Get file path.
-     *
-     * @return file path
-     */
-    public Optional<String> getFilePath() {
-        return Optional.ofNullable(filePath);
-    }
+public final class AlterDatabaseLinkStatementTestCase extends SQLParserTestCase {
 }

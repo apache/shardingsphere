@@ -113,7 +113,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
-                ? KeyGenerateAlgorithmFactory.newInstance() : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+                ? KeyGenerateAlgorithmFactory.newInstance()
+                : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
         Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
@@ -129,8 +130,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
-        defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy() 
-                ? KeyGenerateAlgorithmFactory.newInstance() : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
+                ? KeyGenerateAlgorithmFactory.newInstance()
+                : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
         Preconditions.checkArgument(isValidBindingTableConfiguration(config.getBindingTableGroups()), "Invalid binding table configuration in ShardingRuleConfiguration.");
@@ -267,7 +269,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String originAlgorithmExpression = null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
         String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
         String shardingColumn = getShardingColumn(shardingStrategyConfig);
-        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "");
+        return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "").replaceAll(" ", "");
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {

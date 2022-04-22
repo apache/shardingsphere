@@ -74,5 +74,6 @@ execute
     | alterView
     | alterTrigger
     | createEdition
+    | alterDatabaseLink
     ) SEMI_?
     ;

@@ -23,6 +23,10 @@ Besides, we have also extracted a key generator interface to make users implemen
 
 Use `UUID.randomUUID()` to generate the distributed key.
 
+### NanoID
+
+Generate a string of length 21 distributed key.
+
 ### SNOWFLAKE
 
 Users can configure the strategy of each table in sharding rule configuration module, with default snowflake algorithm generating 64bit long integral data.

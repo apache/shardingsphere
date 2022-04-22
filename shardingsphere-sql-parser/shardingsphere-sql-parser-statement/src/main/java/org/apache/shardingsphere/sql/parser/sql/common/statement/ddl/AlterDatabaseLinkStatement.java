@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Import database configuration statement.
+ * Alter database link statement.
  */
-@RequiredArgsConstructor
-public final class ImportDatabaseConfigurationStatement extends UpdatableRALStatement {
-    
-    private final String filePath;
-    
-    /**
-     * Get file path.
-     *
-     * @return file path
-     */
-    public Optional<String> getFilePath() {
-        return Optional.ofNullable(filePath);
-    }
+@ToString
+public abstract class AlterDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement {
 }

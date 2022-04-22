@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
+package org.apache.shardingsphere.authority.yaml.config;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
-import java.util.Optional;
+import java.util.Properties;
 
 /**
- * Import database configuration statement.
+ * Authority user configuration for YAML.
  */
-@RequiredArgsConstructor
-public final class ImportDatabaseConfigurationStatement extends UpdatableRALStatement {
+@Getter
+@Setter
+public final class YamlAuthorityUserConfiguration implements YamlConfiguration {
     
-    private final String filePath;
+    private String user;
     
-    /**
-     * Get file path.
-     *
-     * @return file path
-     */
-    public Optional<String> getFilePath() {
-        return Optional.ofNullable(filePath);
+    private String password;
+    
+    private String auth;
+    
+    private Properties props;
+    
+    @Override
+    public String toString() {
+        return user + ":" + password;
     }
 }
