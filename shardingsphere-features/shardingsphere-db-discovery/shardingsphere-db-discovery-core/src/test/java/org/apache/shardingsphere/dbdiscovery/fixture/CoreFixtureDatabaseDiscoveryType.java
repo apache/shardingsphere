@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
@@ -44,6 +44,6 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
     public String getType() {
-        return "TEST";
+        return "CORE.FIXTURE";
     }
 }
