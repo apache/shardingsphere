@@ -22,9 +22,10 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -68,12 +69,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShardingTableMetaDataBuilderTest {
+public class ShardingSchemaMetaDataBuilderTest {
     
     private static final String TABLE_NAME = "t_order";
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
     }
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -123,11 +124,11 @@ public class ShardingTableMetaDataBuilderTest {
         ResultSet resultSet = createColumnResultSetForPostgreSQL();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default"))).thenReturn(preparedStatement);
+        when(connection.prepareStatement(startsWith("SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"))).thenReturn(preparedStatement);
         ResultSet indexResultSet = createPostgreSQLIndexResultSet();
         PreparedStatement indexStatement = mock(PreparedStatement.class);
         when(indexStatement.executeQuery()).thenReturn(indexResultSet);
-        when(connection.prepareStatement(startsWith("SELECT tablename, indexname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
+        when(connection.prepareStatement(startsWith("SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname"))).thenReturn(indexStatement);
     }
     
     private void mockOracleResultSet(final Connection connection) throws SQLException {
@@ -177,6 +178,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("indexname")).thenReturn("order_index_t_order_t_order_0");
         when(result.getString("tablename")).thenReturn("t_order_0");
+        when(result.getString("schemaname")).thenReturn("public");
         return result;
     }
     
@@ -215,7 +217,7 @@ public class ShardingTableMetaDataBuilderTest {
         when(result.getString("table_name")).thenReturn("t_order_0");
         when(result.getString("column_name")).thenReturn("id", "pwd_cipher", "pwd_plain");
         when(result.getString("udt_name")).thenReturn("INT");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
+        when(result.getString("table_schema")).thenReturn("public");
         return result;
     }
     
@@ -253,9 +255,9 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        assertResult(actual, "sharding_db");
     }
     
     @Test
@@ -265,23 +267,23 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        assertResult(actual, "sharding_db");
     }
     
     @Test
     public void assertLoadTablesOracle() throws SQLException {
         ShardingRule shardingRule = createShardingRuleForOracle();
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         DatabaseType databaseType = mock(OracleDatabaseType.class);
         when(databaseType.getName()).thenReturn("Oracle");
-        Map<String, TableMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule,
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertThat(actual.keySet().iterator().next(), is("t_order"));
-        TableMetaData tableMetaData = actual.values().iterator().next();
+        Map<String, SchemaMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME),
+                shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        assertThat(actual.get("sharding_db").getTables().keySet().iterator().next(), is("T_ORDER_0"));
+        TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("ID"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("PWD_CIPHER"));
@@ -303,11 +305,20 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        ResultSet schemaMetaData = mockSchemaMetaData();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaMetaData);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        assertResult(actual, "public");
+    }
+    
+    private ResultSet mockSchemaMetaData() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn("public");
+        return result;
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
@@ -324,13 +335,13 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        assertResult(actual);
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        assertResult(actual, "sharding_db");
     }
     
-    private void assertResult(final Map<String, TableMetaData> actual) {
-        TableMetaData tableMetaData = actual.values().iterator().next();
+    private void assertResult(final Map<String, SchemaMetaData> schemaMetaDataMap, final String schemaName) {
+        TableMetaData tableMetaData = schemaMetaDataMap.get(schemaName).getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
@@ -347,9 +358,9 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        TableMetaData tableMetaData = actual.values().iterator().next();
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
@@ -364,9 +375,9 @@ public class ShardingTableMetaDataBuilderTest {
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder loader = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, TableMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props));
-        TableMetaData tableMetaData = actual.values().iterator().next();
+        ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
+        Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+        TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)).getName(), is("pwd_cipher"));
@@ -374,17 +385,18 @@ public class ShardingTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertDecorateWithKeyGenerateStrategy() {
+    public void assertDecorateWithKeyGenerateStrategy() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingTableMetaDataBuilder builder = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
+        ShardingSchemaMetaDataBuilder builder = (ShardingSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(shardingRule);
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         tableMetaDataMap.put(TABLE_NAME, createTableMetaData());
-        Map<String, ColumnMetaData> columns = builder.decorate(tableMetaDataMap, shardingRule, mock(SchemaBuilderMaterials.class)).get(TABLE_NAME).getColumns();
+        Map<String, ColumnMetaData> columns = builder.decorate(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataMap)),
+                shardingRule, mock(SchemaBuilderMaterials.class)).get("sharding_db").getTables().get(TABLE_NAME).getColumns();
         Iterator<ColumnMetaData> iterator = columns.values().iterator();
-        assertFalse(iterator.next().isGenerated());
-        assertFalse(iterator.next().isGenerated());
-        assertFalse(iterator.next().isGenerated());
         assertTrue(iterator.next().isGenerated());
+        assertFalse(iterator.next().isGenerated());
+        assertFalse(iterator.next().isGenerated());
+        assertFalse(iterator.next().isGenerated());
     }
     
     private TableMetaData createTableMetaData() {

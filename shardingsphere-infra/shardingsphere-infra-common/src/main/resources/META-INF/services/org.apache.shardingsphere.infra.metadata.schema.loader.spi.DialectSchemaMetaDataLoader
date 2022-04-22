@@ -15,4 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture.CommonFixtureTableMetaDataBuilder
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.PostgreSQLSchemaMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.MySQLSchemaMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.OpenGaussSchemaMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.SQLServerSchemaMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.OracleSchemaMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.loader.dialect.H2SchemaMetaDataLoader

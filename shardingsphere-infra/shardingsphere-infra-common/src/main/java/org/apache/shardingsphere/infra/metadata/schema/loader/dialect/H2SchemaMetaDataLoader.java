@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for H2.
  */
-public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
     private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS "
             + "WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
@@ -64,16 +65,17 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME IN (%s)";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-                result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
+                Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
+                tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return result;
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {

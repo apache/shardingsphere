@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoade
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.LinkedList;
 
 /**
  * Table meta data utility class.
@@ -61,7 +61,7 @@ public class TableMetaDataUtil {
         }
         return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey().contains(".")
                 ? entry.getKey().split("\\.")[0]
-                : entry.getKey()))).collect(Collectors.toList());
+                : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {

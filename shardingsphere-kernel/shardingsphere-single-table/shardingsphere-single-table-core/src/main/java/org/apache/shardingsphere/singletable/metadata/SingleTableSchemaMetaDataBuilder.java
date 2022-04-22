@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.singletable.metadata;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
-import org.apache.shardingsphere.infra.metadata.schema.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.schema.util.TableMetaDataUtil;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
@@ -35,16 +36,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data builder for single.
+ * Schema meta data builder for single table.
  */
-public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<SingleTableRule> {
+public final class SingleTableSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<SingleTableRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         Collection<String> ruleTables = rule.getTables();
         Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
         if (needLoadTables.isEmpty()) {
@@ -54,16 +54,18 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
         if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<TableMetaData> tableMetaDataList = TableMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
-        return tableMetaDataList.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
     }
     
     @Override
-    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final SingleTableRule rule, final SchemaBuilderMaterials materials) {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Collection<String> ruleTables = rule.getTables();
-        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), ruleTables.contains(entry.getKey()) ? decorate(entry.getKey(), entry.getValue()) : entry.getValue());
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleTableRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
+            for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
+                tables.put(tableEntry.getKey(), decorate(tableEntry.getKey(), tableEntry.getValue()));
+            }
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }

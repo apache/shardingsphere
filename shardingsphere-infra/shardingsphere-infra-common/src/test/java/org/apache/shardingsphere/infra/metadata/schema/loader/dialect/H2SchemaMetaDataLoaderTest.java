@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
@@ -29,9 +30,9 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class H2TableMetaDataLoaderTest {
+public final class H2SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
@@ -64,7 +65,7 @@ public final class H2TableMetaDataLoaderTest {
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
                         + " INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
                 .executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
     }
     
     @Test
@@ -90,7 +91,7 @@ public final class H2TableMetaDataLoaderTest {
                         + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl')")
                 .executeQuery())
                         .thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -145,15 +146,16 @@ public final class H2TableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+    private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         assertTrue(result.isPresent());
         return result.get();
     }
     
-    private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
-        assertThat(actual.size(), is(1));
-        TableMetaData actualTableMetaData = actual.get("tbl");
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+        assertThat(schemaMetaDataList.size(), is(1));
+        assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
+        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, true)));

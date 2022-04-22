@@ -33,4 +33,6 @@ public final class TableMetaDataLoaderMaterial {
     private final Collection<String> tableNames;
     
     private final DataSource dataSource;
+    
+    private final String defaultSchemaName;
 }

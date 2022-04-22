@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
@@ -38,9 +39,9 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data loader for SQLServer.
+ * Schema meta data loader for SQLServer.
  */
-public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
@@ -58,16 +59,17 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         if (!columnMetaDataMap.isEmpty()) {
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-                result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
+                Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
+                tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return result;
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

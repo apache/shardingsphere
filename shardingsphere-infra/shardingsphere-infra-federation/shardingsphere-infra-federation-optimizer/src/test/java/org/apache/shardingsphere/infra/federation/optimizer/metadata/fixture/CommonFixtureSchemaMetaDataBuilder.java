@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.SQLException;
@@ -27,16 +27,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<CommonFixtureRule> {
+public final class CommonFixtureSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<CommonFixtureRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        return Collections.emptyMap();
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = Collections.singletonMap("t_order_new",
+                new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataMap));
     }
     
     @Override
-    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        return tableMetaDataMap;
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return schemaMetaDataMap;
     }
     
     @Override

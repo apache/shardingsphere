@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.SQLException;
@@ -28,23 +29,24 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<DataNodeContainedFixtureRule> {
+public final class DataNodeContainedFixtureRuleBasedSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<DataNodeContainedFixtureRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
-            Map<String, TableMetaData> result = new LinkedHashMap<>();
+            Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
             for (String tableName : tableNames) {
-                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+                tableMetaDataMap.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
             }
-            return result;
+            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataMap));
         }
         return Collections.emptyMap();
     }
     
     @Override
-    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        return tableMetaDataMap;
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap,
+                                                final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return schemaMetaDataMap;
     }
     
     @Override

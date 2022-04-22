@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
@@ -40,9 +41,9 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data loader for Oracle.
+ * Schema meta data loader for Oracle.
  */
-public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
@@ -66,14 +67,14 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> tables) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
+            tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
-        return result;
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

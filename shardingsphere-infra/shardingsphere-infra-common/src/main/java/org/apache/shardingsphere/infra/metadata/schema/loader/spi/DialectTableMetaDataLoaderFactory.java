@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class DialectTableMetaDataLoaderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+        ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
     }
     
     /**
@@ -41,7 +41,7 @@ public final class DialectTableMetaDataLoaderFactory {
      * @param databaseType database type
      * @return new instance of dialect table meta data loader
      */
-    public static Optional<DialectTableMetaDataLoader> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectTableMetaDataLoader.class, databaseType.getName());
+    public static Optional<DialectSchemaMetaDataLoader> newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getName());
     }
 }

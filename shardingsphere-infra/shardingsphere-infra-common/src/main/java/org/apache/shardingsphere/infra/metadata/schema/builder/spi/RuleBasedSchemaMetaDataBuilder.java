@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
@@ -27,31 +27,31 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Table meta data builder with related rule.
+ * Schema meta data builder for ShardingSphere rule.
  * 
  * @param <T> type of ShardingSphere rule
  */
-public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> extends OrderedSPI<T> {
+public interface RuleBasedSchemaMetaDataBuilder<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
-     * Load table meta data.
+     * Load schema meta data.
      *
      * @param tableNames tables name
      * @param rule ShardingSphere rule
      * @param materials SchemaBuilderMaterials materials
-     * @return table meta data map key is logic table name value is actual table meta data
+     * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials) throws SQLException;
+    Map<String, SchemaMetaData> load(Collection<String> tableNames, T rule, SchemaBuilderMaterials materials) throws SQLException;
     
     /**
-     * Decorate table meta data.
+     * Decorate schema meta data.
      *
-     * @param tableMetaDataMap key is logic table name, value is actual table meta data
+     * @param schemaMetaDataMap schema meta data map
      * @param rule ShardingSphere rule
      * @param materials SchemaBuilderMaterials materials
-     * @return table meta data map key is logic table name value is actual table meta data
+     * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> decorate(Map<String, TableMetaData> tableMetaDataMap, T rule, SchemaBuilderMaterials materials) throws SQLException;
+    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, SchemaBuilderMaterials materials) throws SQLException;
 }

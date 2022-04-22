@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
@@ -30,9 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,48 +44,60 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLTableMetaDataLoaderTest {
+public final class PostgreSQLSchemaMetaDataLoaderTest {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default "
-            + "FROM information_schema.columns WHERE table_schema = ?";
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"
+            + " FROM information_schema.columns WHERE table_schema IN ('public')";
     
-    private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN ('tbl')";
+    private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name FROM information_schema.table_constraints tc"
-            + " JOIN information_schema.key_column_usage kc"
-            + " ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
-            + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema = ?";
+    private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN ('tbl') ORDER BY ordinal_position";
     
-    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
+    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
+            + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
+            + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema IN ('public')";
+    
+    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN ('public')";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
     @Test
     public void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(BASIC_TABLE_META_DATA_SQL).executeQuery()).thenReturn(resultSet);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet tableResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+    }
+    
+    private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn("public");
+        return result;
     }
     
     @Test
     public void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(resultSet);
+        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
+        ResultSet tableResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl")));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
@@ -137,15 +150,16 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         return result;
     }
     
-    private DialectTableMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectTableMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"));
+    private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"));
         assertTrue(result.isPresent());
         return result.get();
     }
     
-    private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
-        assertThat(actual.size(), is(1));
-        TableMetaData actualTableMetaData = actual.get("tbl");
+    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+        assertThat(schemaMetaDataList.size(), is(1));
+        assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
+        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", Types.INTEGER, true, true, true)));

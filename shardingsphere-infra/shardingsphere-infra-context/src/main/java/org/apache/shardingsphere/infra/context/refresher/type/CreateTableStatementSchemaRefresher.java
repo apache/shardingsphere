@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -52,15 +55,18 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
+        String databaseName = schemaMetaData.getName();
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props);
-        Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).get(tableName));
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, databaseName);
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
+        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : databaseName;
+        Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(tableMetaData -> {
             schemaMetaData.getDefaultSchema().put(tableName, tableMetaData);
             database.put(tableMetaData);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             // TODO Get real schema name
-            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+            SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, databaseName);
             event.getAlteredTables().add(tableMetaData);
             ShardingSphereEventBus.getInstance().post(event);
         });
