@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -90,8 +89,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         this.backendConnection = backendConnection;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
-        DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(metaDataContexts.getOptimizerContext().getParserContexts().get(databaseName).getDatabaseType().getName());
-        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(getSchemaName(databaseType, databaseName));
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(getSchemaName(logicSQL.getSqlStatementContext().getDatabaseType(), databaseName));
         federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
