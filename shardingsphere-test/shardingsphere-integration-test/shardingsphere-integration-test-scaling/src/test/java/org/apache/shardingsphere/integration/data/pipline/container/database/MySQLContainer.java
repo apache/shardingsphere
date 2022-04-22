@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.integration.data.pipline.container.DockerDatabaseContainer;
+import org.testcontainers.containers.BindMode;
 
 public class MySQLContainer extends DockerDatabaseContainer {
     
@@ -30,13 +30,14 @@ public class MySQLContainer extends DockerDatabaseContainer {
     @Override
     protected void configure() {
         super.configure();
+        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(3306);
         setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%", "MYSQL_DATABASE=test"));
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci");
     }
     
     @Override
-    protected int getPort() {
+    public int getPort() {
         return 3306;
     }
 }

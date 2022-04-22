@@ -15,24 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container.database;
+package org.apache.shardingsphere.integration.data.pipline.env.enums;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-
-// TODO not complete yet
-public class PostgreSQLContainer extends DockerDatabaseContainer {
+public enum ITEnvTypeEnum {
     
-    public PostgreSQLContainer(final String dockerImageName) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
-    }
-    
-    @Override
-    public void start() {
-        
-    }
-    
-    @Override
-    public int getPort() {
-        return 5432;
-    }
+    DOCKER, LOCAL;
 }

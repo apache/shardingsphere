@@ -17,45 +17,71 @@
 
 package org.apache.shardingsphere.integration.data.pipline.cases;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipline.container.ComposedContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.compose.BaseComposedContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.integration.data.pipline.container.compose.LocalComposedContainer;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.junit.Before;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     
-    private DataSource targetDataSource;
-    
     @Getter(AccessLevel.NONE)
-    private final ComposedContainer composedContainer;
-    
-    private String databaseNetworkAlias;
+    private final BaseComposedContainer composedContainer;
     
     private ClusterPersistRepository clusterPersistRepository;
     
     public BaseITCase(final DatabaseType databaseType) {
-        composedContainer = new ComposedContainer(databaseType);
+        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
+            composedContainer = new DockerComposedContainer(databaseType);
+        } else {
+            composedContainer = new LocalComposedContainer(databaseType);
+        }
     }
     
     @Before
     public void setUp() {
         composedContainer.start();
-        targetDataSource = composedContainer.getTargetDataSource();
-        GovernanceContainer governanceContainer = composedContainer.getGovernanceContainer();
-        databaseNetworkAlias = composedContainer.getDatabaseNetworkAlias();
         clusterPersistRepository = new CuratorZookeeperRepository();
-        clusterPersistRepository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "it_db", governanceContainer.getServerLists(), new Properties()));
-        System.out.println(clusterPersistRepository.get("/"));
+        clusterPersistRepository.init(new ClusterPersistRepositoryConfiguration("ZooKeeper", "it_db", composedContainer.getGovernanceContainer().getServerLists(), new Properties()));
+    }
+    
+    /**
+     * Get proxy database connection.
+     *
+     * @return proxy database connection
+     */
+    @SneakyThrows(SQLException.class)
+    public Connection getProxyConnection() {
+        return composedContainer.getProxyConnection();
+    }
+    
+    /**
+     * Get database url, such as  ip:port.
+     *
+     * @return database url
+     */
+    public String getDatabaseUrl() {
+        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
+            return Joiner.on(":").join("db.host", composedContainer.getDatabaseContainer().getPort());
+        } else {
+            return Joiner.on(":").join(composedContainer.getDatabaseContainer().getHost(), composedContainer.getDatabaseContainer().getFirstMappedPort());
+        }
     }
     
     /**
@@ -64,7 +90,7 @@ public abstract class BaseITCase {
      * @return actual source database name list
      */
     public List<String> listSourceDatabaseName() {
-        return composedContainer.listSourceDatabaseName();
+        return composedContainer.getDatabaseContainer().getSourceDatabaseNames();
     }
     
     /**
@@ -73,6 +99,6 @@ public abstract class BaseITCase {
      * @return actual target database name list
      */
     public List<String> listTargetDatabaseName() {
-        return composedContainer.listTargetDatabaseName();
+        return composedContainer.getDatabaseContainer().getTargetDatabaseNames();
     }
 }

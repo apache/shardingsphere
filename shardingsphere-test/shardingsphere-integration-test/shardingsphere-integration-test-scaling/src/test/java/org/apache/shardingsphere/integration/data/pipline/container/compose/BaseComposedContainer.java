@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container;
+package org.apache.shardingsphere.integration.data.pipline.container.compose;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipline.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
@@ -26,66 +27,39 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.gov
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
-import javax.sql.DataSource;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-public final class ComposedContainer implements Startable {
+@Getter
+public abstract class BaseComposedContainer implements Startable {
     
     private final ITContainers containers;
     
-    @Getter
     private final GovernanceContainer governanceContainer;
     
     private final DockerDatabaseContainer databaseContainer;
     
-    private final ShardingSphereProxyContainer proxyContainer;
-    
-    @Getter
-    private final String databaseNetworkAlias = NetworkAliasUtil.getNetworkAlias("db");
-    
-    public ComposedContainer(final DatabaseType databaseType) {
+    public BaseComposedContainer(final DatabaseType databaseType) {
         this.containers = new ITContainers("");
         this.governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), NetworkAliasUtil.getNetworkAlias("zk"));
-        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType), databaseNetworkAlias);
-        ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(databaseType, "");
-        proxyContainer.dependsOn(governanceContainer, databaseContainer);
-        this.proxyContainer = containers.registerContainer(proxyContainer, NetworkAliasUtil.getNetworkAlias("sharding-proxy"));
+        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType), NetworkAliasUtil.getNetworkAlias("db"));
     }
+    
+    /**
+     * Get proxy connection.
+     *
+     * @return sql connection.
+     * @throws SQLException sql exception
+     */
+    public abstract Connection getProxyConnection() throws SQLException;
     
     @Override
     public void start() {
-        containers.start();
+        getContainers().start();
     }
     
     @Override
     public void stop() {
-        containers.stop();
-    }
-    
-    /**
-     * Get target data source.
-     *
-     * @return target data source.
-     */
-    public DataSource getTargetDataSource() {
-        return proxyContainer.getTargetDataSource();
-    }
-    
-    /**
-     * Get actual data source map.
-     *
-     * @return actual data source map
-     */
-    public List<String> listSourceDatabaseName() {
-        return databaseContainer.getSourceDatabaseNames();
-    }
-    
-    /**
-     * Get expected data source map.
-     *
-     * @return expected data source map
-     */
-    public List<String> listTargetDatabaseName() {
-        return databaseContainer.getTargetDatabaseNames();
+        getContainers().stop();
     }
 }

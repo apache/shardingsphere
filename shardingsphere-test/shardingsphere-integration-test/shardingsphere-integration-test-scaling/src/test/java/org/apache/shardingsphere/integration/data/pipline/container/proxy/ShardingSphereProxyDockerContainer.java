@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container;
+package org.apache.shardingsphere.integration.data.pipline.container.proxy;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -27,30 +26,22 @@ import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ShardingSphere proxy container.
  */
 @Slf4j
-public final class ShardingSphereProxyContainer extends DockerITContainer {
+public final class ShardingSphereProxyDockerContainer extends DockerITContainer {
     
     private final DatabaseType databaseType;
     
-    private final String schemaName;
-    
-    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
-    
-    public ShardingSphereProxyContainer(final DatabaseType databaseType, final String schemaName) {
+    public ShardingSphereProxyDockerContainer(final DatabaseType databaseType) {
         super("Scaling-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
-        this.schemaName = schemaName;
     }
     
     @Override
@@ -61,32 +52,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer {
     }
     
     private void mapConfigurationFiles() {
-        String containerPath = "/opt/shardingsphere-proxy/conf";
-        withClasspathResourceMapping("/env/common/proxy/conf/", containerPath, BindMode.READ_ONLY);
-    }
-    
-    /**
-     * Get target data source.
-     *
-     * @return target data source.
-     */
-    public DataSource getTargetDataSource() {
-        DataSource dataSource = targetDataSourceProvider.get();
-        if (Objects.isNull(dataSource)) {
-            targetDataSourceProvider.set(createProxyDataSource());
-        }
-        return targetDataSourceProvider.get();
-    }
-    
-    private DataSource createProxyDataSource() {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), schemaName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        withClasspathResourceMapping("/env/conf/", "/opt/shardingsphere-proxy/conf", BindMode.READ_ONLY);
     }
     
     @Slf4j

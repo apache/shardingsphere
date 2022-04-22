@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container;
+package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
@@ -52,11 +51,15 @@ public abstract class DockerDatabaseContainer extends DockerITContainer {
     }
     
     @Override
-    @SneakyThrows
     protected void postStart() {
         sourceDatabaseNames.addAll(Lists.newArrayList("ds_0", "ds_1"));
         targetDatabaseNames.addAll(Lists.newArrayList("ds_2", "ds_3", "ds_4"));
     }
     
-    protected abstract int getPort();
+    /**
+     * Get database port.
+     *
+     * @return database port
+     */
+    public abstract int getPort();
 }

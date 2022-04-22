@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container.database;
+package org.apache.shardingsphere.integration.data.pipline.cases.command.mysql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import lombok.Data;
 
-// TODO not complete yet
-public class PostgreSQLContainer extends DockerDatabaseContainer {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@Data
+@XmlRootElement(name = "command")
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class MySQLCommand {
     
-    public PostgreSQLContainer(final String dockerImageName) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
-    }
+    @XmlElement(name = "create-table-order")
+    private String createTableOrder;
     
-    @Override
-    public void start() {
-        
-    }
-    
-    @Override
-    public int getPort() {
-        return 5432;
-    }
+    @XmlElement(name = "insert-order")
+    private String insertOrder;
 }

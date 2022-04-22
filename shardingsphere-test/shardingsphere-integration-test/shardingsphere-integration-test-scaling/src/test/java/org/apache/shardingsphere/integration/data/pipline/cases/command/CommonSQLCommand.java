@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.container.database;
+package org.apache.shardingsphere.integration.data.pipline.cases.command;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import lombok.Data;
 
-// TODO not complete yet
-public class PostgreSQLContainer extends DockerDatabaseContainer {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@Data
+@XmlRootElement(name = "command")
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class CommonSQLCommand {
     
-    public PostgreSQLContainer(final String dockerImageName) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
-    }
+    @XmlElement(name = "add-resource")
+    private String addResource;
     
-    @Override
-    public void start() {
-        
-    }
+    @XmlElement(name = "create-database")
+    private String createDatabase;
     
-    @Override
-    public int getPort() {
-        return 5432;
-    }
+    @XmlElement(name = "use-database")
+    private String useDatabase;
+    
+    @XmlElement(name = "create-sharding-table-rule")
+    private String createShardingTableRule;
 }
