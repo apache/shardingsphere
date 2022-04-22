@@ -132,8 +132,8 @@ public final class FilterableTableScanExecutor {
      */
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
+        String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getName());
-        String schemaName = getSchemaName(databaseType);
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
@@ -178,10 +178,6 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    private String getSchemaName(final DatabaseType databaseType) {
-        return databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "public" : executorContext.getSchemaName();
-    }
-    
     private Collection<Statement> getStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         Collection<Statement> result = new LinkedList<>();
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
@@ -194,7 +190,7 @@ public final class FilterableTableScanExecutor {
     
     private SqlString createSQLString(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final DatabaseType databaseType) {
         SqlDialect sqlDialect = SQL_DIALECTS.getOrDefault(databaseType.getClass(), MysqlSqlDialect.DEFAULT);
-        return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext, databaseType)).asStatement().toSqlString(sqlDialect);
+        return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
     @SneakyThrows
@@ -228,9 +224,9 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final DatabaseType databaseType) {
+    private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
-        String schemaName = getSchemaName(databaseType);
+        String schemaName = executorContext.getSchemaName();
         RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster();
         RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName).getCatalogReader();
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());
