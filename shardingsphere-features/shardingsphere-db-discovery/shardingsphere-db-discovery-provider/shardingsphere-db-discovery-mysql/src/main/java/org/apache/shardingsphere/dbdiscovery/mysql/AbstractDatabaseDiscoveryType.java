@@ -28,7 +28,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,12 +41,8 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+    public final void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
             return;
         }
@@ -94,7 +89,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public String getPrimaryDataSource() {
+    public final String getPrimaryDataSource() {
         return oldPrimaryDataSource;
     }
 }
