@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,22 +38,22 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Show slave status database discovery type.
+ * Master-slave database discovery type.
  */
 @Getter
 @Setter
 @Slf4j
-public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
     private Properties props = new Properties();
     
     @Override
-    public ShowSlaveStatusHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+    public MasterSlaveHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            return new ShowSlaveStatusHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
+            return new MasterSlaveHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
         }
     }
     
@@ -108,6 +108,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     
     @Override
     public String getType() {
-        return "SHOW_SLAVE_STATUS";
+        return "MASTER_SLAVE";
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
 
 import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Highly available status of MySQL show slave status cluster.
+ * Highly available status of MySQL master-slave cluster.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class ShowSlaveStatusHighlyAvailableStatus implements HighlyAvailableStatus {
+public final class MasterSlaveHighlyAvailableStatus implements HighlyAvailableStatus {
     
     private final String primaryInstanceURL;
     
