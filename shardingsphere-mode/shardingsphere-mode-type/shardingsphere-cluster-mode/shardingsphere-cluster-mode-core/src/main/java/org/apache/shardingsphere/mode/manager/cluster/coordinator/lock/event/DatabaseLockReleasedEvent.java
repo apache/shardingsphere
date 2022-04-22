@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Locked event.
+ * Lock released event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaLockedEvent implements GovernanceEvent {
+public final class DatabaseLockReleasedEvent implements GovernanceEvent {
     
-    private final String schema;
+    private final String database;
 }

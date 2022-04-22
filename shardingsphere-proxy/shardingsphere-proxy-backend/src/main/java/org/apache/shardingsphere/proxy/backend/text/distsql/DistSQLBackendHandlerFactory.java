@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
@@ -77,8 +77,8 @@ public final class DistSQLBackendHandlerFactory {
         if (null == databaseName) {
             return;
         }
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(databaseName)) {
-            throw new SchemaLockedException(databaseName);
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName)) {
+            throw new DatabaseLockedException(databaseName);
         }
     }
 }

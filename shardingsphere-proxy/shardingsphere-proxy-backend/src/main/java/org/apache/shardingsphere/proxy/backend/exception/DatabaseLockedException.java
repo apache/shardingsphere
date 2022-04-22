@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Schema locked exception.
+ * database locked exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaLockedException extends BackendException {
+public final class DatabaseLockedException extends BackendException {
     
     private static final long serialVersionUID = -5409739222950362541L;
     
-    private final String schemaName;
+    private final String databaseName;
 }

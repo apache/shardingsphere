@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class WorkerIdNodeTest {
-
+    
     @Test
     public void assertGetWorkerIdGeneratorPath() {
         assertThat(WorkerIdNode.getWorkerIdGeneratorPath("instanceId"), is("/worker_id/instanceId"));

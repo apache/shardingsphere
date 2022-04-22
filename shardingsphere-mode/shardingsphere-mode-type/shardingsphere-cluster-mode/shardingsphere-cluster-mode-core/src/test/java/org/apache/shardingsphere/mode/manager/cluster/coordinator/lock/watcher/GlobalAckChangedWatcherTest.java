@@ -33,19 +33,19 @@ public final class GlobalAckChangedWatcherTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/schema/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/database-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> add = new GlobalAckChangedWatcher().createGovernanceEvent(addDataChangedEvent);
         assertTrue(add.isPresent());
         GovernanceEvent addEvent = add.get();
         assertTrue(addEvent instanceof AckLockedEvent);
-        assertThat(((AckLockedEvent) addEvent).getSchema(), is("schema"));
+        assertThat(((AckLockedEvent) addEvent).getDatabase(), is("database"));
         assertThat(((AckLockedEvent) addEvent).getLockedInstance(), is("127.0.0.1@3307"));
-        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/schema/ack/schema-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/database-127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> delete = new GlobalAckChangedWatcher().createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(delete.isPresent());
         GovernanceEvent deleteEvent = delete.get();
         assertTrue(deleteEvent instanceof AckLockReleasedEvent);
-        assertThat(((AckLockReleasedEvent) deleteEvent).getSchema(), is("schema"));
+        assertThat(((AckLockReleasedEvent) deleteEvent).getDatabase(), is("database"));
         assertThat(((AckLockReleasedEvent) deleteEvent).getLockedInstance(), is("127.0.0.1@3307"));
     }
 }

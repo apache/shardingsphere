@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.DatabaseLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.DatabaseLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 
@@ -65,26 +65,26 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalSchemaLocks();
+        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalDatabaseLocks();
         if (allGlobalLock.isEmpty()) {
             lockRegistryService.initGlobalLockRoot();
             return;
         }
         for (String each : allGlobalLock) {
-            Optional<String> schemaLock = LockNode.parseGlobalSchemaLocksNodePath(each);
-            schemaLock.ifPresent(schema -> globalLocks.put(schema, crateGlobalLock()));
+            Optional<String> databaseLock = LockNode.parseGlobalDatabaseLocksNodePath(each);
+            databaseLock.ifPresent(database -> globalLocks.put(database, crateGlobalLock()));
         }
     }
     
     @Override
-    public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
-        ShardingSphereGlobalLock result = globalLocks.get(schemaName);
+    public synchronized ShardingSphereLock getOrCreateDatabaseLock(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Get or create database lock args database name can not be null.");
+        ShardingSphereGlobalLock result = globalLocks.get(databaseName);
         if (null != result) {
             return result;
         }
         result = crateGlobalLock();
-        globalLocks.put(schemaName, result);
+        globalLocks.put(databaseName, result);
         return result;
     }
     
@@ -97,26 +97,26 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get schema lock args schema name can not be null.");
-        return globalLocks.get(schemaName);
+    public ShardingSphereLock getDatabaseLock(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Get database lock args database name can not be null.");
+        return globalLocks.get(databaseName);
     }
     
     @Override
-    public boolean isLockedSchema(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
+    public boolean isLockedDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
         if (globalLocks.isEmpty()) {
             return false;
         }
-        ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schemaName);
+        ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(databaseName);
         if (null != shardingSphereGlobalLock) {
-            return shardingSphereGlobalLock.isLocked(schemaName);
+            return shardingSphereGlobalLock.isLocked(databaseName);
         }
         return false;
     }
     
-    private Optional<ShardingSphereGlobalLock> getGlobalLock(final String schemaName) {
-        return Optional.ofNullable(globalLocks.get(schemaName));
+    private Optional<ShardingSphereGlobalLock> getGlobalLock(final String databaseName) {
+        return Optional.ofNullable(globalLocks.get(databaseName));
     }
     
     /**
@@ -125,14 +125,14 @@ public final class DistributeLockContext implements LockContext {
      * @param event locked event
      */
     @Subscribe
-    public synchronized void renew(final SchemaLockedEvent event) {
-        String schema = event.getSchema();
-        ShardingSphereGlobalLock globalLock = globalLocks.get(schema);
+    public synchronized void renew(final DatabaseLockedEvent event) {
+        String database = event.getDatabase();
+        ShardingSphereGlobalLock globalLock = globalLocks.get(database);
         if (null == globalLock) {
             globalLock = crateGlobalLock();
-            globalLocks.put(schema, globalLock);
+            globalLocks.put(database, globalLock);
         }
-        globalLock.ackLock(schema, getCurrentInstanceId());
+        globalLock.ackLock(database, getCurrentInstanceId());
     }
     
     /**
@@ -141,9 +141,9 @@ public final class DistributeLockContext implements LockContext {
      * @param event lock released event
      */
     @Subscribe
-    public synchronized void renew(final SchemaLockReleasedEvent event) {
-        String schema = event.getSchema();
-        getGlobalLock(schema).ifPresent(lock -> lock.releaseAckLock(schema, getCurrentInstanceId()));
+    public synchronized void renew(final DatabaseLockReleasedEvent event) {
+        String database = event.getDatabase();
+        getGlobalLock(database).ifPresent(lock -> lock.releaseAckLock(database, getCurrentInstanceId()));
     }
     
     /**
@@ -153,7 +153,7 @@ public final class DistributeLockContext implements LockContext {
      */
     @Subscribe
     public synchronized void renew(final AckLockedEvent event) {
-        getGlobalLock(event.getSchema()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(event.getLockedInstance()));
+        getGlobalLock(event.getDatabase()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -163,6 +163,6 @@ public final class DistributeLockContext implements LockContext {
      */
     @Subscribe
     public synchronized void renew(final AckLockReleasedEvent event) {
-        getGlobalLock(event.getSchema()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.removeLockedInstance(event.getLockedInstance()));
+        getGlobalLock(event.getDatabase()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.removeLockedInstance(event.getLockedInstance()));
     }
 }
