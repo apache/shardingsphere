@@ -69,7 +69,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(resultSet.getString("MEMBER_STATE")).thenReturn("ONLINE");
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
         databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        MGRHighlyAvailableStatus actual = (MGRHighlyAvailableStatus) databaseDiscoveryType.loadHighlyAvailableStatus(dataSource);
+        MGRHighlyAvailableStatus actual = databaseDiscoveryType.loadHighlyAvailableStatus(dataSource);
         assertTrue(actual.isPluginActive());
         assertTrue(actual.isSinglePrimaryMode());
         assertThat(actual.getGroupName(), is("group_name"));

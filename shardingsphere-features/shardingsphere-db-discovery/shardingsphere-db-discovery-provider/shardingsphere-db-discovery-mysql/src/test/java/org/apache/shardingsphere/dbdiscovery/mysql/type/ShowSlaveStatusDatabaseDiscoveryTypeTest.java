@@ -39,7 +39,7 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        ShowSlaveStatusHighlyAvailableStatus actual = (ShowSlaveStatusHighlyAvailableStatus) new ShowSlaveStatusDatabaseDiscoveryType().loadHighlyAvailableStatus(getDataSource(true, 3306));
+        ShowSlaveStatusHighlyAvailableStatus actual = new ShowSlaveStatusDatabaseDiscoveryType().loadHighlyAvailableStatus(getDataSource(true, 3306));
         assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
     }
     
