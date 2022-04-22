@@ -34,7 +34,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -59,7 +58,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
             oldPrimaryDataSource = "";

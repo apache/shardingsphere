@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -43,10 +42,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
-     * @param disabledDataSourceNames disabled data source names
      * @param groupName group name
      */
-    void updatePrimaryDataSource(String databaseName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
+    void updatePrimaryDataSource(String databaseName, Map<String, DataSource> dataSourceMap, String groupName);
     
     /**
      * Update member state.

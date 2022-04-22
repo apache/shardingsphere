@@ -54,7 +54,7 @@ public final class DatabaseDiscoveryEngine {
      * @param groupName group name
      */
     public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        databaseDiscoveryType.updatePrimaryDataSource(databaseName, getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames), disabledDataSourceNames, groupName);
+        databaseDiscoveryType.updatePrimaryDataSource(databaseName, getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames), groupName);
     }
     
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
