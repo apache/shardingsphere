@@ -1,17 +1,20 @@
 +++
 title = "CREATE SHARDING BINDING TABLE RULE"
-weight = 3
+weight = 4
 +++
 
 ## 描述
 
-`CREATE SHARDING BINDING TABLE RULE` 语法用于为具有分片规则的表（分片表）添加绑定关系
+`CREATE SHARDING BINDING TABLE RULE` 语法用于为具有分片规则的表（分片表）添加绑定关系并创建绑定规则
 
 ### 语法定义
 
 ```SQL
 CreateBindingTableRule ::=
-  'CREATE' 'SHARDING' 'BINDING' 'TABLE' 'RULES' '(' tableName (',' tableName)* ')'
+  'CREATE' 'SHARDING' 'BINDING' 'TABLE' 'RULES'  bindingRelationshipDefinition  (',' bindingRelationshipDefinition )*
+
+bindingRelationshipDefinition ::=
+  '(' tableName (',' tableName)* ')'
 
 tableName ::=
   identifier
@@ -23,6 +26,7 @@ tableName ::=
 - 一个分片表只能具有一个绑定关系
 - 添加绑定关系的分片表需要使用相同的资源，并且分片节点个数相同。例如 `ds_${0..1}.t_order_${0..1}` 与 `ds_${0..1}.t_order_item_${0..1}`
 - 添加绑定关系的分片表需要对分片键使用相同的分片算法。例如 `t_order_${order_id % 2}` 与 `t_order_item_${order_item_id % 2}` 
+- 绑定规则无法重复创建，但可包含多个绑定关系
 
 ### 示例
 
