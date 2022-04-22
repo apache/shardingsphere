@@ -50,7 +50,7 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
     /**
      * Create new instance of replica load-balance algorithm.
      * 
-     * @param replicaLoadBalanceAlgorithmConfig replica load balance algorithm configuration
+     * @param replicaLoadBalanceAlgorithmConfig replica load-balance algorithm configuration
      * @return new instance of replica load-balance algorithm
      */
     public static ReplicaLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration replicaLoadBalanceAlgorithmConfig) {
@@ -58,10 +58,10 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
     }
     
     /**
-     * Judge whether contains encrypt algorithm.
+     * Judge whether contains load-balance algorithm.
      *
-     * @param replicaLoadBalanceAlgorithmType replica load balance algorithm type
-     * @return contains replica load balance algorithm or not
+     * @param replicaLoadBalanceAlgorithmType replica load-balance algorithm type
+     * @return contains replica load-balance algorithm or not
      */
     public static boolean contains(final String replicaLoadBalanceAlgorithmType) {
         return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType, new Properties()).isPresent();

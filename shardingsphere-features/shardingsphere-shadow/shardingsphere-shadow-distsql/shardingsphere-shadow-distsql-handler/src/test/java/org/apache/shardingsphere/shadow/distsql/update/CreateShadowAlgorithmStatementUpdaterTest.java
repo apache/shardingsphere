@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,15 +40,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShadowAlgorithmStatementUpdaterTest {
     
-    static {
-        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
-    }
-    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final CreateShadowAlgorithmStatementUpdater updater = new CreateShadowAlgorithmStatementUpdater();
     
@@ -60,16 +54,16 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         prop.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
                 new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithExistAlgorithm() throws DistSQLException {
-        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", null));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", null));
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -77,7 +71,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -85,7 +79,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("HINT_TEST_1", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     private CreateShadowAlgorithmStatement createSQLStatement(final ShadowAlgorithmSegment... ruleSegments) {
