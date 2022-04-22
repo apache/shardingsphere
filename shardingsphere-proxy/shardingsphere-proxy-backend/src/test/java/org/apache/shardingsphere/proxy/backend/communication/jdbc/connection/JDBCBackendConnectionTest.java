@@ -97,7 +97,7 @@ public final class JDBCBackendConnectionTest {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
-        backendStatement.setSchemaName(connectionSession.getDatabaseName());
+        backendStatement.setDatabaseName(connectionSession.getDatabaseName());
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     

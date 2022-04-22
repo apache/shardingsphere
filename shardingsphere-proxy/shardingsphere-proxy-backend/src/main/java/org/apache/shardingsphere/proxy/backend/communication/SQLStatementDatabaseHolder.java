@@ -21,35 +21,35 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Hold SQL statement schema for current thread.
+ * Hold SQL statement database for current thread.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementSchemaHolder {
+public final class SQLStatementDatabaseHolder {
     
-    private static final ThreadLocal<String> SQL_STATEMENT_SCHEMA = new ThreadLocal<>();
+    private static final ThreadLocal<String> SQL_STATEMENT_DATABASE = new ThreadLocal<>();
     
     /**
-     * Set SQL statement schema.
+     * Set SQL statement database.
      *
-     * @param schema SQL statement schema
+     * @param database SQL statement database
      */
-    public static void set(final String schema) {
-        SQL_STATEMENT_SCHEMA.set(schema);
+    public static void set(final String database) {
+        SQL_STATEMENT_DATABASE.set(database);
     }
     
     /**
-     * Get SQL statement schema.
+     * Get SQL statement database.
      *
-     * @return SQL statement schema
+     * @return SQL statement database
      */
     public static String get() {
-        return SQL_STATEMENT_SCHEMA.get();
+        return SQL_STATEMENT_DATABASE.get();
     }
     
     /**
-     * Remove SQL statement schema.
+     * Remove SQL statement database.
      */
     public static void remove() {
-        SQL_STATEMENT_SCHEMA.remove();
+        SQL_STATEMENT_DATABASE.remove();
     }
 }
