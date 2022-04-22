@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class FixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
@@ -44,6 +44,6 @@ public final class FixtureDatabaseDiscoveryType implements DatabaseDiscoveryType
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "DISTSQL.FIXTURE";
     }
 }
