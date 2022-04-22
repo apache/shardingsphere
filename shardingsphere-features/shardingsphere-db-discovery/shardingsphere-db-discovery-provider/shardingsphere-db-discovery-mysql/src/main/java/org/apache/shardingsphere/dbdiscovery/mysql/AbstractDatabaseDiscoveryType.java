@@ -17,23 +17,22 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Abstract database discovery type.
  */
+@Getter
+@Setter
 @Slf4j
 public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
@@ -42,22 +41,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
-        if (newPrimaryDataSource.isEmpty()) {
-            return;
-        }
-        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-            oldPrimaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource)));
-        }
-    }
-    
-    private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public final String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
         return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
     }
@@ -94,7 +78,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public String getPrimaryDataSource() {
+    public final String getPrimaryDataSource() {
         return oldPrimaryDataSource;
     }
 }

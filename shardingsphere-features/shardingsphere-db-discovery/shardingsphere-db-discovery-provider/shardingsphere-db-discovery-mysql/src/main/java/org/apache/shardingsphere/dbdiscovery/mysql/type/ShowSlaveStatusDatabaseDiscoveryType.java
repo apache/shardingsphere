@@ -42,13 +42,13 @@ import java.util.Properties;
 /**
  * Show slave status database discovery type.
  */
+@Getter
+@Setter
 @Slf4j
 public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
-    @Getter
-    @Setter
     private Properties props = new Properties();
     
     @Override

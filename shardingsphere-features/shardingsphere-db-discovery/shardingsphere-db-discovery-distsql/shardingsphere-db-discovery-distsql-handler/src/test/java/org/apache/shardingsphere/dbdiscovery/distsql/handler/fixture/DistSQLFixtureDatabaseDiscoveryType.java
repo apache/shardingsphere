@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
 
 public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
@@ -30,7 +29,8 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     }
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+    public String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+        return null;
     }
     
     @Override
@@ -40,6 +40,15 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     @Override
     public String getPrimaryDataSource() {
         return null;
+    }
+    
+    @Override
+    public String getOldPrimaryDataSource() {
+        return null;
+    }
+    
+    @Override
+    public void setOldPrimaryDataSource(final String oldPrimaryDataSource) {
     }
     
     @Override

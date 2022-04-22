@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -39,14 +38,12 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     void checkDatabaseDiscoveryConfiguration(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
     /**
-     * Update primary data source.
-     *
-     * @param databaseName database name
+     * Determine primary data source.
+     * 
      * @param dataSourceMap data source map
-     * @param disabledDataSourceNames disabled data source names
-     * @param groupName group name
+     * @return primary data source name
      */
-    void updatePrimaryDataSource(String databaseName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
+    String determinePrimaryDataSource(Map<String, DataSource> dataSourceMap);
     
     /**
      * Update member state.
@@ -63,4 +60,18 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @return primary data source
      */
     String getPrimaryDataSource();
+    
+    /**
+     * Get old primary data source.
+     * 
+     * @return old primary data source
+     */
+    String getOldPrimaryDataSource();
+    
+    /**
+     * Get old primary data source.
+     * 
+     * @param oldPrimaryDataSource old primary data source
+     */
+    void setOldPrimaryDataSource(String oldPrimaryDataSource);
 }
