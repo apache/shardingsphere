@@ -93,5 +93,34 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>release-all</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <shadeTestJar>true</shadeTestJar>
+                                    <createSourcesJar>true</createSourcesJar>
+                                    <artifactSet>
+                                        <includes>
+                                            <include>${project.groupId}:*:*</include>
+                                        </includes>
+                                    </artifactSet>
+
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
