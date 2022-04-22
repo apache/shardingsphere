@@ -104,7 +104,7 @@ public final class ConnectionSession {
             throw new ShardingSphereException("Failed to switch database, please terminate current transaction.");
         }
         if (statementManager instanceof JDBCBackendStatement) {
-            ((JDBCBackendStatement) statementManager).setSchemaName(databaseName);
+            ((JDBCBackendStatement) statementManager).setDatabaseName(databaseName);
         }
         this.databaseName = databaseName;
     }
