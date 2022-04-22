@@ -47,8 +47,9 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     private String loadPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
-            try (Connection connection = each.getConnection();
-                 Statement statement = connection.createStatement()) {
+            try (
+                    Connection connection = each.getConnection();
+                    Statement statement = connection.createStatement()) {
                 Optional<String> primaryDataSourceURL = loadPrimaryDataSourceURL(statement);
                 if (primaryDataSourceURL.isPresent()) {
                     return primaryDataSourceURL.get();
@@ -62,7 +63,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     protected abstract Optional<String> loadPrimaryDataSourceURL(Statement statement) throws SQLException;
     
-    private  Optional<String> findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
+    private Optional<String> findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
                 String url = connection.getMetaData().getURL();
