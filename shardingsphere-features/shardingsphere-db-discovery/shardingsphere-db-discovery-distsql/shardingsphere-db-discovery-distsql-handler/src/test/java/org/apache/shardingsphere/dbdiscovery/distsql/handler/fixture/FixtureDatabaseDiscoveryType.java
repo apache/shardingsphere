@@ -17,41 +17,33 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * MGR database discovery type fixture.
- */
-@Slf4j
-public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryType {
-    
-    @Override
-    public String getType() {
-        return "mgr";
-    }
+public final class FixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        
     }
     
     @Override
     public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        
     }
     
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        
     }
     
     @Override
     public String getPrimaryDataSource() {
         return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
