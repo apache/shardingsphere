@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Highly available status of MySQL show slave status cluster.
+ * Highly available status of MySQL master-slave cluster.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class ShowSlaveStatusHighlyAvailableStatus implements HighlyAvailableStatus {
+public final class MasterSlaveHighlyAvailableStatus implements HighlyAvailableStatus {
     
     private final String primaryInstanceURL;
     
