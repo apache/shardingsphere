@@ -91,7 +91,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void assertUpdatePrimaryDataSource() throws SQLException {
+    public void assertDeterminePrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -121,8 +121,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        mgrDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, "group_name");
-        assertThat(mgrDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_2"));
+        assertThat(mgrDatabaseDiscoveryType.determinePrimaryDataSource(dataSourceMap), is("ds_2"));
     }
     
     // TODO Fix me

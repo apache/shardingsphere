@@ -63,7 +63,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void assertUpdatePrimaryDataSource() throws SQLException {
+    public void assertDeterminePrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -90,7 +90,6 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        ogHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, "group_name");
-        assertThat(ogHaType.getPrimaryDataSource(), is("ds_2"));
+        assertThat(ogHaType.determinePrimaryDataSource(dataSourceMap), is("ds_2"));
     }
 }

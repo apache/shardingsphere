@@ -29,7 +29,8 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> activeDataSourceMap, final String groupName) {
+    public String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+        return "primary";
     }
     
     @Override
@@ -39,6 +40,15 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     @Override
     public String getPrimaryDataSource() {
         return "primary";
+    }
+    
+    @Override
+    public String getOldPrimaryDataSource() {
+        return null;
+    }
+    
+    @Override
+    public void setOldPrimaryDataSource(final String oldPrimaryDataSource) {
     }
     
     @Override

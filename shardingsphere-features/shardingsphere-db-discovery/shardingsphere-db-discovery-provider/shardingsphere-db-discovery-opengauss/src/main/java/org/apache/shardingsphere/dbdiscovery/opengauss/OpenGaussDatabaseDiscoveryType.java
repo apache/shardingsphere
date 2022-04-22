@@ -22,9 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -41,6 +39,8 @@ import java.util.Properties;
 /**
  * OpenGauss database discovery type.
  */
+@Getter
+@Setter
 @Slf4j
 public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
@@ -58,19 +58,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
-        if (newPrimaryDataSource.isEmpty()) {
-            oldPrimaryDataSource = "";
-            return;
-        }
-        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-            oldPrimaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource)));
-        }
-    }
-    
-    private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();

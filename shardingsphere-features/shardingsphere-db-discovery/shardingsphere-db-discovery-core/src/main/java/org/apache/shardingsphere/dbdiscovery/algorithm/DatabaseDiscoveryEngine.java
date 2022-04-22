@@ -19,6 +19,9 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -54,7 +57,14 @@ public final class DatabaseDiscoveryEngine {
      * @param groupName group name
      */
     public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        databaseDiscoveryType.updatePrimaryDataSource(databaseName, getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames), groupName);
+        String newPrimaryDataSource = databaseDiscoveryType.determinePrimaryDataSource(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        if (newPrimaryDataSource.isEmpty()) {
+            return;
+        }
+        if (!newPrimaryDataSource.equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
+            databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSource);
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource)));
+        }
     }
     
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {

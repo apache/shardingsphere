@@ -46,12 +46,11 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void assertUpdatePrimaryDataSource() throws SQLException {
+    public void assertDeterminePrimaryDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", getDataSource(false, 3306));
         dataSourceMap.put("ds_1", getDataSource(true, 3307));
-        showSlaveStatusDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, "group_name");
-        assertThat(showSlaveStatusDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_0"));
+        assertThat(showSlaveStatusDatabaseDiscoveryType.determinePrimaryDataSource(dataSourceMap), is("ds_0"));
     }
     
     private DataSource getDataSource(final boolean slave, final int port) throws SQLException {
