@@ -29,14 +29,14 @@ tableName ::=
 #### 1.Create a binding table rule
 
 ```sql
--- Before creating a binding table rule, you need to create sharding tables t_order, t_order_item
+-- Before creating a binding table rule, you need to create sharding table rules t_order, t_order_item
 CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
 #### 2.Create multiple binding table rules
 
 ```sql
--- Before creating binding table rules, you need to create sharding tables t_order,t_order_item,t_product,t_product_item
+-- Before creating binding table rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
 CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_product,t_product_item);
 ```
 
