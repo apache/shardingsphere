@@ -20,7 +20,7 @@ tableName ::=
 ### Supplement
 
 - `tableName` can use an existing table or a table that will be created
-- Broadcast table rules cannot be created repeatedly, but can contain multiple broadcast tables
+- Only one broadcast rule can exist, but can contain multiple broadcast tables
 
 ### Example
 
