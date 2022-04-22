@@ -54,7 +54,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         // TODO Check openGauss configuration
     }
     

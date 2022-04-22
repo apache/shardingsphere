@@ -33,8 +33,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -53,14 +53,14 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> result = getPrimaryDataSourceURLS(dataSourceMap);
-        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for databaseName `%s`", databaseName);
-        Preconditions.checkState(1 == result.size(), "More than one primary data source for databaseName `%s`", databaseName);
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<String> primaryDataSourceURLS = getPrimaryDataSourceURLS(dataSourceMap);
+        Preconditions.checkState(!primaryDataSourceURLS.isEmpty(), "Not found primary data source for database name `%s`", databaseName);
+        Preconditions.checkState(1 == primaryDataSourceURLS.size(), "More than one primary data source for database name `%s`", databaseName);
     }
     
     private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> result = new ArrayList<>();
+        Collection<String> result = new HashSet<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
                  Statement statement = connection.createStatement()) {

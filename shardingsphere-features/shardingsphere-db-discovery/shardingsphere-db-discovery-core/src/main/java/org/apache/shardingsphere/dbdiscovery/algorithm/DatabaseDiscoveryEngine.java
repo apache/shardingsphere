@@ -39,14 +39,14 @@ public final class DatabaseDiscoveryEngine {
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
     /**
-     * Check database discovery configuration.
+     * Check highly available status of database cluster.
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(databaseName, dataSourceMap);
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        databaseDiscoveryType.checkHighlyAvailableStatus(databaseName, dataSourceMap);
     }
     
     /**

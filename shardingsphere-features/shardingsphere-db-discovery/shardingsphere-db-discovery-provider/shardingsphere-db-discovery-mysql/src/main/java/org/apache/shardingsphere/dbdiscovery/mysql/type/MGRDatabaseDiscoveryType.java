@@ -47,17 +47,17 @@ import java.util.Properties;
 @Slf4j
 public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
-    private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
+    private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
-    private static final String MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
+    private static final String QUERY_MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
     
-    private static final String GROUP_NAME = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
+    private static final String QUERY_GROUP_NAME = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
     
-    private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
+    private static final String QUERY_SINGLE_PRIMARY_MODE = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
-    private static final String MEMBER_LIST = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
+    private static final String QUERY_MEMBER_LIST = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
     
-    private static final String PRIMARY_DATA_SOURCE = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
+    private static final String QUERY_PRIMARY_DATA_SOURCE = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
             + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
     
     @Getter
@@ -65,19 +65,26 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        checkDataSourceCount(dataSourceMap);
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkMemberCount(statement);
             checkServerGroupName(statement);
-            checkIsSinglePrimaryMode(statement);
+            checkSinglePrimaryMode(statement);
             checkDataSourceInReplicationGroup(statement, dataSourceMap);
         }
     }
     
+    private void checkDataSourceCount(final Map<String, DataSource> dataSourceMap) {
+        if (dataSourceMap.isEmpty()) {
+            throw new ShardingSphereConfigurationException("No enough data source configured.");
+        }
+    }
+    
     private void checkPluginIsActive(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS)) {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
             while (resultSet.next()) {
                 if (!"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
                     throw new ShardingSphereConfigurationException("MGR plugin is not active.");
@@ -87,7 +94,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     private void checkMemberCount(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(MEMBER_COUNT)) {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_COUNT)) {
             while (resultSet.next()) {
                 if (resultSet.getInt(1) < 1) {
                     throw new ShardingSphereConfigurationException("MGR member count < 1");
@@ -97,7 +104,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     private void checkServerGroupName(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(GROUP_NAME)) {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
             while (resultSet.next()) {
                 String serverGroupName = resultSet.getString("VARIABLE_VALUE");
                 String ruleGroupName = props.getProperty("group-name");
@@ -108,8 +115,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         }
     }
     
-    private void checkIsSinglePrimaryMode(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(SINGLE_PRIMARY)) {
+    private void checkSinglePrimaryMode(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
             while (resultSet.next()) {
                 if (!"ON".equals(resultSet.getString("VARIABLE_VALUE"))) {
                     throw new ShardingSphereConfigurationException("MGR is not in single primary mode");
@@ -120,17 +127,17 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private void checkDataSourceInReplicationGroup(final Statement statement, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<String> memberDataSourceURLs = new LinkedList<>();
-        try (ResultSet resultSet = statement.executeQuery(MEMBER_LIST)) {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
             while (resultSet.next()) {
                 memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
+            checkDataSourceInReplicationGroup(entry.getKey(), entry.getValue(), memberDataSourceURLs);
         }
     }
     
-    private void checkDataSourceExistedWithGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+    private void checkDataSourceInReplicationGroup(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
         boolean isExisted = false;
         for (String each : memberDataSourceURLs) {
             if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
@@ -145,7 +152,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(PRIMARY_DATA_SOURCE)) {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
             if (resultSet.next()) {
                 return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
@@ -166,7 +173,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         List<String> result = new LinkedList<>();
         try (Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
              Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
+            ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST);
             while (resultSet.next()) {
                 if (!"ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
                     continue;

@@ -26,7 +26,7 @@ import java.util.Optional;
 public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override

@@ -87,7 +87,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds_0", dataSource);
-        mgrDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        mgrDatabaseDiscoveryType.checkHighlyAvailableStatus("discovery_db", dataSourceMap);
     }
     
     @Test

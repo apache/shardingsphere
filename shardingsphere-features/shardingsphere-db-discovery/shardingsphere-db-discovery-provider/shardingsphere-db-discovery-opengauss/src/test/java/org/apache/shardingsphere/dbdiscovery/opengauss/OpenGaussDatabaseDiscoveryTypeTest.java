@@ -59,7 +59,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         when(resultSet.getString("db_state")).thenReturn("Sync");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds_0", dataSource);
-        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        ogHaType.checkHighlyAvailableStatus("discovery_db", dataSourceMap);
     }
     
     @Test

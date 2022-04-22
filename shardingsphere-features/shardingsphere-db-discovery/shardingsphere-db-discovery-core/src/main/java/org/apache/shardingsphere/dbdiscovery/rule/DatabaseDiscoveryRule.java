@@ -112,7 +112,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
             try {
-                engine.checkDatabaseDiscoveryConfiguration(databaseName, originalDataSourceMap);
+                engine.checkHighlyAvailableStatus(databaseName, originalDataSourceMap);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
