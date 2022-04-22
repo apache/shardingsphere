@@ -5,7 +5,7 @@ weight = 3
 
 ## 描述
 
-`CREATE SHARDING BINDING TABLE RULE` 语法用于为具有分片规则的表(分片表)添加绑定关系
+`CREATE SHARDING BINDING TABLE RULE` 语法用于为具有分片规则的表（分片表）添加绑定关系
 
 ### 语法定义
 
