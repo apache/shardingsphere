@@ -35,7 +35,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,8 +44,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
@@ -122,7 +121,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        mgrDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
+        mgrDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, "group_name");
         assertThat(mgrDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_2"));
     }
     
