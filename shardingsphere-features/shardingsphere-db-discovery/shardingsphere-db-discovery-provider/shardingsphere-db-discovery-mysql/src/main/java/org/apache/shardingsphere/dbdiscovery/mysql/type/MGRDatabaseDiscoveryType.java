@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -65,9 +66,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (
-                Connection connection = dataSourceMap.values().stream().findFirst().get().getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection();
+             Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkMemberCount(statement);
             checkServerGroupName(statement);
@@ -144,12 +144,12 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(PRIMARY_DATA_SOURCE)) {
             if (resultSet.next()) {
-                return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+                return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
-            return "";
+            return Optional.empty();
         }
     }
     
@@ -164,9 +164,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         List<String> result = new LinkedList<>();
-        try (
-                Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
+             Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
             while (resultSet.next()) {
                 if (!"ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {

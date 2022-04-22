@@ -27,6 +27,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Abstract database discovery type.
@@ -38,22 +40,18 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     private String oldPrimaryDataSource;
     
-    protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
-    
     @Override
-    public final String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-        String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
-        return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
+    public final Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+        return findPrimaryDataSourceName(loadPrimaryDataSourceURL(dataSourceMap), dataSourceMap);
     }
     
-    private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
+    private String loadPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
-            try (
-                    Connection connection = each.getConnection();
-                    Statement statement = connection.createStatement()) {
-                String primaryDataSourceURL = getPrimaryDataSourceURL(statement);
-                if (!primaryDataSourceURL.isEmpty()) {
-                    return primaryDataSourceURL;
+            try (Connection connection = each.getConnection();
+                 Statement statement = connection.createStatement()) {
+                Optional<String> primaryDataSourceURL = loadPrimaryDataSourceURL(statement);
+                if (primaryDataSourceURL.isPresent()) {
+                    return primaryDataSourceURL.get();
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source url", ex);
@@ -62,20 +60,20 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
         return "";
     }
     
-    private String findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
-        String result = "";
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            String url;
+    protected abstract Optional<String> loadPrimaryDataSourceURL(Statement statement) throws SQLException;
+    
+    private  Optional<String> findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
-                url = connection.getMetaData().getURL();
+                String url = connection.getMetaData().getURL();
                 if (null != url && url.contains(primaryDataSourceURL)) {
-                    return entry.getKey();
+                    return Optional.of(entry.getKey());
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source name", ex);
             }
         }
-        return result;
+        return Optional.empty();
     }
     
     @Override

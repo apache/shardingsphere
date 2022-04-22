@@ -21,6 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Optional;
 
 public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
@@ -29,8 +30,8 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     }
     
     @Override
-    public String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-        return null;
+    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+        return Optional.empty();
     }
     
     @Override
