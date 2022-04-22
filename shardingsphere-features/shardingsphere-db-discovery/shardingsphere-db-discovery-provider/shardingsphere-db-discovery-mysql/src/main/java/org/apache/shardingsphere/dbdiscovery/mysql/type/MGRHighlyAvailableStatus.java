@@ -52,7 +52,7 @@ public final class MGRHighlyAvailableStatus implements HighlyAvailableStatus {
     public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) throws SQLException {
         Preconditions.checkState(pluginActive, "MGR plugin is not active in database `%s`.", databaseName);
         Preconditions.checkState(singlePrimaryMode, "MGR is not in single primary mode in database `%s`.", databaseName);
-        Preconditions.checkState(props.getProperty("group-name", "").equals(groupName), 
+        Preconditions.checkState(props.getProperty("group-name", "").equals(groupName),
                 "Group name `%s` in MGR is not same with configured one `%s` in database `%s`.", groupName, props.getProperty("group-name"), databaseName);
         Preconditions.checkState(!memberInstanceURLs.isEmpty(), "MGR member is empty in database `%s`.", databaseName);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {

@@ -29,9 +29,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,6 +69,8 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        assertThat(new OpenGaussDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap), is("ds_2"));
+        Optional<String> actual = new OpenGaussDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("ds_2"));
     }
 }
