@@ -38,8 +38,8 @@ public final class LockRegistryService {
      */
     public void initGlobalLockRoot() {
         repository.persist(LockNode.getStandardLocksNodePath(), "");
-        repository.persist(LockNode.getGlobalSchemaLocksNodePath(), "");
-        repository.persist(LockNode.getGlobalSchemaLockedAckNodePath(), "");
+        repository.persist(LockNode.getGlobalDatabaseLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalDatabaseLockedAckNodePath(), "");
     }
     
     /**
@@ -47,8 +47,8 @@ public final class LockRegistryService {
      *
      * @return all global locks
      */
-    public Collection<String> getAllGlobalSchemaLocks() {
-        return repository.getChildrenKeys(LockNode.getGlobalSchemaLocksNodePath());
+    public Collection<String> getAllGlobalDatabaseLocks() {
+        return repository.getChildrenKeys(LockNode.getGlobalDatabaseLocksNodePath());
     }
     
     /**

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsExceptio
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -112,9 +112,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
-        if (cause instanceof SchemaLockedException) {
-            SchemaLockedException exception = (SchemaLockedException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.SCHEMA_WRITE_LOCKED, exception.getSchemaName());
+        if (cause instanceof DatabaseLockedException) {
+            DatabaseLockedException exception = (DatabaseLockedException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
         }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
