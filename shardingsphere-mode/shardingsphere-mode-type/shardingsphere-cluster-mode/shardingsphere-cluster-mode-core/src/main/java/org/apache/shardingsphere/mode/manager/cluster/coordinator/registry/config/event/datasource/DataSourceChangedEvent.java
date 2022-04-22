@@ -33,7 +33,7 @@ public final class DataSourceChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
-    private final String schemaVersion;
+    private final String databaseVersion;
     
     private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
 }

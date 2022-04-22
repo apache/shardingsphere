@@ -143,7 +143,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertDatabaseAdd() throws SQLException {
         DatabaseAddedEvent event = new DatabaseAddedEvent("db_add");
         when(metaDataPersistService.getDataSourceService().load("db_add")).thenReturn(getDataSourcePropertiesMap());
-        when(metaDataPersistService.getSchemaRuleService().load("db_add")).thenReturn(Collections.emptyList());
+        when(metaDataPersistService.getDatabaseRulePersistService().load("db_add")).thenReturn(Collections.emptyList());
         coordinator.renew(event);
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("db_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("db_add").getResource().getDataSources());
@@ -180,7 +180,7 @@ public final class ClusterContextManagerCoordinatorTest {
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllDatabaseNames().contains("db"));
-        verify(contextManager.getMetaDataContexts().getMetaData("db").getDefaultSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
+        verify(contextManager.getMetaDataContexts().getMetaData("db").getSchemaByName("db")).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -321,7 +321,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewSchemaVersionChangedEvent() {
         when(metaDataPersistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
-        when(metaDataPersistService.getSchemaRuleService().load("db", "1")).thenReturn(Collections.emptyList());
+        when(metaDataPersistService.getDatabaseRulePersistService().load("db", "1")).thenReturn(Collections.emptyList());
         SchemaVersionChangedEvent schemaVersionChangedEvent = new SchemaVersionChangedEvent("db", "1");
         Map<String, DataSource> dataSourceMap = initContextManager();
         coordinator.renew(schemaVersionChangedEvent);
