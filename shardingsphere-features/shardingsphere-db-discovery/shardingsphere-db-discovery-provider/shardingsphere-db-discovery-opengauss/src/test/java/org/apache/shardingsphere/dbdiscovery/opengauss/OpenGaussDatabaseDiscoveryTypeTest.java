@@ -29,38 +29,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OpenGaussDatabaseDiscoveryTypeTest {
     
     private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
-    
-    private static final String STANDBYS = "SELECT client_addr,sync_state FROM pg_stat_replication";
-    
-    private final OpenGaussDatabaseDiscoveryType ogHaType = new OpenGaussDatabaseDiscoveryType();
-    
-    @Test
-    public void assertCheckHAConfig() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(DB_ROLE)).thenReturn(resultSet);
-        when(statement.executeQuery(STANDBYS)).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
-        when(resultSet.getString("local_role")).thenReturn("Primary");
-        when(resultSet.getString("db_state")).thenReturn("Normal");
-        when(resultSet.getString("db_state")).thenReturn("Sync");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds_0", dataSource);
-        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
-    }
     
     @Test
     public void assertDeterminePrimaryDataSource() throws SQLException {
@@ -90,6 +69,8 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        assertThat(ogHaType.determinePrimaryDataSource(dataSourceMap), is("ds_2"));
+        Optional<String> actual = new OpenGaussDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("ds_2"));
     }
 }

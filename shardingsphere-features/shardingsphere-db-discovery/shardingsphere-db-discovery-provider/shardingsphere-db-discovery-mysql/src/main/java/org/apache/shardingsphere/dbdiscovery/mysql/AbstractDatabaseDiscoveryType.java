@@ -62,7 +62,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     protected abstract Optional<String> loadPrimaryDataSourceURL(Statement statement) throws SQLException;
     
-    private  Optional<String> findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
+    private Optional<String> findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
                 String url = connection.getMetaData().getURL();

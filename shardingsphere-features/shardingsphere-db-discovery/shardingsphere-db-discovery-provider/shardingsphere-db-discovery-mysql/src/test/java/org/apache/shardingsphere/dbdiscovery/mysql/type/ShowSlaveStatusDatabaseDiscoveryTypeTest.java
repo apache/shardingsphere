@@ -27,22 +27,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
     
-    private final ShowSlaveStatusDatabaseDiscoveryType showSlaveStatusDatabaseDiscoveryType = new ShowSlaveStatusDatabaseDiscoveryType();
-    
     @Test
-    public void assertCheckShowSlaveStatusConfig() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", getDataSource(false, 3306));
-        dataSourceMap.put("ds_1", getDataSource(true, 3307));
-        showSlaveStatusDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+    public void assertLoadHighlyAvailableStatus() throws SQLException {
+        ShowSlaveStatusHighlyAvailableStatus actual = new ShowSlaveStatusDatabaseDiscoveryType().loadHighlyAvailableStatus(getDataSource(true, 3306));
+        assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
     }
     
     @Test
@@ -50,7 +48,9 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", getDataSource(false, 3306));
         dataSourceMap.put("ds_1", getDataSource(true, 3307));
-        assertThat(showSlaveStatusDatabaseDiscoveryType.determinePrimaryDataSource(dataSourceMap), is("ds_0"));
+        Optional<String> actual = new ShowSlaveStatusDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("ds_0"));
     }
     
     private DataSource getDataSource(final boolean slave, final int port) throws SQLException {

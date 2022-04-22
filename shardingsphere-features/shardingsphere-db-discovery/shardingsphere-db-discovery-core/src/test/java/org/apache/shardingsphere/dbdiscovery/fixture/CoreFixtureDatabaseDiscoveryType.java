@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.dbdiscovery.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.Mockito.mock;
+
 public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
+        return mock(HighlyAvailableStatus.class);
     }
     
     @Override
