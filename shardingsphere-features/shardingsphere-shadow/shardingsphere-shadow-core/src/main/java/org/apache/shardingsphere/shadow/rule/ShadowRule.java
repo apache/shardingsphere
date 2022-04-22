@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
@@ -29,8 +28,8 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -45,10 +44,6 @@ import java.util.Optional;
  */
 @Getter
 public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
-    }
     
     private ShadowAlgorithm defaultShadowAlgorithm;
     
@@ -78,9 +73,9 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getSourceDataSourceName(), value.getShadowDataSourceName())));
     }
     
-    private void initShadowAlgorithmConfigurations(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
-        shadowAlgorithmConfigurations.forEach((key, value) -> {
-            ShadowAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(value, ShadowAlgorithm.class);
+    private void initShadowAlgorithmConfigurations(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
+        shadowAlgorithmConfigs.forEach((key, value) -> {
+            ShadowAlgorithm algorithm = ShadowAlgorithmFactory.newInstance(value);
             if (algorithm instanceof HintShadowAlgorithm<?>) {
                 hintShadowAlgorithmNames.add(key);
             }
