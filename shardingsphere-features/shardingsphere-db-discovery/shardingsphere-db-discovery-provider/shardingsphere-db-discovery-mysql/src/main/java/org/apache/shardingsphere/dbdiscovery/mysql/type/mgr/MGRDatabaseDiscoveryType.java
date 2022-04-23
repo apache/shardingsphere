@@ -160,6 +160,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     public String getType() {
-        return "MGR";
+        return "MySQL.MGR";
     }
 }
