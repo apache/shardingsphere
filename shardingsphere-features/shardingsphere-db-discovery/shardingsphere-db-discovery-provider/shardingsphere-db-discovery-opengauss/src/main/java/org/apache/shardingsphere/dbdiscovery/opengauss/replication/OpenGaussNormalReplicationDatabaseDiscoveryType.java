@@ -81,21 +81,19 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            boolean disable = true;
+            boolean isDisabled = true;
             try (
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-                if (resultSet.next()) {
-                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || entry.getKey().equals(oldPrimaryDataSource)) {
-                        disable = false;
-                    }
+                if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || entry.getKey().equals(oldPrimaryDataSource))) {
+                    isDisabled = false;
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find data source urls", ex);
             }
             ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(),
-                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
+                    new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabled ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
         }
     }
     

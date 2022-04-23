@@ -18,26 +18,23 @@
 package org.apache.shardingsphere.infra.storage;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Data source of storage node.
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
 public final class StorageNodeDataSource {
     
-    private String role;
+    private final String role;
     
-    private String status;
+    private final String status;
     
-    private Long replicationDelayMilliseconds;
+    private final Long replicationDelayMilliseconds;
     
     public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status) {
         this.role = role.name().toLowerCase();
         this.status = status.name().toLowerCase();
+        replicationDelayMilliseconds = null;
     }
     
     public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status, final Long replicationDelayMilliseconds) {
