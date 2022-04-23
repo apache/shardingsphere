@@ -34,7 +34,7 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     }
     
     @Override
-    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         return Optional.empty();
     }
     

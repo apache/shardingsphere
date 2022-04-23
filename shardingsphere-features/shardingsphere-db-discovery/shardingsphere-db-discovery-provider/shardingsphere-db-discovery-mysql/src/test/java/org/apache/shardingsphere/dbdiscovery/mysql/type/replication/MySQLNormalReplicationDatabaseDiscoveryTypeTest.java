@@ -42,11 +42,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void assertDeterminePrimaryDataSource() throws SQLException {
+    public void assertFindPrimaryDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mockDataSource(3306));
         dataSourceMap.put("ds_1", mockDataSource(3307));
-        Optional<String> actual = new MySQLNormalReplicationDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new MySQLNormalReplicationDatabaseDiscoveryType().findPrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_0"));
     }
