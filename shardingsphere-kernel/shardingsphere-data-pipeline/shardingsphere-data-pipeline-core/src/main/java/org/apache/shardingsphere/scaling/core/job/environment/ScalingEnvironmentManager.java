@@ -47,8 +47,9 @@ public final class ScalingEnvironmentManager {
         Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
         log.info("cleanupTargetTables, tables={}", tables);
         YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
-             Connection connection = dataSource.getConnection()) {
+        try (
+                PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
+                Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
                 String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

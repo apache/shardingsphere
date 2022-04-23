@@ -205,7 +205,10 @@
         <module name="AvoidEscapedUnicodeCharacters"/>
         <module name="DescendantToken"/>
         <module name="FinalParameters"/>
-        <module name="Indentation"/>
+        <module name="Indentation">
+            <property name="arrayInitIndent" value="2"/>
+            <property name="lineWrappingIndentation" value="8"/>
+        </module>
         <module name="OuterTypeFilename"/>
         <module name="TodoComment"/>
         <module name="TrailingComment"/>
