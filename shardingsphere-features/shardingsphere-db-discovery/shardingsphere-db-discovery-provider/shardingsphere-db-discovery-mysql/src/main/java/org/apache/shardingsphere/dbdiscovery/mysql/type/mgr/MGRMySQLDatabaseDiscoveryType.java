@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -110,15 +109,14 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
-        if (memberDataSourceURLs.isEmpty()) {
-            return;
+        Collection<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
+        if (!memberDataSourceURLs.isEmpty()) {
+            determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
         }
-        determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
     }
     
-    private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
-        List<String> result = new LinkedList<>();
+    private Collection<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
+        Collection<String> result = new LinkedList<>();
         try (
                 Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
                 Statement statement = connection.createStatement()) {
@@ -135,7 +133,7 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
         return result;
     }
     
-    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
+    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getKey().equals(getPrimaryDataSource())) {
                 continue;
