@@ -89,8 +89,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
                 if (resultSet.next()) {
-                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
-                            || entry.getKey().equals(oldPrimaryDataSource)) {
+                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || entry.getKey().equals(oldPrimaryDataSource)) {
                         disable = false;
                     }
                 }
