@@ -54,7 +54,7 @@ public final class DatabaseDiscoveryTypeQueryResultSetTest {
         assertThat(columnNames.size(), is(3));
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("test_name"));
-        assertThat(actual.get(1), is("MGR"));
+        assertThat(actual.get(1), is("MySQL.MGR"));
         assertThat(actual.get(2).toString(), is("{type_key=type_value}"));
     }
     
@@ -63,7 +63,7 @@ public final class DatabaseDiscoveryTypeQueryResultSetTest {
                 "ms-heartbeat", "test");
         Properties discoveryTypeProps = new Properties();
         discoveryTypeProps.put("type_key", "type_value");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", discoveryTypeProps);
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", discoveryTypeProps);
         Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
         discoverTypes.put("test_name", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), Collections.emptyMap(), discoverTypes);

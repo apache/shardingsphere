@@ -36,5 +36,5 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-dis
 | *Name*     | *Type*    | *Description*                                                    |
 | --------- | ---------- | ---------------------------------------------------------------- |
 | id        | Attribute  | Database discovery type Id                                         |
-| type      | Attribute  | Database discovery type, such as: MGR, openGauss                   |
+| type      | Attribute  | Database discovery type, such as: MySQL.MGR                   |
 | props (?) | tag        | Required parameters for database discovery types, such as MGR's group-name   |

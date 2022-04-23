@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss;
+package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussDatabaseDiscoveryTypeTest {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryTypeTest {
     
     private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
@@ -69,7 +69,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        Optional<String> actual = new OpenGaussDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_2"));
     }

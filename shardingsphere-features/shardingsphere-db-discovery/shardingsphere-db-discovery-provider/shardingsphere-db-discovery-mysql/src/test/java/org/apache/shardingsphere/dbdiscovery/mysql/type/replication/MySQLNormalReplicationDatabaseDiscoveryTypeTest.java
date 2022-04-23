@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
 import org.junit.Test;
 
@@ -33,11 +33,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MasterSlaveDatabaseDiscoveryTypeTest {
+public final class MySQLNormalReplicationDatabaseDiscoveryTypeTest {
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MasterSlaveHighlyAvailableStatus actual = new MasterSlaveDatabaseDiscoveryType().loadHighlyAvailableStatus(mockDataSource(3306));
+        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationDatabaseDiscoveryType().loadHighlyAvailableStatus(mockDataSource(3306));
         assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
     }
     
@@ -46,7 +46,7 @@ public final class MasterSlaveDatabaseDiscoveryTypeTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mockDataSource(3306));
         dataSourceMap.put("ds_1", mockDataSource(3307));
-        Optional<String> actual = new MasterSlaveDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new MySQLNormalReplicationDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_0"));
     }
