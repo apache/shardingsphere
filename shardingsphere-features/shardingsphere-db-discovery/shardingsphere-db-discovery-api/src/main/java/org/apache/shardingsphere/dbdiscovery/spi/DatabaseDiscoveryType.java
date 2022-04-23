@@ -64,16 +64,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     String getPrimaryDataSource();
     
     /**
-     * Get old primary data source.
-     * 
-     * @return old primary data source
+     * Set primary data source.
+     *
+     * @param primaryDataSource primary data source
      */
-    String getOldPrimaryDataSource();
-    
-    /**
-     * Get old primary data source.
-     * 
-     * @param oldPrimaryDataSource old primary data source
-     */
-    void setOldPrimaryDataSource(String oldPrimaryDataSource);
+    void setPrimaryDataSource(String primaryDataSource);
 }

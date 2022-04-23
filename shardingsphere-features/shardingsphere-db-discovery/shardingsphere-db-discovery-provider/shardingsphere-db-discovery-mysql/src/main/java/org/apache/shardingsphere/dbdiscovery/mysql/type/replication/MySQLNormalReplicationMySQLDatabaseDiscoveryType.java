@@ -68,10 +68,9 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getKey().equals(getPrimaryDataSource())) {
-                continue;
+            if (!entry.getKey().equals(getPrimaryDataSource())) {
+                determineDatasourceState(databaseName, entry.getKey(), entry.getValue(), groupName);
             }
-            determineDatasourceState(databaseName, entry.getKey(), entry.getValue(), groupName);
         }
     }
     
@@ -79,25 +78,19 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
-            if (replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
-            } else {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED, replicationDelayMilliseconds)));
-            }
+            long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
+            StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
+                    ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED;
+            ShardingSphereEventBus.getInstance().post(
+                    new DataSourceDisabledEvent(databaseName, groupName, datasourceName, new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds)));
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
         }
     }
     
-    private long getSecondsBehindMaster(final Statement statement) throws SQLException {
+    private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                return resultSet.getLong("Seconds_Behind_Master");
-            }
-            return 0L;
+            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
         }
     }
     

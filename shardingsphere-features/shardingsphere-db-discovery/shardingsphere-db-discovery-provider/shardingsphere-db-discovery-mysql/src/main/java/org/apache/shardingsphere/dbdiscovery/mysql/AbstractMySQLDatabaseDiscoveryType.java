@@ -41,7 +41,7 @@ public abstract class AbstractMySQLDatabaseDiscoveryType implements DatabaseDisc
     
     private Properties props = new Properties();
     
-    private String oldPrimaryDataSource;
+    private String primaryDataSource;
     
     @Override
     public final Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
@@ -80,9 +80,4 @@ public abstract class AbstractMySQLDatabaseDiscoveryType implements DatabaseDisc
     }
     
     protected abstract Optional<String> loadPrimaryDatabaseInstanceURL(Statement statement) throws SQLException;
-    
-    @Override
-    public final String getPrimaryDataSource() {
-        return oldPrimaryDataSource;
-    }
 }
