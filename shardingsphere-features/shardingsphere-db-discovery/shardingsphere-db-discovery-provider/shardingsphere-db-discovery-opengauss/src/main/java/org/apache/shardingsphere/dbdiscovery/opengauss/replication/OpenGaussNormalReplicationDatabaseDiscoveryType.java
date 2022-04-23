@@ -68,10 +68,8 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-                if (resultSet.next()) {
-                    if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
-                        return Optional.of(entry.getKey());
-                    }
+                if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
+                    return Optional.of(entry.getKey());
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source url", ex);
