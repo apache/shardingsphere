@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -15,10 +16,8 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.rules.database-discovery.data-sources.rule.data-source-names=ds-0,ds-1,ds-2
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-heartbeat-name=mgr-heartbeat
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-type-name=mgr
-spring.shardingsphere.rules.database-discovery.discovery-heartbeats.mgr-heartbeat.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.type=MySQL.MGR
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.group-name=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+<sql-cases>
+    <sql-case id="alter_database_dictionary_encrypt" value="ALTER DATABASE DICTIONARY ENCRYPT CREDENTIALS;" db-types="Oracle" />
+    <sql-case id="alter_database_dictionary_rekey" value="ALTER DATABASE DICTIONARY REKEY CREDENTIALS;" db-types="Oracle" />
+    <sql-case id="alter_database_dictionary_delete" value="ALTER DATABASE DICTIONARY DELETE CREDENTIALS KEY;" db-types="Oracle" />
+</sql-cases>

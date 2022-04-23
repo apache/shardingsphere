@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss;
+package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,12 +38,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * OpenGauss database discovery type.
+ * Normal replication database discovery type for openGauss.
  */
 @Getter
 @Setter
 @Slf4j
-public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
@@ -52,17 +52,17 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public OpenGaussHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+    public OpenGaussNormalReplicationHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
-            return new OpenGaussHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
+            return new OpenGaussNormalReplicationHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
         }
     }
     
     @Override
-    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (
                     Connection connection = entry.getValue().getConnection();
@@ -109,6 +109,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     
     @Override
     public String getType() {
-        return "openGauss";
+        return "openGauss.NORMAL_REPLICATION";
     }
 }

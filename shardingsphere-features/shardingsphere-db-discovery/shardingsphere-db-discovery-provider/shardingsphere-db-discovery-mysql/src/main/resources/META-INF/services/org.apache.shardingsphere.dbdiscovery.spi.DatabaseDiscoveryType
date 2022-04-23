@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRDatabaseDiscoveryType
-org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave.MasterSlaveDatabaseDiscoveryType
+org.apache.shardingsphere.dbdiscovery.mysql.type.replication.MySQLNormalReplicationDatabaseDiscoveryType

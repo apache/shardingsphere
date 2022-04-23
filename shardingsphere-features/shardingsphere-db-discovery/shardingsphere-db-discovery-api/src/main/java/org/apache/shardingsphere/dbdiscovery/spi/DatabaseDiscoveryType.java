@@ -40,12 +40,12 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
-     * Determine primary data source.
+     * Find primary data source.
      * 
      * @param dataSourceMap data source map
      * @return determined name of primary data source
      */
-    Optional<String> determinePrimaryDataSource(Map<String, DataSource> dataSourceMap);
+    Optional<String> findPrimaryDataSource(Map<String, DataSource> dataSourceMap);
     
     /**
      * Update member state.

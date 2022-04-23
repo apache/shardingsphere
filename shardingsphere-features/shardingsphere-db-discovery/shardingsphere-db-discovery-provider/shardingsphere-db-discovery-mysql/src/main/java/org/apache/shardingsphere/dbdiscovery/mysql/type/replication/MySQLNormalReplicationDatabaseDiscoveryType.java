@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,23 +38,23 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Master-slave database discovery type.
+ * Normal replication database discovery type for MySQL.
  */
 @Getter
 @Setter
 @Slf4j
-public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MySQLNormalReplicationDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
     private Properties props = new Properties();
     
     @Override
-    public MasterSlaveHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+    public MySQLNormalReplicationHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MasterSlaveHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
+            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
         }
     }
     
@@ -110,6 +110,6 @@ public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDisc
     
     @Override
     public String getType() {
-        return "MASTER_SLAVE";
+        return "MySQL.NORMAL_REPLICATION";
     }
 }

@@ -91,14 +91,12 @@ public final class DatabaseDiscoveryEngine {
      * @param groupName group name
      */
     public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        Optional<String> newPrimaryDataSource = databaseDiscoveryType.determinePrimaryDataSource(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        if (!newPrimaryDataSource.isPresent()) {
-            return;
-        }
-        if (!newPrimaryDataSource.get().equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
+        Optional<String> newPrimaryDataSource = databaseDiscoveryType.findPrimaryDataSource(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        if (newPrimaryDataSource.isPresent() && !newPrimaryDataSource.get().equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
             databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSource.get());
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSource.get())));
         }
+        databaseDiscoveryType.updateMemberState(databaseName, dataSourceMap, groupName);
     }
     
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
@@ -107,17 +105,6 @@ public final class DatabaseDiscoveryEngine {
             result.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
         return result;
-    }
-    
-    /**
-     * Update member state.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
-     * @param groupName group name
-     */
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        databaseDiscoveryType.updateMemberState(databaseName, dataSourceMap, groupName);
     }
     
     /**

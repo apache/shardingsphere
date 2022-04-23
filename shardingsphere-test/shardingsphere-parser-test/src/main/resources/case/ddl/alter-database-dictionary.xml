@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -15,10 +16,8 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.rules.database-discovery.data-sources.rule.data-source-names=ds-0,ds-1,ds-2
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-heartbeat-name=mgr-heartbeat
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-type-name=mgr
-spring.shardingsphere.rules.database-discovery.discovery-heartbeats.mgr-heartbeat.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.type=MySQL.MGR
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.group-name=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+<sql-parser-test-cases>
+    <alter-database-dictionary sql-case-id="alter_database_dictionary_encrypt" />
+    <alter-database-dictionary sql-case-id="alter_database_dictionary_rekey" />
+    <alter-database-dictionary sql-case-id="alter_database_dictionary_delete" />
+</sql-parser-test-cases>

@@ -92,8 +92,8 @@ public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(2, 1);
-        discoveryTypes.put("type_name", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()));
-        discoveryTypes.put("other", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()));
+        discoveryTypes.put("type_name", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()));
+        discoveryTypes.put("other", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()));
         return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), discoveryTypes);
     }
 }

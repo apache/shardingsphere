@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
-
-import javax.sql.DataSource;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Highly available status of openGauss cluster.
+ * Alter database dictionary statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class OpenGaussHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
-    
-    private final boolean primary;
-    
-    @Override
-    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
-    }
+public final class AlterDatabaseDictionaryStatementTestCase extends SQLParserTestCase {
 }

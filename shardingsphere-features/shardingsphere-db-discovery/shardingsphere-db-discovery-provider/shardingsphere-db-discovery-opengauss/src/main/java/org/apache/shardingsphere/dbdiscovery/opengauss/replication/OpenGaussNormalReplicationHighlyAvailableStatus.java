@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
+package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
-import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Highly available status of MySQL master-slave cluster.
+ * Highly available status of openGauss normal replication cluster.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class MasterSlaveHighlyAvailableStatus implements GlobalHighlyAvailableStatus {
+public final class OpenGaussNormalReplicationHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
     
-    private final String primaryInstanceURL;
+    private final boolean primary;
     
     @Override
     public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
-        Preconditions.checkState(null != primaryInstanceURL, "Can not load primary data source URL in database `%s`.", databaseName);
     }
 }
