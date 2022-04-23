@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spi;
+package org.apache.shardingsphere.dbdiscovery.spi.status;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

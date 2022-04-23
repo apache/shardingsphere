@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;

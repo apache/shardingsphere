@@ -15,28 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
-
-import javax.sql.DataSource;
-import java.util.Map;
-import java.util.Properties;
+package org.apache.shardingsphere.dbdiscovery.spi.status;
 
 /**
- * Highly available status of openGauss cluster.
+ * Global highly available status for database cluster.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class OpenGaussHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
-    
-    private final boolean primary;
-    
-    @Override
-    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
-    }
+public interface GlobalHighlyAvailableStatus extends HighlyAvailableStatus {
 }

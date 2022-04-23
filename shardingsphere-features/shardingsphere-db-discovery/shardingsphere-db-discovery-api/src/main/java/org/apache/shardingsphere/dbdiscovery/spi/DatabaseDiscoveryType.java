@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;

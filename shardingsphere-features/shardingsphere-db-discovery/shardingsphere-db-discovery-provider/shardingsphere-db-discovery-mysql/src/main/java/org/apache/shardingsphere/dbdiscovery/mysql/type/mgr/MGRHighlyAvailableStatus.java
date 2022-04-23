@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import javax.sql.DataSource;
@@ -38,7 +38,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class MGRHighlyAvailableStatus implements HighlyAvailableStatus {
+public final class MGRHighlyAvailableStatus implements GlobalHighlyAvailableStatus {
     
     private final boolean pluginActive;
     
