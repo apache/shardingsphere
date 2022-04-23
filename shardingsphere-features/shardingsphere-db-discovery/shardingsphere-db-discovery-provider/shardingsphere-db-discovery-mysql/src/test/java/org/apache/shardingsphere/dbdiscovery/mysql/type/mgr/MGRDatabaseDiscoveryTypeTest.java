@@ -77,7 +77,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     }
     
     @Test
-    public void assertDeterminePrimaryDataSource() throws SQLException {
+    public void assertFindPrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -107,7 +107,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        Optional<String> actual = databaseDiscoveryType.determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = databaseDiscoveryType.findPrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_2"));
     }

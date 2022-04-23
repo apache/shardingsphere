@@ -62,7 +62,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     }
     
     @Override
-    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (
                     Connection connection = entry.getValue().getConnection();

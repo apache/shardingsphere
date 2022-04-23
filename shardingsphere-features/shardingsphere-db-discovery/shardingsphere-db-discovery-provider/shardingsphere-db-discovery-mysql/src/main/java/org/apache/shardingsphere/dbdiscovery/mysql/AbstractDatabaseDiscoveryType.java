@@ -41,7 +41,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     private String oldPrimaryDataSource;
     
     @Override
-    public final Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public final Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         return findPrimaryDataSourceName(loadPrimaryDataSourceURL(dataSourceMap), dataSourceMap);
     }
     

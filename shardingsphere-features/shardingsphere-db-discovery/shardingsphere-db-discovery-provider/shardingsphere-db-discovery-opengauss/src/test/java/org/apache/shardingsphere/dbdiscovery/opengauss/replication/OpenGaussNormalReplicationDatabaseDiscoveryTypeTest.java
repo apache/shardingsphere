@@ -42,7 +42,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryTypeTest {
     private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
     @Test
-    public void assertDeterminePrimaryDataSource() throws SQLException {
+    public void assertFindPrimaryDataSource() throws SQLException {
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -69,7 +69,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryType().determinePrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryType().findPrimaryDataSource(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_2"));
     }
