@@ -34,7 +34,7 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         return Optional.of("primary");
     }
     

@@ -69,7 +69,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryType().findPrimaryDataSource(dataSourceMap);
+        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryType().findPrimaryDataSourceName(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_2"));
     }

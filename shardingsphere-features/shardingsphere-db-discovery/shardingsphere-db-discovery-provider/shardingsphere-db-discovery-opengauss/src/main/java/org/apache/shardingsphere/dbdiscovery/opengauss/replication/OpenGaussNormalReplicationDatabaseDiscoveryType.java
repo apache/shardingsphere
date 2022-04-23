@@ -45,7 +45,7 @@ import java.util.Properties;
 @Slf4j
 public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
-    private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
+    private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
     private String oldPrimaryDataSource;
     
@@ -56,22 +56,20 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
             return new OpenGaussNormalReplicationHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
         }
     }
     
     @Override
-    public Optional<String> findPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
-                if (resultSet.next()) {
-                    if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
-                        return Optional.of(entry.getKey());
-                    }
+                    ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
+                if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
+                    return Optional.of(entry.getKey());
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source url", ex);
@@ -83,23 +81,23 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            boolean disable = true;
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
-                if (resultSet.next()) {
-                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
-                            || entry.getKey().equals(oldPrimaryDataSource)) {
-                        disable = false;
-                    }
-                }
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find data source urls", ex);
-            }
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(),
-                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
+            StorageNodeStatus storageNodeStatus = isDisabledDataSource(entry.getKey(), entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
         }
+    }
+    
+    private boolean isDisabledDataSource(final String dataSourceName, final DataSource dataSource) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
+            if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || dataSourceName.equals(oldPrimaryDataSource))) {
+                return false;
+            }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find data source urls", ex);
+        }
+        return true;
     }
     
     @Override

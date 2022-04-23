@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * HA heartbeat job.
+ * Heartbeat job.
  */
 @RequiredArgsConstructor
 public final class HeartbeatJob implements SimpleJob {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -45,7 +45,6 @@ public final class HeartbeatJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(databaseDiscoveryType);
-        engine.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName);
+        new DatabaseDiscoveryEngine(databaseDiscoveryType).updatePrimaryDataSource(databaseName, dataSourceMap, disabledDataSourceNames, groupName);
     }
 }

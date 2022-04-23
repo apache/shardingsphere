@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -34,17 +32,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * MGR database discovery type for MySQL.
  */
 @Slf4j
-public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
@@ -56,10 +52,6 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private static final String QUERY_PRIMARY_DATA_SOURCE = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
             + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-    
-    @Getter
-    @Setter
-    private Properties props = new Properties();
     
     @Override
     public MGRHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
@@ -99,7 +91,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
             if (resultSet.next()) {
                 return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
@@ -110,15 +102,14 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
-        if (memberDataSourceURLs.isEmpty()) {
-            return;
+        Collection<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
+        if (!memberDataSourceURLs.isEmpty()) {
+            determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
         }
-        determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
     }
     
-    private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
-        List<String> result = new LinkedList<>();
+    private Collection<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
+        Collection<String> result = new LinkedList<>();
         try (
                 Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
                 Statement statement = connection.createStatement()) {
@@ -135,7 +126,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         return result;
     }
     
-    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
+    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getKey().equals(getPrimaryDataSource())) {
                 continue;

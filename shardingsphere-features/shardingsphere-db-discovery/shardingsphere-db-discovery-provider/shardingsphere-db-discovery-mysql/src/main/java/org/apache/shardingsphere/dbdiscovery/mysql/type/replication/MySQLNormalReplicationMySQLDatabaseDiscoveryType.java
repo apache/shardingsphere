@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -35,31 +33,26 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Normal replication database discovery type for MySQL.
  */
-@Getter
-@Setter
 @Slf4j
-public final class MySQLNormalReplicationDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
-    
-    private Properties props = new Properties();
     
     @Override
     public MySQLNormalReplicationHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
+            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstanceURL(statement).orElse(null));
         }
     }
     
     @Override
-    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");
@@ -87,7 +80,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryType extends AbstractD
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
-            if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
+            if (replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
                         new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
             } else {

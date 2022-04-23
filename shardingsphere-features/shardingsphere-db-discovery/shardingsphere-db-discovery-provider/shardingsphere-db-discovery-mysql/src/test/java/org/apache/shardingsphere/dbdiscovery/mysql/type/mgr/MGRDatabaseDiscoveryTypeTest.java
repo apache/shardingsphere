@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
 import com.google.common.eventbus.EventBus;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
-    private final MGRDatabaseDiscoveryType databaseDiscoveryType = new MGRDatabaseDiscoveryType();
+    private final MGRMySQLDatabaseDiscoveryType databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryType();
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
@@ -107,7 +107,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        Optional<String> actual = databaseDiscoveryType.findPrimaryDataSource(dataSourceMap);
+        Optional<String> actual = databaseDiscoveryType.findPrimaryDataSourceName(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_2"));
     }
@@ -116,7 +116,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     @Ignore
     @Test
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+        Field declaredField = AbstractMySQLDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
         declaredField.set(databaseDiscoveryType, "ds_0");
         EventBus eventBus = mock(EventBus.class);
