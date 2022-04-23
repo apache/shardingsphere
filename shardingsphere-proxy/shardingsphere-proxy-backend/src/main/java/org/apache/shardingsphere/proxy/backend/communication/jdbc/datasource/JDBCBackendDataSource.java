@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -108,14 +107,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         ShardingSphereTransactionManager transactionManager =
                 ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
-        boolean isDataSourceAggregation = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().containsKey("data-source-aggregation-enabled")
-                ? ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED)
-                : false;
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
-        if (isDataSourceAggregation) {
-            String databaseName = GlobalDataSourceRegistry.getInstance().getDataSourceSchema().get(schemaName + "." + dataSourceName);
-            result.setCatalog(databaseName);
-        }
         if (dataSourceName.contains(".")) {
             String databaseName = dataSourceName.split("\\.")[1];
             result.setCatalog(databaseName);

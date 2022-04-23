@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
@@ -30,21 +31,21 @@ import java.util.Optional;
 public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     
     /**
-     * Check database discovery configuration.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
+     * Load highly available status.
+     * 
+     * @param dataSource data source
+     * @return loaded highly available status
      * @throws SQLException SQL exception
      */
-    void checkDatabaseDiscoveryConfiguration(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
+    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
-     * Determine primary data source.
+     * Find primary data source name.
      * 
      * @param dataSourceMap data source map
-     * @return determined name of primary data source
+     * @return found name of primary data source
      */
-    Optional<String> determinePrimaryDataSource(Map<String, DataSource> dataSourceMap);
+    Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
     
     /**
      * Update member state.
@@ -63,16 +64,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     String getPrimaryDataSource();
     
     /**
-     * Get old primary data source.
-     * 
-     * @return old primary data source
+     * Set primary data source.
+     *
+     * @param primaryDataSource primary data source
      */
-    String getOldPrimaryDataSource();
-    
-    /**
-     * Get old primary data source.
-     * 
-     * @param oldPrimaryDataSource old primary data source
-     */
-    void setOldPrimaryDataSource(String oldPrimaryDataSource);
+    void setPrimaryDataSource(String primaryDataSource);
 }

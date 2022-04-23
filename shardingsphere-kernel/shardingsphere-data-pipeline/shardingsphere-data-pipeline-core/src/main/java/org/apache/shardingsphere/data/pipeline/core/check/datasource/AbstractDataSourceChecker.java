@@ -59,9 +59,10 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     private void checkEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         for (String each : tableNames) {
             String sql = getSQLBuilder().buildCheckEmptySQL(each);
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (
+                    Connection connection = dataSource.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     throw new PipelineJobPrepareFailedException(String.format("Target table `%s` is not empty, sql: %s.", each, sql));
                 }

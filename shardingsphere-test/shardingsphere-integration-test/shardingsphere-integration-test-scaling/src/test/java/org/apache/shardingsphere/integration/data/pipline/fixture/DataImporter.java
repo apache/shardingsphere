@@ -55,8 +55,9 @@ public final class DataImporter {
     
     @SneakyThrows(SQLException.class)
     private void createTable(final DataSource dataSource, final String tableName, final String columnName, final String columnType) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(String.format(CREATE_SQL, tableName, columnName, columnType))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(String.format(CREATE_SQL, tableName, columnName, columnType))) {
             preparedStatement.execute();
         }
     }

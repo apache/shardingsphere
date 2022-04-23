@@ -34,9 +34,10 @@ public final class PostgreSQLDatabaseAssertionMetaData implements DatabaseAssert
     public String getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) throws SQLException {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
                 return resultSet.getString("attname");
             }

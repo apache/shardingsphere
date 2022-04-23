@@ -1287,6 +1287,14 @@ defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
 
+alterDatabaseDictionary
+    : ALTER DATABASE DICTIONARY (
+    | ENCRYPT CREDENTIALS
+    | REKEY CREDENTIALS
+    | DELETE CREDENTIALS KEY
+    )
+    ;
+    
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses

@@ -46,8 +46,9 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         PipelineConfiguration pipelineConfig = parameter.getPipelineConfiguration();
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        try (Connection sourceConnection = getSourceCachedDataSource(pipelineConfig, dataSourceManager).getConnection();
-             Connection targetConnection = getTargetCachedDataSource(pipelineConfig, dataSourceManager).getConnection()) {
+        try (
+                Connection sourceConnection = getSourceCachedDataSource(pipelineConfig, dataSourceManager).getConnection();
+                Connection targetConnection = getTargetCachedDataSource(pipelineConfig, dataSourceManager).getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);

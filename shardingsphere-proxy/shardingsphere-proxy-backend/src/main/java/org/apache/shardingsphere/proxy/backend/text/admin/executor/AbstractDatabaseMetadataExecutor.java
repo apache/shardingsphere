@@ -213,9 +213,10 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
             ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
-            try (Connection conn = dataSourceEntry.get().getValue().getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet resultSet = ps.executeQuery()) {
+            try (
+                    Connection conn = dataSourceEntry.get().getValue().getConnection();
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ResultSet resultSet = ps.executeQuery()) {
                 callback.apply(resultSet);
             }
         }

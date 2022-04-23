@@ -49,16 +49,18 @@ public final class MySQLPositionInitializer implements PositionInitializer {
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
         }
     }
     
     private long getServerId(final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(2);
         }

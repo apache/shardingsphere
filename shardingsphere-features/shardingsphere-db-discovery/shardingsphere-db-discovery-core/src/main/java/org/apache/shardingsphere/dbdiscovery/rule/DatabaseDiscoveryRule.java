@@ -110,15 +110,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
             DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getDatabaseDiscoveryType());
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
             try {
-                engine.checkDatabaseDiscoveryConfiguration(databaseName, originalDataSourceMap);
+                engine.checkHighlyAvailableStatus(databaseName, originalDataSourceMap);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            engine.updatePrimaryDataSource(databaseName, originalDataSourceMap, disabledDataSourceNames, groupName);
-            dataSourceRule.updatePrimaryDataSourceName(engine.getPrimaryDataSource());
-            engine.updateMemberState(databaseName, originalDataSourceMap, groupName);
+            dataSourceRule.updatePrimaryDataSourceName(engine.updatePrimaryDataSource(databaseName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames(), groupName));
         }
     }
     

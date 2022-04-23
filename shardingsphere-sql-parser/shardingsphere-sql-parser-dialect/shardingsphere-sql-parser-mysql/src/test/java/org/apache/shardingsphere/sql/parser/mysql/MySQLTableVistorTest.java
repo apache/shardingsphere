@@ -59,7 +59,7 @@ public final class MySQLTableVistorTest {
                 + "`submission_date` DATE,\n"
                 + "PRIMARY KEY ( `runoob_id` )\n"
                 + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-            1, 5});
+                1, 5});
     }
     
     private final String caseId;

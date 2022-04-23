@@ -165,8 +165,9 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     private Collection<String> loadRoleTableGrants(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Collection<String> result = new HashSet<>(tables.size(), 1);
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getLoadRoleTableGrantsSQL(tables))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getLoadRoleTableGrantsSQL(tables))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString("table_name"));

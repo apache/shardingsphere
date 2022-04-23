@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -162,7 +162,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return ((LocalDateTime) endpoint).format(dateTimeFormatter);
         }
         if (endpoint instanceof Date) {
-            return new SimpleDateFormat(getDateTimePattern()).format(endpoint);
+            return ((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(dateTimeFormatter);
         }
         return endpoint.toString();
     }

@@ -47,10 +47,10 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<Object[]> init() {
         return Arrays.asList(new Object[][]{
-            {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
-            {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
-            {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
-            {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
         });
     }
     
@@ -64,8 +64,9 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
                     Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.executeQuery("SELECT * FROM t_order");
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");
@@ -83,8 +84,9 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
                     Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.executeQuery("SELECT * FROM t_order");
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");

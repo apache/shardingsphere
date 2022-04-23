@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.registry;
+package org.apache.shardingsphere.dbdiscovery.spi.status;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Instance.
+ * Highly available status for database cluster.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class Instance {
+public interface HighlyAvailableStatus {
     
-    private final String ip;
-    
-    private final Integer port;
+    /**
+     * Validate highly available status.
+     * 
+     * @param databaseName database name
+     * @param dataSourceMap data source map 
+     * @param props properties of database discovery type
+     * @throws SQLException SQL exception
+     */
+    void validate(String databaseName, Map<String, DataSource> dataSourceMap, Properties props) throws SQLException;
 }

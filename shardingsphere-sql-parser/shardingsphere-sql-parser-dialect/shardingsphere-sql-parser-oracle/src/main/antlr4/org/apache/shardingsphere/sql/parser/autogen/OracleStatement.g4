@@ -75,5 +75,6 @@ execute
     | alterTrigger
     | createEdition
     | alterDatabaseLink
+    | alterDatabaseDictionary
     ) SEMI_?
     ;

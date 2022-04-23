@@ -18,19 +18,23 @@
 package org.apache.shardingsphere.dbdiscovery.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.Mockito.mock;
+
 public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
+        return mock(HighlyAvailableStatus.class);
     }
     
     @Override
-    public Optional<String> determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         return Optional.of("primary");
     }
     
@@ -44,12 +48,7 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public String getOldPrimaryDataSource() {
-        return null;
-    }
-    
-    @Override
-    public void setOldPrimaryDataSource(final String oldPrimaryDataSource) {
+    public void setPrimaryDataSource(final String primaryDataSource) {
     }
     
     @Override
