@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Abstract MySQL database discovery type.
@@ -37,6 +38,8 @@ import java.util.Optional;
 @Setter
 @Slf4j
 public abstract class AbstractMySQLDatabaseDiscoveryType implements DatabaseDiscoveryType {
+    
+    private Properties props = new Properties();
     
     private String oldPrimaryDataSource;
     
