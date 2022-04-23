@@ -103,8 +103,14 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         Collection<String> memberDatabaseInstanceURLs = findMemberDatabaseInstanceURLs(dataSourceMap);
-        if (!memberDatabaseInstanceURLs.isEmpty()) {
-            postDataSourceDisabledEvent(databaseName, dataSourceMap, memberDatabaseInstanceURLs, groupName);
+        if (memberDatabaseInstanceURLs.isEmpty()) {
+            return;
+        }
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (!entry.getKey().equals(getPrimaryDataSource())) {
+                StorageNodeStatus storageNodeStatus = isDisabledDataSource(memberDatabaseInstanceURLs, entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
+            }
         }
     }
     
@@ -123,15 +129,6 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
             log.error("An exception occurred while find member data source urls", ex);
         }
         return result;
-    }
-    
-    private void postDataSourceDisabledEvent(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLs, final String groupName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(getPrimaryDataSource())) {
-                StorageNodeStatus storageNodeStatus = isDisabledDataSource(memberDataSourceURLs, entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
-            }
-        }
     }
     
     private boolean isDisabledDataSource(final Collection<String> memberDataSourceURLs, final DataSource dataSource) {
