@@ -69,12 +69,12 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(getPrimaryDataSource())) {
-                determineDatasourceState(databaseName, entry.getKey(), entry.getValue(), groupName);
+                postDataSourceDisabledEvent(databaseName, entry.getKey(), entry.getValue(), groupName);
             }
         }
     }
     
-    private void determineDatasourceState(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
+    private void postDataSourceDisabledEvent(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
