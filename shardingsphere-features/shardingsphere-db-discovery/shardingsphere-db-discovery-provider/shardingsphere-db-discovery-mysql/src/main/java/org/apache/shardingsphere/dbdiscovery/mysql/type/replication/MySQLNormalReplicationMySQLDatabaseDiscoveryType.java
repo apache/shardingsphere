@@ -79,13 +79,10 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
-            if (replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
-            } else {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
-                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED, replicationDelayMilliseconds)));
-            }
+            StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
+                    ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED;
+            ShardingSphereEventBus.getInstance().post(
+                    new DataSourceDisabledEvent(databaseName, groupName, datasourceName, new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds)));
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
         }
