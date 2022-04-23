@@ -57,7 +57,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryTypeTest {
         when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
-        when(resultSet.getString("Master_Port")).thenReturn(Integer.toString(3306));
+        when(resultSet.getString("Master_Port")).thenReturn("3306");
         when(result.getConnection().getMetaData().getURL()).thenReturn(String.format("jdbc:mysql://127.0.0.1:%s/test?serverTimezone=UTC&useSSL=false", port));
         return result;
     }
