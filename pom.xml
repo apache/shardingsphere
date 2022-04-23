@@ -1055,10 +1055,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>src/resources/shardingsphere_eclipse_formatter.xml</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/shardingsphere_eclipse_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>src/resources/license-header</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
                         </licenseHeader>
                     </java>
                 </configuration>
