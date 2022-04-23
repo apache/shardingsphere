@@ -55,8 +55,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     public OpenGaussHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(DB_ROLE)
-        ) {
+             ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
             return new OpenGaussHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
         }
     }
