@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class MasterSlaveHighlyAvailableStatus implements HighlyAvailableStatus {
+public final class MasterSlaveHighlyAvailableStatus implements GlobalHighlyAvailableStatus {
     
     private final String primaryInstanceURL;
     

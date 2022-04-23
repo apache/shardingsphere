@@ -20,7 +20,9 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -50,13 +52,34 @@ public final class DatabaseDiscoveryEngine {
      * @throws SQLException SQL exception
      */
     public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<HighlyAvailableStatus> statuses = new HashSet<>();
+        Collection<HighlyAvailableStatus> statuses = loadHighlyAvailableStatuses(dataSourceMap);
+        Preconditions.checkState(!statuses.isEmpty(), "No database instance in database cluster `%s`.", databaseName);
+        HighlyAvailableStatus sample = statuses.iterator().next();
+        if (sample instanceof GlobalHighlyAvailableStatus) {
+            checkGlobalHighlyAvailableStatus(databaseName, dataSourceMap, statuses);
+        } else if (sample instanceof RoleSeparatedHighlyAvailableStatus) {
+            checkRoleSeparatedHighlyAvailableStatus(databaseName, dataSourceMap, statuses);
+        }
+    }
+    
+    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<HighlyAvailableStatus> result = new HashSet<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             // TODO query with multiple threads
-            statuses.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
+            result.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
         }
+        return result;
+    }
+    
+    private void checkGlobalHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         Preconditions.checkState(1 == statuses.size(), "Different status in highly available cluster in database `%s`.", databaseName);
         statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryType.getProps());
+    }
+    
+    private void checkRoleSeparatedHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+        for (HighlyAvailableStatus each : statuses) {
+            each.validate(databaseName, dataSourceMap, databaseDiscoveryType.getProps());
+        }
     }
     
     /**

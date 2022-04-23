@@ -52,9 +52,12 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public OpenGaussHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
-        // TODO Load OpenGaussHighlyAvailableStatus
-        return new OpenGaussHighlyAvailableStatus();
+    public OpenGaussHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+            return new OpenGaussHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
+        }
     }
     
     @Override
