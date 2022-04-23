@@ -61,11 +61,6 @@ public final class DataSourcePoolCreator {
      * @return created data source
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
-        if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            if (GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().containsKey(dataSourceProps.getInstance())) {
-                return GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().get(dataSourceProps.getInstance());
-            }
-        }
         // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
@@ -77,9 +72,6 @@ public final class DataSourcePoolCreator {
             dataSourceReflection.addDefaultDataSourceProperties();
         } else {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
-        }
-        if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            GlobalDataSourceRegistry.getInstance().getCachedInstanceDataSources().put(dataSourceProps.getInstance(), result);
         }
         return result;
     }
@@ -140,13 +132,5 @@ public final class DataSourcePoolCreator {
                 dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().setProperty(entry.getKey(), entry.getValue().toString());
             }
         }
-    }
-    
-    private static boolean isCanBeDataSourceAggregation(final DataSourceProperties dataSourceProps) {
-        if (!dataSourceProps.getConnectionPropertySynonyms().getLocalProperties().containsKey("jdbcUrl")) {
-            return false;
-        }
-        String jdbcUrlProp = (String) dataSourceProps.getConnectionPropertySynonyms().getLocalProperties().get("jdbcUrl");
-        return jdbcUrlProp.contains("jdbc:mysql") && GlobalDataSourceRegistry.getInstance().isDataSourceAggregationEnabled();
     }
 }
