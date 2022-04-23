@@ -47,6 +47,5 @@ public final class HeartbeatJob implements SimpleJob {
     public void execute(final ShardingContext shardingContext) {
         DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(databaseDiscoveryType);
         engine.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName);
-        engine.updateMemberState(schemaName, dataSourceMap, groupName);
     }
 }
