@@ -45,7 +45,7 @@ import java.util.Properties;
 @Slf4j
 public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
-    private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
+    private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
     private String oldPrimaryDataSource;
     
@@ -56,7 +56,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
             return new OpenGaussNormalReplicationHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
         }
     }
@@ -67,7 +67,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
             try (
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                    ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
                 if (resultSet.next()) {
                     if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
                         return Optional.of(entry.getKey());
@@ -87,7 +87,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
             try (
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
+                    ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
                 if (resultSet.next()) {
                     if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
                             || entry.getKey().equals(oldPrimaryDataSource)) {
