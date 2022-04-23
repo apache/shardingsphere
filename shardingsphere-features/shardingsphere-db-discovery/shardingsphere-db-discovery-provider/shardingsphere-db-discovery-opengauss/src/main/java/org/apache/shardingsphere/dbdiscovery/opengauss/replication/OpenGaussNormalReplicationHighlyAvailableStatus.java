@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss;
+package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,12 +27,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Highly available status of openGauss cluster.
+ * Highly available status of openGauss normal replication cluster.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class OpenGaussHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
+public final class OpenGaussNormalReplicationHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
     
     private final boolean primary;
     
