@@ -48,12 +48,7 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public String getOldPrimaryDataSource() {
-        return null;
-    }
-    
-    @Override
-    public void setOldPrimaryDataSource(final String oldPrimaryDataSource) {
+    public void setPrimaryDataSource(final String primaryDataSource) {
     }
     
     @Override

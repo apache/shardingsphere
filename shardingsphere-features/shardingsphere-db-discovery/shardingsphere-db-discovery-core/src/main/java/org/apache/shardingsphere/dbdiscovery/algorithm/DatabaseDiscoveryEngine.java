@@ -93,8 +93,8 @@ public final class DatabaseDiscoveryEngine {
      */
     public String updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Optional<String> newPrimaryDataSourceName = databaseDiscoveryType.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
-            databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSourceName.get());
+        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryType.getPrimaryDataSource())) {
+            databaseDiscoveryType.setPrimaryDataSource(newPrimaryDataSourceName.get());
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
         databaseDiscoveryType.updateMemberState(databaseName, dataSourceMap, groupName);

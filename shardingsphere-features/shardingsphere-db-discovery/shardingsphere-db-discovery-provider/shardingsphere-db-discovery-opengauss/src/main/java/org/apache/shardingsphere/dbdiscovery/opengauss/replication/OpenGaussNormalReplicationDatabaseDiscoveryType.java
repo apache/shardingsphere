@@ -47,7 +47,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
-    private String oldPrimaryDataSource;
+    private String primaryDataSource;
     
     private Properties props = new Properties();
     
@@ -91,18 +91,13 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || dataSourceName.equals(oldPrimaryDataSource))) {
+            if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || dataSourceName.equals(primaryDataSource))) {
                 return false;
             }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find data source urls", ex);
         }
         return true;
-    }
-    
-    @Override
-    public String getPrimaryDataSource() {
-        return oldPrimaryDataSource;
     }
     
     @Override
