@@ -30,13 +30,13 @@ import java.util.Optional;
 public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     
     /**
-     * Check database discovery configuration.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
+     * Load highly available status.
+     * 
+     * @param dataSource data source
+     * @return loaded highly available status
      * @throws SQLException SQL exception
      */
-    void checkDatabaseDiscoveryConfiguration(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
+    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
      * Determine primary data source.

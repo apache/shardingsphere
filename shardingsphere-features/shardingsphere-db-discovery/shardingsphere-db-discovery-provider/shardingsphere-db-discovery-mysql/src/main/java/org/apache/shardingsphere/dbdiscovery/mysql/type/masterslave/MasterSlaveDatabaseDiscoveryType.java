@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.masterslave;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,45 +32,29 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Show slave status database discovery type.
+ * Master-slave database discovery type.
  */
 @Getter
 @Setter
 @Slf4j
-public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> result = getPrimaryDataSourceURLS(dataSourceMap);
-        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for databaseName `%s`", databaseName);
-        Preconditions.checkState(1 == result.size(), "More than one primary data source for databaseName `%s`", databaseName);
-    }
-    
-    private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> result = new ArrayList<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement()) {
-                Optional<String> url = loadPrimaryDataSourceURL(statement);
-                if (url.isPresent() && !result.contains(url.get())) {
-                    result.add(url.get());
-                }
-            }
+    public MasterSlaveHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            return new MasterSlaveHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
         }
-        return result;
     }
     
     @Override
@@ -99,9 +82,8 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     private void determineDatasourceState(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
             if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
@@ -126,6 +108,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     
     @Override
     public String getType() {
-        return "SHOW_SLAVE_STATUS";
+        return "MASTER_SLAVE";
     }
 }

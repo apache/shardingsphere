@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type;
+package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
@@ -35,13 +35,18 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -49,45 +54,26 @@ import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryTypeTest {
     
-    private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
-    
-    private static final String MEMBER_COUNT = "SELECT count(*) FROM performance_schema.replication_group_members";
-    
-    private static final String GROUP_NAME = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
-    
-    private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
-    
-    private static final String GROUP_MEMBER = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
-    
-    private final MGRDatabaseDiscoveryType mgrDatabaseDiscoveryType = new MGRDatabaseDiscoveryType();
+    private final MGRDatabaseDiscoveryType databaseDiscoveryType = new MGRDatabaseDiscoveryType();
     
     @Test
-    public void assertCheckMGRConfig() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
+    public void assertLoadHighlyAvailableStatus() throws SQLException {
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(PLUGIN_STATUS)).thenReturn(resultSet);
-        when(statement.executeQuery(MEMBER_COUNT)).thenReturn(resultSet);
-        when(statement.executeQuery(GROUP_NAME)).thenReturn(resultSet);
-        when(statement.executeQuery(SINGLE_PRIMARY)).thenReturn(resultSet);
-        when(statement.executeQuery(GROUP_MEMBER)).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false, true, false);
+        when(dataSource.getConnection().createStatement().executeQuery(any())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, true, true, true, false);
         when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
-        when(resultSet.getInt(1)).thenReturn(3);
-        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
-        when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1");
-        when(resultSet.getString("MEMBER_PORT")).thenReturn(Integer.toString(3306));
+        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("ON", "group_name");
+        when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1", "127.0.0.1");
+        when(resultSet.getString("MEMBER_PORT")).thenReturn("3306", "3307");
         when(resultSet.getString("MEMBER_STATE")).thenReturn("ONLINE");
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
-        mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds_0", dataSource);
-        mgrDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
+        databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
+        MGRHighlyAvailableStatus actual = databaseDiscoveryType.loadHighlyAvailableStatus(dataSource);
+        assertTrue(actual.isPluginActive());
+        assertTrue(actual.isSinglePrimaryMode());
+        assertThat(actual.getGroupName(), is("group_name"));
+        assertThat(actual.getMemberInstanceURLs(), is(Arrays.asList("127.0.0.1:3306", "127.0.0.1:3307")));
     }
     
     @Test
@@ -120,8 +106,10 @@ public final class MGRDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        assertThat(mgrDatabaseDiscoveryType.determinePrimaryDataSource(dataSourceMap), is("ds_2"));
+        databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
+        Optional<String> actual = databaseDiscoveryType.determinePrimaryDataSource(dataSourceMap);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("ds_2"));
     }
     
     // TODO Fix me
@@ -130,7 +118,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
         Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
-        declaredField.set(mgrDatabaseDiscoveryType, "ds_0");
+        declaredField.set(databaseDiscoveryType, "ds_0");
         EventBus eventBus = mock(EventBus.class);
         mockStatic(ShardingSphereEventBus.class);
         when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
@@ -162,7 +150,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, "readwrite_ds");
+        databaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, "readwrite_ds");
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "readwrite_ds", "ds_2",
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED))));
     }

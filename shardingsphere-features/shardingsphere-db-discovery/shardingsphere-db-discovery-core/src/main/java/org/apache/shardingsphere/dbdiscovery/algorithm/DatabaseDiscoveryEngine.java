@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -27,7 +29,9 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -39,14 +43,20 @@ public final class DatabaseDiscoveryEngine {
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
     /**
-     * Check database discovery configuration.
+     * Check highly available status of database cluster.
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(databaseName, dataSourceMap);
+    public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<HighlyAvailableStatus> statuses = new HashSet<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            // TODO query with multiple threads
+            statuses.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
+        }
+        Preconditions.checkState(1 == statuses.size(), "Different status in highly available cluster in database `%s`.", databaseName);
+        statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryType.getProps());
     }
     
     /**
