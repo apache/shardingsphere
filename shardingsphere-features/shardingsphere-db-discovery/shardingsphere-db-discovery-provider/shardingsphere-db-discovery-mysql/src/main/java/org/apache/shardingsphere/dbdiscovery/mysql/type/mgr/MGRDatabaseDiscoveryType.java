@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * MGR database discovery type.
+ * MGR database discovery type for MySQL.
  */
 @Slf4j
 public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
