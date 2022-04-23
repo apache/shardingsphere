@@ -47,4 +47,15 @@ public final class PipelineMetaDataNode {
     public static String getScalingRootPath() {
         return "/" + ROOT_NODE;
     }
+    
+    /**
+     * Get scaling job offset path.
+     *
+     * @param jobId job id.
+     * @param shardingItem sharding item.
+     * @return job offset path.
+     */
+    public static String getScalingJobOffsetPath(final String jobId, final int shardingItem) {
+        return Joiner.on("/").join(getScalingRootPath(), jobId, "offset", shardingItem);
+    }
 }

@@ -50,8 +50,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public Connection getProxyConnection() throws SQLException {
+    public Connection getProxyConnection(final String databaseName) throws SQLException {
         return DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(),
-                getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), ""), "root", "root");
+                getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName), "root", "root");
     }
 }

@@ -46,7 +46,7 @@ public final class LocalComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public Connection getProxyConnection() throws SQLException {
-        return DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), "localhost", 3307, ""), "root", "root");
+    public Connection getProxyConnection(final String databaseName) throws SQLException {
+        return DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), "localhost", 3307, databaseName), "root", "root");
     }
 }
