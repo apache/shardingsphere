@@ -115,8 +115,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            engine.updatePrimaryDataSource(databaseName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames(), groupName);
-            dataSourceRule.updatePrimaryDataSourceName(engine.getPrimaryDataSource());
+            dataSourceRule.updatePrimaryDataSourceName(engine.updatePrimaryDataSource(databaseName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames(), groupName));
         }
     }
     

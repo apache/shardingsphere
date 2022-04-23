@@ -89,14 +89,16 @@ public final class DatabaseDiscoveryEngine {
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
      * @param groupName group name
+     * @return updated primary data source name
      */
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+    public String updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Optional<String> newPrimaryDataSourceName = databaseDiscoveryType.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryType.getOldPrimaryDataSource())) {
             databaseDiscoveryType.setOldPrimaryDataSource(newPrimaryDataSourceName.get());
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
         databaseDiscoveryType.updateMemberState(databaseName, dataSourceMap, groupName);
+        return newPrimaryDataSourceName.orElseGet(databaseDiscoveryType::getPrimaryDataSource);
     }
     
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
@@ -105,14 +107,5 @@ public final class DatabaseDiscoveryEngine {
             result.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
         return result;
-    }
-    
-    /**
-     * Get primary data source.
-     *
-     * @return primary data source
-     */
-    public String getPrimaryDataSource() {
-        return databaseDiscoveryType.getPrimaryDataSource();
     }
 }
