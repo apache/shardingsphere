@@ -63,8 +63,9 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     @Override
     public MGRHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstanceURLs(statement));
         }
     }
@@ -118,8 +119,9 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         List<String> result = new LinkedList<>();
-        try (Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
+                Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST);
             while (resultSet.next()) {
                 if (!"ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {

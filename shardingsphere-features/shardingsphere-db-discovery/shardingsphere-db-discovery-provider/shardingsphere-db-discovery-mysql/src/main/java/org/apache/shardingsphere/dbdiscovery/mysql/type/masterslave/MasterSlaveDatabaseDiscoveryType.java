@@ -51,8 +51,9 @@ public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDisc
     
     @Override
     public MasterSlaveHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             return new MasterSlaveHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
         }
     }
@@ -82,8 +83,9 @@ public final class MasterSlaveDatabaseDiscoveryType extends AbstractDatabaseDisc
     }
     
     private void determineDatasourceState(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = getSecondsBehindMaster(statement) * 1000L;
             if (replicationDelayMilliseconds < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
