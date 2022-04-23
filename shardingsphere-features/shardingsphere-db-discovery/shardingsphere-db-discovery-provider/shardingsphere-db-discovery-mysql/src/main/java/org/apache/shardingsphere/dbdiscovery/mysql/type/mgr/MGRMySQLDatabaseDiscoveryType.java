@@ -102,23 +102,22 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        Collection<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
-        if (!memberDataSourceURLs.isEmpty()) {
-            determineDisabledDataSource(databaseName, dataSourceMap, memberDataSourceURLs, groupName);
+        Collection<String> memberDatabaseInstanceURLs = findMemberDatabaseInstanceURLs(dataSourceMap);
+        if (!memberDatabaseInstanceURLs.isEmpty()) {
+            postDataSourceDisabledEvent(databaseName, dataSourceMap, memberDatabaseInstanceURLs, groupName);
         }
     }
     
-    private Collection<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
+    private Collection<String> findMemberDatabaseInstanceURLs(final Map<String, DataSource> dataSourceMap) {
         Collection<String> result = new LinkedList<>();
         try (
                 Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
-                Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
             while (resultSet.next()) {
-                if (!"ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
-                    continue;
+                if ("ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
+                    result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
                 }
-                result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find member data source urls", ex);
@@ -126,27 +125,27 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
         return result;
     }
     
-    private void determineDisabledDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLs, final String groupName) {
+    private void postDataSourceDisabledEvent(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getKey().equals(getPrimaryDataSource())) {
-                continue;
+            if (!entry.getKey().equals(getPrimaryDataSource())) {
+                StorageNodeStatus storageNodeStatus = isDisabledDataSource(memberDataSourceURLs, entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
             }
-            boolean disable = true;
-            String url;
-            try (Connection connection = entry.getValue().getConnection()) {
-                url = connection.getMetaData().getURL();
-                for (String each : memberDataSourceURLs) {
-                    if (null != url && url.contains(each)) {
-                        disable = false;
-                        break;
-                    }
-                }
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find data source urls", ex);
-            }
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(),
-                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
         }
+    }
+    
+    private boolean isDisabledDataSource(final Collection<String> memberDataSourceURLs, final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            String url = connection.getMetaData().getURL();
+            for (String each : memberDataSourceURLs) {
+                if (null != url && url.contains(each)) {
+                    return false;
+                }
+            }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find data source urls", ex);
+        }
+        return true;
     }
     
     @Override
