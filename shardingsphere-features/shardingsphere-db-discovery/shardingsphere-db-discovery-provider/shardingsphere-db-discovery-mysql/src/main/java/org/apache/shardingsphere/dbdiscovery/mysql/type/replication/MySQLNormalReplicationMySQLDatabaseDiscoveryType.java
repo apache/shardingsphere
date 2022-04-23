@@ -78,7 +78,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement) * 1000L;
+            long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
             if (replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName,
                         new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED, replicationDelayMilliseconds)));
@@ -93,7 +93,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     
     private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") : 0L;
+            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
         }
     }
     
