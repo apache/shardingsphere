@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -43,7 +43,7 @@ import java.util.Properties;
 @Getter
 @Setter
 @Slf4j
-public final class MySQLNormalReplicationDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
@@ -54,12 +54,12 @@ public final class MySQLNormalReplicationDatabaseDiscoveryType extends AbstractD
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDataSourceURL(statement).orElse(null));
+            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstanceURL(statement).orElse(null));
         }
     }
     
     @Override
-    protected Optional<String> loadPrimaryDataSourceURL(final Statement statement) throws SQLException {
+    protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");

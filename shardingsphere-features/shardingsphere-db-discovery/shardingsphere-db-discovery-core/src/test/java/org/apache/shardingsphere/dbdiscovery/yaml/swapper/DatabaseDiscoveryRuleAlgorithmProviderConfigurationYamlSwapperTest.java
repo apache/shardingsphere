@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedD
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.junit.Test;
 
@@ -86,6 +86,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         heartBeatConfig.put("mgr_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), heartBeatConfig,
-                        ImmutableMap.of("mgr", new MGRDatabaseDiscoveryType())));
+                        ImmutableMap.of("mgr", new MGRMySQLDatabaseDiscoveryType())));
     }
 }
