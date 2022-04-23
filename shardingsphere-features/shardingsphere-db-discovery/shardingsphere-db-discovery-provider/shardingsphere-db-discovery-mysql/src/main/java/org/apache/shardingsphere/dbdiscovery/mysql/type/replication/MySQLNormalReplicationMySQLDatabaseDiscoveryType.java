@@ -93,10 +93,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     
     private long loadSecondsBehindMaster(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                return resultSet.getLong("Seconds_Behind_Master");
-            }
-            return 0L;
+            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") : 0L;
         }
     }
     
