@@ -35,7 +35,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
         MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource());
-        assertThat(actual.getDatabaseInstance().toString(), is("127.0.0.1:3306"));
+        assertThat(actual.getDatabaseInstanceURL(), is("127.0.0.1:3306"));
     }
     
     @Test

@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.type.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
@@ -47,7 +46,7 @@ public final class MGRHighlyAvailableStatus implements GlobalHighlyAvailableStat
     
     private final String groupName;
     
-    private final Collection<IPPortPrimaryDatabaseInstance> databaseInstances;
+    private final Collection<String> databaseInstanceURLs;
     
     @Override
     public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) throws SQLException {
@@ -55,16 +54,16 @@ public final class MGRHighlyAvailableStatus implements GlobalHighlyAvailableStat
         Preconditions.checkState(singlePrimaryMode, "MGR is not in single primary mode in database `%s`.", databaseName);
         Preconditions.checkState(props.getProperty("group-name", "").equals(groupName),
                 "Group name `%s` in MGR is not same with configured one `%s` in database `%s`.", groupName, props.getProperty("group-name"), databaseName);
-        Preconditions.checkState(!databaseInstances.isEmpty(), "MGR member is empty in database `%s`.", databaseName);
+        Preconditions.checkState(!databaseInstanceURLs.isEmpty(), "MGR member is empty in database `%s`.", databaseName);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             checkDataSourceInReplicationGroup(databaseName, entry.getKey(), entry.getValue());
         }
     }
     
     private void checkDataSourceInReplicationGroup(final String databaseName, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        for (IPPortPrimaryDatabaseInstance each : databaseInstances) {
+        for (String each : databaseInstanceURLs) {
             try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(each.toString())) {
+                if (connection.getMetaData().getURL().contains(each)) {
                     return;
                 }
             }

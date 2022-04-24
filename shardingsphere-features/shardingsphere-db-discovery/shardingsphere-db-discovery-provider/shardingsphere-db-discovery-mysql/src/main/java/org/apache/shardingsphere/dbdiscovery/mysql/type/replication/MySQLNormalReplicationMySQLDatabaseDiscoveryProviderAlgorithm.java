@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -72,13 +71,13 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         return false;
     }
     
-    private Optional<IPPortPrimaryDatabaseInstance> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
+    private Optional<String> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");
                 String masterPort = resultSet.getString("Master_Port");
                 if (null != masterHost && null != masterPort) {
-                    return Optional.of(new IPPortPrimaryDatabaseInstance(masterHost, masterPort));
+                    return Optional.of(String.join(":", masterHost, masterPort));
                 }
             }
             return Optional.empty();
