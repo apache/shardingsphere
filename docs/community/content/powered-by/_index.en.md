@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 177 companies.
+Total: 178 companies.
 
 ### Infra Software
 <ul>
@@ -53,6 +53,7 @@ Total: 177 companies.
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+    <li><a href="https://www.airstar.com/" rel="nofollow">Airstar</a></li>
 </ul>
 
 ### Internet
