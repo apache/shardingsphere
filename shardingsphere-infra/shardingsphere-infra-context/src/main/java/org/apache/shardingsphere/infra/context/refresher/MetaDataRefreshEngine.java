@@ -62,7 +62,7 @@ public final class MetaDataRefreshEngine {
     /**
      * Refresh.
      *
-     * @param sqlStatementContext SQL statement Context
+     * @param sqlStatementContext SQL statement context
      * @param logicDataSourceNamesSupplier logic data source names supplier
      * @throws SQLException SQL exception
      */
