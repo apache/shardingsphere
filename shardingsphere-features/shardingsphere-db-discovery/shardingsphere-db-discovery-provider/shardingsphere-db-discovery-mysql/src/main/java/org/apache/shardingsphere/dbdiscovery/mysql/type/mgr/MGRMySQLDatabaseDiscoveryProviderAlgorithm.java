@@ -97,7 +97,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
@@ -106,8 +106,6 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
                 MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
                 return metaData.getHostname().equals(resultSet.getString("MEMBER_HOST")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("MEMBER_PORT"));
             }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while find primary data source name", ex);
         }
         return false;
     }
