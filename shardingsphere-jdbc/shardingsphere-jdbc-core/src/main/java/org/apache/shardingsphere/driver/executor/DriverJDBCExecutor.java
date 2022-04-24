@@ -59,7 +59,7 @@ public final class DriverJDBCExecutor {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName), 
+                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName),
                 metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getProps());
     }
     
@@ -156,7 +156,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        metadataRefreshEngine.refresh(sqlStatement,
-            () -> routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
+        metadataRefreshEngine.refresh(sqlStatement, () -> routeUnits.stream()
+                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
     }
 }

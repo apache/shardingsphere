@@ -41,7 +41,12 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Whether to use traffic or not.
      */
-    USE_TRAFFIC("useTraffic", String.valueOf(Boolean.FALSE), boolean.class);
+    USE_TRAFFIC("useTraffic", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Whether hint skip encrypt rewrite or not.
+     */
+    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

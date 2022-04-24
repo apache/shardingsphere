@@ -32,9 +32,10 @@ public interface DatabaseProtocolFrontendEngine extends StatefulTypedSPI {
     /**
      * Set database version.
      * 
+     * @param schemaName schema name
      * @param databaseVersion database version
      */
-    default void setDatabaseVersion(String databaseVersion) {
+    default void setDatabaseVersion(String schemaName, String databaseVersion) {
     }
     
     /**

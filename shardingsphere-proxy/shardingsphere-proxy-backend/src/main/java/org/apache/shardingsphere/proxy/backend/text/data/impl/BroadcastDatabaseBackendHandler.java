@@ -53,38 +53,38 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     @SuppressWarnings("rawtypes")
     @Override
     public Future<ResponseHeader> executeFuture() {
-        List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
-        String originalSchema = connectionSession.getSchemaName();
-        List<Future> futures = new ArrayList<>(schemaNames.size());
-        for (String each : schemaNames) {
-            connectionSession.setCurrentSchema(each);
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
+        String originalDatabase = connectionSession.getDatabaseName();
+        List<Future> futures = new ArrayList<>(databaseNames.size());
+        for (String each : databaseNames) {
+            connectionSession.setCurrentDatabase(each);
             futures.add(databaseCommunicationEngineFactory.<VertxDatabaseCommunicationEngine>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute());
         }
         return CompositeFuture.all(futures)
                 .compose(unused -> Future.succeededFuture((ResponseHeader) new UpdateResponseHeader(sqlStatementContext.getSqlStatement())))
                 .eventually(unused -> {
-                    connectionSession.setCurrentSchema(originalSchema);
+                    connectionSession.setCurrentDatabase(originalDatabase);
                     return Future.succeededFuture();
                 });
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
-        String originalSchema = connectionSession.getSchemaName();
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
+        String originalDatabase = connectionSession.getDatabaseName();
         try {
-            for (String each : schemaNames) {
-                connectionSession.setCurrentSchema(each);
+            for (String each : databaseNames) {
+                connectionSession.setCurrentDatabase(each);
                 databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute();
             }
         } finally {
-            connectionSession.setCurrentSchema(originalSchema);
+            connectionSession.setCurrentDatabase(originalDatabase);
         }
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
     
-    private Optional<List<String>> getSchemaNamesWithDataSource() {
-        List<String> result = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
+    private Optional<List<String>> getDatabaseNamesWithDataSource() {
+        List<String> result = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
         return Optional.of(result).filter(each -> !each.isEmpty());
     }
 }

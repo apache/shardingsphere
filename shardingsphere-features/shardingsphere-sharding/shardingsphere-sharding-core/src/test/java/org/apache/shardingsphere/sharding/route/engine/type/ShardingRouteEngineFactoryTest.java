@@ -98,7 +98,7 @@ public final class ShardingRouteEngineFactoryTest {
     private ShardingConditions shardingConditions;
     
     private Collection<String> tableNames;
-
+    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Before
@@ -154,7 +154,7 @@ public final class ShardingRouteEngineFactoryTest {
     public void assertNewInstanceForDALSetForMySQL() {
         assertNewInstanceForDALSet(mock(MySQLSetStatement.class));
     }
-
+    
     @Test
     public void assertNewInstanceForDALSetForPostgreSQL() {
         assertNewInstanceForDALSet(mock(PostgreSQLSetStatement.class));

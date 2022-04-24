@@ -34,9 +34,9 @@ import java.util.Map;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String schemaName, 
+    public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String databaseName,
                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new DatabaseDiscoveryRule(schemaName, dataSources, config);
+        return new DatabaseDiscoveryRule(databaseName, dataSources, config);
     }
     
     @Override

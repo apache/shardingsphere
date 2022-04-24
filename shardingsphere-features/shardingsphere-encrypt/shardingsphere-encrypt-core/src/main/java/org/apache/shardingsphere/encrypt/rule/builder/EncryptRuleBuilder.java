@@ -34,7 +34,7 @@ import java.util.Map;
 public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final EncryptRuleConfiguration config, final String schemaName,
+    public EncryptRule build(final EncryptRuleConfiguration config, final String databaseName,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return new EncryptRule(config, dataSources);
     }

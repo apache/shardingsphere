@@ -24,10 +24,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MySQLPipelineSQLBuilderTest {
     
@@ -47,8 +49,9 @@ public final class MySQLPipelineSQLBuilderTest {
     
     @Test
     public void assertBuildSumCrc32SQL() {
-        String actual = sqlBuilder.buildCRC32SQL("t2", "id");
-        assertThat(actual, is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
+        Optional<String> actual = sqlBuilder.buildCRC32SQL("t2", "id");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

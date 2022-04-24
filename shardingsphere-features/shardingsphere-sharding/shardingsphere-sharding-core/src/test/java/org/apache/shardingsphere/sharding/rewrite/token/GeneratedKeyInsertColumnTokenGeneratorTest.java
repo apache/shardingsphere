@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyInsertColumnTokenGeneratorTest {
-
+    
     @Test
     public void assertGenerateSQLToken() {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);

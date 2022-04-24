@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowSlaveHostsStatementAssert {
-
+    
     /**
      * Assert show slave host statement is correct with expected show slave host statement test case.
      *

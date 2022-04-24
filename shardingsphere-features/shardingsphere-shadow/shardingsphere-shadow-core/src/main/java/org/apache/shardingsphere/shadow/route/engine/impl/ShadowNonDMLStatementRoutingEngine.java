@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,8 +61,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private Optional<Collection<String>> parseSQLComments() {
-        Collection<String> result = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().stream().map(CommentSegment::getText)
-                .collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> result = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().stream().map(CommentSegment::getText).collect(Collectors.toList());
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     

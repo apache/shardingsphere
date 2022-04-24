@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class SavepointStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlAttribute(name = "savepoint-name")
     private String savepointName;
 }

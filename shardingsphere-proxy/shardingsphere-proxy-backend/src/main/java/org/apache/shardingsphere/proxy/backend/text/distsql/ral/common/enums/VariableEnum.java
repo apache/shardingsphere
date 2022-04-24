@@ -24,9 +24,9 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
  */
 public enum VariableEnum {
     
-    AGENT_PLUGINS_ENABLED, 
+    AGENT_PLUGINS_ENABLED,
     
-    CACHED_CONNECTIONS, 
+    CACHED_CONNECTIONS,
     
     TRANSACTION_TYPE;
     

@@ -45,13 +45,13 @@ import static org.mockito.Mockito.when;
 public final class OrderByTokenGeneratorTest {
     
     private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
-
+    
     private static final String TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
-
+    
     private static final int TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX = 5;
-
+    
     private OrderDirection orderDirection = mock(OrderDirection.class);
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -63,7 +63,7 @@ public final class OrderByTokenGeneratorTest {
         when(selectStatementContext.getOrderByContext().isGenerated()).thenReturn(Boolean.TRUE);
         assertTrue(orderByTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
@@ -82,7 +82,7 @@ public final class OrderByTokenGeneratorTest {
         assertThat(orderByToken.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
         assertThat(orderByToken.getOrderDirections().get(0), is(orderDirection));
     }
-
+    
     private Collection<OrderByItem> getOrderByItemCollection() {
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         when(columnOrderByItemSegment.getText()).thenReturn(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);

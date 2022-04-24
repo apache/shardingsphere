@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTablesExecutorTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -80,7 +80,7 @@ public final class ShowTablesExecutorTest {
         when(metaData.getDefaultSchema()).thenReturn(schema);
         when(metaData.isComplete()).thenReturn(true);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap(String.format(SCHEMA_PATTERN, 0), metaData);
+        return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), metaData);
     }
     
     @Test
@@ -132,7 +132,7 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertShowTablesExecutorWithExpectedUpperCase() throws SQLException {
+    public void assertShowTablesExecutorWithUpperCase() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
@@ -146,7 +146,7 @@ public final class ShowTablesExecutorTest {
     }
     
     @Test
-    public void assertShowTablesExecutorWithUnexpectedLowerCase() throws SQLException {
+    public void assertShowTablesExecutorWithLowerCase() throws SQLException {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
@@ -154,25 +154,15 @@ public final class ShowTablesExecutorTest {
         ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithUnexpectedUpperCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_ACCOUNT")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
+        showTablesExecutor.getMergedResult().next();
+        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         assertFalse(showTablesExecutor.getMergedResult().next());
     }
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

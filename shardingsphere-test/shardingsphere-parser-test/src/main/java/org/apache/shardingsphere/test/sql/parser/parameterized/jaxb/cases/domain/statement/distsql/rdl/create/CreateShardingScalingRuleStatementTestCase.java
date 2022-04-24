@@ -31,10 +31,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class CreateShardingScalingRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
-
+    
     @XmlElement(name = "configuration")
     private ExpectedShardingScalingRuleConfigurationSegment configurationSegment;
 }

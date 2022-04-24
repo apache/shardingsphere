@@ -225,8 +225,7 @@ public final class DataRecordMergerTest {
                 mockUpdateDataRecord("t1", 2, 2, 1),
                 mockUpdateDataRecord("t1", 2, 2, 2),
                 mockDeleteDataRecord("t1", 3, 1, 1),
-                mockInsertDataRecord("t2", 1, 1, 1)
-        );
+                mockInsertDataRecord("t2", 1, 1, 1));
     }
     
     private DataRecord mockInsertDataRecord(final int id, final int userId, final int totalPrice) {

@@ -18,6 +18,5 @@
 
 <sql-parser-test-cases>
     <commit sql-case-id="end" />
-    <commit sql-case-id="end_prepare" />
-    <commit sql-case-id="end_in_pg" />
+    <commit sql-case-id="end_transaction" />
 </sql-parser-test-cases>

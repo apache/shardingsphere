@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @Getter
 @Setter
 @ToString
-public class OracleFlashbackTableStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleFlashbackTableStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
     
     private SimpleTableSegment table;
-
+    
     private SimpleTableSegment renameTable;
 }

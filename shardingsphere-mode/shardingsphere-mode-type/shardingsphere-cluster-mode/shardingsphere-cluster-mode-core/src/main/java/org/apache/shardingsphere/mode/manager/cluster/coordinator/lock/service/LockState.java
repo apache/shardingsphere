@@ -22,5 +22,5 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
  */
 public enum LockState {
     
-    LOCKED, UNLOCKED
+    LOCKED, UNLOCKED, LOCKING
 }

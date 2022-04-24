@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
@@ -64,6 +65,14 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     private static final String FETCH_PRIMARY_KEY_TEMPLATE = "SELECT constraint_name,column_name FROM information_schema"
             + ".key_column_usage WHERE table_name = '%s' AND table_schema='public'";
     
+    private static final String COMMENT_TEMPLATE = "COMMENT ON %s %s IS '%s'";
+    
+    private static final String FETCH_TABLE_COLUMN_TEMPLATE = "SELECT ordinal_position,column_name FROM information_schema.columns WHERE "
+            + "table_name = '%s' AND table_schema='public' ORDER BY ordinal_position";
+    
+    private static final String FETCH_COMMENT_TEMPLATE = "SELECT objsubid,description FROM pg_catalog.pg_description WHERE objoid = "
+            + "'%s'::regclass";
+    
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         Collection<ActualTableDefinition> actualTableDefinitions;
@@ -75,8 +84,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(),
-                parameter.getDataSourceManager()).getConnection()) {
+        try (
+                Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(),
+                        parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);
@@ -97,11 +107,11 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                     case ALTER_TABLE:
                         return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                     case CREATE_INDEX:
-                        return rewriteActualIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     case DROP_INDEX:
-                        return rewriteActualIndexSql(sql, each.getActualTableName(), each.getLogicTableName());
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     case COMMENT_ON:
-                        // TODO need support by kernel
+                        return sql.replace(each.getActualTableName(), each.getLogicTableName());
                     default:
                         return "";
                 }
@@ -111,14 +121,10 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         return result;
     }
     
-    private String rewriteActualIndexSql(final String sql, final String actualTableName, final String logicTableName) {
-        return sql.replace(actualTableName, logicTableName);
-    }
-    
     private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
         Collection<ActualTableDefinition> result = new LinkedList<>();
-        ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration)
-                PipelineDataSourceConfigurationFactory.newInstance(parameter.getPipelineConfiguration().getSource().getType(),
+        ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig =
+                (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(parameter.getPipelineConfiguration().getSource().getType(),
                         parameter.getPipelineConfiguration().getSource().getParameter());
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
@@ -132,12 +138,12 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                 try (Connection sourceConnection = dataSource.getConnection()) {
                     String actualTableName = dataNode.getTableName();
                     StringJoiner joiner = new StringJoiner(";");
-                    Pair<String, List<String>> pkPiar = queryTablePrimaryKey(sourceConnection, actualTableName);
-                    joiner.add(queryCreateTableSql(sourceConnection, actualTableName, pkPiar.getRight()));
-                    queryCreateIndexes(sourceConnection, actualTableName, pkPiar.getLeft()).forEach(joiner::add);
-                    String logicTableName = each.getLogicTableName();
+                    Pair<String, List<String>> primaryKeyPair = queryTablePrimaryKey(sourceConnection, actualTableName);
+                    joiner.add(queryCreateTableSql(sourceConnection, actualTableName, primaryKeyPair.getRight()));
+                    queryCreateIndexes(sourceConnection, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
+                    queryCommentOnList(sourceConnection, actualTableName).forEach(joiner::add);
                     String tableDefinition = joiner.toString();
-                    result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
+                    result.add(new ActualTableDefinition(each.getLogicTableName(), actualTableName, tableDefinition));
                 }
             }
         }
@@ -147,8 +153,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     private Pair<String, List<String>> queryTablePrimaryKey(final Connection sourceConnection, final String actualTableName) throws SQLException {
         String primaryKeyName = null;
         List<String> primaryKeyColumns = new LinkedList<>();
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet resultSet = statement.executeQuery(String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName))) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName))) {
             while (resultSet.next()) {
                 primaryKeyName = primaryKeyName == null ? resultSet.getString(1) : primaryKeyName;
                 primaryKeyColumns.add(resultSet.getString(2));
@@ -172,12 +179,43 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     
     private List<String> queryCreateIndexes(final Connection sourceConnection, final String actualTableName, final String pkName) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
             while (resultSet.next()) {
                 // TODO add drop index first, make sure the index is not exist
                 result.add(String.format(DROP_INDEX_TEMPLATE, resultSet.getString(1), resultSet.getString(2)));
                 result.add(resultSet.getString(3));
+            }
+        }
+        return result;
+    }
+    
+    private List<String> queryCommentOnList(final Connection sourceConnection, final String actualTableName) throws SQLException {
+        final String fetchCommentSql = String.format(FETCH_COMMENT_TEMPLATE, actualTableName);
+        List<String> result = new LinkedList<>();
+        Map<Integer, String> commentMap = Maps.newHashMap();
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet commentResult = statement.executeQuery(fetchCommentSql)) {
+            while (commentResult.next()) {
+                commentMap.put(commentResult.getInt(1), commentResult.getString(2));
+            }
+            String tableComment = commentMap.remove(0);
+            if (!Strings.isNullOrEmpty(tableComment)) {
+                result.add(String.format(COMMENT_TEMPLATE, "TABLE", actualTableName, tableComment));
+            }
+        }
+        final String fetchColumnSql = String.format(FETCH_TABLE_COLUMN_TEMPLATE, actualTableName);
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet columnsResult = statement.executeQuery(fetchColumnSql)) {
+            while (columnsResult.next()) {
+                String columnComment = commentMap.get(columnsResult.getInt(1));
+                if (columnComment != null) {
+                    result.add(String.format(COMMENT_TEMPLATE, "COLUMN",
+                            new StringJoiner(".").add(actualTableName).add(columnsResult.getString(2)), columnComment));
+                }
             }
         }
         return result;

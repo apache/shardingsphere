@@ -36,24 +36,24 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkConfigurationExist(schemaName, currentRuleConfig);
-        checkResourceExist(schemaName, shardingSphereMetaData, sqlStatement);
-        checkDefaultResourceExist(schemaName, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getName();
+        checkConfigurationExist(databaseName, currentRuleConfig);
+        checkResourceExist(databaseName, shardingSphereMetaData, sqlStatement);
+        checkDefaultResourceExist(databaseName, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(schemaName, "single table"));
+    private void checkConfigurationExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
     }
     
-    private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+    private void checkResourceExist(final String databaseName, final ShardingSphereMetaData metaData, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Set<String> resourceNames = metaData.getResource().getDataSources().keySet();
-        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
-            () -> new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
+        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
+                databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
-    private void checkDefaultResourceExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", schemaName));
+    private void checkDefaultResourceExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
     }
     
     @Override

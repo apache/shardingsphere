@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 public final class SetVariableBackendHandlerTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     private ContextManager contextManagerBefore;
     
@@ -69,7 +69,7 @@ public final class SetVariableBackendHandlerTest {
     public void setUp() {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(properties));
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -86,14 +86,14 @@ public final class SetVariableBackendHandlerTest {
             when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             when(metaData.getDefaultSchema()).thenReturn(schema);
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }
     
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XA"), connectionSession));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -102,7 +102,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "BASE"), connectionSession));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -111,7 +111,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -120,7 +120,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XXX"), connectionSession));
         handler.execute();
     }
@@ -133,7 +133,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -142,7 +142,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -151,7 +151,7 @@ public final class SetVariableBackendHandlerTest {
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
-        connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
+        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));

@@ -20,9 +20,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
@@ -58,7 +59,6 @@ public final class RuleAlteredContext {
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
         ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
     
@@ -74,7 +74,7 @@ public final class RuleAlteredContext {
     
     private final RowBasedJobLockAlgorithm sourceWritingStopAlgorithm;
     
-    private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
+    private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
     private final RuleBasedJobLockAlgorithm checkoutLockAlgorithm;
     
@@ -98,8 +98,10 @@ public final class RuleAlteredContext {
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, JobCompletionDetectAlgorithm.class) : null;
         sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLockAlgorithm.class);
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
-        dataConsistencyCheckAlgorithm = null != dataConsistencyChecker ? ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class) : null;
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyCalculator();
+        dataConsistencyCalculateAlgorithm = null != dataConsistencyChecker
+                ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps())
+                : null;
         checkoutLockAlgorithm = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLockAlgorithm.class);
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();

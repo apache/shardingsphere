@@ -55,27 +55,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingResultMergerEngineTest {
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForMySQL() {
         assertNewInstanceWithSelectStatement(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForOracle() {
         assertNewInstanceWithSelectStatement(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForPostgreSQL() {
         assertNewInstanceWithSelectStatement(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForSQL92() {
         assertNewInstanceWithSelectStatement(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForSQLServer() {
         assertNewInstanceWithSelectStatement(new SQLServerSelectStatement());

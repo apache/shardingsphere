@@ -7,12 +7,12 @@ chapter = true
 
 ## DatabaseDiscoveryType
 
-| *SPI Name*                            | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| DatabaseDiscoveryType                 | Database discovery type                                 |
+| *SPI Name*                                      | *Description*                                 |
+| ----------------------------------------------- | --------------------------------------------- |
+| DatabaseDiscoveryType                           | Database discovery type                       |
 
-| *Implementation Class*                | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| MGRDatabaseDiscoveryType              | Database discovery of MySQL's MGR                       |
-| ShowSlaveStatusDatabaseDiscoveryType  | Database discovery of MySQL's master-slave delay        |
-| OpenGaussDatabaseDiscoveryType        | Database discovery of openGauss                         |
+| *Implementation Class*                          | *Description*                                 |
+| ----------------------------------------------- | --------------------------------------------- |
+| MGRDatabaseDiscoveryType                        | Database discovery of MySQL's MGR             |
+| MySQLNormalReplicationDatabaseDiscoveryType     | Database discovery of MySQL's replication     |
+| OpenGaussNormalReplicationDatabaseDiscoveryType | Database discovery of openGauss's replication |

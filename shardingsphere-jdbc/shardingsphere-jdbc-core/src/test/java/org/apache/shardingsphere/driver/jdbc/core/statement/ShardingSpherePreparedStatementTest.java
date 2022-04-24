@@ -345,8 +345,9 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertGeneratedKeysForBatchInsert() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
             preparedStatement.setString(3, "MULTI");
@@ -365,8 +366,9 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "show");
             preparedStatement.setString(2, "yes");
             preparedStatement.execute();
@@ -384,9 +386,10 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         int orderId = 200;
         String status = "init";
         String updatedStatus = "updated on duplicate key";
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
-             PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
             preparedStatement.setInt(1, itemId);
             preparedStatement.setInt(2, orderId);
             preparedStatement.setInt(3, userId1);
@@ -414,9 +417,10 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             }
         }
         
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
-             PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
             preparedStatement.setInt(1, itemId);
             preparedStatement.setInt(2, orderId);
             preparedStatement.setInt(3, userId1);

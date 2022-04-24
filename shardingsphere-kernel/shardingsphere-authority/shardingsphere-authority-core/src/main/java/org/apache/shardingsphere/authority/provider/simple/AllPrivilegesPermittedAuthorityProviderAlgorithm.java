@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.simple;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * All privileges permitted authority provider algorithm.
  */
-public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
     
@@ -55,21 +55,21 @@ public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements A
     }
     
     private static final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
-    
+        
         @Override
         public void setSuperPrivilege() {
         }
-    
+        
         @Override
         public boolean hasPrivileges(final String schema) {
             return true;
         }
-    
+        
         @Override
         public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
             return true;
         }
-    
+        
         @Override
         public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
             return true;

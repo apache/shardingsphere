@@ -27,22 +27,15 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporterFactory;
 
-import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Execute process engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteProcessEngine {
-    
-    private static final Collection<ExecuteProcessReporter> HANDLERS;
-    
-    static {
-        ShardingSphereServiceLoader.register(ExecuteProcessReporter.class);
-        HANDLERS = ShardingSphereServiceLoader.newServiceInstances(ExecuteProcessReporter.class);
-    }
     
     /**
      * Initialize.
@@ -53,9 +46,10 @@ public final class ExecuteProcessEngine {
      */
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
-        if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        if (reporter.isPresent() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
-            HANDLERS.iterator().next().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
+            reporter.get().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
     
@@ -63,6 +57,10 @@ public final class ExecuteProcessEngine {
      * Clean.
      */
     public static void clean() {
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            reporter.get().reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
+        }
         ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
@@ -73,9 +71,8 @@ public final class ExecuteProcessEngine {
      * @param executionUnit execution unit
      */
     public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
-        if (!HANDLERS.isEmpty()) {
-            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
-        }
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        reporter.ifPresent(optional -> optional.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE));
     }
     
     /**
@@ -84,8 +81,9 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      */
     public static void finish(final String executionID) {
-        if (!HANDLERS.isEmpty() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            HANDLERS.iterator().next().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            reporter.get().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }
 }

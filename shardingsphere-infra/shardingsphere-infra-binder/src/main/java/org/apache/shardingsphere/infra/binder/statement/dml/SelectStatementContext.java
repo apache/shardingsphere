@@ -39,6 +39,8 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -116,7 +118,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap,
                                                                         final List<Object> parameters, final String defaultDatabaseName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
@@ -138,7 +140,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 throw new SchemaNotExistedException(databaseName);
             }
         }
-        String schemaName = tablesContext.getSchemaName().orElse(databaseName);
+        // FIXME get postgresql/opengauss schemaName from search_path
+        String defaultSchemaName = getDatabaseType() instanceof PostgreSQLDatabaseType || getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : databaseName;
+        String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
         return metaData.getSchemaByName(schemaName);
     }
     

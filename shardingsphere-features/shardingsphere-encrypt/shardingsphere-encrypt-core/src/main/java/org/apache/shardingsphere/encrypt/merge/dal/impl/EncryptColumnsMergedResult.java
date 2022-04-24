@@ -46,7 +46,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     }
     
     @Override
-    public final boolean next() throws SQLException { 
+    public final boolean next() throws SQLException {
         boolean hasNext = nextValue();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (hasNext && !encryptTable.isPresent()) {
@@ -79,7 +79,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         }
         return getOriginalValue(columnIndex, type);
     }
-
+    
     @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");

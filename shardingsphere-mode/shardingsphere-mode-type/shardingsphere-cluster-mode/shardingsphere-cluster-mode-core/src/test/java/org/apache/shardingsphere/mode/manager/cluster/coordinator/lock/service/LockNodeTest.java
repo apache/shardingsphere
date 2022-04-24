@@ -28,46 +28,58 @@ import static org.junit.Assert.assertTrue;
 public final class LockNodeTest {
     
     @Test
-    public void assertGetLockNodePath() {
-        assertThat(LockNode.getLockNodePath("test"), is("/lock/locks/test"));
+    public void assertGetStandardLockedNodePath() {
+        assertThat(LockNode.getStandardLocksNodePath(), is("/lock/standard/locks"));
     }
     
     @Test
-    public void assertGetLockName() {
-        assertThat(LockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").orElse(null), is("sharding_db.test"));
+    public void assertGetGlobalDatabaseLocksNodePath() {
+        assertThat(LockNode.getGlobalDatabaseLocksNodePath(), is("/lock/global/database/locks"));
     }
     
     @Test
-    public void assertGetLockedKey() {
-        Optional<String> lockName = LockNode.getLockedName("key/lock/global/locks/schema-127.0.0.1@3307");
-        assertTrue(lockName.isPresent());
-        assertThat(lockName.get(), is("schema-127.0.0.1@3307"));
+    public void assertGetGlobalDatabaseLockedAckNodePath() {
+        assertThat(LockNode.getGlobalDatabaseLockedAckNodePath(), is("/lock/global/database/ack"));
     }
     
     @Test
-    public void assertGetAckLockedKey() {
-        Optional<String> lockName = LockNode.getAckLockedName("/lock/global/ack/schema-127.0.0.1@3308");
-        assertTrue(lockName.isPresent());
-        assertThat(lockName.get(), is("schema-127.0.0.1@3308"));
+    public void assertGenerateStandardLockName() {
+        assertThat(LockNode.generateStandardLockName("lockName"), is("/lock/standard/locks/lockName"));
     }
     
     @Test
-    public void assertGetGlobalLocksNodePath() {
-        assertThat(LockNode.getGlobalLocksNodePath(), is("/lock/global/locks"));
+    public void assertGenerateGlobalDatabaseLocksName() {
+        assertThat(LockNode.generateGlobalDatabaseLocksName("database"), is("/lock/global/database/locks/database"));
     }
     
     @Test
-    public void assertGenerateSchemaAckLockName() {
-        assertThat(LockNode.generateSchemaAckLockName("schema", "lockedInstanceId"), is("/lock/global/ack/schema-lockedInstanceId"));
+    public void assertGenerateGlobalDatabaseAckLockName() {
+        assertThat(LockNode.generateGlobalDatabaseAckLockName("database", "127.0.0.1@3307"), is("/lock/global/database/ack/database-127.0.0.1@3307"));
     }
     
     @Test
-    public void assertGetGlobalAckNodePath() {
-        assertThat(LockNode.getGlobalAckNodePath(), is("/lock/global/ack"));
+    public void assertGenerateGlobalDatabaseLockReleasedNodePath() {
+        assertThat(LockNode.generateGlobalDatabaseLockReleasedNodePath("database"), is("/lock/global/database/locks/database/leases"));
     }
     
     @Test
-    public void assertGenerateSchemaLockName() {
-        assertThat(LockNode.generateSchemaLockName("schema", "instanceId"), is("/lock/global/locks/schema-instanceId"));
+    public void assertGenerateLockTokenNodePath() {
+        assertThat(LockNode.generateLockTokenNodePath(), is("/lock/global/token"));
+    }
+    
+    @Test
+    public void assertParseGlobalDatabaseLocksNodePath() {
+        String nodePath = "/lock/global/database/locks/database-127.0.0.1@3307/leases/c_l_00000000";
+        Optional<String> globalDatabaseLockedAckNodePath = LockNode.parseGlobalDatabaseLocksNodePath(nodePath);
+        assertTrue(globalDatabaseLockedAckNodePath.isPresent());
+        assertThat(globalDatabaseLockedAckNodePath.get(), is("database-127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertParseGlobalDatabaseLockedAckNodePath() {
+        String nodePath = "/lock/global/database/ack/database-127.0.0.1@3307";
+        Optional<String> globalDatabaseLockedAckNodePath = LockNode.parseGlobalDatabaseLockedAckNodePath(nodePath);
+        assertTrue(globalDatabaseLockedAckNodePath.isPresent());
+        assertThat(globalDatabaseLockedAckNodePath.get(), is("database-127.0.0.1@3307"));
     }
 }

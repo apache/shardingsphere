@@ -5,7 +5,7 @@ weight = 3
 
 ## Configuration Item Explanation
 
-Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.0.xsd)
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd)
 
 \<database-discovery:rule />
 
@@ -36,5 +36,5 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-dis
 | *Name*     | *Type*    | *Description*                                                    |
 | --------- | ---------- | ---------------------------------------------------------------- |
 | id        | Attribute  | Database discovery type Id                                         |
-| type      | Attribute  | Database discovery type, such as: MGR、openGauss                   |
+| type      | Attribute  | Database discovery type, such as: MySQL.MGR                   |
 | props (?) | tag        | Required parameters for database discovery types, such as MGR's group-name   |

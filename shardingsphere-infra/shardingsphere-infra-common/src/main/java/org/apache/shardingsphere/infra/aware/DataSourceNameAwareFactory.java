@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.aware;
 
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.optional.OptionalSPIRegistry;
 
 import java.util.Optional;
@@ -25,39 +27,19 @@ import java.util.Optional;
 /**
  * Data source name aware factory.
  */
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceNameAwareFactory {
     
-    private static volatile DataSourceNameAwareFactory instance;
-    
-    private final DataSourceNameAware dataSourceNameAware;
-    
-    private DataSourceNameAwareFactory() {
-        dataSourceNameAware = OptionalSPIRegistry.findRegisteredService(DataSourceNameAware.class).orElse(null);
+    static {
+        ShardingSphereServiceLoader.register(DataSourceNameAware.class);
     }
     
     /**
-     * Get data source name aware.
+     * Create new instance of data source name aware.
      * 
-     * @return data source name aware
+     * @return new instance of data source name aware
      */
-    public Optional<DataSourceNameAware> getDataSourceNameAware() {
-        return Optional.ofNullable(dataSourceNameAware);
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static DataSourceNameAwareFactory getInstance() {
-        if (null == instance) {
-            synchronized (DataSourceNameAwareFactory.class) {
-                if (null == instance) {
-                    instance = new DataSourceNameAwareFactory();
-                }
-            }
-        }
-        return instance;
+    public static Optional<DataSourceNameAware> newInstance() {
+        return OptionalSPIRegistry.findRegisteredService(DataSourceNameAware.class);
     }
 }

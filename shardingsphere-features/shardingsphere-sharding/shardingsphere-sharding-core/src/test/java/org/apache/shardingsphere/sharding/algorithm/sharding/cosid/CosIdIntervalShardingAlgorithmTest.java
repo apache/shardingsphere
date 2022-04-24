@@ -5,7 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -87,8 +89,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
                 Arguments.of(datetimeConvert.apply(LOWER_DATE_TIME), "table_202101"),
                 Arguments.of(datetimeConvert.apply(LocalDateTime.of(2021, 2, 14, 22, 0)), "table_202102"),
                 Arguments.of(datetimeConvert.apply(LocalDateTime.of(2021, 10, 1, 0, 0)), "table_202110"),
-                Arguments.of(datetimeConvert.apply(UPPER_DATE_TIME), "table_202201")
-        );
+                Arguments.of(datetimeConvert.apply(UPPER_DATE_TIME), "table_202201"));
     }
     
     static Iterable<Object[]> preciseArgsProviderAsLocalDateTime() {
@@ -139,8 +140,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
                 Arguments.of(Range.lessThan(datetimeConvert.apply(LocalDateTime.of(2021, 5, 5, 0, 0))),
                         new ExactCollection<>("table_202101", "table_202102", "table_202103", "table_202104", "table_202105")),
                 Arguments.of(Range.atMost(datetimeConvert.apply(LocalDateTime.of(2021, 5, 5, 0, 0))),
-                        new ExactCollection<>("table_202101", "table_202102", "table_202103", "table_202104", "table_202105"))
-        );
+                        new ExactCollection<>("table_202101", "table_202102", "table_202103", "table_202104", "table_202105")));
     }
     
     static Iterable<Object[]> rangeArgsProviderAsLocalDateTime() {

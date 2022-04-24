@@ -63,7 +63,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             throw new ShardingSphereException("INSERT INTO ... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
         }
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (insertSelectSegment.isPresent() && shardingRule.tableRuleExists(tablesContext.getTableNames()) 
+        if (insertSelectSegment.isPresent() && shardingRule.tableRuleExists(tablesContext.getTableNames())
                 && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
@@ -82,7 +82,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
         Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {

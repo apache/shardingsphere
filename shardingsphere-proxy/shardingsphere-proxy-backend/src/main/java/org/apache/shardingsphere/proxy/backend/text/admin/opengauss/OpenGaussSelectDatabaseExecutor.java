@@ -73,10 +73,10 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
     }
     
     private OgCatalog constructOgCatalog() {
-        Collection<String> allSchemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        OgDatabase[] ogDatabases = new OgDatabase[allSchemaNames.size()];
+        Collection<String> allDatabaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        OgDatabase[] ogDatabases = new OgDatabase[allDatabaseNames.size()];
         int i = 0;
-        for (String each : allSchemaNames) {
+        for (String each : allDatabaseNames) {
             ogDatabases[i++] = new OgDatabase(each, DAT_COMPATIBILITY);
         }
         return new OgCatalog(ogDatabases);

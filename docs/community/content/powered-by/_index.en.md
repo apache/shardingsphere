@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 175 companies.
+Total: 178 companies.
 
 ### Infra Software
 <ul>
@@ -53,6 +53,7 @@ Total: 175 companies.
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+    <li><a href="https://www.airstar.com/" rel="nofollow">Airstar</a></li>
 </ul>
 
 ### Internet
@@ -60,6 +61,7 @@ Total: 175 companies.
     <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">Poizon</a></li>
+    <li><a href="http://game.163.com/" rel="nofollow">Game 163</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">JoyBuy</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
@@ -83,6 +85,7 @@ Total: 175 companies.
     <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
+    <li><a href="https://www.danchuangglobal.com/" rel="nofollow">VTN</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -206,7 +209,7 @@ Total: 175 companies.
     <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>
 </ul>
 
-### Communication
+### ICT (Information and Communications Technology)
 <ul>
     <li><a href="https://www.iflytek.com/" rel="nofollow">Iflytek</a></li>
     <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a></li>
@@ -214,7 +217,7 @@ Total: 175 companies.
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 
-### Internet of Things - IoT
+### IoT (Internet of Things)
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">Hikvision</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>

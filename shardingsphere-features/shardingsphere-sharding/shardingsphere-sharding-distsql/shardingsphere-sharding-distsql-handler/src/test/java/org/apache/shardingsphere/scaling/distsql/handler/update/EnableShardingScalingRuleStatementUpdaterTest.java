@@ -67,7 +67,7 @@ public final class EnableShardingScalingRuleStatementUpdaterTest {
         currentRuleConfig.setScalingName(scalingName);
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(scalingName), currentRuleConfig);
     }
-
+    
     @Test
     public void assertBuildToBeAlteredRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();

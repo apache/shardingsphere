@@ -27,7 +27,7 @@ modes:
 transactions: 
   - local
 
-# supported: sharding,readwrite-splitting,encrypt,db-discovery
+# supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
 features: 
   - sharding
   - readwrite-splitting

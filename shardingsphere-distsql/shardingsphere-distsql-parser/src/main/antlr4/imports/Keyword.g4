@@ -139,6 +139,10 @@ SCHEMA
     : S C H E M A
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 SINGLE
     : S I N G L E
     ;

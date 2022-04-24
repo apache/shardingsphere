@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,35 +39,33 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
-        ShardingSphereLock result = locks.get(schemaName);
+    public ShardingSphereLock getOrCreateDatabaseLock(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Get or create databaseName lock args databaseName name can not be null.");
+        ShardingSphereLock result = locks.get(databaseName);
         if (null != result) {
             return result;
         }
         synchronized (locks) {
-            result = locks.get(schemaName);
+            result = locks.get(databaseName);
             if (null != result) {
                 return result;
             }
             result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(schemaName, result);
+            locks.put(databaseName, result);
             return result;
         }
     }
     
     @Override
-    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        if (null == schemaName) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(locks.get(schemaName));
+    public ShardingSphereLock getDatabaseLock(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Get database lock args database name can not be null.");
+        return locks.get(databaseName);
     }
     
     @Override
-    public boolean isLockedSchema(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
-        ShardingSphereLock shardingSphereLock = locks.get(schemaName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
+    public boolean isLockedDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
+        ShardingSphereLock shardingSphereLock = locks.get(databaseName);
+        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
     }
 }

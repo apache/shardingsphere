@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
@@ -58,7 +58,7 @@ public final class DistSQLBackendHandlerFactory {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            checkLockedSchema(connectionSession);
+            checkLockedDatabase(connectionSession);
             return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
@@ -66,19 +66,19 @@ public final class DistSQLBackendHandlerFactory {
                     || sqlStatement instanceof UpdatableScalingRALStatement) {
                 return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
             }
-            checkLockedSchema(connectionSession);
+            checkLockedDatabase(connectionSession);
             return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
     
-    private static void checkLockedSchema(final ConnectionSession connectionSession) {
-        String schemaName = connectionSession.getSchemaName();
-        if (null == schemaName) {
+    private static void checkLockedDatabase(final ConnectionSession connectionSession) {
+        String databaseName = connectionSession.getDatabaseName();
+        if (null == databaseName) {
             return;
         }
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName)) {
-            throw new SchemaLockedException(schemaName);
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName)) {
+            throw new DatabaseLockedException(databaseName);
         }
     }
 }

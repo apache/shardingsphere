@@ -46,7 +46,7 @@ public final class StoragePrivilegeMerger {
      * @param rules rules
      * @return map of user and  privilege
      */
-    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges, 
+    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges,
                                                                   final String schemaName, final Collection<ShardingSphereRule> rules) {
         Map<ShardingSphereUser, NativePrivileges> result = new HashMap<>(privileges.size(), 1);
         for (Entry<ShardingSphereUser, Collection<NativePrivileges>> entry : privileges.entrySet()) {

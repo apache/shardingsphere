@@ -59,9 +59,9 @@ public enum SQLVisitorRule {
     ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
     
     ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
-
+    
     DROP_FOREIGN_TABLE("DropForeignTable", SQLStatementType.DDL),
-
+    
     ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
@@ -83,15 +83,21 @@ public enum SQLVisitorRule {
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
     
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
-
+    
+    DROP_ROUTINE("DropRoutine", SQLStatementType.DDL),
+    
     DROP_RULE("DropRule", SQLStatementType.DDL),
-
+    
     DROP_STATISTICS("DropStatistics", SQLStatementType.DDL),
+    
+    DROP_PUBLICATION("DropPublication", SQLStatementType.DDL),
+    
+    DROP_SUBSCRIPTION("DropSubscription", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
     
     ALTER_FUNCTION("AlterFunction", SQLStatementType.DDL),
-
+    
     DROP_CAST("DropCast", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
@@ -104,19 +110,25 @@ public enum SQLVisitorRule {
     
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
+    ALTER_DATABASE_LINK("AlterDatabaseLink", SQLStatementType.DDL),
+    
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
+    
+    ALTER_DATABASE_DICTIONARY("AlterDatabaseDictionary", SQLStatementType.DDL),
     
     CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
     
     ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
     
     DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
-
+    
     DROP_DIRECTORY("DropDirectory", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
+    
+    CREATE_EDITION("CreateEdition", SQLStatementType.DDL),
     
     ALTER_EVENT("AlterEvent", SQLStatementType.DDL),
     
@@ -145,7 +157,7 @@ public enum SQLVisitorRule {
     ALTER_TRIGGER("AlterTrigger", SQLStatementType.DDL),
     
     DROP_TRIGGER("DropTrigger", SQLStatementType.DDL),
-
+    
     DROP_EVENT_TRIGGER("DropEventTrigger", SQLStatementType.DDL),
     
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
@@ -175,6 +187,8 @@ public enum SQLVisitorRule {
     ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
     
     DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
+    
+    DROP_TEXT_SEARCH("DropTextSearch", SQLStatementType.DDL),
     
     ASSOCIATE_STATISTICS("AssociateStatistics", SQLStatementType.DDL),
     
@@ -238,6 +252,10 @@ public enum SQLVisitorRule {
     
     UNLOCK("Unlock", SQLStatementType.TCL),
     
+    COMMIT_PREPARED("CommitPrepared", SQLStatementType.TCL),
+    
+    ROLLBACK_PREPARED("RollbackPrepared", SQLStatementType.TCL),
+    
     GRANT("Grant", SQLStatementType.DCL),
     
     GRANT_ROLE_OR_PRIVILEGE_TO("GrantRoleOrPrivilegeTo", SQLStatementType.DCL),
@@ -281,6 +299,8 @@ public enum SQLVisitorRule {
     SET_ROLE("SetRole", SQLStatementType.DCL),
     
     SET_PASSWORD("SetPassword", SQLStatementType.DCL),
+    
+    REVERT("Revert", SQLStatementType.DCL),
     
     USE("Use", SQLStatementType.DAL),
     
@@ -394,7 +414,7 @@ public enum SQLVisitorRule {
     
     CALL("Call", SQLStatementType.DML),
     
-    CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
+    CHANGE_MASTER("ChangeMaster", SQLStatementType.RL),
     
     START_SLAVE("StartSlave", SQLStatementType.RL),
     
@@ -453,14 +473,20 @@ public enum SQLVisitorRule {
     DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
     
     DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL),
-
+    
     DROP_AGGREGATE("DropAggregate", SQLStatementType.DDL),
     
     DROP_COLLATION("DropCollation", SQLStatementType.DDL),
     
     DROP_FOREIGN_DATA_WRAPPER("DropForeignDataWrapper", SQLStatementType.DDL),
     
-    DROP_TYPE("DropType", SQLStatementType.DDL);
+    DROP_TYPE("DropType", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_CLASS("DropOperatorClass", SQLStatementType.DDL),
+    
+    DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL),
+    
+    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL);
     
     private final String name;
     

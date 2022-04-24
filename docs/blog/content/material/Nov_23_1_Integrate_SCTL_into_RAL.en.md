@@ -12,7 +12,7 @@ Recently, the ShardingSphere community has redesigned the SCTL grammar and the e
 
 ## Review: What's RAL?
 
-RAL is a subtype of DistSQL. DistSQL contains three types:  RDL、RQL and RAL.
+RAL is a subtype of DistSQL. DistSQL contains three types:  RDL, RQL and RAL.
 
 - Resource & Rule Definition Language (RDL)：to create, modify or delete resources and rules.
 
@@ -37,7 +37,7 @@ SCTL is made of the below commands：
 | sctl:hint addDatabaseShardingValue xx=yy    |  For the current connection. Add database sharding value yy to the logical table xx.|
 | sctl:hint addTableShardingValue xx=yy   | For the current connection. Add table sharding value yy to the logical table xx.|
 | sctl:hint clear    | For the current connection only. Clear all hint setting.|
-| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false，sharding_type:databases_only/databases_tables`|
+| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false, sharding_type:databases_only/databases_tables`|
 | sctl:hint show table status    | For the current connection only. Query hint database sharding value of the logical table.|
 
 ## Why Integrate SCTL Now?
@@ -94,7 +94,7 @@ Input command
 
 Output
 
-a. If successful, display "Query OK, 0 rows affected"；
+a. If successful, display "Query OK, 0 rows affected";
 
 b. Execute `show variable transaction_type` again and the type is XA now.
 
@@ -179,7 +179,7 @@ Output
 - `set readwrite_splitting hint source`
 
 >For the current connection only. Set read-write splitting hint strategy (AUTO or WRITE).
-Supported source types include：AUTO and WRITE（case insensitive）.
+Supported source types include：AUTO and WRITE (case insensitive) .
 > - AUTO： automated readwrite splitting hint
 > - WRITE：compulsory hint at the master library
 
@@ -189,8 +189,8 @@ Input command
 
 Output
 
-a. If sucessful，show "Query OK, 0 rows affected"；
-b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write；
+a. If sucessful, show "Query OK, 0 rows affected";
+b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write;
 c. Execute `preview select * from t_order`and see the queried SQL will go to the master database.
 
     mysql> preview select * from t_order;
@@ -269,7 +269,7 @@ Input command
     
 Output
 
-a. If successful, show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show  `t_order_item`'s `database_sharding_values` as 1. Update `sharding_type value` as `databases_only`.
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_3_codes.png)
@@ -290,8 +290,8 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`；
+a. If successful, show "Query OK, 0 rows affected";
+b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`;
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_5_codes.png)
 
@@ -305,12 +305,12 @@ Enter the add command again to add an even value.
 
 Output：
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values` = '5,10'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_7_codes.png)
 
-c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1：（ Because the hint values include both odd and even number so it contains all target data sources）
+c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1： ( Because the hint values include both odd and even number so it contains all target data sources) 
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_8_codes.png)
 
@@ -324,7 +324,7 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values`  as '5,10' while `table_sharding_values` is '0'：
 
 ![](https://shardingsphere.apache.org/blog/img/Blog_27_img_9_codes.png)
@@ -360,7 +360,7 @@ Set hint value and then execute the command;
 
 Output
 
-a. If successful，show "Query OK, 0 rows affected";
+a. If successful, show "Query OK, 0 rows affected";
 b. Get readwrite_splitting hint default and sharding hint default; use `show readwrite_splitting hint status ;` or `show sharding hint status;` command to see the result.
 
 **Note: Please remember: if you need to use DistSQL Hint, you need to enable the configuration`proxy-hint-enabled`of ShardingSphere-Proxy. For more information, please read:**

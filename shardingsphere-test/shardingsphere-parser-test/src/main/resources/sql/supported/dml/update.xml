@@ -42,4 +42,5 @@
     <sql-case id="update_with_multiple_set" value="UPDATE employees SET job_id = 'SA_MAN', salary = 1000, department_id = 120 WHERE last_name = 'Douglas Grant'" db-types="Oracle" />
     <sql-case id="update_with_set_value" value="UPDATE people_demo1 p SET VALUE(p) = (SELECT VALUE(q) FROM people_demo2 q WHERE p.department_id = q.department_id) WHERE p.department_id = 10" db-types="Oracle" />
     <sql-case id="update_with_multi_columns" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100'), (salary, commission_pct) = (SELECT 1.1*AVG(salary), 1.5*AVG(commission_pct) FROM employees b WHERE a.department_id = b.department_id)" db-types="Oracle" />
+    <sql-case id="update_with_force_index" value="UPDATE t_order FORCE INDEX (PRIMARY) SET status = ? WHERE order_id = ?" db-types="MySQL" />
 </sql-cases>

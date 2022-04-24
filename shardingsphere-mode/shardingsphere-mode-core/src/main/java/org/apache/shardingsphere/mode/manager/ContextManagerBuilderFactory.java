@@ -42,6 +42,7 @@ public final class ContextManagerBuilderFactory {
      */
     public static ContextManagerBuilder newInstance(final ModeConfiguration modeConfig) {
         return null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
+                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
     }
 }

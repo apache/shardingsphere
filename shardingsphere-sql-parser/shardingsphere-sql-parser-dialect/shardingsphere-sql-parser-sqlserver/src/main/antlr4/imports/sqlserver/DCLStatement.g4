@@ -334,7 +334,7 @@ ignoredNameIdentifier
     ;
 
 dropUser
-    : DROP USER
+    : DROP USER (IF EXISTS)? userName
     ;
 
 alterUser
@@ -433,7 +433,7 @@ createLoginForAnalyticsPlatformSystemOptionListClause
     ;
 
 dropLogin
-    : DROP LOGIN
+    : DROP LOGIN ignoredNameIdentifier
     ;
 
 alterLogin
@@ -456,4 +456,8 @@ passwordOptionClause
 
 cryptographicCredentialsOptionClause
     : ADD CREDENTIAL identifier | DROP CREDENTIAL identifier
+    ;
+
+revert
+    : REVERT (WITH COOKIE EQ_ variableName)?
     ;

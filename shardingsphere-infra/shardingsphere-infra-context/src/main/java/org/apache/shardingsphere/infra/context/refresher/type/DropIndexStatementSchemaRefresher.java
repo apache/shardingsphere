@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexSta
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +53,8 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             for (String each : getIndexNames(sqlStatement)) {
                 tableMetaData.getIndexes().remove(each);
             }
-            post(schemaMetaData.getName(), tableMetaData);
+            // TODO Get real schema name
+            post(schemaMetaData.getName(), schemaMetaData.getName(), tableMetaData);
         }
     }
     
@@ -67,11 +67,11 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
-        return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
+        return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private void post(final String schemaName, final TableMetaData tableMetaData) {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaName);
+    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
+        SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
         event.getAlteredTables().add(tableMetaData);
         ShardingSphereEventBus.getInstance().post(event);
     }

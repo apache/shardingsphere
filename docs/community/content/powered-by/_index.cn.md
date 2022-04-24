@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 175 家公司。
+共计 178 家公司。
 
 ### 基础软件
 <ul>
@@ -53,6 +53,7 @@ chapter = true
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
+    <li><a href="https://www.airstar.com/" rel="nofollow">天星金融</a></li>
 </ul>
 
 ### 互联网
@@ -60,6 +61,7 @@ chapter = true
     <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">得物</a></li>
+    <li><a href="http://game.163.com/" rel="nofollow">网易游戏</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
@@ -83,6 +85,7 @@ chapter = true
     <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
+    <li><a href="https://www.danchuangglobal.com/" rel="nofollow">浙江单创品牌管理有限公司</a></li>
 </ul>
 
 ### 数字化与云服务

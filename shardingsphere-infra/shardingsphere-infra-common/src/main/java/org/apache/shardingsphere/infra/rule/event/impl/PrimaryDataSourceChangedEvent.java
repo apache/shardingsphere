@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.event.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 @Getter
 public final class PrimaryDataSourceChangedEvent implements DataSourceStatusChangedEvent {
     
-    private final QualifiedSchema qualifiedSchema;
+    private final QualifiedDatabase qualifiedDatabase;
 }

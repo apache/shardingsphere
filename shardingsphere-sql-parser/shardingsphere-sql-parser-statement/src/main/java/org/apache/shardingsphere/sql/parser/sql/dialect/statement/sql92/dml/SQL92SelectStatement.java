@@ -33,7 +33,7 @@ import java.util.Optional;
 public final class SQL92SelectStatement extends SelectStatement implements SQL92Statement {
     
     private LimitSegment limit;
-
+    
     /**
      * Get order by segment.
      *

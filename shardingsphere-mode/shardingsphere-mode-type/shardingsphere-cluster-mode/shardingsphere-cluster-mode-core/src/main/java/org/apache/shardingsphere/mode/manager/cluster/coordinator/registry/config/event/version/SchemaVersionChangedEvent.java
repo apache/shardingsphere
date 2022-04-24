@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class SchemaVersionChangedEvent implements GovernanceEvent {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String activeVersion;
 }

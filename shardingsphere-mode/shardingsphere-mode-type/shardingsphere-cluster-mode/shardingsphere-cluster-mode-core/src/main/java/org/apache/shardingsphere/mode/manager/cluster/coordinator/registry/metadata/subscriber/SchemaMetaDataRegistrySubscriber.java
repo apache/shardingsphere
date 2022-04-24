@@ -42,7 +42,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
-        event.getAlteredTables().forEach(each -> persistService.persist(event.getSchemaName(), each));
-        event.getDroppedTables().forEach(each -> persistService.delete(event.getSchemaName(), each));
+        event.getAlteredTables().forEach(each -> persistService.persist(event.getDatabaseName(), event.getSchemaName(), each));
+        event.getDroppedTables().forEach(each -> persistService.delete(event.getDatabaseName(), event.getSchemaName(), each));
     }
 }

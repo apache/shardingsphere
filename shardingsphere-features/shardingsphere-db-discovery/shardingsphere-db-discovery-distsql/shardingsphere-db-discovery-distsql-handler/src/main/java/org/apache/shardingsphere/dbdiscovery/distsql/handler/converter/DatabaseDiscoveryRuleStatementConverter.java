@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 /**
  * Database discovery rule statement converter.
  */
@@ -52,7 +51,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      */
     public static DatabaseDiscoveryRuleConfiguration convert(final Collection<AbstractDatabaseDiscoverySegment> ruleSegments) {
         Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = ruleSegments.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
-        final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList())
                 .forEach(each -> addConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
         segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList())
@@ -60,21 +59,21 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         return result;
     }
     
-    private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration configuration, final DatabaseDiscoveryDefinitionSegment segment) {
+    private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration config, final DatabaseDiscoveryDefinitionSegment segment) {
         String discoveryTypeName = getName(segment.getName(), segment.getDiscoveryType().getName());
         ShardingSphereAlgorithmConfiguration discoveryType = new ShardingSphereAlgorithmConfiguration(segment.getDiscoveryType().getName(), segment.getDiscoveryType().getProps());
         String heartbeatName = getName(segment.getName(), "heartbeat");
         DatabaseDiscoveryHeartBeatConfiguration heartbeatConfiguration = new DatabaseDiscoveryHeartBeatConfiguration(segment.getDiscoveryHeartbeat());
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
-        configuration.getDataSources().add(dataSourceRuleConfiguration);
-        configuration.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
-        configuration.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfiguration);
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
+        config.getDataSources().add(dataSourceRuleConfiguration);
+        config.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
+        config.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfiguration);
     }
     
     private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration configuration, final DatabaseDiscoveryConstructionSegment segment) {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
         configuration.getDataSources().add(dataSourceRuleConfiguration);
     }
     
@@ -102,7 +101,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      */
     public static DatabaseDiscoveryRuleConfiguration convertDiscoveryType(final Collection<DatabaseDiscoveryTypeSegment> typeSegment) {
         final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        typeSegment.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryTypeName(), 
+        typeSegment.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryTypeName(),
                 new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
         return result;
     }

@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
             ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
         }
     }
-
+    
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public final void check(final String schemaName, final T config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available sharding rule configurations in schema `%s`.", schemaName);
+    public final void check(final String databaseName, final T config) {
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available sharding rule configurations in database `%s`.", databaseName);
     }
     
     protected abstract boolean hasAvailableTableConfigurations(T config);

@@ -64,7 +64,7 @@ public final class DropDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test_db", "other_db"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Arrays.asList("test_db", "other_db"));
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
@@ -86,27 +86,27 @@ public final class DropDatabaseBackendHandlerTest {
     public void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
     public void assertExecuteDropCurrentDatabase() {
-        when(connectionSession.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getDatabaseName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession).setCurrentSchema(null);
+        verify(connectionSession).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test
     public void assertExecuteDropOtherDatabase() {
-        when(connectionSession.getSchemaName()).thenReturn("test_db");
+        when(connectionSession.getDatabaseName()).thenReturn("test_db");
         when(sqlStatement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
-        verify(connectionSession, times(0)).setCurrentSchema(null);
+        verify(connectionSession, times(0)).setCurrentDatabase(null);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }

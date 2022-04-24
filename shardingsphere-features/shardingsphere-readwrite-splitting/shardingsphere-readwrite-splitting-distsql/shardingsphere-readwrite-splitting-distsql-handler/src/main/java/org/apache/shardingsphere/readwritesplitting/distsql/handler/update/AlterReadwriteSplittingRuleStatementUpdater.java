@@ -33,9 +33,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +41,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,33 +49,28 @@ import java.util.stream.Collectors;
  */
 public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
-    static {
-        // TODO consider about register once only
-        ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
-    }
-    
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData);
+        String databaseName = shardingSphereMetaData.getName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Readwrite splitting", schemaName);
+            throw new RequiredRuleMissedException("Readwrite splitting", databaseName);
         }
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
+    private void checkToBeAlteredRules(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                        final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new RequiredRuleMissedException("Readwrite splitting", schemaName, notExistedRuleNames);
+            throw new RequiredRuleMissedException("Readwrite splitting", databaseName, notExistedRuleNames);
         }
     }
     
@@ -88,13 +80,13 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     
     private void checkToBeAlteredLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> invalidLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+                .filter(each -> !ReplicaLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         if (!invalidLoadBalancers.isEmpty()) {
             throw new InvalidAlgorithmConfigurationException("Load balancers", invalidLoadBalancers);
         }
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement,
+    private void checkToBeAlteredResources(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                            final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
@@ -107,12 +99,13 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
             }
         });
         Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistResources));
+        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
         Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistLogicResources));
+        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
         Collection<String> result = new LinkedHashSet<>();
         Optional<ExportableRule> exportableRule = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
@@ -138,8 +131,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     
     private void dropRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         for (ReadwriteSplittingDataSourceRuleConfiguration each : toBeAlteredRuleConfig.getDataSources()) {
-            Optional<ReadwriteSplittingDataSourceRuleConfiguration> toBeRemovedDataSourceRuleConfig
-                    = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.getName().equals(dataSource.getName())).findAny();
+            Optional<ReadwriteSplittingDataSourceRuleConfiguration> toBeRemovedDataSourceRuleConfig =
+                    currentRuleConfig.getDataSources().stream().filter(dataSource -> each.getName().equals(dataSource.getName())).findAny();
             Preconditions.checkState(toBeRemovedDataSourceRuleConfig.isPresent());
             currentRuleConfig.getDataSources().remove(toBeRemovedDataSourceRuleConfig.get());
             currentRuleConfig.getLoadBalancers().remove(toBeRemovedDataSourceRuleConfig.get().getLoadBalancerName());

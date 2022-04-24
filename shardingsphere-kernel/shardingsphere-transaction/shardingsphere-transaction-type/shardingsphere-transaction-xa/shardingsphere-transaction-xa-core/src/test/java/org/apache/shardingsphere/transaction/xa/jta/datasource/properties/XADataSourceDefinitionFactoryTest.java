@@ -40,7 +40,7 @@ public final class XADataSourceDefinitionFactoryTest {
     public void assertCreateXAPropertiesForMySQL() {
         assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
     }
-
+    
     @Test
     public void assertCreateXAPropertiesForMariaDB() {
         assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));

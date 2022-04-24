@@ -29,14 +29,14 @@ import java.util.Map;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.newServiceInstances(SQLExecutionHook.class);
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
     
     static {
         ShardingSphereServiceLoader.register(SQLExecutionHook.class);
     }
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
             each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);

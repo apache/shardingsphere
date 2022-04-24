@@ -126,7 +126,7 @@ public final class DeleteStatementAssert {
             assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
         }
     }
-
+    
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(actual);
         if (null != expected.getLimitClause()) {
