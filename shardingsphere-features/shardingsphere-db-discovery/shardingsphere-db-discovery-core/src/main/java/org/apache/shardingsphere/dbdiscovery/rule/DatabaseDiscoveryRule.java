@@ -115,7 +115,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            dataSourceRule.updatePrimaryDataSourceName(engine.changePrimaryDataSource(databaseName, groupName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
+            dataSourceRule.changePrimaryDataSourceName(engine.changePrimaryDataSource(
+                    databaseName, groupName, entry.getValue().getPrimaryDataSourceName(), originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
         }
     }
     
@@ -164,7 +165,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getGroupName())) {
-                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
+                    entry.getValue().changePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
                 }
             }
         }
@@ -187,12 +188,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
+                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
+                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !rule.getDisabledDataSourceNames().contains(dataSource.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                String jobName = entry.getValue().getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + entry.getValue().getGroupName();
-                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, entry.getValue().getGroupName(), dataSources, entry.getValue().getDatabaseDiscoveryProviderAlgorithm(),
-                        entry.getValue().getDisabledDataSourceNames()).execute(null),
-                        entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
+                String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
+                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSources,
+                        rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
                 modeScheduleContext.get().startCronJob(job);
             }
         }

@@ -48,9 +48,9 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    private String primaryDataSourceName;
+    private volatile String primaryDataSourceName;
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, 
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config,
                                            final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
         checkConfiguration(config);
         groupName = config.getGroupName();
@@ -92,12 +92,12 @@ public final class DatabaseDiscoveryDataSourceRule {
     }
     
     /**
-     * Update primary data source name.
+     * Change primary data source name.
      *
-     * @param dataSourceName data source name
+     * @param primaryDataSourceName to be changed primary data source name
      */
-    public void updatePrimaryDataSourceName(final String dataSourceName) {
-        primaryDataSourceName = dataSourceName;
+    public void changePrimaryDataSourceName(final String primaryDataSourceName) {
+        this.primaryDataSourceName = primaryDataSourceName;
     }
     
     /**

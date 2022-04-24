@@ -55,18 +55,4 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * @return storage node data source
      */
     StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
-    
-    /**
-     * Get primary data source.
-     *
-     * @return primary data source
-     */
-    String getPrimaryDataSource();
-    
-    /**
-     * Set primary data source.
-     *
-     * @param primaryDataSource primary data source
-     */
-    void setPrimaryDataSource(String primaryDataSource);
 }

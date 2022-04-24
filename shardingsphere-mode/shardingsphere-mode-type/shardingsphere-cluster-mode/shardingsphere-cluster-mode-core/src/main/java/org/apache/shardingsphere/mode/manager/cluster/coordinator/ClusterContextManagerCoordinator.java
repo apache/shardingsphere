@@ -161,10 +161,8 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final DisabledStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
         contextManager.getMetaDataContexts().getMetaDataMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
-                .stream()
-                .filter(each -> each instanceof StatusContainedRule)
-                .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
+                .stream().filter(each -> each instanceof StatusContainedRule)
+                .forEach(each -> ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
     
     /**

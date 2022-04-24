@@ -41,8 +41,6 @@ public abstract class AbstractMySQLDatabaseDiscoveryProviderAlgorithm implements
     
     private Properties props = new Properties();
     
-    private String primaryDataSource;
-    
     @Override
     public final Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         String primaryDatabaseInstanceURL = loadPrimaryDatabaseInstanceURL(dataSourceMap);

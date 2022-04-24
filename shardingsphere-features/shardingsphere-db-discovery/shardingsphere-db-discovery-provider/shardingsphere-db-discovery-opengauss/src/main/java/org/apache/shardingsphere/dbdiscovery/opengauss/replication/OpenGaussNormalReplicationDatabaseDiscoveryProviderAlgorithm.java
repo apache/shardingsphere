@@ -45,8 +45,6 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
-    private String primaryDataSource;
-    
     private Properties props = new Properties();
     
     @Override

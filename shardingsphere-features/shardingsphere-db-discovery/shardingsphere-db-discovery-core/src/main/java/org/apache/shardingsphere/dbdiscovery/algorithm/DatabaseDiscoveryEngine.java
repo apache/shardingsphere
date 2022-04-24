@@ -78,7 +78,7 @@ public final class DatabaseDiscoveryEngine {
     }
     
     private void checkRoleSeparatedHighlyAvailableStatus(
-            final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+                                                         final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         for (HighlyAvailableStatus each : statuses) {
             each.validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
         }
@@ -89,17 +89,18 @@ public final class DatabaseDiscoveryEngine {
      *
      * @param databaseName database name
      * @param groupName group name
+     * @param originalPrimaryDataSourceName original primary data source name
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
      * @return changed primary data source name
      */
-    public String changePrimaryDataSource(final String databaseName, final String groupName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
+                                          final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = databaseDiscoveryProviderAlgorithm.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryProviderAlgorithm.getPrimaryDataSource())) {
-            databaseDiscoveryProviderAlgorithm.setPrimaryDataSource(newPrimaryDataSourceName.get());
+        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
-        String result = newPrimaryDataSourceName.orElseGet(databaseDiscoveryProviderAlgorithm::getPrimaryDataSource);
+        String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap);
         return result;
     }
