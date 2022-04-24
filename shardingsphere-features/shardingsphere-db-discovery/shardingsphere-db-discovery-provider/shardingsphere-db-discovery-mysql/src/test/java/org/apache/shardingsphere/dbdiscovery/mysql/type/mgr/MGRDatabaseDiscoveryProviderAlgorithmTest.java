@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,10 +41,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
         assertTrue(actual.isPluginActive());
         assertTrue(actual.isSinglePrimaryMode());
         assertThat(actual.getGroupName(), is("group_name"));
-        Iterator<IPPortPrimaryDatabaseInstance> databaseInstances = actual.getDatabaseInstances().iterator();
-        assertThat(databaseInstances.next().toString(), is("127.0.0.1:3306"));
-        assertThat(databaseInstances.next().toString(), is("127.0.0.1:3307"));
-        assertFalse(databaseInstances.hasNext());
+        assertThat(actual.getDatabaseInstanceURLs(), is(Arrays.asList("127.0.0.1:3306", "127.0.0.1:3307")));
     }
     
     private DataSource mockToBeLoadedHighlyAvailableStatusDataSource() throws SQLException {

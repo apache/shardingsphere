@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -65,7 +64,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstances(statement));
+            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstanceURLs(statement));
         }
     }
     
@@ -87,11 +86,11 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         }
     }
     
-    private Collection<IPPortPrimaryDatabaseInstance> queryMemberInstances(final Statement statement) throws SQLException {
-        Collection<IPPortPrimaryDatabaseInstance> result = new LinkedList<>();
+    private Collection<String> queryMemberInstanceURLs(final Statement statement) throws SQLException {
+        Collection<String> result = new LinkedList<>();
         try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
             while (resultSet.next()) {
-                result.add(new IPPortPrimaryDatabaseInstance(resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+                result.add(String.join(":", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
         return result;
