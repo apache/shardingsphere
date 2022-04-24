@@ -38,11 +38,9 @@ import static org.mockito.Mockito.when;
 
 public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
-    private final MGRMySQLDatabaseDiscoveryProviderAlgorithm databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
-    
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MGRHighlyAvailableStatus actual = databaseDiscoveryType.loadHighlyAvailableStatus(mockToBeLoadedHighlyAvailableStatusDataSource());
+        MGRHighlyAvailableStatus actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockToBeLoadedHighlyAvailableStatusDataSource());
         assertTrue(actual.isPluginActive());
         assertTrue(actual.isSinglePrimaryMode());
         assertThat(actual.getGroupName(), is("group_name"));
@@ -70,7 +68,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     public void assertFindPrimaryDataSource() throws SQLException {
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                 + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-        Optional<IPPortPrimaryDatabaseInstance> actual = databaseDiscoveryType.findPrimaryInstance("foo_ds", mockToBeFoundPrimaryDataSource(sql));
+        Optional<IPPortPrimaryDatabaseInstance> actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("foo_ds", mockToBeFoundPrimaryDataSource(sql));
         assertTrue(actual.isPresent());
         assertThat(actual.get().toString(), is("127.0.0.1:3306"));
     }
@@ -90,7 +88,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     public void assertGetDisabledStorageNodeDataSource() throws SQLException {
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
-        StorageNodeDataSource actual = databaseDiscoveryType.getStorageNodeDataSource(dataSource);
+        StorageNodeDataSource actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().getStorageNodeDataSource(dataSource);
         assertThat(actual.getRole(), is("member"));
         assertThat(actual.getStatus(), is("disabled"));
         assertThat(actual.getReplicationDelayMilliseconds(), is(0L));
