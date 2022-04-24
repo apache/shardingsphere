@@ -84,15 +84,15 @@ public final class DatabaseDiscoveryEngine {
     }
     
     /**
-     * Update primary data source.
+     * Change primary data source.
      *
      * @param databaseName database name
      * @param groupName group name
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
-     * @return updated primary data source name
+     * @return changed primary data source name
      */
-    public String updatePrimaryDataSource(final String databaseName, final String groupName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public String changePrimaryDataSource(final String databaseName, final String groupName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = databaseDiscoveryType.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryType.getPrimaryDataSource())) {
             databaseDiscoveryType.setPrimaryDataSource(newPrimaryDataSourceName.get());
