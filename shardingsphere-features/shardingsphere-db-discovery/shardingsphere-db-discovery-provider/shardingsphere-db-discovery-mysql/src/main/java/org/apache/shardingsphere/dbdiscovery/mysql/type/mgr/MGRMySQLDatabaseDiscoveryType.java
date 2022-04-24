@@ -97,10 +97,7 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     @Override
     protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
-            if (resultSet.next()) {
-                return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
-            }
-            return Optional.empty();
+            return resultSet.next() ? Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
         }
     }
     
