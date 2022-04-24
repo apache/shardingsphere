@@ -32,4 +32,11 @@ public interface SchemaMetaDataAware {
      * @param schemas schema meta data map
      */
     void setSchemas(Map<String, ShardingSphereSchema> schemas);
+    
+    /**
+     * Set database name.
+     * 
+     * @param databaseName database name
+     */
+    void setDatabaseName(String databaseName);
 }

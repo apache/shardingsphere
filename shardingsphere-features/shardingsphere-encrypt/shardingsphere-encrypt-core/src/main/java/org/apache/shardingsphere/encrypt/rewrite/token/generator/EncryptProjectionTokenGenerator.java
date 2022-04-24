@@ -25,12 +25,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -58,6 +55,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private List<SQLToken> previousSQLTokens;
     
     private Map<String, ShardingSphereSchema> schemas;
+    
+    private String databaseName;
     
     private EncryptRule encryptRule;
     
@@ -139,11 +138,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
             }
         }
-        DatabaseType databaseType = selectStatementContext.getDatabaseType();
-        TablesContext tablesContext = selectStatementContext.getTablesContext();
-        ShardingSphereSchema schema = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType
-                ? tablesContext.getSchemaName().map(schemas::get).orElse(schemas.get("public"))
-                : schemas.values().iterator().next();
+        String defaultSchema = selectStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     

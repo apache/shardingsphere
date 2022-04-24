@@ -43,6 +43,8 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     
     private Map<String, ShardingSphereSchema> schemas;
     
+    private String databaseName;
+    
     @Override
     public void init() {
     }
@@ -86,10 +88,5 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
         result[2] = (byte) (intValue >>> 8);
         result[3] = (byte) intValue;
         return result;
-    }
-    
-    @Override
-    public void setSchemas(final Map<String, ShardingSphereSchema> schemas) {
-        this.schemas = schemas;
     }
 }

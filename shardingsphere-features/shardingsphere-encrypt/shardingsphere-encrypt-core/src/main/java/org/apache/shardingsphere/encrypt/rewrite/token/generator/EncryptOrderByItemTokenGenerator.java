@@ -23,12 +23,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -51,6 +47,8 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     
     private Map<String, ShardingSphereSchema> schemas;
     
+    private String databaseName;
+    
     private EncryptRule encryptRule;
     
     @SuppressWarnings("rawtypes")
@@ -63,15 +61,12 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        ShardingSphereSchema schema = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType
-                ? tablesContext.getSchemaName().map(schemas::get).orElse(schemas.get("public"))
-                : schemas.values().iterator().next();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = tablesContext.findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
+                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
                 result.addAll(generateSQLTokensWithColumnSegments(Collections.singletonList(columnSegment), columnTableNames));
             }
         }

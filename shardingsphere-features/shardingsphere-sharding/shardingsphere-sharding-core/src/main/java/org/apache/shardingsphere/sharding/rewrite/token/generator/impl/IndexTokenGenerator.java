@@ -18,12 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -46,6 +42,8 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     private Map<String, ShardingSphereSchema> schemas;
     
+    private String databaseName;
+    
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
@@ -54,10 +52,8 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
-        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        ShardingSphereSchema schema = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType
-                ? tablesContext.getSchemaName().map(schemas::get).orElse(schemas.get("public")) : schemas.values().iterator().next();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         if (sqlStatementContext instanceof IndexAvailable) {
             for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
                 result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier(), sqlStatementContext, shardingRule, schema));

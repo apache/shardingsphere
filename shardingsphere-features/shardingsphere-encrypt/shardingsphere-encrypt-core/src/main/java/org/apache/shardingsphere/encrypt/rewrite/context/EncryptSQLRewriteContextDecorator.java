@@ -51,7 +51,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
                 || !containsEncryptTable(encryptRule, sqlStatementContext)) {
             return;
         }
-        Collection<EncryptCondition> encryptConditions = getEncryptConditions(encryptRule, sqlRewriteContext);
+        Collection<EncryptCondition> encryptConditions = createEncryptConditions(encryptRule, sqlRewriteContext);
         encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchemas());
         if (!sqlRewriteContext.getParameters().isEmpty()) {
             Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule,
@@ -63,14 +63,15 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         sqlRewriteContext.addSQLTokenGenerators(sqlTokenGenerators);
     }
     
-    private Collection<EncryptCondition> getEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
+    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
         Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
         Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
-        return new EncryptConditionEngine(encryptRule, sqlRewriteContext.getSchemas()).createEncryptConditions(whereSegments, columnSegments, sqlStatementContext);
+        return new EncryptConditionEngine(encryptRule, sqlRewriteContext.getSchemas())
+                .createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, sqlRewriteContext.getDatabaseName());
     }
     
     @SuppressWarnings("rawtypes")

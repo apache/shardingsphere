@@ -31,19 +31,21 @@ public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorith
     
     private Map<String, ShardingSphereSchema> schemas;
     
+    private String databaseName;
+    
     @Override
     public void init() {
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schemas.get(encryptContext.getSchemaName()).get(encryptContext.getTableName());
+        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
         return "encrypt_" + plainValue + "_" + tableMetaData.getName();
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schemas.get(encryptContext.getSchemaName()).get(encryptContext.getTableName());
+        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
         return cipherValue.replaceAll("encrypt_", "").replaceAll("_" + tableMetaData.getName(), "");
     }
     
