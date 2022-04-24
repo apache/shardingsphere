@@ -50,7 +50,8 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private String primaryDataSourceName;
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, 
+                                           final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
         checkConfiguration(config);
         groupName = config.getGroupName();
         dataSourceNames = config.getDataSourceNames();
