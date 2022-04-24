@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -61,26 +62,27 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicate() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
-        List<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments = Arrays.asList(
-                new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())),
-                new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(databaseDiscoveryTypeSegments),
+        List<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Arrays.asList(
+                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())),
+                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithNotExist() throws DistSQLException {
-        List<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments =
-                Collections.singletonList(new DatabaseDiscoveryTypeSegment("discovery_type_1", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(databaseDiscoveryTypeSegments),
+        List<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments =
+                Collections.singletonList(new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type_1", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                         Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
-        Set<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments),
+        Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
+                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                         Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
     }
@@ -89,16 +91,17 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     public void assertBuildAndUpdate() throws DistSQLException {
         Properties currentProperties = new Properties();
         currentProperties.put("key", "value");
-        DatabaseDiscoveryRuleConfiguration currentRuleConfiguration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
+        DatabaseDiscoveryRuleConfiguration currentRuleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
                 Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", currentProperties)));
         Properties properties = new Properties();
         properties.put("key", "value_1");
-        Set<DatabaseDiscoveryTypeSegment> discoveryTypeSegments = Collections.singleton(new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", properties)));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments), currentRuleConfiguration);
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration =
-                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(discoveryTypeSegments));
+        Set<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
+                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", properties)));
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments), currentRuleConfig);
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
+                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(algorithmSegments));
         DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfiguration);
+        updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfig);
         assertThat(currentConfiguration.getDiscoveryTypes().size(), is(1));
         assertThat(currentConfiguration.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
         assertThat(currentConfiguration.getDiscoveryTypes().get("discovery_type").getProps().get("key"), is("value_1"));
