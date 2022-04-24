@@ -52,7 +52,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             return;
         }
         Collection<EncryptCondition> encryptConditions = createEncryptConditions(encryptRule, sqlRewriteContext);
-        encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchemas());
+        encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchemas(), sqlRewriteContext.getDatabaseName());
         if (!sqlRewriteContext.getParameters().isEmpty()) {
             Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule,
                     sqlRewriteContext.getDatabaseName(), sqlRewriteContext.getSchemas(), sqlStatementContext, encryptConditions).getParameterRewriters();

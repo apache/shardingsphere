@@ -20,12 +20,12 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -313,13 +313,15 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     /**
      * Set up encryptor schema.
-     * 
+     *
      * @param schemas schema map
+     * @param databaseName database name
      */
-    public void setUpEncryptorSchema(final Map<String, ShardingSphereSchema> schemas) {
+    public void setUpEncryptorSchema(final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
         for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
             if (each instanceof SchemaMetaDataAware) {
                 ((SchemaMetaDataAware) each).setSchemas(schemas);
+                ((SchemaMetaDataAware) each).setDatabaseName(databaseName);
             }
         }
     }
