@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -31,7 +30,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -57,18 +55,16 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public Optional<NamedPrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
-                return Optional.of(new NamedPrimaryDatabaseInstance(dataSourceName));
-            }
+            return resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"));
         } catch (final SQLException ex) {
             log.error("An exception occurred while find primary data source url", ex);
         }
-        return Optional.empty();
+        return false;
     }
     
     @Override

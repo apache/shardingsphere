@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -35,11 +31,8 @@ import static org.mockito.Mockito.when;
 public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
-    public void assertFindPrimaryDataSource() throws SQLException {
-        DataSource dataSource = mockDatSource();
-        Optional<NamedPrimaryDatabaseInstance> actual = new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("foo_ds", dataSource);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDataSourceName(), is("foo_ds"));
+    public void assertIsPrimaryInstance() throws SQLException {
+        assertTrue(new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDatSource()));
     }
     
     private DataSource mockDatSource() throws SQLException {

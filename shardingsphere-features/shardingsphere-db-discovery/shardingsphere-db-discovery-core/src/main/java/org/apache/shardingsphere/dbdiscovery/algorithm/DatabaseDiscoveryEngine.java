@@ -21,9 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.type.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.type.RoleSeparatedHighlyAvailableStatus;
@@ -33,7 +30,6 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -113,29 +109,9 @@ public final class DatabaseDiscoveryEngine {
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         for (Entry<String, DataSource> entry : getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames).entrySet()) {
-            Optional<? extends PrimaryDatabaseInstance> newPrimaryInstance = databaseDiscoveryProviderAlgorithm.findPrimaryInstance(entry.getKey(), entry.getValue());
-            if (newPrimaryInstance.isPresent()) {
-                return findPrimaryDataSourceName(dataSourceMap, newPrimaryInstance.get());
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final PrimaryDatabaseInstance newPrimaryInstance) {
-        return newPrimaryInstance instanceof IPPortPrimaryDatabaseInstance
-                ? findPrimaryDataSourceName(dataSourceMap, (IPPortPrimaryDatabaseInstance) newPrimaryInstance)
-                : Optional.of(((NamedPrimaryDatabaseInstance) newPrimaryInstance).getDataSourceName());
-    }
-    
-    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final IPPortPrimaryDatabaseInstance databaseInstance) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (Connection connection = entry.getValue().getConnection()) {
-                String url = connection.getMetaData().getURL();
-                if (null != url && url.contains(databaseInstance.toString())) {
-                    return Optional.of(entry.getKey());
-                }
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find primary data source name", ex);
+            boolean isPrimaryInstance = databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue());
+            if (isPrimaryInstance) {
+                return Optional.of(entry.getKey());
             }
         }
         return Optional.empty();

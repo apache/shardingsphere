@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
+import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -56,15 +57,19 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     }
     
     @Override
-    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            return loadPrimaryDatabaseInstance(statement);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
+            if (resultSet.next()) {
+                MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
+                return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
+            }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find primary data source name", ex);
         }
-        return Optional.empty();
+        return false;
     }
     
     private Optional<IPPortPrimaryDatabaseInstance> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
