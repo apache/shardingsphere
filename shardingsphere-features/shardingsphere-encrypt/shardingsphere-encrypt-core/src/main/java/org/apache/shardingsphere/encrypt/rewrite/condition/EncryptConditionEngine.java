@@ -83,7 +83,7 @@ public final class EncryptConditionEngine {
      * @param databaseName database name
      * @return encrypt conditions
      */
-    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments, final Collection<ColumnSegment> columnSegments, 
+    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments, final Collection<ColumnSegment> columnSegments,
                                                                 final SQLStatementContext<?> sqlStatementContext, final String databaseName) {
         Collection<EncryptCondition> result = new LinkedList<>();
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
