@@ -35,9 +35,9 @@ public final class HeartbeatJob implements SimpleJob {
     
     private final String databaseName;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final String groupName;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
     
@@ -45,6 +45,6 @@ public final class HeartbeatJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        new DatabaseDiscoveryEngine(databaseDiscoveryType).updatePrimaryDataSource(databaseName, dataSourceMap, disabledDataSourceNames, groupName);
+        new DatabaseDiscoveryEngine(databaseDiscoveryType).updatePrimaryDataSource(databaseName, groupName, dataSourceMap, disabledDataSourceNames);
     }
 }
