@@ -78,7 +78,7 @@ public final class DatabaseDiscoveryEngine {
     }
     
     private void checkRoleSeparatedHighlyAvailableStatus(
-            final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+                                                         final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         for (HighlyAvailableStatus each : statuses) {
             each.validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
         }
