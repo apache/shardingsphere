@@ -54,7 +54,7 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @param replicaDataSource replica data source
      * @return storage node data source
      */
-    StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource);
+    StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
     
     /**
      * Get primary data source.
