@@ -26,15 +26,15 @@ public final class DuplicateRuleException extends RuleDefinitionViolationExcepti
     
     private static final long serialVersionUID = -1738699538105858939L;
     
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
+    public DuplicateRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
+        super(1113, String.format("Duplicate %s rule names `%s` in database `%s`", ruleType, ruleNames, databaseName));
     }
     
     public DuplicateRuleException(final String ruleType, final Collection<String> ruleNames) {
         super(1113, String.format("Duplicate %s rule names `%s`", ruleType, ruleNames));
     }
     
-    public DuplicateRuleException(final String type, final String schemaName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
+    public DuplicateRuleException(final String type, final String databaseName) {
+        super(1113, String.format("Duplicate `%s` in database `%s`", type, databaseName));
     }
 }

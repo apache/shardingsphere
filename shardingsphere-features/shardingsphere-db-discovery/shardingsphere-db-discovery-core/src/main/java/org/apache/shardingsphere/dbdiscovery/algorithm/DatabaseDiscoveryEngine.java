@@ -19,16 +19,21 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
-import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.type.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.type.RoleSeparatedHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,6 +46,7 @@ import java.util.Optional;
  * Database discovery engine.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class DatabaseDiscoveryEngine {
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
@@ -77,8 +83,8 @@ public final class DatabaseDiscoveryEngine {
         statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
     }
     
-    private void checkRoleSeparatedHighlyAvailableStatus(
-                                                         final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+    private void checkRoleSeparatedHighlyAvailableStatus(final String databaseName,
+                                                         final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         for (HighlyAvailableStatus each : statuses) {
             each.validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
         }
@@ -96,12 +102,45 @@ public final class DatabaseDiscoveryEngine {
      */
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Optional<String> newPrimaryDataSourceName = databaseDiscoveryProviderAlgorithm.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap, disabledDataSourceNames);
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
         String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap);
+        return result;
+    }
+    
+    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+        Optional<? extends PrimaryDatabaseInstance> newPrimaryInstance = databaseDiscoveryProviderAlgorithm.findPrimaryInstance(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        return newPrimaryInstance.isPresent() ? findPrimaryDataSourceName(dataSourceMap, newPrimaryInstance.get()) : Optional.empty();
+    }
+    
+    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final PrimaryDatabaseInstance newPrimaryInstance) {
+        return newPrimaryInstance instanceof IPPortPrimaryDatabaseInstance
+                ? findPrimaryDataSourceName(dataSourceMap, (IPPortPrimaryDatabaseInstance) newPrimaryInstance)
+                : Optional.of(((NamedPrimaryDatabaseInstance) newPrimaryInstance).getDataSourceName());
+    }
+    
+    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final IPPortPrimaryDatabaseInstance databaseInstance) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            try (Connection connection = entry.getValue().getConnection()) {
+                String url = connection.getMetaData().getURL();
+                if (null != url && url.contains(databaseInstance.toString())) {
+                    return Optional.of(entry.getKey());
+                }
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source name", ex);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            result.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
         return result;
     }
     
@@ -112,13 +151,5 @@ public final class DatabaseDiscoveryEngine {
                         new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), databaseDiscoveryProviderAlgorithm.getStorageNodeDataSource(entry.getValue())));
             }
         }
-    }
-    
-    private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            result.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        return result;
     }
 }

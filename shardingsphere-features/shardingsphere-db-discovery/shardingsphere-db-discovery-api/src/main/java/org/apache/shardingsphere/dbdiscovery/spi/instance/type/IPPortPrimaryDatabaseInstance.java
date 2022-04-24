@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spi.status;
+package org.apache.shardingsphere.dbdiscovery.spi.instance.type;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
 
 /**
- * Global highly available status for database cluster.
+ * Primary database instance by IP and port.
  */
-public interface GlobalHighlyAvailableStatus extends HighlyAvailableStatus {
+@RequiredArgsConstructor
+public final class IPPortPrimaryDatabaseInstance implements PrimaryDatabaseInstance {
+    
+    private final String ip;
+    
+    private final String port;
+    
+    @Override
+    public String toString() {
+        return String.join(":", ip, port);
+    }
 }

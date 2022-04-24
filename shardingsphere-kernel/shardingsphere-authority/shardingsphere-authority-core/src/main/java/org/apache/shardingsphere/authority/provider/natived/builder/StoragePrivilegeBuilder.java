@@ -93,7 +93,7 @@ public final class StoragePrivilegeBuilder {
         save(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         checkConsistent(result);
-        return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+        return StoragePrivilegeMerger.merge(result, metaData.getDatabaseName(), metaData.getRuleMetaData().getRules());
     }
     
     private static void save(final Collection<DataSource> dataSources,

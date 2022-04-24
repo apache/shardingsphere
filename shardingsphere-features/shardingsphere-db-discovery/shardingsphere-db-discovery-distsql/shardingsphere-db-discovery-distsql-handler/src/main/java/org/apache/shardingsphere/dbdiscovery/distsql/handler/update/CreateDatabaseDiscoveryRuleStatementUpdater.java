@@ -60,7 +60,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
         checkResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
         checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);

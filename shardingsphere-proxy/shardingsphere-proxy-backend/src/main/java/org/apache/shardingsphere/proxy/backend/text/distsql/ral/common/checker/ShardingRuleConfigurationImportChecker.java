@@ -71,14 +71,14 @@ public final class ShardingRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String schemaName = shardingSphereMetaData.getName();
-        checkLogicTables(schemaName, currentRuleConfig);
-        checkResources(schemaName, shardingSphereMetaData, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkLogicTables(databaseName, currentRuleConfig);
+        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
         checkKeyGenerators(currentRuleConfig);
         checkShardingAlgorithms(currentRuleConfig);
     }
     
-    private void checkLogicTables(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         Collection<String> allLogicTables = new LinkedList<>();
@@ -86,7 +86,7 @@ public final class ShardingRuleConfigurationImportChecker {
         allLogicTables.addAll(autoTablesLogicTables);
         Set<String> duplicatedLogicTables = allLogicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException(SHARDING, schemaName, duplicatedLogicTables));
+        DistSQLException.predictionThrow(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException(SHARDING, databaseName, duplicatedLogicTables));
     }
     
     private void checkShardingAlgorithms(final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -121,12 +121,12 @@ public final class ShardingRuleConfigurationImportChecker {
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private void checkResources(final String schemaName, final ShardingSphereMetaData shardingSphereMetaData, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
         Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
         notExistedResources.removeIf(logicResources::contains);
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResources));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {

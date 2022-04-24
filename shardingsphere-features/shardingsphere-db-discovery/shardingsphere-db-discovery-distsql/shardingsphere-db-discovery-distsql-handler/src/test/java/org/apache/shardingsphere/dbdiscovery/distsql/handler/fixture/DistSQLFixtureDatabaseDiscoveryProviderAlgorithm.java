@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -37,7 +38,7 @@ public final class DistSQLFixtureDatabaseDiscoveryProviderAlgorithm implements D
     }
     
     @Override
-    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
+    public Optional<NamedPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
         return Optional.empty();
     }
     

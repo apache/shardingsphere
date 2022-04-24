@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
+package org.apache.shardingsphere.dbdiscovery.spi.instance.type;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.type.RoleSeparatedHighlyAvailableStatus;
-
-import javax.sql.DataSource;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
 
 /**
- * Highly available status of openGauss normal replication cluster.
+ * Primary database instance by data source name.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class OpenGaussNormalReplicationHighlyAvailableStatus implements RoleSeparatedHighlyAvailableStatus {
+public final class NamedPrimaryDatabaseInstance implements PrimaryDatabaseInstance {
     
-    private final boolean primary;
-    
-    @Override
-    public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
-    }
+    private final String dataSourceName;
 }

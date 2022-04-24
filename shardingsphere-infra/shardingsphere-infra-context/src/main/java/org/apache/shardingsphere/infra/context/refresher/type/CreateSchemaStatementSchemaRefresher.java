@@ -44,7 +44,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         database.put(sqlStatement.getSchemaName(), new TableMetaData());
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getName(), sqlStatement.getSchemaName());
+        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getDatabaseName(), sqlStatement.getSchemaName());
         ShardingSphereEventBus.getInstance().post(event);
     }
     

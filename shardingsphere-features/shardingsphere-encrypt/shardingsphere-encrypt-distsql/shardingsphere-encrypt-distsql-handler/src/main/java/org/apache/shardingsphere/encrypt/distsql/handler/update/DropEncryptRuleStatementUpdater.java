@@ -37,7 +37,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkToBeDroppedEncryptTableNames(databaseName, sqlStatement, currentRuleConfig);
     }
     
