@@ -35,6 +35,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Database discovery engine.
@@ -43,7 +49,11 @@ import java.util.Optional;
 public final class DatabaseDiscoveryEngine {
     
     private final DatabaseDiscoveryType databaseDiscoveryType;
-    
+
+    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
+
+    private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
+
     /**
      * Check highly available status of database cluster.
      *
@@ -61,13 +71,22 @@ public final class DatabaseDiscoveryEngine {
             checkRoleSeparatedHighlyAvailableStatus(databaseName, dataSourceMap, statuses);
         }
     }
-    
-    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) throws SQLException {
+
+    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) {
         Collection<HighlyAvailableStatus> result = new HashSet<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
+        Collection<Future<HighlyAvailableStatus>> tasks = new HashSet<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            // TODO query with multiple threads
-            result.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
+            tasks.add(executorService.submit(() -> databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue())));
         }
+        tasks.forEach(task -> {
+            try {
+                result.add(task.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS));
+            } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+                throw new IllegalStateException(String.format("Error while loading highly available Status with %s", task), ex);
+            }
+        });
+        executorService.shutdownNow();
         return result;
     }
     
