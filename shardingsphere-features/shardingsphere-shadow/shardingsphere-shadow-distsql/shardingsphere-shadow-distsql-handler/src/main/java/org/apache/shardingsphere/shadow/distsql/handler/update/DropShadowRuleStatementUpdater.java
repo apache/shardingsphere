@@ -36,7 +36,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }

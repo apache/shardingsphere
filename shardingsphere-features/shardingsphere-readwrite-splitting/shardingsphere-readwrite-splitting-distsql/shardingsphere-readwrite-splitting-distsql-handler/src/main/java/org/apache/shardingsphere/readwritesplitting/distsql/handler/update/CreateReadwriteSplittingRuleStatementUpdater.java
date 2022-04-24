@@ -53,7 +53,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, shardingSphereMetaData.getResource());
         checkToBeCreatedResources(databaseName, sqlStatement, shardingSphereMetaData);
         checkToBeCreatedLoadBalancers(sqlStatement);

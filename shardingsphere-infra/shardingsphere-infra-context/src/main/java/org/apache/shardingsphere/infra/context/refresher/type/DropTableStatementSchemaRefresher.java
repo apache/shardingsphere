@@ -44,7 +44,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         // TODO Get real schema name
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getDatabaseName(), schemaMetaData.getDatabaseName());
         sqlStatement.getTables().forEach(each -> {
             schemaMetaData.getDefaultSchema().remove(each.getTableName().getIdentifier().getValue());
             database.remove(each.getTableName().getIdentifier().getValue());

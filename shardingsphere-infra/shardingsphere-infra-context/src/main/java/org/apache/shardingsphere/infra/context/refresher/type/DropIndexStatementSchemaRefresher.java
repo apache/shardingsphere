@@ -54,7 +54,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
                 tableMetaData.getIndexes().remove(each);
             }
             // TODO Get real schema name
-            post(schemaMetaData.getName(), schemaMetaData.getName(), tableMetaData);
+            post(schemaMetaData.getDatabaseName(), schemaMetaData.getDatabaseName(), tableMetaData);
         }
     }
     

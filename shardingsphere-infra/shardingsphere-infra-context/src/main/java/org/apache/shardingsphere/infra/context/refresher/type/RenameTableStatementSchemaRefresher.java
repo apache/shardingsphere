@@ -53,7 +53,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         // TODO Get real schema name
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getDatabaseName(), schemaMetaData.getDatabaseName());
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             String tableName = each.getTable().getTableName().getIdentifier().getValue();
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
@@ -79,9 +79,9 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaMetaData.getName());
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaMetaData.getDatabaseName());
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
-        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getName();
+        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getDatabaseName();
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(tableMetaData -> {
             schemaMetaData.getDefaultSchema().put(tableName, tableMetaData);

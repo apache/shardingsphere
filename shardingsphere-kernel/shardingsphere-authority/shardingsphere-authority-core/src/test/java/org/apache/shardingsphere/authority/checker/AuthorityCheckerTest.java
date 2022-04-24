@@ -124,7 +124,7 @@ public final class AuthorityCheckerTest {
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap(final Collection<ShardingSphereUser> users) throws SQLException {
-        when(metaData.getName()).thenReturn("db0");
+        when(metaData.getDatabaseName()).thenReturn("db0");
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(metaData.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());

@@ -55,7 +55,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
-        String databaseName = schemaMetaData.getName();
+        String databaseName = schemaMetaData.getDatabaseName();
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
