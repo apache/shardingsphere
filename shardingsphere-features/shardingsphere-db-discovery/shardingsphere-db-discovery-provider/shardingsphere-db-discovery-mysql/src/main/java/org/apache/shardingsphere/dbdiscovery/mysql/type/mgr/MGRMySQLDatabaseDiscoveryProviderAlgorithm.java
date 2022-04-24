@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -32,13 +33,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
  * MGR database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
+public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
@@ -91,9 +94,22 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMy
     }
     
     @Override
-    protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
+    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            try (
+                    Connection connection = entry.getValue().getConnection();
+                    Statement statement = connection.createStatement()) {
+                return loadPrimaryDatabaseInstance(statement);
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source name", ex);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<IPPortPrimaryDatabaseInstance> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
-            return resultSet.next() ? Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
+            return resultSet.next() ? Optional.of(new IPPortPrimaryDatabaseInstance(resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
         }
     }
     

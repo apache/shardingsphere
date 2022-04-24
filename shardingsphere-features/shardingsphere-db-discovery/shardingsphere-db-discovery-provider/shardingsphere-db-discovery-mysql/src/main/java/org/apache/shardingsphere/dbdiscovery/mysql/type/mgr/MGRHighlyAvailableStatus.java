@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.status.type.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import javax.sql.DataSource;

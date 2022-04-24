@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spi.status;
+package org.apache.shardingsphere.dbdiscovery.spi.status.type;
+
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 
 /**
  * Role separated highly available status for database cluster.

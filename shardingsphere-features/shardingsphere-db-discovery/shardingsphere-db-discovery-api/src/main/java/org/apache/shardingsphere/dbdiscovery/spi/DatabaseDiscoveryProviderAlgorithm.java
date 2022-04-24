@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
+import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -41,12 +42,12 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
     HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
-     * Find primary data source name.
+     * Find primary instance.
      * 
      * @param dataSourceMap data source map
-     * @return found name of primary data source
+     * @return found primary instance
      */
-    Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
+    Optional<? extends PrimaryDatabaseInstance> findPrimaryInstance(Map<String, DataSource> dataSourceMap);
     
     /**
      * Get storage node data source.

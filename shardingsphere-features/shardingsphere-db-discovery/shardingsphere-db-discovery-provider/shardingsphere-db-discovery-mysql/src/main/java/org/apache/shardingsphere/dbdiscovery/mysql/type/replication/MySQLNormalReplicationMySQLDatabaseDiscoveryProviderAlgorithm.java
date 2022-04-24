@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -28,13 +29,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
  * Normal replication database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
@@ -43,18 +46,31 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstanceURL(statement).orElse(null));
+            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstance(statement).orElse(null));
         }
     }
     
     @Override
-    protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
+    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            try (
+                    Connection connection = entry.getValue().getConnection();
+                    Statement statement = connection.createStatement()) {
+                return loadPrimaryDatabaseInstance(statement);
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source name", ex);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<IPPortPrimaryDatabaseInstance> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");
                 String masterPort = resultSet.getString("Master_Port");
                 if (null != masterHost && null != masterPort) {
-                    return Optional.of(String.format("%s:%s", masterHost, masterPort));
+                    return Optional.of(new IPPortPrimaryDatabaseInstance(masterHost, masterPort));
                 }
             }
             return Optional.empty();

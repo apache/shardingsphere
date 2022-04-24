@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -58,14 +59,14 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
+    public Optional<NamedPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (
                     Connection connection = entry.getValue().getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
                 if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
-                    return Optional.of(entry.getKey());
+                    return Optional.of(new NamedPrimaryDatabaseInstance(entry.getKey()));
                 }
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find primary data source url", ex);

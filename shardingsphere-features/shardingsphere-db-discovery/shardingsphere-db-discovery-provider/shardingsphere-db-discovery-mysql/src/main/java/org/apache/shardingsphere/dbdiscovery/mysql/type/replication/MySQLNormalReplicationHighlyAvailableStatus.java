@@ -21,7 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
+import org.apache.shardingsphere.dbdiscovery.spi.status.type.GlobalHighlyAvailableStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -35,10 +36,10 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class MySQLNormalReplicationHighlyAvailableStatus implements GlobalHighlyAvailableStatus {
     
-    private final String primaryInstanceURL;
+    private final IPPortPrimaryDatabaseInstance databaseInstance;
     
     @Override
     public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) {
-        Preconditions.checkState(null != primaryInstanceURL, "Can not load primary data source URL in database `%s`.", databaseName);
+        Preconditions.checkState(null != databaseInstance, "Can not load primary data source URL in database `%s`.", databaseName);
     }
 }
