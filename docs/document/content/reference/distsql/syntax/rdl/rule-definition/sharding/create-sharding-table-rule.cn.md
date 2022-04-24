@@ -155,4 +155,5 @@ CREATE SHARDING TABLE RULE t_order (
 ### 相关链接
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
 - [CREATE SHARDING ALGORITHM](/cn/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
+- [CREATE DEFAULT_SHARDING STRATEGY](/cn/reference/distsql/syntax/rdl/rule-definition/create-default-sharding-strategy/)
 
