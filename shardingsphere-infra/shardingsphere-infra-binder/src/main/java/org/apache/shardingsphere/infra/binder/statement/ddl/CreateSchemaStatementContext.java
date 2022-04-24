@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 
+/**
+ * Create schema statement context.
+ */
 @Getter
-@Setter
-@ToString
-public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateSchemaStatementContext extends CommonSQLStatementContext<CreateSchemaStatement> {
     
-    private String schemaName;
+    public CreateSchemaStatementContext(final CreateSchemaStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

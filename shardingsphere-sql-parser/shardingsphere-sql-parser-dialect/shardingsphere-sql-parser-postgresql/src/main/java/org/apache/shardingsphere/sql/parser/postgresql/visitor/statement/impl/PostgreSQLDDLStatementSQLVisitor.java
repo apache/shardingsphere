@@ -228,6 +228,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -799,7 +800,9 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        return new PostgreSQLCreateLanguageStatement();
+        PostgreSQLCreateSchemaStatement result = new PostgreSQLCreateSchemaStatement();
+        result.setSchemaName(ctx.createSchemaClauses().colId().getText());
+        return result;
     }
     
     @Override

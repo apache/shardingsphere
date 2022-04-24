@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
@@ -26,5 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  * PostgreSQL create schema statement.
  */
 @ToString
-public final class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+@Setter
+public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement implements DDLStatement, PostgreSQLStatement {
 }

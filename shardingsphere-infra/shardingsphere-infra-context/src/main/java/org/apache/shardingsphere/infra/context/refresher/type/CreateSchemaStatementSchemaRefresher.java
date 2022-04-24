@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 
 import java.sql.SQLException;
@@ -41,10 +42,9 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String addSchemaName = sqlStatement.getSchema().getIdentifier().getValue();
-        database.put(addSchemaName, null);
+        database.put(sqlStatement.getSchemaName(), new TableMetaData());
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getName(), schemaName);
+        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getName(), sqlStatement.getSchemaName());
         ShardingSphereEventBus.getInstance().post(event);
     }
     
