@@ -62,10 +62,10 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-                if (resultSet.next()) {
-                    MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
-                    return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
-                }
+            if (resultSet.next()) {
+                MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
+                return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
+            }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find primary data source name", ex);
         }
