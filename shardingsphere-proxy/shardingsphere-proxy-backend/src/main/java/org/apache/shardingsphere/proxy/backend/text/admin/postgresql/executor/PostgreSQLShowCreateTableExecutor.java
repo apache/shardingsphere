@@ -22,13 +22,8 @@ import freemarker.template.TemplateException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.FreemarkerManager;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Array;
@@ -38,12 +33,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,20 +48,8 @@ import java.util.stream.Collectors;
 @Getter
 public final class PostgreSQLShowCreateTableExecutor {
     
-    
     @SneakyThrows
-    public String getCreateSQL(final String logicTable, final String logicSchemaName) {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getRules(logicSchemaName);
-        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(logicSchemaName);
-        DataNodes dataNodes = new DataNodes(rules);
-        Optional<DataNode> optional = dataNodes.getDataNodes(logicTable).stream().filter(dataNode -> dataSourceMap.containsKey(dataNode.getDataSourceName())).findFirst();
-        DataSource dataSource = optional.map(dataNode -> dataSourceMap.get(dataNode.getDataSourceName())).orElseGet(() -> dataSourceMap.values().iterator().next());
-        String tableName = optional.map(DataNode::getTableName).orElse(logicTable);
-        return doGetCreateSQL(tableName, "public", dataSource.getConnection());
-    }
-    
-    @SneakyThrows
-    public String doGetCreateSQL(final String tableName, final String schemaName, final Connection connection) {
+    public String getCreateSQL(final String tableName, final String schemaName, final Connection connection) {
         Map<String, Object> context = new HashMap<>();
         getDataBaseId(context, connection);
         getSchemaId(context, schemaName, connection);
@@ -78,7 +60,6 @@ public final class PostgreSQLShowCreateTableExecutor {
     
     private String getReverseEngineeredSql(final Map<String, Object> context, final Connection connection) {
         return getReSqlForTable(context, connection);
-        // TODO add inherited and of_type
     }
     
     private String getReSqlForTable(final Map<String, Object> context, final Connection connection) {
@@ -88,47 +69,28 @@ public final class PostgreSQLShowCreateTableExecutor {
     }
     
     private void formatColumnList(final Map<String, Object> context, final Connection connection) {
-        // TODO
     }
     
     private void formatter(final Map<String, Object> context, final Connection connection) {
         if (null != context.get("seclabels")) {
-            // TODO 
         }
-        // TODO setPrivileges(context);
-        // TODO add vacuum_table vacuum_toast
-        // TODO typeOrTable
-        // TODO inherited table(s) columns
         getFormattedColumns(context, connection);
         addConstraintsToOutput(context, connection);
     }
     
     @SneakyThrows
     private void getFormattedColumns(final Map<String, Object> context, final Connection connection) {
-        List<Map<String, Object>> allColumns;
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSqlFromTemplate(context, "columns/12_plus/properties.ftl"))
-        ) {
-            allColumns = getRows(resultSet);
-        }
+        List<Map<String, Object>> allColumns = executeByTemplate(connection, context, "columns/12_plus/properties.ftl");
         Map<String, Object> editTypes = new HashMap<>();
         for (Map<String, Object> each : allColumns) {
             editTypes.put(each.get("atttypid").toString(), new LinkedList<>());
-            // TODO other columns
         }
         context.put("columns", allColumns);
         Map<String, Object> param = new HashMap<>();
         param.put("type_ids", String.join(",", editTypes.keySet()));
         if (!allColumns.isEmpty()) {
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getSqlFromTemplate(param, "columns/default/edit_mode_types_multi.ftl"))
-            ) {
-                for (Map<String, Object> each : getRows(resultSet)) {
-                    // TODO pgArray sorted
-                    editTypes.put(each.get("main_oid").toString(), each.get("edit_types"));
-                }
+            for (Map<String, Object> each : executeByTemplate(connection, param, "columns/default/edit_mode_types_multi.ftl")) {
+                editTypes.put(each.get("main_oid").toString(), each.get("edit_types"));
             }
             for (Map<String, Object> each : allColumns) {
                 columnFormatter(each, editTypes.get(each.get("atttypid").toString()));
@@ -140,17 +102,12 @@ public final class PostgreSQLShowCreateTableExecutor {
         checkPrimaryColumn(column);
         fetchLengthPrecision(column);
         if (null != column.get("attoptions")) {
-            // TODO
         }
         if (null != column.get("seclabels")) {
-            // TODO
         }
-        // TODO acl
         Set<String> editTypes = Arrays.stream((String[]) ((Array) editTypeList).getArray()).collect(Collectors.toSet());
         editTypes.add(column.get("cltype").toString());
         column.put("edit_types", editTypes);
-        // TODO cltype
-        
     }
     
     private void addConstraintsToOutput(final Map<String, Object> context, final Connection connection) {
@@ -176,30 +133,16 @@ public final class PostgreSQLShowCreateTableExecutor {
                     columns.add(r);
                 }
                 each.put("columns", columns);
-                // TODO get include
                 each.put("include", new LinkedList<>());
             }
             context.put(entry.getValue(), rows);
         }
-        // TODO add foreign keys
         context.put("foreign_key", new LinkedList<>());
     }
     
     private void fetchLengthPrecision(final Map<String, Object> each) {
-        // TODO
         each.put("attlen", null);
         each.put("attprecision", null);
-    }
-    
-    
-    private String checkSchemaInName(final String typname, final String schema) {
-        if (typname.indexOf(schema + "\".") > 0) {
-            return typname.substring(schema.length() + 3);
-        }
-        if (typname.indexOf(schema + ".") > 0) {
-            return typname.substring(schema.length() + 1);
-        }
-        return typname;
     }
     
     private void checkPrimaryColumn(final Map<String, Object> column) {
@@ -215,12 +158,7 @@ public final class PostgreSQLShowCreateTableExecutor {
     }
     
     private void fetchTableProperties(final Map<String, Object> context, final Connection connection) throws SQLException, IOException, TemplateException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSqlFromTemplate(context, "table/12_plus/properties.ftl"))
-        ) {
-            appendToMap(resultSet, context);
-        }
+        appendFirstRow(executeByTemplate(connection, context, "table/12_plus/properties.ftl"), context);
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
         setRowsCount(context);
@@ -228,12 +166,10 @@ public final class PostgreSQLShowCreateTableExecutor {
     }
     
     private void fetchPrivileges(final Map<String, Object> context) {
-        // TODO
         context.put("acl", new LinkedList<>());
     }
     
     private void setRowsCount(final Map<String, Object> context) {
-        // TODO
         context.put("rows_cnt", "0");
     }
     
@@ -307,8 +243,8 @@ public final class PostgreSQLShowCreateTableExecutor {
     private void getTableId(final Map<String, Object> context, final String schemaName, final String tableName, final Connection connection) throws SQLException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format("SELECT tablename::REGCLASS::OID AS tid FROM pg_catalog.pg_tables WHERE schemaname = '%s' and tablename = '%s';", schemaName, tableName))
-        ) {
+                ResultSet resultSet = statement
+                        .executeQuery(String.format("SELECT tablename::REGCLASS::OID AS tid FROM pg_catalog.pg_tables WHERE schemaname = '%s' and tablename = '%s';", schemaName, tableName))) {
             appendToMap(resultSet, context);
         }
     }
@@ -316,8 +252,7 @@ public final class PostgreSQLShowCreateTableExecutor {
     private void getSchemaId(final Map<String, Object> context, final String schemaName, final Connection connection) throws SQLException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format("select oid as scid from pg_catalog.pg_namespace where nspname = '%s';", schemaName))
-        ) {
+                ResultSet resultSet = statement.executeQuery(String.format("select oid as scid from pg_catalog.pg_namespace where nspname = '%s';", schemaName))) {
             appendToMap(resultSet, context);
         }
     }
@@ -325,18 +260,20 @@ public final class PostgreSQLShowCreateTableExecutor {
     private void getDataBaseId(final Map<String, Object> context, final Connection connection) throws SQLException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format("select oid as did, datlastsysoid from pg_catalog.pg_database where datname = '%s';", connection.getCatalog()))
-        ) {
+                ResultSet resultSet = statement.executeQuery(String.format("select oid as did, datlastsysoid from pg_catalog.pg_database where datname = '%s';", connection.getCatalog()))) {
             appendToMap(resultSet, context);
         }
     }
     
     private void appendToMap(final ResultSet resultSet, final Map<String, Object> map) throws SQLException {
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        while (resultSet.next()) {
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                map.put(metaData.getColumnName(i), resultSet.getObject(i));
-            }
+        List<Map<String, Object>> rows = getRows(resultSet);
+        appendFirstRow(rows, map);
+    }
+    
+    private void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
+        for (Map<String, Object> each : rows) {
+            context.putAll(each);
+            break;
         }
     }
     
@@ -344,7 +281,7 @@ public final class PostgreSQLShowCreateTableExecutor {
         ResultSetMetaData metaData = resultSet.getMetaData();
         List<Map<String, Object>> result = new LinkedList<>();
         while (resultSet.next()) {
-            Map<String, Object> row = new HashMap<>();
+            Map<String, Object> row = new LinkedHashMap<>();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
                 row.put(metaData.getColumnName(i), resultSet.getObject(i));
             }
@@ -357,8 +294,7 @@ public final class PostgreSQLShowCreateTableExecutor {
     private List<Map<String, Object>> executeByTemplate(final Connection connection, final Map<String, Object> param, final String path) {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSqlFromTemplate(param, path))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getSqlFromTemplate(param, path))) {
             return getRows(resultSet);
         }
     }

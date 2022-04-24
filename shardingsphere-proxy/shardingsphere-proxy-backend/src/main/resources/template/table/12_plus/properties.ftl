@@ -73,3 +73,4 @@ WHERE rel.relkind IN ('r','s','t','p') AND rel.relnamespace = ${ scid?c }::oid
 AND NOT rel.relispartition
 <#if tid?? >  AND rel.oid = ${ tid?c }::oid </#if>
 ORDER BY rel.relname;
+
