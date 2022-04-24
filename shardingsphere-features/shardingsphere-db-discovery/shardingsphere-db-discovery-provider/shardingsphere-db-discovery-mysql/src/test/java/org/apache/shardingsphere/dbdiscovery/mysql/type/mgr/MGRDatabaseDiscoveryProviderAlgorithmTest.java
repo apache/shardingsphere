@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.junit.Test;
 
@@ -96,9 +97,9 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         databaseDiscoveryType.getProps().setProperty("group-name", "group_name");
-        Optional<String> actual = databaseDiscoveryType.findPrimaryDataSourceName(dataSourceMap);
+        Optional<IPPortPrimaryDatabaseInstance> actual = databaseDiscoveryType.findPrimaryInstance(dataSourceMap);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("ds_2"));
+        assertThat(actual.get().toString(), is("127.0.0.1:3308"));
     }
     
     @Test

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatabaseInstance;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -69,8 +70,8 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithmT
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        Optional<String> actual = new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().findPrimaryDataSourceName(dataSourceMap);
+        Optional<NamedPrimaryDatabaseInstance> actual = new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance(dataSourceMap);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("ds_2"));
+        assertThat(actual.get().getDataSourceName(), is("ds_2"));
     }
 }

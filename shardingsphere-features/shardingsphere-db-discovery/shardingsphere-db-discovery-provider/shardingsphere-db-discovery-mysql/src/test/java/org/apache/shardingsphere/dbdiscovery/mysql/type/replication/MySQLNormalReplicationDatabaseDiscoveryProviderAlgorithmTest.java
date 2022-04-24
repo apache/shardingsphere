@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
+import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -38,7 +39,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
         MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource(3306));
-        assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
+        assertThat(actual.getDatabaseInstance().toString(), is("127.0.0.1:3306"));
     }
     
     @Test
@@ -46,9 +47,9 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mockDataSource(3306));
         dataSourceMap.put("ds_1", mockDataSource(3307));
-        Optional<String> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryDataSourceName(dataSourceMap);
+        Optional<IPPortPrimaryDatabaseInstance> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance(dataSourceMap);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("ds_0"));
+        assertThat(actual.get().toString(), is("127.0.0.1:3306"));
     }
     
     private DataSource mockDataSource(final int port) throws SQLException {
