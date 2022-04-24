@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipline.env;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipline.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.data.pipline.util.ScalingUtil;
@@ -33,23 +32,24 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
-    private final boolean isEnvironmentPrepared;
-    
     private final Properties props;
     
     private final String itEnvType;
     
     private IntegrationTestEnvironment() {
-        props = loadProperties("env/it-env.properties");
+        props = loadProperties();
         itEnvType = props.getProperty("it.env.type");
-        isEnvironmentPrepared = false;
     }
     
-    @SneakyThrows
-    private Properties loadProperties(final String propsFileName) {
+    private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream(propsFileName)) {
+        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        for (String each : System.getProperties().stringPropertyNames()) {
+            result.setProperty(each, System.getProperty(each));
         }
         return result;
     }

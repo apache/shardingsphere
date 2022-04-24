@@ -19,12 +19,9 @@ package org.apache.shardingsphere.integration.data.pipline;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipline.env.ITEnvironmentContext;
-import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipline.fixture.DataImporter;
 import org.apache.shardingsphere.integration.data.pipline.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.data.pipline.util.ScalingUtil;
 import org.junit.Ignore;
-import org.junit.Test;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,21 +37,6 @@ public final class ScalingIT {
     private static final long WAIT_MS_BEFORE_START_JOB = 10 * 1000;
     
     private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
-    
-    @Test
-    public void assertScaling() throws InterruptedException {
-        if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
-            DataImporter dataImporter = new DataImporter();
-            dataImporter.createTables();
-            dataImporter.importData();
-            String jobId = assertStartJob();
-            waitInventoryFinish(jobId);
-            dataImporter.importData();
-            Thread.sleep(WAIT_MS_BEFORE_CHECK_JOB);
-            assertJobCheck(jobId);
-        }
-    }
     
     private String assertStartJob() {
         String configuration = ITEnvironmentContext.INSTANCE.getScalingConfiguration();
