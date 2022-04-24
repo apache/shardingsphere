@@ -39,9 +39,6 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
-    private DatabaseDiscoveryProviderAlgorithm mgrDatabaseDiscoveryProviderAlgorithm;
-    
-    @Resource
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration mgrDatabaseDiscoveryRule;
     
     @Test
