@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.spi;
 
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -48,13 +49,12 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
     
     /**
-     * Update member state.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
-     * @param groupName group name
+     * Get storage node data source.
+     * 
+     * @param replicaDataSource replica data source
+     * @return storage node data source
      */
-    void updateMemberState(String databaseName, Map<String, DataSource> dataSourceMap, String groupName);
+    StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
     
     /**
      * Get primary data source.

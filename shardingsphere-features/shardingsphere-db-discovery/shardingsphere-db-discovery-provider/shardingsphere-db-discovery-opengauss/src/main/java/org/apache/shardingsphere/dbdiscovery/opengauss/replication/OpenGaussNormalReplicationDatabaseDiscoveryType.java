@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -79,13 +77,8 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(primaryDataSource)) {
-                StorageNodeStatus storageNodeStatus = isDisabledDataSource(entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
-            }
-        }
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
     private boolean isDisabledDataSource(final DataSource replicaDataSource) {

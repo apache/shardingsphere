@@ -20,8 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -34,8 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -97,28 +93,12 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     @Override
     protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
-            if (resultSet.next()) {
-                return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
-            }
-            return Optional.empty();
+            return resultSet.next() ? Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
         }
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(getPrimaryDataSource())) {
-                postDataSourceDisabledEvent(databaseName, groupName, entry.getKey(), entry.getValue());
-            }
-        }
-    }
-    
-    private void postDataSourceDisabledEvent(final String databaseName, final String groupName, final String replicaDataSourceName, final DataSource replicaDataSource) {
-        StorageNodeDataSource storageNodeDataSource = getStorageNodeDataSource(replicaDataSource);
-        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, replicaDataSourceName, storageNodeDataSource));
-    }
-    
-    private StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     

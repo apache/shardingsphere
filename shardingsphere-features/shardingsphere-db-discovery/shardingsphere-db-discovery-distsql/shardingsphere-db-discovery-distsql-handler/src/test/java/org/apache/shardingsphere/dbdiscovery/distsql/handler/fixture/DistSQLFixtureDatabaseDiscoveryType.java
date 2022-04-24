@@ -19,6 +19,9 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -39,7 +42,8 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
     }
     
     @Override
