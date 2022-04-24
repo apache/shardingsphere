@@ -108,8 +108,7 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
         }
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(getPrimaryDataSource())) {
-                StorageNodeStatus storageNodeStatus = isDisabledDataSource(memberDatabaseInstanceURLs, entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
+                postDataSourceDisabledEvent(databaseName, groupName, memberDatabaseInstanceURLs, entry.getKey(), entry.getValue());
             }
         }
     }
@@ -129,6 +128,16 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
             log.error("An exception occurred while find member data source urls", ex);
         }
         return result;
+    }
+    
+    private void postDataSourceDisabledEvent(final String databaseName, final String groupName, 
+                                             final Collection<String> memberDatabaseInstanceURLs, final String replicaDataSourceName, final DataSource replicaDataSource) {
+        StorageNodeDataSource storageNodeDataSource = getStorageNodeDataSource(memberDatabaseInstanceURLs, replicaDataSource);
+        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, replicaDataSourceName, storageNodeDataSource));
+    }
+    
+    private StorageNodeDataSource getStorageNodeDataSource(final Collection<String> memberDatabaseInstanceURLs, final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(memberDatabaseInstanceURLs, replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
     private boolean isDisabledDataSource(final Collection<String> memberDataSourceURLs, final DataSource dataSource) {

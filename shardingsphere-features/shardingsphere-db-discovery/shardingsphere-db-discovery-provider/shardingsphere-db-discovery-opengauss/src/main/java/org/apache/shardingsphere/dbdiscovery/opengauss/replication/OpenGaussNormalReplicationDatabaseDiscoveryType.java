@@ -81,17 +81,19 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            StorageNodeStatus storageNodeStatus = isDisabledDataSource(entry.getKey(), entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
+            if (!entry.getKey().equals(primaryDataSource)) {
+                StorageNodeStatus storageNodeStatus = isDisabledDataSource(entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
+            }
         }
     }
     
-    private boolean isDisabledDataSource(final String dataSourceName, final DataSource dataSource) {
+    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || dataSourceName.equals(primaryDataSource))) {
+            if (resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
                 return false;
             }
         } catch (final SQLException ex) {
