@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 @Getter

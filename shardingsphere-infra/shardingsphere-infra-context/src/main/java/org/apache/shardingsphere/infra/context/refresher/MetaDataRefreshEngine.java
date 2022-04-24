@@ -74,7 +74,7 @@ public final class MetaDataRefreshEngine {
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(getSchemaName(sqlStatementContext.getDatabaseType(), schemaMetaData.getName()));
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(getSchemaName(sqlStatementContext.getDatabaseType(), schemaMetaData.getDatabaseName()));
             schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
