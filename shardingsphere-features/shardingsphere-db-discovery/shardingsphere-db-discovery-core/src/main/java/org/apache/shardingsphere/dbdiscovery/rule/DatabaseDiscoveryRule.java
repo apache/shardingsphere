@@ -115,7 +115,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            dataSourceRule.updatePrimaryDataSourceName(engine.changePrimaryDataSource(databaseName, groupName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
+            dataSourceRule.changePrimaryDataSourceName(engine.changePrimaryDataSource(databaseName, groupName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
         }
     }
     
@@ -164,7 +164,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getGroupName())) {
-                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
+                    entry.getValue().changePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
                 }
             }
         }
