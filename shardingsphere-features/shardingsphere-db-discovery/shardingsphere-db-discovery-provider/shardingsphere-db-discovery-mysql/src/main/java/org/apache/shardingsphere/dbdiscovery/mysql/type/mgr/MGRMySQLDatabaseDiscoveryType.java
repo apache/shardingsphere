@@ -122,22 +122,25 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
-    private boolean isDisabledDataSource(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            MySQLDataSourceMetaData dataSourceMetaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
-            try (PreparedStatement preparedStatement = connection.prepareStatement(QUERY_CURRENT_MEMBER_STATE)) {
-                preparedStatement.setString(1, dataSourceMetaData.getHostname());
-                preparedStatement.setString(2, Integer.toString(dataSourceMetaData.getPort()));
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next() && "ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
-                        return false;
-                    }
-                }
+    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
+        try (Connection connection = replicaDataSource.getConnection()) {
+            if (isOnlineDataSource(connection, new MySQLDataSourceMetaData(connection.getMetaData().getURL()))) {
+                return false;
             }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find data source urls", ex);
         }
         return true;
+    }
+    
+    private boolean isOnlineDataSource(final Connection connection, final MySQLDataSourceMetaData metaData) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(QUERY_CURRENT_MEMBER_STATE)) {
+            preparedStatement.setString(1, metaData.getHostname());
+            preparedStatement.setString(2, Integer.toString(metaData.getPort()));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() && "ONLINE".equals(resultSet.getString("MEMBER_STATE"));
+            }
+        }
     }
     
     @Override
