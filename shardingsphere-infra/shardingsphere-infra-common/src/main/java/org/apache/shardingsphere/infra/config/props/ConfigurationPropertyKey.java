@@ -122,7 +122,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy mysql default version, default 5.7.22.
      */
-    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false);
+    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
+    
+    /**
+     * Proxy default port, default 3307.
+     */
+    PROXY_DEFAULT_PORT("proxy-default-port", "3307", String.class, false);
     
     private final String key;
     
