@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
+public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;

@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Database discovery type.
+ * Database discovery provider algorithm.
  */
-public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
+public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Load highly available status.
