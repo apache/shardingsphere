@@ -56,7 +56,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
             putTableMetaData(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
             removeTableMetaData(schemaMetaData, database, optimizerPlanners, schemaName, tableName);
-            event.getAlteredTables().add(schemaMetaData.getDefaultSchema().get(renameTable));
+            event.getAlteredTables().add(schemaMetaData.getSchemaByName(schemaName).get(renameTable));
             event.getDroppedTables().add(tableName);
         }
         ShardingSphereEventBus.getInstance().post(event);

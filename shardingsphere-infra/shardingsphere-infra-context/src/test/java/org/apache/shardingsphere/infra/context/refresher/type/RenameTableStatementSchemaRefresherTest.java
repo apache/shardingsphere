@@ -75,7 +75,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         return new ShardingSphereMetaData("foo_database",
-                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_database", mock(ShardingSphereSchema.class)));
+                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
     }
     
     private ShardingSphereResource mockShardingSphereResource() {
