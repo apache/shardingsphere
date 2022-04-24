@@ -60,7 +60,7 @@ public final class SQLTokenGenerators {
      * @return SQL tokens
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas, 
+    public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
                                             final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
@@ -77,7 +77,7 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, 
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters,
                                         final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);

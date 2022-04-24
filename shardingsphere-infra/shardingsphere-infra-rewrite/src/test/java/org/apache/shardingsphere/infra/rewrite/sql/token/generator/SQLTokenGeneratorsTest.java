@@ -89,7 +89,7 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
-        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mockSchemaMap());
+        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
@@ -103,7 +103,7 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
         List<SQLToken> expectedCollection = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedCollection).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mockSchemaMap());
+        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(2));
         assertThat(actualSqlTokens, is(expectedCollection));
