@@ -113,8 +113,7 @@ public final class DatabaseDiscoveryEngine {
                 if (databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue())) {
                     return Optional.of(entry.getKey());
                 }
-            }
-            catch (final SQLException ex) {
+            } catch (final SQLException ex) {
                 log.error("An exception occurred while judge primary data source: ", ex);
             }
         }
