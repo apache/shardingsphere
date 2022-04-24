@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 
 public final class DatabaseDiscoveryRuleTest {
     
-    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", mock(DataSource.class));
+    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", mock(DataSource.class));
     
     @Test
     public void assertNewWithEmptyDataSourceRule() {
