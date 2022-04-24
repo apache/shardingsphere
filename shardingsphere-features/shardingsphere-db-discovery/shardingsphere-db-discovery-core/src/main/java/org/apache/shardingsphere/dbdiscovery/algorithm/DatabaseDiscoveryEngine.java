@@ -77,7 +77,8 @@ public final class DatabaseDiscoveryEngine {
         statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
     }
     
-    private void checkRoleSeparatedHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+    private void checkRoleSeparatedHighlyAvailableStatus(
+            final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         for (HighlyAvailableStatus each : statuses) {
             each.validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
         }
@@ -106,7 +107,8 @@ public final class DatabaseDiscoveryEngine {
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), databaseDiscoveryProviderAlgorithm.getStorageNodeDataSource(entry.getValue())));
+                ShardingSphereEventBus.getInstance().post(
+                        new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), databaseDiscoveryProviderAlgorithm.getStorageNodeDataSource(entry.getValue())));
             }
         }
     }
