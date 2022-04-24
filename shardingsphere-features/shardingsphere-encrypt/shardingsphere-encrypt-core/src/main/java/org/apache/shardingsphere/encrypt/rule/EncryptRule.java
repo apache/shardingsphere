@@ -314,12 +314,12 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Set up encryptor schema.
      * 
-     * @param schema schema
+     * @param schemas schema map
      */
-    public void setUpEncryptorSchema(final ShardingSphereSchema schema) {
+    public void setUpEncryptorSchema(final Map<String, ShardingSphereSchema> schemas) {
         for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
             if (each instanceof SchemaMetaDataAware) {
-                ((SchemaMetaDataAware) each).setSchema(schema);
+                ((SchemaMetaDataAware) each).setSchemas(schemas);
             }
         }
     }

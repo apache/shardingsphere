@@ -55,14 +55,14 @@ public final class SQLTokenGenerators {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param schema ShardingSphere schema
+     * @param schemas ShardingSphere schema map
      * @return SQL tokens
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final Map<String, ShardingSphereSchema> schemas) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
-            setUpSQLTokenGenerator(each, parameters, schema, result);
+            setUpSQLTokenGenerator(each, parameters, schemas, result);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -75,12 +75,13 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final ShardingSphereSchema schema, final List<SQLToken> previousSQLTokens) {
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters,
+                                        final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
         if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) sqlTokenGenerator).setSchema(schema);
+            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemas(schemas);
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteRe
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,8 +38,14 @@ public final class GenericSQLRewriteEngineTest {
     public void assertRewrite() {
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine().rewrite(
                 new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                        mock(ShardingSphereSchema.class), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList()));
+                        mockSchemaMap(), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList()));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
 }

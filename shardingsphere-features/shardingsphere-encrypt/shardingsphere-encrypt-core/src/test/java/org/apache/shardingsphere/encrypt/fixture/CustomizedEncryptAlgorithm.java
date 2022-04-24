@@ -20,11 +20,12 @@ package org.apache.shardingsphere.encrypt.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -40,7 +41,7 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     
     private byte[] key = DigestUtils.sha256(TEST_KEY);
     
-    private ShardingSphereSchema schema;
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public void init() {
@@ -88,7 +89,7 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     }
     
     @Override
-    public void setSchema(final ShardingSphereSchema schema) {
-        this.schema = schema;
+    public void setSchemas(final Map<String, ShardingSphereSchema> schemas) {
+        this.schemas = schemas;
     }
 }

@@ -28,7 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -68,10 +70,15 @@ public final class IndexTokenGeneratorTest {
         IndexTokenGenerator indexTokenGenerator = new IndexTokenGenerator();
         ShardingRule shardingRule = mock(ShardingRule.class);
         indexTokenGenerator.setShardingRule(shardingRule);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        indexTokenGenerator.setSchema(schema);
+        indexTokenGenerator.setSchemas(mockSchemaMap());
         Collection<IndexToken> result = indexTokenGenerator.generateSQLTokens(alterIndexStatementContext);
         assertThat(result.size(), is(1));
         assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
 }

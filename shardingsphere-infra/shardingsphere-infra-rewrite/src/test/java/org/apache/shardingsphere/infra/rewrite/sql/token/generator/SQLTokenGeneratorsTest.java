@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
-        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mockSchemaMap());
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
@@ -102,7 +103,7 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
         List<SQLToken> expectedCollection = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedCollection).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereSchema.class));
+        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mockSchemaMap());
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(2));
         assertThat(actualSqlTokens, is(expectedCollection));
@@ -113,5 +114,11 @@ public final class SQLTokenGeneratorsTest {
         Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
         field.setAccessible(true);
         return (Map<Class<?>, SQLTokenGenerator>) field.get(sqlTokenGenerators);
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
 }
