@@ -65,13 +65,13 @@ public final class SchemaMetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertPersistSchemaTables() {
+    public void assertPersistDatabase() {
         new SchemaMetaDataPersistService(repository).persist("foo_db");
-        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_db/tables"), anyString());
+        verify(repository).persist(eq("/metadata/foo_db"), anyString());
     }
     
     @Test
-    public void assertDelete() {
+    public void assertDeleteDatabase() {
         new SchemaMetaDataPersistService(repository).delete("foo_db");
         verify(repository).delete("/metadata/foo_db");
     }
