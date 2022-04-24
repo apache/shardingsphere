@@ -35,8 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -101,15 +99,13 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement()) {
-                return loadPrimaryDatabaseInstance(statement);
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find primary data source name", ex);
-            }
+    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            return loadPrimaryDatabaseInstance(statement);
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find primary data source name", ex);
         }
         return Optional.empty();
     }

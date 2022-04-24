@@ -112,8 +112,13 @@ public final class DatabaseDiscoveryEngine {
     }
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Optional<? extends PrimaryDatabaseInstance> newPrimaryInstance = databaseDiscoveryProviderAlgorithm.findPrimaryInstance(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        return newPrimaryInstance.isPresent() ? findPrimaryDataSourceName(dataSourceMap, newPrimaryInstance.get()) : Optional.empty();
+        for (Entry<String, DataSource> entry : getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames).entrySet()) {
+            Optional<? extends PrimaryDatabaseInstance> newPrimaryInstance = databaseDiscoveryProviderAlgorithm.findPrimaryInstance(entry.getKey(), entry.getValue());
+            if (newPrimaryInstance.isPresent()) {
+                return findPrimaryDataSourceName(dataSourceMap, newPrimaryInstance.get());
+            }
+        }
+        return Optional.empty();
     }
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final PrimaryDatabaseInstance newPrimaryInstance) {
