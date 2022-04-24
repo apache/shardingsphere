@@ -51,7 +51,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstance(statement).orElse(null));
+            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstanceURL(statement).orElse(null));
         }
     }
     
@@ -71,7 +71,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         return false;
     }
     
-    private Optional<String> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
+    private Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
                 String masterHost = resultSet.getString("Master_Host");
