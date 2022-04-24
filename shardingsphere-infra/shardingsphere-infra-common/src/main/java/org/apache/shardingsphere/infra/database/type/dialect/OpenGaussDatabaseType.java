@@ -77,4 +77,9 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
     }
+    
+    @Override
+    public String getDefaultSchema(final String databaseName) {
+        return "public";
+    }
 }
