@@ -32,7 +32,7 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
     }
     

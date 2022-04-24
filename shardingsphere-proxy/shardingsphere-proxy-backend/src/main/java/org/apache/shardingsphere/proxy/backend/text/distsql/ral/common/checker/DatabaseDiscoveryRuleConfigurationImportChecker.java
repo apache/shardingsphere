@@ -55,19 +55,19 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String schemaName = shardingSphereMetaData.getName();
-        checkResources(schemaName, shardingSphereMetaData, currentRuleConfig);
-        checkDiscoverTypeAndHeartbeat(schemaName, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
+        checkDiscoverTypeAndHeartbeat(databaseName, currentRuleConfig);
     }
     
-    private void checkResources(final String schemaName, final ShardingSphereMetaData shardingSphereMetaData, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> requireResources.addAll(each.getDataSourceNames()));
         Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistResources));
+        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
     }
     
-    private void checkDiscoverTypeAndHeartbeat(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDiscoverTypeAndHeartbeat(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
@@ -79,6 +79,6 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
                 invalidInput.add(each.getDiscoveryHeartbeatName());
             }
         });
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(DB_DISCOVERY, schemaName, invalidInput));
+        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(DB_DISCOVERY, databaseName, invalidInput));
     }
 }

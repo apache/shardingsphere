@@ -44,7 +44,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicateRuleNames(shardingSphereMetaData.getName(), sqlStatement, currentRuleConfig);
+        checkDuplicateRuleNames(shardingSphereMetaData.getDatabaseName(), sqlStatement, currentRuleConfig);
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource

@@ -32,7 +32,7 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements Ru
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(shardingSphereMetaData.getName(), currentRuleConfig);
+        checkCurrentRuleConfiguration(shardingSphereMetaData.getDatabaseName(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {

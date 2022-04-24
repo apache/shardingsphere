@@ -43,7 +43,7 @@ import java.util.Optional;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String name;
+    private final String databaseName;
     
     private final ShardingSphereResource resource;
     
@@ -111,7 +111,7 @@ public final class ShardingSphereMetaData {
     public ShardingSphereSchema getDefaultSchema() {
         // FIXME optimize this logic when mode event contains schemaName
         ShardingSphereSchema defaultSchema = schemas.values().isEmpty() ? null : schemas.get("public");
-        return schemas.getOrDefault(name, defaultSchema);
+        return schemas.getOrDefault(databaseName, defaultSchema);
     }
     
     /**
