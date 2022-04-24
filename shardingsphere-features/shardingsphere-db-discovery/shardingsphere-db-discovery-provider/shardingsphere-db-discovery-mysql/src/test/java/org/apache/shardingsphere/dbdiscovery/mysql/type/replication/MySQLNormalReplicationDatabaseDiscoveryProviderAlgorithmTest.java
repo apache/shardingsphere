@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
-import org.apache.shardingsphere.dbdiscovery.spi.instance.type.IPPortPrimaryDatabaseInstance;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,10 +39,8 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     }
     
     @Test
-    public void assertFindPrimaryDataSource() throws SQLException {
-        Optional<IPPortPrimaryDatabaseInstance> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("ds_0", mockDataSource());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().toString(), is("127.0.0.1:3306"));
+    public void assertIsPrimaryInstance() throws SQLException {
+        assertTrue(new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSource()));
     }
     
     private DataSource mockDataSource() throws SQLException {

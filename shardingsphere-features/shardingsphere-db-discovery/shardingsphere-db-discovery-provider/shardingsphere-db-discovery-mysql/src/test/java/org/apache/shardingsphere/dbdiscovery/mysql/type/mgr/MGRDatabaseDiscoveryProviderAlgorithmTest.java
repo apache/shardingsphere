@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -65,15 +64,13 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     }
     
     @Test
-    public void assertFindPrimaryDataSource() throws SQLException {
-        String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
-                + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-        Optional<IPPortPrimaryDatabaseInstance> actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("foo_ds", mockToBeFoundPrimaryDataSource(sql));
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().toString(), is("127.0.0.1:3306"));
+    public void assertIsPrimaryInstance() throws SQLException {
+        assertTrue(new MGRMySQLDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockPrimaryDataSource()));
     }
     
-    private DataSource mockToBeFoundPrimaryDataSource(final String sql) throws SQLException {
+    private DataSource mockPrimaryDataSource() throws SQLException {
+        String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
+                + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.getConnection().createStatement().executeQuery(sql)).thenReturn(resultSet);

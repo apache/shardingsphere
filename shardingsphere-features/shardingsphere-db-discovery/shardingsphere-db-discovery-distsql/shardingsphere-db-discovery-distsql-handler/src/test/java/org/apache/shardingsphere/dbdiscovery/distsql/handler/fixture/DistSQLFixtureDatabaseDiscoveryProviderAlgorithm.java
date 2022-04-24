@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.instance.PrimaryDatabaseInstance;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 
@@ -37,8 +35,8 @@ public final class DistSQLFixtureDatabaseDiscoveryProviderAlgorithm implements D
     }
     
     @Override
-    public Optional<? extends PrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
-        return Optional.empty();
+    public boolean isPrimaryInstance(final DataSource dataSource) {
+        return false;
     }
     
     @Override

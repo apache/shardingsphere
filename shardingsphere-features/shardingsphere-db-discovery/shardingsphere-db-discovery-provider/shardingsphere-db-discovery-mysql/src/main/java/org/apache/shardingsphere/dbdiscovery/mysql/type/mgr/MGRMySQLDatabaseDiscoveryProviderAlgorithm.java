@@ -35,7 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -99,21 +98,19 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public Optional<IPPortPrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            return loadPrimaryDatabaseInstance(statement);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
+            if (resultSet.next()) {
+                MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
+                return metaData.getHostname().equals(resultSet.getString("MEMBER_HOST")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("MEMBER_PORT"));
+            }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find primary data source name", ex);
         }
-        return Optional.empty();
-    }
-    
-    private Optional<IPPortPrimaryDatabaseInstance> loadPrimaryDatabaseInstance(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
-            return resultSet.next() ? Optional.of(new IPPortPrimaryDatabaseInstance(resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
-        }
+        return false;
     }
     
     @Override
