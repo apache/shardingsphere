@@ -49,9 +49,7 @@ public final class DatabaseDiscoveryEngine {
     private final DatabaseDiscoveryType databaseDiscoveryType;
 
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
-
-    private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
-
+    
     /**
      * Check highly available status of database cluster.
      *
