@@ -21,57 +21,35 @@ import org.apache.shardingsphere.dbdiscovery.spi.instance.type.NamedPrimaryDatab
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
     
-    private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
-    
     @Test
     public void assertFindPrimaryDataSource() throws SQLException {
-        List<DataSource> dataSources = new LinkedList<>();
-        List<Connection> connections = new LinkedList<>();
-        List<Statement> statements = new LinkedList<>();
-        List<ResultSet> resultSets = new LinkedList<>();
-        List<DatabaseMetaData> databaseMetaData = new LinkedList<>();
-        for (int i = 0; i < 3; i++) {
-            dataSources.add(mock(DataSource.class));
-            connections.add(mock(Connection.class));
-            statements.add(mock(Statement.class));
-            resultSets.add(mock(ResultSet.class));
-            databaseMetaData.add(mock(DatabaseMetaData.class));
-        }
-        for (int i = 0; i < 3; i++) {
-            when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
-            when(connections.get(i).createStatement()).thenReturn(statements.get(i));
-            when(statements.get(i).executeQuery(DB_ROLE)).thenReturn(resultSets.get(i));
-            when(resultSets.get(i).next()).thenReturn(true, false);
-            when(resultSets.get(i).getString("local_role")).thenReturn("Primary");
-            when(resultSets.get(i).getString("db_state")).thenReturn("Normal");
-            when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
-            when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:postgres://127.0.0.1:" + (3306 + i) + "/ds_0");
-        }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
-        for (int i = 0; i < 3; i++) {
-            dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
-        }
-        Optional<NamedPrimaryDatabaseInstance> actual = new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance(dataSourceMap);
+        DataSource dataSource = mockDatSource();
+        Optional<NamedPrimaryDatabaseInstance> actual = new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("foo_ds", dataSource);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getDataSourceName(), is("ds_2"));
+        assertThat(actual.get().getDataSourceName(), is("foo_ds"));
+    }
+    
+    private DataSource mockDatSource() throws SQLException {
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection().createStatement().executeQuery("SELECT local_role,db_state FROM pg_stat_get_stream_replications()")).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getString("local_role")).thenReturn("Primary");
+        when(resultSet.getString("db_state")).thenReturn("Normal");
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:postgres://127.0.0.1:3306/foo_ds");
+        return result;
     }
 }

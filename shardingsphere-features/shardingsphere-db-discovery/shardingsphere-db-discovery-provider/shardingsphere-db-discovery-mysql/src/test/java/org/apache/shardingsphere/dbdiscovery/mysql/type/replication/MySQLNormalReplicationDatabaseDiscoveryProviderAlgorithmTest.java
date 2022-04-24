@@ -23,8 +23,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,28 +36,25 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource(3306));
+        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource());
         assertThat(actual.getDatabaseInstance().toString(), is("127.0.0.1:3306"));
     }
     
     @Test
     public void assertFindPrimaryDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", mockDataSource(3306));
-        dataSourceMap.put("ds_1", mockDataSource(3307));
-        Optional<IPPortPrimaryDatabaseInstance> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance(dataSourceMap);
+        Optional<IPPortPrimaryDatabaseInstance> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryInstance("ds_0", mockDataSource());
         assertTrue(actual.isPresent());
         assertThat(actual.get().toString(), is("127.0.0.1:3306"));
     }
     
-    private DataSource mockDataSource(final int port) throws SQLException {
+    private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
         when(resultSet.getString("Master_Port")).thenReturn("3306");
-        when(result.getConnection().getMetaData().getURL()).thenReturn(String.format("jdbc:mysql://127.0.0.1:%s/test?serverTimezone=UTC&useSSL=false", port));
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         return result;
     }
 }

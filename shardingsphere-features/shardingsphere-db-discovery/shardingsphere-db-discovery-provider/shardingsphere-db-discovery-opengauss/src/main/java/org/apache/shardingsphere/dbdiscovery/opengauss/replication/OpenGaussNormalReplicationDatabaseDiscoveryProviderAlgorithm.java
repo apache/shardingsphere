@@ -31,8 +31,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -59,18 +57,16 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public Optional<NamedPrimaryDatabaseInstance> findPrimaryInstance(final Map<String, DataSource> dataSourceMap) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-                if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
-                    return Optional.of(new NamedPrimaryDatabaseInstance(entry.getKey()));
-                }
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find primary data source url", ex);
+    public Optional<NamedPrimaryDatabaseInstance> findPrimaryInstance(final String dataSourceName, final DataSource dataSource) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
+            if (resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"))) {
+                return Optional.of(new NamedPrimaryDatabaseInstance(dataSourceName));
             }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find primary data source url", ex);
         }
         return Optional.empty();
     }

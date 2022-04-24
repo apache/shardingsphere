@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,12 +41,13 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
     HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
-     * Find primary instance.
-     * 
-     * @param dataSourceMap data source map
-     * @return found primary instance
+     * Find primary database instance.
+     *
+     * @param dataSourceName data source name
+     * @param dataSource data source
+     * @return found primary database instance
      */
-    Optional<? extends PrimaryDatabaseInstance> findPrimaryInstance(Map<String, DataSource> dataSourceMap);
+    Optional<? extends PrimaryDatabaseInstance> findPrimaryInstance(String dataSourceName, DataSource dataSource);
     
     /**
      * Get storage node data source.

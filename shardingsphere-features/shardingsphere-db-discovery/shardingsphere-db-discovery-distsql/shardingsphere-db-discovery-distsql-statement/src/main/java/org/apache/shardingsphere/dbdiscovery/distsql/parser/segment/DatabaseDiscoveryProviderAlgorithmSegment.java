@@ -23,13 +23,13 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Database discovery type segment.
+ * Database discovery provider algorithm segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryTypeSegment implements ASTNode {
+public final class DatabaseDiscoveryProviderAlgorithmSegment implements ASTNode {
     
-    private final String discoveryTypeName;
+    private final String discoveryProviderName;
     
-    private final AlgorithmSegment algorithmSegment;
+    private final AlgorithmSegment algorithm;
 }
