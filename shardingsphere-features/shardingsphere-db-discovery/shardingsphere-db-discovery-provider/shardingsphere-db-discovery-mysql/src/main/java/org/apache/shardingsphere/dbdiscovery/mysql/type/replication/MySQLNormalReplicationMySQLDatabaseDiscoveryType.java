@@ -80,7 +80,8 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
             StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
-                    ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED;
+                    ? StorageNodeStatus.ENABLED
+                    : StorageNodeStatus.DISABLED;
             ShardingSphereEventBus.getInstance().post(
                     new DataSourceDisabledEvent(databaseName, groupName, datasourceName, new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds)));
         } catch (SQLException ex) {
