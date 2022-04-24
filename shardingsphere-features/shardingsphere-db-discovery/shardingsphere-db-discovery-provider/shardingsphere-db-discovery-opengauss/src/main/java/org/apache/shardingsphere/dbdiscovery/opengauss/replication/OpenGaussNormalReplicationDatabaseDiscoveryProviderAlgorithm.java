@@ -20,9 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -38,16 +36,14 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Normal replication database discovery type for openGauss.
+ * Normal replication database discovery provider algorithm for openGauss.
  */
 @Getter
 @Setter
 @Slf4j
-public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
-    
-    private String primaryDataSource;
     
     private Properties props = new Properties();
     
@@ -79,19 +75,16 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            StorageNodeStatus storageNodeStatus = isDisabledDataSource(entry.getKey(), entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
-        }
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
-    private boolean isDisabledDataSource(final String dataSourceName, final DataSource dataSource) {
+    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) || dataSourceName.equals(primaryDataSource))) {
+            if (resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
                 return false;
             }
         } catch (final SQLException ex) {

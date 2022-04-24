@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -30,15 +28,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Normal replication database discovery type for MySQL.
+ * Normal replication database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
@@ -66,26 +62,19 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(getPrimaryDataSource())) {
-                postDataSourceDisabledEvent(databaseName, entry.getKey(), entry.getValue(), groupName);
-            }
-        }
-    }
-    
-    private void postDataSourceDisabledEvent(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
             StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
-                    ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED;
-            ShardingSphereEventBus.getInstance().post(
-                    new DataSourceDisabledEvent(databaseName, groupName, datasourceName, new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds)));
+                    ? StorageNodeStatus.ENABLED
+                    : StorageNodeStatus.DISABLED;
+            return new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds);
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
         }
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
     }
     
     private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {

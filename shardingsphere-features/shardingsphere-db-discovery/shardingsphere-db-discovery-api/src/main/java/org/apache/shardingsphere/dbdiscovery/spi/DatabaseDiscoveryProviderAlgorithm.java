@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.spi;
 
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -26,9 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Database discovery type.
+ * Database discovery provider algorithm.
  */
-public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
+public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Load highly available status.
@@ -48,25 +49,10 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
     
     /**
-     * Update member state.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
-     * @param groupName group name
+     * Get storage node data source.
+     * 
+     * @param replicaDataSource replica data source
+     * @return storage node data source
      */
-    void updateMemberState(String databaseName, Map<String, DataSource> dataSourceMap, String groupName);
-    
-    /**
-     * Get primary data source.
-     *
-     * @return primary data source
-     */
-    String getPrimaryDataSource();
-    
-    /**
-     * Set primary data source.
-     *
-     * @param primaryDataSource primary data source
-     */
-    void setPrimaryDataSource(String primaryDataSource);
+    StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
 }

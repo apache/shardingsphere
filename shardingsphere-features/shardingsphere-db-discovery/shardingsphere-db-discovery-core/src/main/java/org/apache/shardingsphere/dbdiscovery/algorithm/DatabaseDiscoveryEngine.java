@@ -19,12 +19,13 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
@@ -42,7 +43,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DatabaseDiscoveryEngine {
     
-    private final DatabaseDiscoveryType databaseDiscoveryType;
+    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
     
     /**
      * Check highly available status of database cluster.
@@ -66,39 +67,51 @@ public final class DatabaseDiscoveryEngine {
         Collection<HighlyAvailableStatus> result = new HashSet<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             // TODO query with multiple threads
-            result.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
+            result.add(databaseDiscoveryProviderAlgorithm.loadHighlyAvailableStatus(entry.getValue()));
         }
         return result;
     }
     
     private void checkGlobalHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         Preconditions.checkState(1 == statuses.size(), "Different status in highly available cluster in database `%s`.", databaseName);
-        statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryType.getProps());
+        statuses.iterator().next().validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
     }
     
-    private void checkRoleSeparatedHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
+    private void checkRoleSeparatedHighlyAvailableStatus(
+                                                         final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
         for (HighlyAvailableStatus each : statuses) {
-            each.validate(databaseName, dataSourceMap, databaseDiscoveryType.getProps());
+            each.validate(databaseName, dataSourceMap, databaseDiscoveryProviderAlgorithm.getProps());
         }
     }
     
     /**
-     * Update primary data source.
+     * Change primary data source.
      *
      * @param databaseName database name
+     * @param groupName group name
+     * @param originalPrimaryDataSourceName original primary data source name
      * @param dataSourceMap data source map
      * @param disabledDataSourceNames disabled data source names
-     * @param groupName group name
-     * @return updated primary data source name
+     * @return changed primary data source name
      */
-    public String updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        Optional<String> newPrimaryDataSourceName = databaseDiscoveryType.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
-        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(databaseDiscoveryType.getPrimaryDataSource())) {
-            databaseDiscoveryType.setPrimaryDataSource(newPrimaryDataSourceName.get());
+    public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
+                                          final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+        Optional<String> newPrimaryDataSourceName = databaseDiscoveryProviderAlgorithm.findPrimaryDataSourceName(getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames));
+        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
-        databaseDiscoveryType.updateMemberState(databaseName, dataSourceMap, groupName);
-        return newPrimaryDataSourceName.orElseGet(databaseDiscoveryType::getPrimaryDataSource);
+        String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
+        postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap);
+        return result;
+    }
+    
+    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (!entry.getKey().equals(primaryDataSourceName)) {
+                ShardingSphereEventBus.getInstance().post(
+                        new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), databaseDiscoveryProviderAlgorithm.getStorageNodeDataSource(entry.getValue())));
+            }
+        }
     }
     
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {

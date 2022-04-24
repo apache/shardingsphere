@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRMySQLDatabaseDiscoveryType
-org.apache.shardingsphere.dbdiscovery.mysql.type.replication.MySQLNormalReplicationMySQLDatabaseDiscoveryType
+org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.DistSQLFixtureDatabaseDiscoveryProviderAlgorithm

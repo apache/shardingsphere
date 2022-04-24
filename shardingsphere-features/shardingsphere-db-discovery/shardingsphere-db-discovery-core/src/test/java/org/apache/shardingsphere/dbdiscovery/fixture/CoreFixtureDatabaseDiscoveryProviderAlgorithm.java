@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.fixture;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -26,7 +29,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 
-public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     @Override
     public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
@@ -39,16 +42,8 @@ public final class CoreFixtureDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-    }
-    
-    @Override
-    public String getPrimaryDataSource() {
-        return "primary";
-    }
-    
-    @Override
-    public void setPrimaryDataSource(final String primaryDataSource) {
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
     }
     
     @Override

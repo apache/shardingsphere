@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
-import com.google.common.eventbus.EventBus;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -48,13 +39,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MGRDatabaseDiscoveryTypeTest {
+public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
-    private final MGRMySQLDatabaseDiscoveryType databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryType();
+    private final MGRMySQLDatabaseDiscoveryProviderAlgorithm databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
@@ -112,46 +101,18 @@ public final class MGRDatabaseDiscoveryTypeTest {
         assertThat(actual.get(), is("ds_2"));
     }
     
-    // TODO Fix me
-    @Ignore
     @Test
-    public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = AbstractMySQLDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
-        declaredField.setAccessible(true);
-        declaredField.set(databaseDiscoveryType, "ds_0");
-        EventBus eventBus = mock(EventBus.class);
-        mockStatic(ShardingSphereEventBus.class);
-        when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
-        List<DataSource> dataSources = new LinkedList<>();
-        List<Connection> connections = new LinkedList<>();
-        List<Statement> statements = new LinkedList<>();
-        List<ResultSet> resultSets = new LinkedList<>();
-        List<DatabaseMetaData> databaseMetaData = new LinkedList<>();
-        for (int i = 0; i < 3; i++) {
-            dataSources.add(mock(DataSource.class));
-            connections.add(mock(Connection.class));
-            statements.add(mock(Statement.class));
-            resultSets.add(mock(ResultSet.class));
-            databaseMetaData.add(mock(DatabaseMetaData.class));
-        }
-        String sql = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
-        for (int i = 0; i < 3; i++) {
-            when(dataSources.get(i).getConnection()).thenReturn(connections.get(i));
-            when(connections.get(i).createStatement()).thenReturn(statements.get(i));
-            when(statements.get(i).executeQuery(sql)).thenReturn(resultSets.get(i));
-            when(resultSets.get(i).next()).thenReturn(true, false);
-            when(resultSets.get(i).getString("MEMBER_HOST")).thenReturn("127.0.0.1");
-            when(resultSets.get(i).getString("MEMBER_PORT")).thenReturn(Integer.toString(3306 + i));
-            when(resultSets.get(i).getString("MEMBER_STATE")).thenReturn("ONLINE");
-            when(connections.get(i).getMetaData()).thenReturn(databaseMetaData.get(i));
-            when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
-        }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
-        for (int i = 0; i < 3; i++) {
-            dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
-        }
-        databaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, "readwrite_ds");
-        verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "readwrite_ds", "ds_2",
-                new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED))));
+    public void assertGetDisabledStorageNodeDataSource() throws SQLException {
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
+        StorageNodeDataSource actual = databaseDiscoveryType.getStorageNodeDataSource(dataSource);
+        assertThat(actual.getRole(), is("member"));
+        assertThat(actual.getStatus(), is("disabled"));
+        assertThat(actual.getReplicationDelayMilliseconds(), is(0L));
+    }
+    
+    @Test
+    public void assertGetEnabledStorageNodeDataSource() {
+        // TODO
     }
 }

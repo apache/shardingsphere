@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,16 +32,14 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Abstract MySQL database discovery type.
+ * Abstract MySQL database discovery provider algorithm.
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractMySQLDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public abstract class AbstractMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private Properties props = new Properties();
-    
-    private String primaryDataSource;
     
     @Override
     public final Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {

@@ -18,29 +18,27 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * MGR database discovery type for MySQL.
+ * MGR database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
+public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
@@ -52,6 +50,8 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     
     private static final String QUERY_PRIMARY_DATA_SOURCE = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
             + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
+    
+    private static final String QUERY_CURRENT_MEMBER_STATE = "SELECT MEMBER_STATE FROM performance_schema.replication_group_members WHERE MEMBER_HOST=? AND MEMBER_PORT=?";
     
     @Override
     public MGRHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
@@ -93,56 +93,34 @@ public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDi
     @Override
     protected Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PRIMARY_DATA_SOURCE)) {
-            if (resultSet.next()) {
-                return Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
-            }
-            return Optional.empty();
+            return resultSet.next() ? Optional.of(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"))) : Optional.empty();
         }
     }
     
     @Override
-    public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        Collection<String> memberDatabaseInstanceURLs = findMemberDatabaseInstanceURLs(dataSourceMap);
-        if (memberDatabaseInstanceURLs.isEmpty()) {
-            return;
-        }
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(getPrimaryDataSource())) {
-                StorageNodeStatus storageNodeStatus = isDisabledDataSource(memberDatabaseInstanceURLs, entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED;
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus)));
-            }
-        }
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
-    private Collection<String> findMemberDatabaseInstanceURLs(final Map<String, DataSource> dataSourceMap) {
-        Collection<String> result = new LinkedList<>();
-        try (
-                Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
-            while (resultSet.next()) {
-                if ("ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
-                    result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
-                }
-            }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while find member data source urls", ex);
-        }
-        return result;
-    }
-    
-    private boolean isDisabledDataSource(final Collection<String> memberDataSourceURLs, final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            String url = connection.getMetaData().getURL();
-            for (String each : memberDataSourceURLs) {
-                if (null != url && url.contains(each)) {
-                    return false;
-                }
+    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
+        try (Connection connection = replicaDataSource.getConnection()) {
+            if (isOnlineDataSource(connection, new MySQLDataSourceMetaData(connection.getMetaData().getURL()))) {
+                return false;
             }
         } catch (final SQLException ex) {
             log.error("An exception occurred while find data source urls", ex);
         }
         return true;
+    }
+    
+    private boolean isOnlineDataSource(final Connection connection, final MySQLDataSourceMetaData metaData) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(QUERY_CURRENT_MEMBER_STATE)) {
+            preparedStatement.setString(1, metaData.getHostname());
+            preparedStatement.setString(2, Integer.toString(metaData.getPort()));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() && "ONLINE".equals(resultSet.getString("MEMBER_STATE"));
+            }
+        }
     }
     
     @Override
