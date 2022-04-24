@@ -82,14 +82,14 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements Da
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSource)) {
-                StorageNodeDataSource storageNodeDataSource = getStorageNodeDataSource(entry);
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), getStorageNodeDataSource(entry.getValue())));
             }
         }
     }
     
-    private StorageNodeDataSource getStorageNodeDataSource(final Entry<String, DataSource> entry) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(entry.getValue()) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
+    @Override
+    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
     }
     
     private boolean isDisabledDataSource(final DataSource replicaDataSource) {
