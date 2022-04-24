@@ -69,23 +69,28 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends Abst
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(getPrimaryDataSource())) {
-                postDataSourceDisabledEvent(databaseName, entry.getKey(), entry.getValue(), groupName);
+                postDataSourceDisabledEvent(databaseName, groupName, entry.getKey(), entry.getValue());
             }
         }
     }
     
-    private void postDataSourceDisabledEvent(final String databaseName, final String datasourceName, final DataSource dataSource, final String groupName) {
+    private void postDataSourceDisabledEvent(final String databaseName, final String groupName, final String datasourceName, final DataSource replicaDataSource) {
+        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, datasourceName, getStorageNodeDataSource(replicaDataSource)));
+    }
+    
+    private StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
             StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
-                    ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED;
-            ShardingSphereEventBus.getInstance().post(
-                    new DataSourceDisabledEvent(databaseName, groupName, datasourceName, new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds)));
+                    ? StorageNodeStatus.ENABLED
+                    : StorageNodeStatus.DISABLED;
+            return new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds);
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
         }
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
     }
     
     private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {
