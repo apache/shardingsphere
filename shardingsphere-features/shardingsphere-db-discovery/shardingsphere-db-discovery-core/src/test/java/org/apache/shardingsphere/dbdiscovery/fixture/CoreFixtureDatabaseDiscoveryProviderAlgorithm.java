@@ -47,15 +47,6 @@ public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements Data
     }
     
     @Override
-    public String getPrimaryDataSource() {
-        return "primary";
-    }
-    
-    @Override
-    public void setPrimaryDataSource(final String primaryDataSource) {
-    }
-    
-    @Override
     public String getType() {
         return "CORE.FIXTURE";
     }

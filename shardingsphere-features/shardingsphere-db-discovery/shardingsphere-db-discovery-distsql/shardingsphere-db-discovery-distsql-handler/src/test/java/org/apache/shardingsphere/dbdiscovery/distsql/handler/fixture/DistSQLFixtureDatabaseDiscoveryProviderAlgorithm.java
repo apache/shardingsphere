@@ -47,15 +47,6 @@ public final class DistSQLFixtureDatabaseDiscoveryProviderAlgorithm implements D
     }
     
     @Override
-    public String getPrimaryDataSource() {
-        return null;
-    }
-    
-    @Override
-    public void setPrimaryDataSource(final String primaryDataSource) {
-    }
-    
-    @Override
     public String getType() {
         return "DISTSQL.FIXTURE";
     }

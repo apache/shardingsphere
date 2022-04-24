@@ -103,7 +103,6 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertGetDisabledStorageNodeDataSource() throws SQLException {
-        databaseDiscoveryType.setPrimaryDataSource("foo_ds");
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         StorageNodeDataSource actual = databaseDiscoveryType.getStorageNodeDataSource(dataSource);
