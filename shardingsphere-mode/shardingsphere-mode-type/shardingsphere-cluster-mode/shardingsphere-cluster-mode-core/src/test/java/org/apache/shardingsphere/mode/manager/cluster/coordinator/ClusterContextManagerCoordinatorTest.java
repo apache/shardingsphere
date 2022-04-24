@@ -243,7 +243,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        when(metaData.getName()).thenReturn("db");
+        when(metaData.getDatabaseName()).thenReturn("db");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);

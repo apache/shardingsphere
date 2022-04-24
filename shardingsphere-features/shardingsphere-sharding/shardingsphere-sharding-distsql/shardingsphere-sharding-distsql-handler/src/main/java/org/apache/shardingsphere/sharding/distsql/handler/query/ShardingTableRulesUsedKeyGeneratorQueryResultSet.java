@@ -42,23 +42,23 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
         Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getName(), result, each));
+        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabaseName(), result, each));
         data = result.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String schemaName, final List<Collection<Object>> result,
+    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String databaseName, final List<Collection<Object>> result,
                                final ShardingRuleConfiguration shardingRuleConfiguration) {
         if (!statement.getKeyGeneratorName().isPresent()) {
             return;
         }
         shardingRuleConfiguration.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(schemaName, "table", each.getLogicTable()));
+                result.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
             }
         });
         shardingRuleConfiguration.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(schemaName, "auto_table", each.getLogicTable()));
+                result.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
             }
         });
     }

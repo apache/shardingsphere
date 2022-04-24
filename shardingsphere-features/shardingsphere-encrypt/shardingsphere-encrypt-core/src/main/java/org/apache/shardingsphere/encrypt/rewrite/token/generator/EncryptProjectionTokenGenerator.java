@@ -54,7 +54,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private List<SQLToken> previousSQLTokens;
     
-    private ShardingSphereSchema schema;
+    private Map<String, ShardingSphereSchema> schemas;
+    
+    private String databaseName;
     
     private EncryptRule encryptRule;
     
@@ -136,6 +138,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
             }
         }
+        String defaultSchema = selectStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     

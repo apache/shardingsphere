@@ -42,7 +42,9 @@ import java.util.Optional;
 @Setter
 public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, EncryptRuleAware {
     
-    private ShardingSphereSchema schema;
+    private Map<String, ShardingSphereSchema> schemas;
+    
+    private String databaseName;
     
     private EncryptRule encryptRule;
     
@@ -56,6 +58,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<ColumnSegment> columnSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getColumnSegments() : Collections.emptyList();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         return generateSQLTokens(columnSegments, columnExpressionTableNames);
     }

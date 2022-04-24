@@ -47,12 +47,12 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String schemaName = shardingSphereMetaData.getName();
-        checkResources(schemaName, shardingSphereMetaData, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
         checkLoadBalancers(currentRuleConfig);
     }
     
-    private void checkResources(final String schemaName, final ShardingSphereMetaData shardingSphereMetaData, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
@@ -67,10 +67,10 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
             }
         });
         Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistResources));
+        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistLogicResources));
+        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
     private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
