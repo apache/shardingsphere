@@ -3,12 +3,8 @@ title = "SHOW UNUSED RESOURCE"
 weight = 3
 +++
 
-
 ### 描述
-
 `SHOW UNUSED RESOURCE` 语法用于查询指定逻辑库已经添加但还未被规则引用的资源。
-
-
 
 ### 语法
 ```SQL
@@ -23,7 +19,6 @@ schemaName ::=
 - 未指定 `schemaName` 时，默认是当前使用的 `SCHEMA`； 如未使用 `SCHEMA` 则会提示 `No database selected`。
 
  ### 返回值说明
-
 | 列        | 说明      |
 | --------- | -------- |
 | name      | 数据源名称 |

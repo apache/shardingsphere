@@ -3,12 +3,8 @@ title = "SHOW RESOURCE"
 weight = 2
 +++
 
-
 ### Description
-
 The `SHOW RESOURCE` syntax is used to query the resources that have been added to the specified schema.
-
-
 
 ### Syntax
 ```SQL
@@ -23,7 +19,6 @@ schemaName ::=
 - When `schemaName` is not specified, the default is the currently used `SCHEMA`; if `SCHEMA` is not used, it will prompt `No database selected`.
 
  ### Return Value Description
-
 | Column    | Description           |
 | --------- | --------------------- |
 | name      | Data source name      |

@@ -3,11 +3,8 @@ title = "SHOW UNUSED RESOURCE"
 weight = 3
 +++
 
-
 ### Description
-
 The `SHOW UNUSED RESOURCE` syntax is used to query resources that have been added by the specified schema but not yet referenced by rules.
-
 
 ### Syntax
 ```SQL
@@ -22,7 +19,6 @@ schemaName ::=
 - When `schemaName` is not specified, the default is the currently used `SCHEMA`; if `SCHEMA` is not used, it will prompt `No database selected`.
 
  ### Return Value Description
-
 | Column    | Description           |
 | --------- | --------------------- |
 | name      | Data source name      |
