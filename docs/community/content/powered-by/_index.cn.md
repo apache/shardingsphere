@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 178 家公司。
+共计 181 家公司。
 
 ### 基础软件
 <ul>
@@ -25,6 +25,7 @@ chapter = true
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
+    <li><a href="https://www.psbc.com/cn/" rel="nofollow">中国邮政储蓄银行</a></li>
 </ul>
 
 ### 支付
@@ -113,6 +114,7 @@ chapter = true
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
+    <li><a href="https://www.hello-inc.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a>：<a href="https://mp.weixin.qq.com/s/EWhgaT_63lVuwVAJNpqLbw" rel="nofollow">用户案例</a></li>
@@ -135,6 +137,7 @@ chapter = true
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
     <li><a href="http://www.c-wms.net/" rel="nofollow">弘人网络科技</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">喜百年供应链科技</a></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a></li>
 </ul>
 
 ### 旅游服务

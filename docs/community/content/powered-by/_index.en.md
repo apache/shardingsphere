@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 178 companies.
+Total: 181 companies.
 
 ### Infra Software
 <ul>
@@ -25,6 +25,7 @@ Total: 178 companies.
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
+    <li><a href="https://www.psbc.com/en/" rel="nofollow">Postal Savings Bank of China</a></li>
 </ul>
 
 ### Payment
@@ -113,6 +114,7 @@ Total: 178 companies.
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
+    <li><a href="https://www.hello-inc.com/" rel="nofollow">Hello Inc</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
@@ -135,6 +137,7 @@ Total: 178 companies.
     <li><a href="https://www.keking.com" rel="nofollow">KeKing</a></li>
     <li><a href="http://www.c-wms.net/" rel="nofollow">C-WMS</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">Xbnwl</a></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">HuiMin</a></li>
 </ul>
 
 ### Travel
