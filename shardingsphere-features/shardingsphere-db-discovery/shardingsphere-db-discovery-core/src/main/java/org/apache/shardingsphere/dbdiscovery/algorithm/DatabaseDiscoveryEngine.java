@@ -18,29 +18,27 @@
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.spi.status.GlobalHighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.dbdiscovery.spi.status.RoleSeparatedHighlyAvailableStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Database discovery engine.
@@ -72,22 +70,18 @@ public final class DatabaseDiscoveryEngine {
         }
     }
 
-    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) {
-        Collection<HighlyAvailableStatus> result = new HashSet<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
-        Collection<Future<HighlyAvailableStatus>> tasks = new HashSet<>();
+    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) throws SQLException{
+        ExecutorEngine executorEngine = new ExecutorEngine(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
+        return executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryType));
+    }
+
+    private ExecutionGroupContext<Entry<String, DataSource>> createExecutionGroupContext(Map<String, DataSource> dataSourceMap) {
+        Collection<ExecutionGroup<Entry<String, DataSource>>> inputGroups = new ArrayList<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            tasks.add(executorService.submit(() -> databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue())));
+            ExecutionGroup<Entry<String, DataSource>> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry));
+            inputGroups.add(executionGroup);
         }
-        tasks.forEach(task -> {
-            try {
-                result.add(task.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS));
-            } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-                throw new IllegalStateException(String.format("Error while loading highly available Status with %s", task), ex);
-            }
-        });
-        executorService.shutdownNow();
-        return result;
+        return new ExecutionGroupContext<>(inputGroups);
     }
     
     private void checkGlobalHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<HighlyAvailableStatus> statuses) throws SQLException {
