@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -36,12 +36,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Normal replication database discovery type for openGauss.
+ * Normal replication database discovery provider algorithm for openGauss.
  */
 @Getter
 @Setter
 @Slf4j
-public final class OpenGaussNormalReplicationDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     

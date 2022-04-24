@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,18 +44,19 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final Properties heartbeatProps;
     
-    private final DatabaseDiscoveryType databaseDiscoveryType;
+    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     private String primaryDataSourceName;
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, 
+                                           final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
         checkConfiguration(config);
         groupName = config.getGroupName();
         dataSourceNames = config.getDataSourceNames();
         this.heartbeatProps = props;
-        this.databaseDiscoveryType = databaseDiscoveryType;
+        this.databaseDiscoveryProviderAlgorithm = databaseDiscoveryProviderAlgorithm;
     }
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {

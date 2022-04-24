@@ -33,11 +33,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationDatabaseDiscoveryTypeTest {
+public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryType().loadHighlyAvailableStatus(mockDataSource(3306));
+        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource(3306));
         assertThat(actual.getPrimaryInstanceURL(), is("127.0.0.1:3306"));
     }
     
@@ -46,7 +46,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryTypeTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mockDataSource(3306));
         dataSourceMap.put("ds_1", mockDataSource(3307));
-        Optional<String> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryType().findPrimaryDataSourceName(dataSourceMap);
+        Optional<String> actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().findPrimaryDataSourceName(dataSourceMap);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("ds_0"));
     }

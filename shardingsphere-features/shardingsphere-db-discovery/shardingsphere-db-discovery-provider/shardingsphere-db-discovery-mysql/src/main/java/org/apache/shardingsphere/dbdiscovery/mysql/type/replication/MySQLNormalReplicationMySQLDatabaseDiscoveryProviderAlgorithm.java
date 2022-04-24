@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
@@ -31,10 +31,10 @@ import java.sql.Statement;
 import java.util.Optional;
 
 /**
- * Normal replication database discovery type for MySQL.
+ * Normal replication database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     

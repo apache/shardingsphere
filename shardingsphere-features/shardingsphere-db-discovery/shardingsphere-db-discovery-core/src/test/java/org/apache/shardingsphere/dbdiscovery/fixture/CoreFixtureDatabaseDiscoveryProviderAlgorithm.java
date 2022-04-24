@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
+package org.apache.shardingsphere.dbdiscovery.fixture;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 
-public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     @Override
     public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
@@ -38,7 +38,7 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     
     @Override
     public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
-        return Optional.empty();
+        return Optional.of("primary");
     }
     
     @Override
@@ -48,7 +48,7 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     
     @Override
     public String getPrimaryDataSource() {
-        return null;
+        return "primary";
     }
     
     @Override
@@ -57,6 +57,6 @@ public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscov
     
     @Override
     public String getType() {
-        return "DISTSQL.FIXTURE";
+        return "CORE.FIXTURE";
     }
 }

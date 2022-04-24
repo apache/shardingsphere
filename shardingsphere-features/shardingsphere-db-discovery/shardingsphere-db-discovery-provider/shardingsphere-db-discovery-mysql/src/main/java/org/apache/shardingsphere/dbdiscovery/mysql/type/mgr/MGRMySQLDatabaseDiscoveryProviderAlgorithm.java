@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -35,10 +35,10 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * MGR database discovery type for MySQL.
+ * MGR database discovery provider algorithm for MySQL.
  */
 @Slf4j
-public final class MGRMySQLDatabaseDiscoveryType extends AbstractMySQLDatabaseDiscoveryType {
+public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm extends AbstractMySQLDatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     

@@ -41,9 +41,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MGRDatabaseDiscoveryTypeTest {
+public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
-    private final MGRMySQLDatabaseDiscoveryType databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryType();
+    private final MGRMySQLDatabaseDiscoveryProviderAlgorithm databaseDiscoveryType = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
     
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
