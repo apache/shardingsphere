@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -219,20 +219,20 @@ public abstract class DatabaseCommunicationEngine<T> {
         return !JDBCDriverType.STATEMENT.equals(driverType);
     }
     
-    protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema(backendConnection.getConnectionSession().getDatabaseName())) {
+    protected void checkDatabaseSchema(final ExecutionContext executionContext) {
+        if (isLockedDatabase(backendConnection.getConnectionSession().getDatabaseName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
     
-    private boolean isLockedSchema(final String schemaName) {
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName);
+    private boolean isLockedDatabase(final String databaseName) {
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return;
         }
-        throw new SchemaLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
     }
 }

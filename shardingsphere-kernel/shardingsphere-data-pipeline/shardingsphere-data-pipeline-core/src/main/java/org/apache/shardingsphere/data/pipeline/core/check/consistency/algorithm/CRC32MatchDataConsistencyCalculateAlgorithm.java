@@ -65,9 +65,10 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     }
     
     private long calculateCRC32(final DataSource dataSource, final String sql) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
         }

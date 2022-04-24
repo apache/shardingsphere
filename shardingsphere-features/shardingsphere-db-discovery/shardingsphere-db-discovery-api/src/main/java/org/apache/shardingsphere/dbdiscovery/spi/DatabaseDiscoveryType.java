@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database discovery type.
@@ -30,23 +31,21 @@ import java.util.Map;
 public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     
     /**
-     * Check database discovery configuration.
-     *
-     * @param databaseName database name
-     * @param dataSourceMap data source map
+     * Load highly available status.
+     * 
+     * @param dataSource data source
+     * @return loaded highly available status
      * @throws SQLException SQL exception
      */
-    void checkDatabaseDiscoveryConfiguration(String databaseName, Map<String, DataSource> dataSourceMap) throws SQLException;
+    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
-     * Update primary data source.
-     *
-     * @param databaseName database name
+     * Find primary data source name.
+     * 
      * @param dataSourceMap data source map
-     * @param disabledDataSourceNames disabled data source names
-     * @param groupName group name
+     * @return found name of primary data source
      */
-    void updatePrimaryDataSource(String databaseName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames, String groupName);
+    Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
     
     /**
      * Update member state.
@@ -63,4 +62,11 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * @return primary data source
      */
     String getPrimaryDataSource();
+    
+    /**
+     * Set primary data source.
+     *
+     * @param primaryDataSource primary data source
+     */
+    void setPrimaryDataSource(String primaryDataSource);
 }

@@ -33,13 +33,13 @@ public final class LockNodeTest {
     }
     
     @Test
-    public void assertGetGlobalSchemaLocksNodePath() {
-        assertThat(LockNode.getGlobalSchemaLocksNodePath(), is("/lock/global/schema/locks"));
+    public void assertGetGlobalDatabaseLocksNodePath() {
+        assertThat(LockNode.getGlobalDatabaseLocksNodePath(), is("/lock/global/database/locks"));
     }
     
     @Test
-    public void assertGetGlobalSchemaLockedAckNodePath() {
-        assertThat(LockNode.getGlobalSchemaLockedAckNodePath(), is("/lock/global/schema/ack"));
+    public void assertGetGlobalDatabaseLockedAckNodePath() {
+        assertThat(LockNode.getGlobalDatabaseLockedAckNodePath(), is("/lock/global/database/ack"));
     }
     
     @Test
@@ -48,18 +48,18 @@ public final class LockNodeTest {
     }
     
     @Test
-    public void assertGenerateGlobalSchemaLocksName() {
-        assertThat(LockNode.generateGlobalSchemaLocksName("schema"), is("/lock/global/schema/locks/schema"));
+    public void assertGenerateGlobalDatabaseLocksName() {
+        assertThat(LockNode.generateGlobalDatabaseLocksName("database"), is("/lock/global/database/locks/database"));
     }
     
     @Test
-    public void assertGenerateGlobalSchemaAckLockName() {
-        assertThat(LockNode.generateGlobalSchemaAckLockName("schema", "127.0.0.1@3307"), is("/lock/global/schema/ack/schema-127.0.0.1@3307"));
+    public void assertGenerateGlobalDatabaseAckLockName() {
+        assertThat(LockNode.generateGlobalDatabaseAckLockName("database", "127.0.0.1@3307"), is("/lock/global/database/ack/database-127.0.0.1@3307"));
     }
     
     @Test
-    public void assertGenerateGlobalSchemaLockReleasedNodePath() {
-        assertThat(LockNode.generateGlobalSchemaLockReleasedNodePath("schema"), is("/lock/global/schema/locks/schema/leases"));
+    public void assertGenerateGlobalDatabaseLockReleasedNodePath() {
+        assertThat(LockNode.generateGlobalDatabaseLockReleasedNodePath("database"), is("/lock/global/database/locks/database/leases"));
     }
     
     @Test
@@ -68,18 +68,18 @@ public final class LockNodeTest {
     }
     
     @Test
-    public void assertParseGlobalSchemaLocksNodePath() {
-        String nodePath = "/lock/global/schema/locks/schema-127.0.0.1@3307/leases/c_l_00000000";
-        Optional<String> globalSchemaLocksNodePath = LockNode.parseGlobalSchemaLocksNodePath(nodePath);
-        assertTrue(globalSchemaLocksNodePath.isPresent());
-        assertThat(globalSchemaLocksNodePath.get(), is("schema-127.0.0.1@3307"));
+    public void assertParseGlobalDatabaseLocksNodePath() {
+        String nodePath = "/lock/global/database/locks/database-127.0.0.1@3307/leases/c_l_00000000";
+        Optional<String> globalDatabaseLockedAckNodePath = LockNode.parseGlobalDatabaseLocksNodePath(nodePath);
+        assertTrue(globalDatabaseLockedAckNodePath.isPresent());
+        assertThat(globalDatabaseLockedAckNodePath.get(), is("database-127.0.0.1@3307"));
     }
     
     @Test
-    public void assertParseGlobalSchemaLockedAckNodePath() {
-        String nodePath = "/lock/global/schema/ack/schema-127.0.0.1@3307";
-        Optional<String> globalSchemaLockedAckNodePath = LockNode.parseGlobalSchemaLockedAckNodePath(nodePath);
-        assertTrue(globalSchemaLockedAckNodePath.isPresent());
-        assertThat(globalSchemaLockedAckNodePath.get(), is("schema-127.0.0.1@3307"));
+    public void assertParseGlobalDatabaseLockedAckNodePath() {
+        String nodePath = "/lock/global/database/ack/database-127.0.0.1@3307";
+        Optional<String> globalDatabaseLockedAckNodePath = LockNode.parseGlobalDatabaseLockedAckNodePath(nodePath);
+        assertTrue(globalDatabaseLockedAckNodePath.isPresent());
+        assertThat(globalDatabaseLockedAckNodePath.get(), is("database-127.0.0.1@3307"));
     }
 }

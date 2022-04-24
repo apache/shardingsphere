@@ -32,6 +32,12 @@ public final class MySQLCommand {
     @XmlElement(name = "create-table-order")
     private String createTableOrder;
     
+    @XmlElement(name = "create-table-orderitem")
+    private String createTableOrderItem;
+    
     @XmlElement(name = "insert-order")
     private String insertOrder;
+    
+    @XmlElement(name = "insert-order-item")
+    private String insertOrderItem;
 }

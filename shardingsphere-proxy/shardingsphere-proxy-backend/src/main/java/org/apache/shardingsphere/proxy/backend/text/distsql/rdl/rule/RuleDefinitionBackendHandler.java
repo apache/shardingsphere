@@ -153,14 +153,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             if (!newVersion.isPresent()) {
                 throw new RuntimeException(String.format("Unable to get a new version for schema: %s", shardingSphereMetaData.getName()));
             }
-            metaDataPersistService.get().getSchemaRuleService().persist(shardingSphereMetaData.getName(), newVersion.get(), buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement,
-                    updater, currentRuleConfig, preprocessor));
+            metaDataPersistService.get().getDatabaseRulePersistService().persist(shardingSphereMetaData.getName(), newVersion.get(),
+                    buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement, updater, currentRuleConfig, preprocessor));
             ShardingSphereEventBus.getInstance().post(new SchemaVersionPreparedEvent(newVersion.get(), shardingSphereMetaData.getName()));
         }
     }
     
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().persist(
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(
                 shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
     

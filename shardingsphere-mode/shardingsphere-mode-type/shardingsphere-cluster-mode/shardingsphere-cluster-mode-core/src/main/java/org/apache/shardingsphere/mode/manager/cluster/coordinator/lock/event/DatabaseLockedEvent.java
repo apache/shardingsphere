@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.registry;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Instance.
+ * Locked event.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class Instance {
+public final class DatabaseLockedEvent implements GovernanceEvent {
     
-    private final String ip;
-    
-    private final Integer port;
+    private final String database;
 }

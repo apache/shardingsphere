@@ -88,9 +88,9 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private DatabaseDiscoveryRule createRule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "TEST");
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));
+                ImmutableMap.of("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
     }
 }

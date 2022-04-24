@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryEngine;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -107,17 +108,14 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
-            DatabaseDiscoveryType databaseDiscoveryType = dataSourceRule.getDatabaseDiscoveryType();
+            DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getDatabaseDiscoveryType());
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = dataSourceRule.getDisabledDataSourceNames();
             try {
-                databaseDiscoveryType.checkDatabaseDiscoveryConfiguration(databaseName, originalDataSourceMap);
+                engine.checkHighlyAvailableStatus(databaseName, originalDataSourceMap);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-            databaseDiscoveryType.updatePrimaryDataSource(databaseName, originalDataSourceMap, disabledDataSourceNames, groupName);
-            dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(databaseName, originalDataSourceMap, groupName);
+            dataSourceRule.updatePrimaryDataSourceName(engine.updatePrimaryDataSource(databaseName, originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames(), groupName));
         }
     }
     

@@ -66,7 +66,7 @@ public final class MetaDataPersistServiceTest {
     private DataSourcePersistService dataSourceService;
     
     @Mock
-    private DatabaseRulePersistService schemaRuleService;
+    private DatabaseRulePersistService databaseRulePersistService;
     
     @Mock
     private GlobalRulePersistService globalRuleService;
@@ -83,7 +83,7 @@ public final class MetaDataPersistServiceTest {
     public void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
         setField("dataSourceService", dataSourceService);
-        setField("schemaRuleService", schemaRuleService);
+        setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
         setField("computeNodePersistService", computeNodePersistService);
@@ -104,7 +104,7 @@ public final class MetaDataPersistServiceTest {
         metaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", createDataSourcePropertiesMap(dataSourceMap), false);
-        verify(schemaRuleService).persist("foo_db", ruleConfigs, false);
+        verify(databaseRulePersistService).persist("foo_db", ruleConfigs, false);
         verify(globalRuleService).persist(globalRuleConfigs, false);
         verify(propsService).persist(props, false);
     }

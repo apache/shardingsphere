@@ -180,8 +180,9 @@ public final class InventoryTaskSplitter {
         JobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getHandleConfig().getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)) {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);

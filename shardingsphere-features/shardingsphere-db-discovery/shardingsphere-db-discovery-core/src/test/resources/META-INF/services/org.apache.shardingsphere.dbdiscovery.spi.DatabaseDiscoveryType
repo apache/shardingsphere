@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.fixture.TestDatabaseDiscoveryType
+org.apache.shardingsphere.dbdiscovery.fixture.CoreFixtureDatabaseDiscoveryType

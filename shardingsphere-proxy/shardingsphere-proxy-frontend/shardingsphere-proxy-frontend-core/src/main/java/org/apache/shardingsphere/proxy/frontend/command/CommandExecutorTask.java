@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -80,8 +80,8 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
-            // TODO optimize SQLStatementSchemaHolder
-            SQLStatementSchemaHolder.remove();
+            // TODO optimize SQLStatementDatabaseHolder
+            SQLStatementDatabaseHolder.remove();
             Collection<SQLException> exceptions = Collections.emptyList();
             try {
                 connectionSession.getBackendConnection().closeExecutionResources();

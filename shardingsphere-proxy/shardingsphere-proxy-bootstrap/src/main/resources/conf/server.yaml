@@ -81,5 +81,4 @@
 #  sql-federation-enabled: false
 #    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
 #  proxy-backend-driver-type: JDBC
-#  data-source-aggregation-enabled: false
 #  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.

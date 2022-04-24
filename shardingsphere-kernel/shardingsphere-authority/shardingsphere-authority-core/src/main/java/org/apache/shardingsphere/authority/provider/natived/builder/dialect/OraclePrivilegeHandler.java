@@ -57,9 +57,10 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Collection<Grantee> grantees = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 grantees.add(new Grantee(resultSet.getString("GRANTEE"), ""));
             }
@@ -97,9 +98,10 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final DataSource dataSource,
                                      final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
             while (resultSet.next()) {
                 collectTablePrivileges(privilegeCache, resultSet);
             }
@@ -141,9 +143,10 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     private void fillSysPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final DataSource dataSource,
                                    final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache = new HashMap<>();
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 collectSysPrivileges(privilegeCache, resultSet);
             }

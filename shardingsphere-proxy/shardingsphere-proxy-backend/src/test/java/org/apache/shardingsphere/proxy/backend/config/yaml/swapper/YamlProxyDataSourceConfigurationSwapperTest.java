@@ -38,7 +38,7 @@ public final class YamlProxyDataSourceConfigurationSwapperTest {
     public void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
-        DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig, "swapper_test", "foo_db", false);
+        DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig);
         assertConnectionConfig(actualDataSourceConfig);
         assertPoolConfig(actualDataSourceConfig);
     }

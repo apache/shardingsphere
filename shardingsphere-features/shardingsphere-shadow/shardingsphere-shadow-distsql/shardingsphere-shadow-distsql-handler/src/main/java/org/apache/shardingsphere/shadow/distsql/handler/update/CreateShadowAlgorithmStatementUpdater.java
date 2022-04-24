@@ -29,12 +29,10 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -71,9 +69,9 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     private void checkAlgorithmType(final CreateShadowAlgorithmStatement sqlStatement) throws DistSQLException {
-        Collection<String> notExistedShardingAlgorithms = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW, notExistedShardingAlgorithms));
+        Collection<String> notExistedShadowAlgorithms = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
+                .filter(each -> !ShadowAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        DistSQLException.predictionThrow(notExistedShadowAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW, notExistedShadowAlgorithms));
     }
     
     private void checkDuplicatedInput(final String databaseName, final CreateShadowAlgorithmStatement sqlStatement) throws DistSQLException {

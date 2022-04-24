@@ -17,41 +17,42 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
-/**
- * MGR database discovery type fixture.
- */
-@Slf4j
-public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryType {
+import static org.mockito.Mockito.mock;
+
+public final class DistSQLFixtureDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public String getType() {
-        return "mgr";
+    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
+        return mock(HighlyAvailableStatus.class);
     }
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        
-    }
-    
-    @Override
-    public void updatePrimaryDataSource(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
-        
+    public Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
+        return Optional.empty();
     }
     
     @Override
     public void updateMemberState(final String databaseName, final Map<String, DataSource> dataSourceMap, final String groupName) {
-        
     }
     
     @Override
     public String getPrimaryDataSource() {
         return null;
+    }
+    
+    @Override
+    public void setPrimaryDataSource(final String primaryDataSource) {
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
     }
 }

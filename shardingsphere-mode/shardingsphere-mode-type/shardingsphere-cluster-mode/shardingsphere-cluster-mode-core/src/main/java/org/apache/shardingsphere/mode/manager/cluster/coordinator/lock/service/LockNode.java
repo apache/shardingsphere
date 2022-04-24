@@ -40,7 +40,7 @@ public final class LockNode {
     
     private static final String LOCK_TOKEN = "token";
     
-    private static final String LOCK_LEVEL_SCHEMA = "schema";
+    private static final String LOCK_LEVEL_DATABASE = "database";
     
     private static final String LOCKS_NODE = "locks";
     
@@ -56,21 +56,21 @@ public final class LockNode {
     }
     
     /**
-     * Get global schema locks node path.
+     * Get global database locks node path.
      *
-     * @return global schema lock node path
+     * @return global database lock node path
      */
-    public static String getGlobalSchemaLocksNodePath() {
-        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_SCHEMA, LOCKS_NODE);
+    public static String getGlobalDatabaseLocksNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_DATABASE, LOCKS_NODE);
     }
     
     /**
-     * Get global schema locked ack node path.
+     * Get global database locked ack node path.
      *
-     * @return global schema locked ack node path
+     * @return global database locked ack node path
      */
-    public static String getGlobalSchemaLockedAckNodePath() {
-        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_SCHEMA, LOCKED_ACK_NODE);
+    public static String getGlobalDatabaseLockedAckNodePath() {
+        return Joiner.on("/").join("", LOCK_ROOT, LOCK_SCOPE_GLOBAL, LOCK_LEVEL_DATABASE, LOCKED_ACK_NODE);
     }
     
     /**
@@ -84,34 +84,34 @@ public final class LockNode {
     }
     
     /**
-     * Generate global schema locks name.
+     * Generate global database locks name.
      *
-     * @param schema schema
-     * @return global schema locks name
+     * @param database database
+     * @return global database locks name
      */
-    public static String generateGlobalSchemaLocksName(final String schema) {
-        return getGlobalSchemaLocksNodePath() + "/" + schema;
+    public static String generateGlobalDatabaseLocksName(final String database) {
+        return getGlobalDatabaseLocksNodePath() + "/" + database;
     }
     
     /**
-     * Generate global schema ack lock name.
+     * Generate global database ack lock name.
      *
-     * @param schema schema
+     * @param database database
      * @param lockedInstanceId locked instance id
-     * @return global schema ack lock name
+     * @return global database ack lock name
      */
-    public static String generateGlobalSchemaAckLockName(final String schema, final String lockedInstanceId) {
-        return getGlobalSchemaLockedAckNodePath() + "/" + LockNodeUtil.generateSchemaLockName(schema, lockedInstanceId);
+    public static String generateGlobalDatabaseAckLockName(final String database, final String lockedInstanceId) {
+        return getGlobalDatabaseLockedAckNodePath() + "/" + LockNodeUtil.generateDatabaseLockName(database, lockedInstanceId);
     }
     
     /**
-     * Generate global schema Lock released node path.
+     * Generate global database Lock released node path.
      *
-     * @param schema schema
-     * @return global schema Lock released name
+     * @param database database
+     * @return global database Lock released name
      */
-    public static String generateGlobalSchemaLockReleasedNodePath(final String schema) {
-        return getGlobalSchemaLocksNodePath() + "/" + schema + "/leases";
+    public static String generateGlobalDatabaseLockReleasedNodePath(final String database) {
+        return getGlobalDatabaseLocksNodePath() + "/" + database + "/leases";
     }
     
     /**
@@ -124,25 +124,25 @@ public final class LockNode {
     }
     
     /**
-     * Parse global schema Locks node path.
+     * Parse global database Locks node path.
      *
      * @param nodePath locks node path
-     * @return global schema locked node path
+     * @return global database locked node path
      */
-    public static Optional<String> parseGlobalSchemaLocksNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getGlobalSchemaLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> parseGlobalDatabaseLocksNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getGlobalDatabaseLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
-     * Parse global schema locked ack node path.
+     * Parse global database locked ack node path.
      *
      * @param nodePath locked ack node path
-     * @return global schema locked ack node path
+     * @return global database locked ack node path
      */
-    public static Optional<String> parseGlobalSchemaLockedAckNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getGlobalSchemaLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> parseGlobalDatabaseLockedAckNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getGlobalDatabaseLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

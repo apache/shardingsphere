@@ -56,22 +56,19 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, DataSourceGeneratedDatabaseConfiguration> swapDatabaseConfigurations(final YamlProxyConfiguration yamlConfig) {
         Map<String, DataSourceGeneratedDatabaseConfiguration> result = new LinkedHashMap<>(yamlConfig.getDatabaseConfigurations().size(), 1);
-        boolean isDataSourceAggregation = yamlConfig.getServerConfiguration().getProps().containsKey("data-source-aggregation-enabled")
-                && (boolean) yamlConfig.getServerConfiguration().getProps().get("data-source-aggregation-enabled");
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : yamlConfig.getDatabaseConfigurations().entrySet()) {
             Map<String, DataSourceConfiguration> databaseDataSourceConfigs =
-                    swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName(), isDataSourceAggregation);
+                    swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName());
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
             result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
         }
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String databaseName,
-                                                                              final boolean isDataSourceAggregation) {
+    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String databaseName) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlConfigs.entrySet()) {
-            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue(), databaseName, entry.getKey(), isDataSourceAggregation));
+            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue()));
         }
         return result;
     }

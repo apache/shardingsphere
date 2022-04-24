@@ -55,7 +55,7 @@ public final class MetaDataPersistService {
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
     
-    private final DatabaseRulePersistService schemaRuleService;
+    private final DatabaseRulePersistService databaseRulePersistService;
     
     private final GlobalRulePersistService globalRuleService;
     
@@ -69,7 +69,7 @@ public final class MetaDataPersistService {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
-        schemaRuleService = new DatabaseRulePersistService(repository);
+        databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
@@ -91,7 +91,7 @@ public final class MetaDataPersistService {
         for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
             String schemaName = entry.getKey();
             dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-            schemaRuleService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            databaseRulePersistService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
         }
     }
     

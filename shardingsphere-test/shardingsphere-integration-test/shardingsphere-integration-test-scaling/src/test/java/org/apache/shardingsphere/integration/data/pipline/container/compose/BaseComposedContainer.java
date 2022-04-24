@@ -47,11 +47,12 @@ public abstract class BaseComposedContainer implements Startable {
     
     /**
      * Get proxy connection.
-     *
+     * 
+     * @param databaseName database name
      * @return sql connection.
      * @throws SQLException sql exception
      */
-    public abstract Connection getProxyConnection() throws SQLException;
+    public abstract Connection getProxyConnection(String databaseName) throws SQLException;
     
     @Override
     public void start() {

@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Locked event.
+ * Alter database dictionary statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaLockedEvent implements GovernanceEvent {
-    
-    private final String schema;
+@ToString
+public abstract class AlterDatabaseDictionaryStatement extends AbstractSQLStatement implements DDLStatement {
 }

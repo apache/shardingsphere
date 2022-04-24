@@ -81,8 +81,9 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     }
     
     private WalPosition getWalPosition(final Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getLogSequenceNumberSQL(connection));
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(getLogSequenceNumberSQL(connection));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }

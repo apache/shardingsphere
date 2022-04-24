@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.spring.namespace;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRMySQLDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,11 +45,6 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration mgrDatabaseDiscoveryRule;
     
     @Test
-    public void assertMGRDatabaseDiscoveryType() {
-        assertThat(mgrDatabaseDiscoveryType.getType(), is("MGR"));
-    }
-    
-    @Test
     public void assertDefaultDataSource() {
         assertDiscoveryTypes(mgrDatabaseDiscoveryRule.getDiscoveryTypes());
         assertHeartbeats(mgrDatabaseDiscoveryRule.getDiscoveryHeartbeats());
@@ -59,7 +54,7 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     
     private void assertDiscoveryTypes(final Map<String, DatabaseDiscoveryType> discoveryTypes) {
         assertThat(discoveryTypes.size(), is(1));
-        assertThat(discoveryTypes.get("mgr"), instanceOf(MGRDatabaseDiscoveryType.class));
+        assertThat(discoveryTypes.get("mgr"), instanceOf(MGRMySQLDatabaseDiscoveryType.class));
         assertNotNull(discoveryTypes.get("mgr").getProps());
         assertThat(discoveryTypes.get("mgr").getProps().get("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.heartbeat;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryEngine;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -27,12 +28,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * HA heartbeat job.
+ * Heartbeat job.
  */
 @RequiredArgsConstructor
 public final class HeartbeatJob implements SimpleJob {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -44,7 +45,6 @@ public final class HeartbeatJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        databaseDiscoveryType.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName);
-        databaseDiscoveryType.updateMemberState(schemaName, dataSourceMap, groupName);
+        new DatabaseDiscoveryEngine(databaseDiscoveryType).updatePrimaryDataSource(databaseName, dataSourceMap, disabledDataSourceNames, groupName);
     }
 }

@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Schema locked exception.
+ * Alter database dictionary statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaLockedException extends BackendException {
-    
-    private static final long serialVersionUID = -5409739222950362541L;
-    
-    private final String schemaName;
+public final class AlterDatabaseDictionaryStatementTestCase extends SQLParserTestCase {
 }

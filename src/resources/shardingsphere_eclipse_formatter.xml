@@ -39,8 +39,8 @@
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="80"/>
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="16"/>
         <setting id="org.eclipse.jdt.core.formatter.blank_lines_after_package" value="1"/>
-        <setting id="org.eclipse.jdt.core.formatter.continuation_indentation_for_array_initializer" value="1"/>
-        <setting id="org.eclipse.jdt.core.formatter.alignment_for_resources_in_try" value="110"/>
+        <setting id="org.eclipse.jdt.core.formatter.continuation_indentation_for_array_initializer" value="2"/>
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_resources_in_try" value="160"/>
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration" value="10"/>
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration" value="106"/>
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration" value="106"/>

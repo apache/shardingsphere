@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event;
+package org.apache.shardingsphere.dbdiscovery.spi.status;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Lock released event.
+ * Highly available status for database cluster.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaLockReleasedEvent implements GovernanceEvent {
+public interface HighlyAvailableStatus {
     
-    private final String schema;
+    /**
+     * Validate highly available status.
+     * 
+     * @param databaseName database name
+     * @param dataSourceMap data source map 
+     * @param props properties of database discovery type
+     * @throws SQLException SQL exception
+     */
+    void validate(String databaseName, Map<String, DataSource> dataSourceMap, Properties props) throws SQLException;
 }
