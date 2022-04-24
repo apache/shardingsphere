@@ -103,8 +103,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     public abstract T execute();
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        metadataRefreshEngine.refresh(sqlStatement, () -> executionContext.getRouteContext().getRouteUnits().stream()
+        metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
                 .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -51,14 +49,13 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        // TODO Get real schema name
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+                        final Collection<String> logicDataSourceNames, final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaName);
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             String tableName = each.getTable().getTableName().getIdentifier().getValue();
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
-            putTableMetaData(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, renameTable, props);
-            removeTableMetaData(schemaMetaData, database, optimizerPlanners, tableName);
+            putTableMetaData(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
+            removeTableMetaData(schemaMetaData, database, optimizerPlanners, schemaName, tableName);
             event.getAlteredTables().add(schemaMetaData.getDefaultSchema().get(renameTable));
             event.getDroppedTables().add(tableName);
         }
@@ -66,26 +63,25 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     }
     
     private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database,
-                                     final Map<String, OptimizerPlannerContext> optimizerPlanners, final String tableName) {
-        schemaMetaData.getDefaultSchema().remove(tableName);
+                                     final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
+        schemaMetaData.getSchemaByName(schemaName).remove(tableName);
         schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(tableName));
-        database.remove(tableName);
+        database.remove(schemaName, tableName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
     private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                  final Collection<String> logicDataSourceNames, final String tableName, final ConfigurationProperties props) throws SQLException {
+                                  final Collection<String> logicDataSourceNames, final String schemaName, final String tableName, final ConfigurationProperties props) throws SQLException {
         if (!containsInDataNodeContainedRule(tableName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaMetaData.getName());
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
-        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getName();
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(tableMetaData -> {
-            schemaMetaData.getDefaultSchema().put(tableName, tableMetaData);
-            database.put(tableMetaData);
+            schemaMetaData.getSchemaByName(schemaName).put(tableName, tableMetaData);
+            database.put(schemaName, tableMetaData);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
