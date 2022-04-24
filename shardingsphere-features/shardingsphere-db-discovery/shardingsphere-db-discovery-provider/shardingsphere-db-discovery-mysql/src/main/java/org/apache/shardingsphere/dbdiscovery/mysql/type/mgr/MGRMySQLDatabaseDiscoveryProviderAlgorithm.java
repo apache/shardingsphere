@@ -68,7 +68,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstanceURLs(statement));
+            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstances(statement));
         }
     }
     
@@ -90,11 +90,11 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         }
     }
     
-    private Collection<String> queryMemberInstanceURLs(final Statement statement) throws SQLException {
-        Collection<String> result = new LinkedList<>();
+    private Collection<IPPortPrimaryDatabaseInstance> queryMemberInstances(final Statement statement) throws SQLException {
+        Collection<IPPortPrimaryDatabaseInstance> result = new LinkedList<>();
         try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
             while (resultSet.next()) {
-                result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+                result.add(new IPPortPrimaryDatabaseInstance(resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
         return result;

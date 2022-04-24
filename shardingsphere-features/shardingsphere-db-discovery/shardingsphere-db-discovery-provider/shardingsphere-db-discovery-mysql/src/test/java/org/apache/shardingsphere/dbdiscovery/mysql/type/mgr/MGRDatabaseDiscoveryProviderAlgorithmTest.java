@@ -27,14 +27,15 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,7 +64,10 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
         assertTrue(actual.isPluginActive());
         assertTrue(actual.isSinglePrimaryMode());
         assertThat(actual.getGroupName(), is("group_name"));
-        assertThat(actual.getMemberInstanceURLs(), is(Arrays.asList("127.0.0.1:3306", "127.0.0.1:3307")));
+        Iterator<IPPortPrimaryDatabaseInstance> databaseInstances = actual.getDatabaseInstances().iterator();
+        assertThat(databaseInstances.next().toString(), is("127.0.0.1:3306"));
+        assertThat(databaseInstances.next().toString(), is("127.0.0.1:3307"));
+        assertFalse(databaseInstances.hasNext());
     }
     
     @Test
