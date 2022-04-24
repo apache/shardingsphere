@@ -35,6 +35,6 @@ public final class DuplicateRuleException extends RuleDefinitionViolationExcepti
     }
     
     public DuplicateRuleException(final String type, final String databaseName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, databaseName));
+        super(1113, String.format("Duplicate `%s` in database `%s`", type, databaseName));
     }
 }
