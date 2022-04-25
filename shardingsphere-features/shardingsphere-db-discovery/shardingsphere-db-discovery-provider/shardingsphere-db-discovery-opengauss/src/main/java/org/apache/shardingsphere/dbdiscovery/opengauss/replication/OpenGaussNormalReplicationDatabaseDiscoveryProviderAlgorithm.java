@@ -55,16 +55,13 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
             return resultSet.next() && "Primary".equals(resultSet.getString("local_role")) && "Normal".equals(resultSet.getString("db_state"));
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while find primary data source url", ex);
         }
-        return false;
     }
     
     @Override

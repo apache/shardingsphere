@@ -109,9 +109,12 @@ public final class DatabaseDiscoveryEngine {
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         for (Entry<String, DataSource> entry : getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames).entrySet()) {
-            boolean isPrimaryInstance = databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue());
-            if (isPrimaryInstance) {
-                return Optional.of(entry.getKey());
+            try {
+                if (databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue())) {
+                    return Optional.of(entry.getKey());
+                }
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while judge primary data source: ", ex);
             }
         }
         return Optional.empty();

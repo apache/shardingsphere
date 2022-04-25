@@ -43,8 +43,9 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * 
      * @param dataSource data source to be judged
      * @return is primary database instance or not
+     * @throws SQLException SQL exception
      */
-    boolean isPrimaryInstance(DataSource dataSource);
+    boolean isPrimaryInstance(DataSource dataSource) throws SQLException;
     
     /**
      * Get storage node data source.

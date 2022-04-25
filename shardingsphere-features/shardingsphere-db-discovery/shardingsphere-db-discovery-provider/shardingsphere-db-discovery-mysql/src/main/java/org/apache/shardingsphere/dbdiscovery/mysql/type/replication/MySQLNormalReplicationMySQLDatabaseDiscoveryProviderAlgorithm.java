@@ -56,7 +56,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     }
     
     @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
+    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
@@ -65,10 +65,8 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
                 MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
                 return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
             }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while find primary data source name", ex);
+            return false;
         }
-        return false;
     }
     
     private Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
