@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
+package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;

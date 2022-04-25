@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
+package org.apache.shardingsphere.dbdiscovery.opengauss;
 
 import org.junit.Test;
 
@@ -28,26 +28,21 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithmTest {
-    
-    @Test
-    public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", mockDataSource());
-    }
+public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSource()));
+        assertTrue(new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDatSource()));
     }
     
-    private DataSource mockDataSource() throws SQLException {
+    private DataSource mockDatSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
+        when(result.getConnection().createStatement().executeQuery("SELECT local_role,db_state FROM pg_stat_get_stream_replications()")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
-        when(resultSet.getString("Master_Port")).thenReturn("3306");
-        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
+        when(resultSet.getString("local_role")).thenReturn("Primary");
+        when(resultSet.getString("db_state")).thenReturn("Normal");
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:postgres://127.0.0.1:3306/foo_ds");
         return result;
     }
 }

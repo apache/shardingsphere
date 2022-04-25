@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
+package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.junit.Test;
