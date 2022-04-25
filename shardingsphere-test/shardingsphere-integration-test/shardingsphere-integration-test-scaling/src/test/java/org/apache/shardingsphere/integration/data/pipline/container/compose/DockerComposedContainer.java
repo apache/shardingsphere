@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.integration.data.pipline.container.compose;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.container.proxy.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
  * Composed container, include governance container and database container.
@@ -50,8 +50,15 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public Connection getProxyConnection(final String databaseName) throws SQLException {
-        return DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(),
-                getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName), "root", "root");
+    public DataSource getProxyDataSource(final String databaseName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
+        String jdbcUrl = StringUtils.appendIfMissing(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName), "&rewriteBatchedStatements=true");
+        result.setJdbcUrl(jdbcUrl);
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(2);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        return result;
     }
 }
