@@ -17,19 +17,33 @@
 
 package org.apache.shardingsphere.spring.namespace.fixture.factorybean;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithm;
 
 import java.util.Properties;
 
-public final class ShardingSphereAlgorithmFixtureFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShardingSphereFixtureAlgorithm> {
+@RequiredArgsConstructor
+public final class ShardingSphereAlgorithmFixtureFactoryBean implements ShardingSphereAlgorithmFactoryBean<ShardingSphereFixtureAlgorithm> {
+    
+    private final String type;
+    
+    private final Properties props;
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereFixtureAlgorithm.class);
     }
     
-    public ShardingSphereAlgorithmFixtureFactoryBean(final String type, final Properties props) {
-        super(ShardingSphereFixtureAlgorithm.class, type, props);
+    @Override
+    public ShardingSphereFixtureAlgorithm getObject() {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), ShardingSphereFixtureAlgorithm.class);
+    }
+    
+    @Override
+    public Class<ShardingSphereFixtureAlgorithm> getObjectType() {
+        return ShardingSphereFixtureAlgorithm.class;
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.dbdiscovery.spring.namespace.factorybean;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -26,13 +28,20 @@ import java.util.Properties;
 /**
  * Database discovery algorithm factory bean.
  */
-public final class DatabaseDiscoveryAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<DatabaseDiscoveryProviderAlgorithm> {
+@RequiredArgsConstructor
+public final class DatabaseDiscoveryAlgorithmFactoryBean implements ShardingSphereAlgorithmFactoryBean<DatabaseDiscoveryProviderAlgorithm> {
     
-    static {
-        ShardingSphereServiceLoader.register(DatabaseDiscoveryProviderAlgorithm.class);
+    private final String type;
+    
+    private final Properties props;
+    
+    @Override
+    public DatabaseDiscoveryProviderAlgorithm getObject() {
+        return DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(type, props));
     }
     
-    public DatabaseDiscoveryAlgorithmFactoryBean(final String type, final Properties props) {
-        super(DatabaseDiscoveryProviderAlgorithm.class, type, props);
+    @Override
+    public Class<DatabaseDiscoveryProviderAlgorithm> getObjectType() {
+        return DatabaseDiscoveryProviderAlgorithm.class;
     }
 }

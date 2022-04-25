@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shadow.spring.namespace.factorybean;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -26,13 +28,20 @@ import java.util.Properties;
 /**
  * Shadow algorithm factory bean.
  */
-public final class ShadowAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShadowAlgorithm> {
+@RequiredArgsConstructor
+public final class ShadowAlgorithmFactoryBean implements ShardingSphereAlgorithmFactoryBean<ShadowAlgorithm> {
     
-    static {
-        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
+    private final String type;
+    
+    private final Properties props;
+    
+    @Override
+    public ShadowAlgorithm getObject() {
+        return ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(type, props));
     }
     
-    public ShadowAlgorithmFactoryBean(final String type, final Properties props) {
-        super(ShadowAlgorithm.class, type, props);
+    @Override
+    public Class<ShadowAlgorithm> getObjectType() {
+        return ShadowAlgorithm.class;
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -26,13 +28,20 @@ import java.util.Properties;
 /**
  * Key generate algorithm factory bean.
  */
-public final class KeyGenerateAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<KeyGenerateAlgorithm> {
+@RequiredArgsConstructor
+public final class KeyGenerateAlgorithmFactoryBean implements ShardingSphereAlgorithmFactoryBean<KeyGenerateAlgorithm> {
     
-    static {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+    private final String type;
+    
+    private final Properties props;
+    
+    @Override
+    public KeyGenerateAlgorithm getObject() {
+        return KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(type, props));
     }
     
-    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties props) {
-        super(KeyGenerateAlgorithm.class, type, props);
+    @Override
+    public Class<KeyGenerateAlgorithm> getObjectType() {
+        return KeyGenerateAlgorithm.class;
     }
 }
