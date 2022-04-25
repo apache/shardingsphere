@@ -23,7 +23,6 @@ import org.apache.shardingsphere.integration.data.pipline.cases.IncrementTaskRun
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public final class MySQLManualScalingCase extends BaseMySQLScalingCase {
     }
     
     @Test
-    public void assertManualScalingSuccess() throws InterruptedException, SQLException {
+    public void assertManualScalingSuccess() throws InterruptedException {
         List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList(getCommonSQLCommand().getPreviewSelectOrder());
         Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));

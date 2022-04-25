@@ -23,19 +23,16 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
+public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
-    public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MySQLNormalReplicationHighlyAvailableStatus actual = new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockDataSource());
-        assertThat(actual.getDatabaseInstanceURL(), is("127.0.0.1:3306"));
+    public void assertCheckEnvironment() throws SQLException {
+        new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", mockDataSource());
     }
     
     @Test

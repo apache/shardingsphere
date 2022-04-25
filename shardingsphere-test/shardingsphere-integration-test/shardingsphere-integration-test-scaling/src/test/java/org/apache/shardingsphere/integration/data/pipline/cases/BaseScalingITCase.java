@@ -36,7 +36,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,10 +143,9 @@ public abstract class BaseScalingITCase {
      *
      * @param jdbcTemplate jdbc template
      * @param jobId job id
-     * @throws InterruptedException if interrupted
-     * @throws SQLException if any SQL exception
+     * @throws InterruptedException interrupted exception
      */
-    protected void checkMatchConsistency(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException, SQLException {
+    protected void checkMatchConsistency(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format(commonSQLCommand.getShowScalingStatus(), jobId));

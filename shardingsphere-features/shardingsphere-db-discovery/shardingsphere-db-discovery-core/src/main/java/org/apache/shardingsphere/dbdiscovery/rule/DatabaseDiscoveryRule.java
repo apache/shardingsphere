@@ -111,7 +111,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getDatabaseDiscoveryProviderAlgorithm());
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
             try {
-                engine.checkHighlyAvailableStatus(databaseName, originalDataSourceMap);
+                engine.checkEnvironment(databaseName, originalDataSourceMap);
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }

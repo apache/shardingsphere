@@ -45,16 +45,6 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     private Properties props = new Properties();
     
     @Override
-    public OpenGaussNormalReplicationHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            return new OpenGaussNormalReplicationHighlyAvailableStatus(resultSet.next() && resultSet.getString("local_role").equals("Primary"));
-        }
-    }
-    
-    @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) {
     }
     
