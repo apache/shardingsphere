@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
@@ -815,12 +816,33 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
-        return new PostgreSQLAlterSchemaStatement();
+        PostgreSQLAlterSchemaStatement result = new PostgreSQLAlterSchemaStatement();
+        result.setSchemaName(((IdentifierValue) visit(ctx.name().get(0))).getValue());
+        if (ctx.name().size() > 1) {
+            result.setRenameSchema(((IdentifierValue) visit(ctx.name().get(1))).getValue());
+        }
+        return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
-        return new PostgreSQLDropSchemaStatement();
+        PostgreSQLDropSchemaStatement result = new PostgreSQLDropSchemaStatement();
+        result.getSchemaNames().addAll(((CollectionValue<String>) visit(ctx.nameList())).getValue());
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitNameList(final NameListContext ctx) {
+        CollectionValue<String> result = new CollectionValue<>();
+        if (null != ctx.nameList()) {
+            result.combine((CollectionValue<String>) visit(ctx.nameList()));
+        }
+        if (null != ctx.name()) {
+            result.getValue().add(((IdentifierValue) visit(ctx.name())).getValue());
+        }
+        return result;
     }
     
     @Override
