@@ -73,10 +73,10 @@ public final class DatabaseDiscoveryEngine {
         return executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryType));
     }
 
-    private ExecutionGroupContext<Entry<String, DataSource>> createExecutionGroupContext(Map<String, DataSource> dataSourceMap) {
-        Collection<ExecutionGroup<Entry<String, DataSource>>> inputGroups = new ArrayList<>();
+    private ExecutionGroupContext<DataSource> createExecutionGroupContext(Map<String, DataSource> dataSourceMap) {
+        Collection<ExecutionGroup<DataSource>> inputGroups = new ArrayList<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            ExecutionGroup<Entry<String, DataSource>> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry));
+            ExecutionGroup<DataSource> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry.getValue()));
             inputGroups.add(executionGroup);
         }
         return new ExecutionGroupContext<>(inputGroups);

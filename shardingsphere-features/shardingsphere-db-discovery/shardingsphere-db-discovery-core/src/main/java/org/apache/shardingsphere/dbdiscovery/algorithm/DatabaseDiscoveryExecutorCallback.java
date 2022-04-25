@@ -12,18 +12,18 @@ import java.util.Collection;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<Map.Entry<String, DataSource>, HighlyAvailableStatus> {
+public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, HighlyAvailableStatus> {
 
     private final DatabaseDiscoveryType databaseDiscoveryType;
 
     @Override
-    public Collection<HighlyAvailableStatus> execute(Collection<Map.Entry<String, DataSource>> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException {
+    public Collection<HighlyAvailableStatus> execute(Collection<DataSource> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException {
         Collection<HighlyAvailableStatus> result = new ArrayList<>(inputs.size());
-        inputs.forEach(entry -> {
+        inputs.forEach(dataSource -> {
             try {
-                result.add(databaseDiscoveryType.loadHighlyAvailableStatus(entry.getValue()));
+                result.add(databaseDiscoveryType.loadHighlyAvailableStatus(dataSource));
             } catch (SQLException e) {
-                throw new IllegalStateException(String.format("Error while loading highly available Status with %s", entry), e);
+                throw new IllegalStateException(String.format("Error while loading highly available Status with %s", dataSource), e);
             }
         });
         return result;
