@@ -81,7 +81,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         try (
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
+            long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
             StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
                     ? StorageNodeStatus.ENABLED
                     : StorageNodeStatus.DISABLED;
@@ -92,7 +92,7 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
     }
     
-    private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {
+    private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
         }
