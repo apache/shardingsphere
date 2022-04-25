@@ -35,6 +35,10 @@ public final class DistSQLFixtureDatabaseDiscoveryProviderAlgorithm implements D
     }
     
     @Override
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    }
+    
+    @Override
     public boolean isPrimaryInstance(final DataSource dataSource) {
         return false;
     }

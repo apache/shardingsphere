@@ -39,12 +39,22 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
     HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
+     * Check environment.
+     * 
+     * @param databaseName database name
+     * @param dataSource data source
+     * @throws SQLException SQL exception
+     */
+    void checkEnvironment(String databaseName, DataSource dataSource) throws SQLException;
+    
+    /**
      * Judge whether database instance is primary.
      * 
      * @param dataSource data source to be judged
      * @return is primary database instance or not
+     * @throws SQLException SQL exception
      */
-    boolean isPrimaryInstance(DataSource dataSource);
+    boolean isPrimaryInstance(DataSource dataSource) throws SQLException;
     
     /**
      * Get storage node data source.
