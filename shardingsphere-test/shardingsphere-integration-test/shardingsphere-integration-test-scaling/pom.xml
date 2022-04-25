@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>5.3.19</version>
+            <version>${springframework.version}</version>
             <scope>test</scope>
         </dependency>
         

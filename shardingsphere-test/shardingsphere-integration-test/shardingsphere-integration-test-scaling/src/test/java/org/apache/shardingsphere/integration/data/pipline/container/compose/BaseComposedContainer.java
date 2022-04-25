@@ -46,7 +46,7 @@ public abstract class BaseComposedContainer implements Startable {
     }
     
     /**
-     * Get proxy datasource.
+     * Get proxy data source.
      *
      * @param databaseName database name
      * @return sql connection.

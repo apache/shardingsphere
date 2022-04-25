@@ -51,7 +51,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Getter(AccessLevel.PROTECTED)
 public abstract class BaseScalingITCase {
     
     @Getter(AccessLevel.NONE)
@@ -59,6 +58,9 @@ public abstract class BaseScalingITCase {
     
     @Getter(AccessLevel.PROTECTED)
     private CommonSQLCommand commonSQLCommand;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private JdbcTemplate jdbcTemplate;
     
     public BaseScalingITCase(final DatabaseType databaseType) {
         if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
@@ -94,10 +96,11 @@ public abstract class BaseScalingITCase {
             connection.createStatement().execute(commonSQLCommand.getCreateShardingBinding());
             connection.createStatement().execute(commonSQLCommand.getCreateShardingScalingRule());
         }
+        jdbcTemplate = new JdbcTemplate(composedContainer.getProxyDataSource("sharding_db"));
     }
     
     /**
-     * Get proxy database datasource.
+     * Get proxy database data source.
      *
      * @param dataSourceName data source names
      * @return proxy database connection
@@ -157,7 +160,6 @@ public abstract class BaseScalingITCase {
                 assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
                 String datasourceName = entry.get("data_source").toString();
                 actualStatusMap.put(datasourceName, status);
-                
                 if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                     finished = false;
                     break;
