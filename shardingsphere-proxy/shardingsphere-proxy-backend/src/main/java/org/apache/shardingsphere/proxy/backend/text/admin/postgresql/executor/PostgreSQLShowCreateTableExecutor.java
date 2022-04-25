@@ -33,7 +33,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -70,10 +69,32 @@ public final class PostgreSQLShowCreateTableExecutor {
     private String getReSqlForTable(final Map<String, Object> context, final Connection connection) {
         formatter(context, connection);
         formatColumnList(context, connection);
-        return getSqlFromTemplate(context, "table/12_plus/create.ftl");
+        StringBuffer result = new StringBuffer();
+        result.append(String.format("-- Table: %s.%s\n\n-- ", context.get("schema"), context.get("name")));
+        result.append(getSqlFromTemplate(context, "table/default/delete.ftl"));
+        result.append("\n");
+        String tableSQL = getSqlFromTemplate(context, "table/12_plus/create.ftl");
+        result.append(tableSQL);
+        return result.toString();
     }
     
     private void formatColumnList(final Map<String, Object> context, final Connection connection) {
+        List<Map<String, Object>> columns = (List<Map<String, Object>>) context.get("columns");
+        for (Map<String, Object> c : columns) {
+            if (c.containsKey("cltype")) {
+                typeFormatter(c, (String) c.get("cltype"));                
+            }
+        }
+
+    }
+    
+    private void typeFormatter(final Map<String, Object> c, final String cltype) {
+        if (cltype.contains("[]")) {
+            c.put("cltype", cltype.substring(0, cltype.length() - 2));
+            c.put("hasSqrBracket", true);
+        } else {
+            c.put("hasSqrBracket", false);
+        }
     }
     
     private void formatter(final Map<String, Object> context, final Connection connection) {
@@ -234,7 +255,7 @@ public final class PostgreSQLShowCreateTableExecutor {
     private List<Map<String, Object>> getCheckConstraints(final Long tid, final Connection connection) {
         Map<String, Object> param = new HashMap<>();
         param.put("tid", tid);
-        return executeByTemplate(connection, param, "template/check_constraint/9.2_plus/get_cols.ftl");
+        return executeByTemplate(connection, param, "check_constraint/9.2_plus/get_cols.ftl");
     }
     
     private boolean isPartitionAndConstraintInherited(final Map<String, Object> constraint, final Map<String, Object> context) {
@@ -327,17 +348,17 @@ public final class PostgreSQLShowCreateTableExecutor {
     private void fetchLengthPrecision(final Map<String, Object> column) {
         String fullType = getFullDataType(column);
         if (column.containsKey("elemoid")) {
-            getLengthPrecision((Integer) column.get("elemoid"), column, fullType);
+            getLengthPrecision((Long) column.get("elemoid"), column, fullType);
         }
     }
     
-    private void getLengthPrecision(final Integer elemoid, final Map<String, Object> column, final String fullType) {
+    private void getLengthPrecision(final Long elemoid, final Map<String, Object> column, final String fullType) {
         boolean precision = false;
         boolean length = false;
         String typeval = "";
-        Integer[] l = {1560,1561,1562,1563,1042,1043,1014,1015};
-        Integer[] d = {1083,1114,1115,1183,1184,1185,1186,1187,1266,1270};
-        Integer[] p = {1231,1700};
+        Long[] l = {1560L,1561L,1562L,1563L,1042L,1043L,1014L,1015L};
+        Long[] d = {1083L,1114L,1115L,1183L,1184L,1185L,1186L,1187L,1266L,1270L};
+        Long[] p = {1231L,1700L};
         if (0 != elemoid) {
             if (Arrays.asList(l).contains(elemoid)) {
                 typeval = "L";
