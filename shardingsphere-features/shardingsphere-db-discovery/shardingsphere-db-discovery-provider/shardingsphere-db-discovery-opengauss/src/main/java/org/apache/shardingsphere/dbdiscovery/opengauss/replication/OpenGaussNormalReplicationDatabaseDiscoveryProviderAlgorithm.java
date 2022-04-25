@@ -55,6 +55,10 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    }
+    
+    @Override
     public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();

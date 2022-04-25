@@ -38,9 +38,6 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     @Test
     public void assertLoadHighlyAvailableStatus() throws SQLException {
         MGRHighlyAvailableStatus actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockToBeLoadedHighlyAvailableStatusDataSource());
-        assertTrue(actual.isPluginActive());
-        assertTrue(actual.isSinglePrimaryMode());
-        assertThat(actual.getGroupName(), is("group_name"));
         assertThat(actual.getDatabaseInstanceURLs(), is(Arrays.asList("127.0.0.1:3306", "127.0.0.1:3307")));
     }
     
@@ -50,11 +47,28 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
         when(result.getConnection().createStatement().executeQuery(any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, false);
         when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
-        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("ON", "group_name");
+        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("ON", "foo_group");
         when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1", "127.0.0.1");
         when(resultSet.getString("MEMBER_PORT")).thenReturn("3306", "3307");
         when(resultSet.getString("MEMBER_STATE")).thenReturn("ONLINE");
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
+        return result;
+    }
+    
+    @Test
+    public void assertCheckEnvironment() throws SQLException {
+        MGRMySQLDatabaseDiscoveryProviderAlgorithm actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
+        actual.getProps().setProperty("group-name", "foo_group");
+        actual.checkEnvironment("foo_db", mockEnvironmentAvailableDataSource());
+    }
+    
+    private DataSource mockEnvironmentAvailableDataSource() throws SQLException {
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection().createStatement().executeQuery(any())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
+        when(resultSet.getString("VARIABLE_VALUE")).thenReturn("ON", "foo_group");
         return result;
     }
     
