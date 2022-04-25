@@ -78,6 +78,8 @@ execute
     | createDomain
     | createRule
     | createSchema
+    | alterSchema
+    | dropSchema
     | createType
     | createTextSearch
     | declare
@@ -89,7 +91,6 @@ execute
     | dropView
     | dropSequence
     | dropDomain
-    | dropSchema
     | vacuum
     | prepare
     | executeStmt

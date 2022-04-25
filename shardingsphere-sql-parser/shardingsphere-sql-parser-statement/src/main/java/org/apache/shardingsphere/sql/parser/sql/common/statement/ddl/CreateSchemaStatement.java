@@ -22,10 +22,24 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Optional;
+
+/**
+ * Create schema statement.
+ */
 @Getter
 @Setter
 @ToString
 public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private String schemaName;
+    
+    /**
+     * Get schema name.
+     * 
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        return Optional.ofNullable(schemaName);
+    }
 }
