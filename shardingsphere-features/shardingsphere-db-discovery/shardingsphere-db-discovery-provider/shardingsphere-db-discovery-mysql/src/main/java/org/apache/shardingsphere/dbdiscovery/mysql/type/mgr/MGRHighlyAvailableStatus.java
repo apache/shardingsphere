@@ -40,20 +40,10 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class MGRHighlyAvailableStatus implements GlobalHighlyAvailableStatus {
     
-    private final boolean pluginActive;
-    
-    private final boolean singlePrimaryMode;
-    
-    private final String groupName;
-    
     private final Collection<String> databaseInstanceURLs;
     
     @Override
     public void validate(final String databaseName, final Map<String, DataSource> dataSourceMap, final Properties props) throws SQLException {
-        Preconditions.checkState(pluginActive, "MGR plugin is not active in database `%s`.", databaseName);
-        Preconditions.checkState(singlePrimaryMode, "MGR is not in single primary mode in database `%s`.", databaseName);
-        Preconditions.checkState(props.getProperty("group-name", "").equals(groupName),
-                "Group name `%s` in MGR is not same with configured one `%s` in database `%s`.", groupName, props.getProperty("group-name"), databaseName);
         Preconditions.checkState(!databaseInstanceURLs.isEmpty(), "MGR member is empty in database `%s`.", databaseName);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             checkDataSourceInReplicationGroup(databaseName, entry.getKey(), entry.getValue());

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.event;
 import lombok.Getter;
 
 /**
- * add schema event.
+ * Add schema event.
  */
 @Getter
 public final class AddSchemaEvent {

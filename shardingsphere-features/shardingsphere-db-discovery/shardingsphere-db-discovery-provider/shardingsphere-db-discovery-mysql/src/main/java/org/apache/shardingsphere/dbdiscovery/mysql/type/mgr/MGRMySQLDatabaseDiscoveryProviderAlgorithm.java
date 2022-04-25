@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.mgr;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +47,9 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
-    private static final String QUERY_GROUP_NAME = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
-    
     private static final String QUERY_SINGLE_PRIMARY_MODE = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
+    
+    private static final String QUERY_GROUP_NAME = "SELECT VARIABLE_VALUE FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
     
     private static final String QUERY_MEMBER_LIST = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
     
@@ -64,7 +65,19 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MGRHighlyAvailableStatus(queryIsPluginActive(statement), queryIsSinglePrimaryMode(statement), queryGroupName(statement), queryMemberInstanceURLs(statement));
+            return new MGRHighlyAvailableStatus(queryMemberInstanceURLs(statement));
+        }
+    }
+    
+    @Override
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            Preconditions.checkState(queryIsPluginActive(statement), "MGR plugin is not active in database `%s`.", databaseName);
+            Preconditions.checkState(queryIsSinglePrimaryMode(statement), "MGR is not in single primary mode in database `%s`.", databaseName);
+            Preconditions.checkState(props.getProperty("group-name", "").equals(queryGroupName(statement)),
+                    "Group name in MGR is not same with configured one `%s` in database `%s`.", props.getProperty("group-name"), databaseName);
         }
     }
     

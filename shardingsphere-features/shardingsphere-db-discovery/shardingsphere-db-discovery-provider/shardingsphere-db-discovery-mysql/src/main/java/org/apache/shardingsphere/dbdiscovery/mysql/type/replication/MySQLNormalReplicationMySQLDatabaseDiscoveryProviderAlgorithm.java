@@ -56,6 +56,10 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     }
     
     @Override
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    }
+    
+    @Override
     public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
