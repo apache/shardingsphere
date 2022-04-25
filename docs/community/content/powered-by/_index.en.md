@@ -13,11 +13,12 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 181 companies.
+Total: 182 companies.
 
 ### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+    <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
 </ul>
 
 ### Bank
