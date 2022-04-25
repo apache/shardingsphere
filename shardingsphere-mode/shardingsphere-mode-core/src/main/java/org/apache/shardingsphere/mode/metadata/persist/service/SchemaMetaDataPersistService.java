@@ -40,13 +40,13 @@ public final class SchemaMetaDataPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist schema.
+     * Persist tables.
      *
      * @param databaseName database name to be persisted
      * @param schemaName schema name to be persisted
      * @param schema schema to be persisted
      */
-    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void persistTables(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (null == schema) {
             return;
         }
@@ -65,17 +65,17 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName schema name
      * @param tableMetaData table meta data
      */
-    public void persist(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
+    public void persistTable(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
         repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableMetaData.getName().toLowerCase()),
                 YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
     }
     
     /**
-     * Persist schema tables.
+     * Persist database.
      *
      * @param databaseName database name
      */
-    public void persist(final String databaseName) {
+    public void persistDatabase(final String databaseName) {
         repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
     }
     
@@ -85,7 +85,7 @@ public final class SchemaMetaDataPersistService {
      * @param databaseName database name
      * @param schemaName schema name
      */
-    public void persist(final String databaseName, final String schemaName) {
+    public void persistSchema(final String databaseName, final String schemaName) {
         repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
     }
     
@@ -95,11 +95,11 @@ public final class SchemaMetaDataPersistService {
             String onlineTableName = entry.getKey();
             TableMetaData localTableMetaData = cachedLocalTables.remove(onlineTableName);
             if (null == localTableMetaData) {
-                delete(databaseName, schemaName, onlineTableName);
+                deleteTable(databaseName, schemaName, onlineTableName);
                 continue;
             }
             if (!localTableMetaData.equals(entry.getValue())) {
-                persist(databaseName, schemaName, localTableMetaData);
+                persistTable(databaseName, schemaName, localTableMetaData);
             }
         }
         if (!cachedLocalTables.isEmpty()) {
@@ -117,7 +117,7 @@ public final class SchemaMetaDataPersistService {
      *
      * @param databaseName database name to be deleted
      */
-    public void delete(final String databaseName) {
+    public void deleteDatabase(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
@@ -127,7 +127,7 @@ public final class SchemaMetaDataPersistService {
      * @param databaseName database name
      * @param schemaName schema name
      */
-    public void delete(final String databaseName, final String schemaName) {
+    public void deleteSchema(final String databaseName, final String schemaName) {
         repository.delete(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName));
     }
     
@@ -138,7 +138,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName schema name
      * @param tableName table name
      */
-    public void delete(final String databaseName, final String schemaName, final String tableName) {
+    public void deleteTable(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName));
     }
     

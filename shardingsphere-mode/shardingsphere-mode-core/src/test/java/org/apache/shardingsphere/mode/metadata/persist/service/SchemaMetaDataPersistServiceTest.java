@@ -60,19 +60,19 @@ public final class SchemaMetaDataPersistServiceTest {
         TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", tableMetaData);
-        new SchemaMetaDataPersistService(repository).persist("foo_db", "foo_schema", schema);
+        new SchemaMetaDataPersistService(repository).persistTables("foo_db", "foo_schema", schema);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
     
     @Test
     public void assertPersistDatabase() {
-        new SchemaMetaDataPersistService(repository).persist("foo_db");
+        new SchemaMetaDataPersistService(repository).persistDatabase("foo_db");
         verify(repository).persist(eq("/metadata/foo_db"), anyString());
     }
     
     @Test
     public void assertDeleteDatabase() {
-        new SchemaMetaDataPersistService(repository).delete("foo_db");
+        new SchemaMetaDataPersistService(repository).deleteDatabase("foo_db");
         verify(repository).delete("/metadata/foo_db");
     }
     
@@ -103,7 +103,7 @@ public final class SchemaMetaDataPersistServiceTest {
     @Test
     public void assertPersistTableMetaData() {
         TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new SchemaMetaDataPersistService(repository).persist("foo_db", "foo_schema", tableMetaData);
+        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", tableMetaData);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
