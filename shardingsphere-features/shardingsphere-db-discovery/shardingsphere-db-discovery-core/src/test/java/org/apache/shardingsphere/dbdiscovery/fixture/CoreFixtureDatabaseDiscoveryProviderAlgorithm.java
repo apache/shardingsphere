@@ -18,21 +18,13 @@
 package org.apache.shardingsphere.dbdiscovery.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
 import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 
-import static org.mockito.Mockito.mock;
-
 public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
-    
-    @Override
-    public HighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) {
-        return mock(HighlyAvailableStatus.class);
-    }
     
     @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) {

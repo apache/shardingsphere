@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
-import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
@@ -28,15 +27,6 @@ import java.sql.SQLException;
  * Database discovery provider algorithm.
  */
 public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgorithm {
-    
-    /**
-     * Load highly available status.
-     * 
-     * @param dataSource data source
-     * @return loaded highly available status
-     * @throws SQLException SQL exception
-     */
-    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
     
     /**
      * Check environment.

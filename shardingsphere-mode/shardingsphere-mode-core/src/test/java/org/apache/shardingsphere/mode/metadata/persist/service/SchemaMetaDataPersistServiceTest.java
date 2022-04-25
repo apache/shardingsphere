@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -94,7 +93,7 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertLoadAllDatabaseNames() {
-        when(repository.getChildrenKeys("/metadata")).thenReturn(Arrays.asList("foo_db"));
+        when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
         Collection<String> actual = new SchemaMetaDataPersistService(repository).loadAllDatabaseNames();
         assertThat(actual.size(), is(1));
         assertThat(actual, hasItems("foo_db"));

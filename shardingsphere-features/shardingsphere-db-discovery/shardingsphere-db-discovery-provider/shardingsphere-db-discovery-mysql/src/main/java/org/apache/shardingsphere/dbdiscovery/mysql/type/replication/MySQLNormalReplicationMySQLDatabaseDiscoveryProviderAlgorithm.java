@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type.replication;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -47,16 +47,19 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     private Properties props = new Properties();
     
     @Override
-    public MySQLNormalReplicationHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            return new MySQLNormalReplicationHighlyAvailableStatus(loadPrimaryDatabaseInstanceURL(statement).orElse(null));
+            checkMasterInstance(databaseName, statement);
         }
     }
     
-    @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    private void checkMasterInstance(final String databaseName, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
+            Preconditions.checkState(resultSet.next() && null != resultSet.getString("Master_Host") && null != resultSet.getString("Master_Port"),
+                    "Can not load primary data source URL in database `%s`.", databaseName);
+        }
     }
     
     @Override
@@ -70,19 +73,6 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
                 return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
             }
             return false;
-        }
-    }
-    
-    private Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                String masterHost = resultSet.getString("Master_Host");
-                String masterPort = resultSet.getString("Master_Port");
-                if (null != masterHost && null != masterPort) {
-                    return Optional.of(String.join(":", masterHost, masterPort));
-                }
-            }
-            return Optional.empty();
         }
     }
     

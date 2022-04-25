@@ -23,7 +23,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,22 +35,6 @@ import static org.mockito.Mockito.when;
 public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
-    public void assertLoadHighlyAvailableStatus() throws SQLException {
-        MGRHighlyAvailableStatus actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().loadHighlyAvailableStatus(mockToBeLoadedHighlyAvailableStatusDataSource());
-        assertThat(actual.getDatabaseInstanceURLs(), is(Arrays.asList("127.0.0.1:3306", "127.0.0.1:3307")));
-    }
-    
-    private DataSource mockToBeLoadedHighlyAvailableStatusDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery(any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1", "127.0.0.1");
-        when(resultSet.getString("MEMBER_PORT")).thenReturn("3306", "3307");
-        return result;
-    }
-    
-    @Test
     public void assertCheckEnvironment() throws SQLException {
         MGRMySQLDatabaseDiscoveryProviderAlgorithm actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
         actual.getProps().setProperty("group-name", "foo_group");
@@ -62,9 +45,12 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.getConnection().createStatement().executeQuery(any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true);
+        when(resultSet.next()).thenReturn(true, true, true, true, false);
         when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
         when(resultSet.getString("VARIABLE_VALUE")).thenReturn("ON", "foo_group");
+        when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1");
+        when(resultSet.getString("MEMBER_PORT")).thenReturn("3306");
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         return result;
     }
     

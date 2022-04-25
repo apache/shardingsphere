@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 @Getter
 public abstract class BaseComposedContainer implements Startable {
@@ -49,8 +48,7 @@ public abstract class BaseComposedContainer implements Startable {
      * Get proxy data source.
      *
      * @param databaseName database name
-     * @return sql connection.
-     * @throws SQLException sql exception
+     * @return proxy data source
      */
     public abstract DataSource getProxyDataSource(String databaseName);
     
