@@ -89,9 +89,9 @@ public final class MetaDataPersistService {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
         for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
-            String schemaName = entry.getKey();
-            dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-            databaseRulePersistService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            String databaseName = entry.getKey();
+            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+            databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
         }
     }
     
@@ -105,7 +105,7 @@ public final class MetaDataPersistService {
     
     /**
      * Persist instance labels.
-     * 
+     *
      * @param instanceId instance id
      * @param labels labels
      * @param isOverwrite whether overwrite registry center's configuration if existed
@@ -116,7 +116,7 @@ public final class MetaDataPersistService {
     
     /**
      * Get effective data sources.
-     * 
+     *
      * @param databaseName database name
      * @param databaseConfigs database configurations
      * @return effective data sources
@@ -128,8 +128,7 @@ public final class MetaDataPersistService {
                 : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
-    private Map<String, DataSource> mergeEffectiveDataSources(
-                                                              final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
+    private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();
