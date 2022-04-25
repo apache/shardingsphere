@@ -73,4 +73,28 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "apply-scaling")
     private String applyScaling;
+    
+    @XmlElement(name = "auto-alter-table-rule")
+    private String autoAlterTableRule;
+    
+    @XmlElement(name = "insert-order")
+    private String insertOrder;
+    
+    @XmlElement(name = "insert-order-item")
+    private String insertOrderItem;
+    
+    @XmlElement(name = "simple-insert-order")
+    private String simpleInsertOrder;
+    
+    @XmlElement(name = "update-order")
+    private String updateOrder;
+    
+    @XmlElement(name = "update-order-item")
+    private String updateOrderItem;
+    
+    @XmlElement(name = "delete-order")
+    private String deleteOrder;
+    
+    @XmlElement(name = "delete-order-item")
+    private String deleteOrderItem;
 }

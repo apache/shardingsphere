@@ -43,8 +43,8 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
-        event.getAlteredTables().forEach(each -> persistService.persist(event.getDatabaseName(), event.getSchemaName(), each));
-        event.getDroppedTables().forEach(each -> persistService.delete(event.getDatabaseName(), event.getSchemaName(), each));
+        event.getAlteredTables().forEach(each -> persistService.persistTable(event.getDatabaseName(), event.getSchemaName(), each));
+        event.getDroppedTables().forEach(each -> persistService.deleteTable(event.getDatabaseName(), event.getSchemaName(), each));
     }
     
     /**
@@ -54,6 +54,6 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void addSchema(final AddSchemaEvent event) {
-        persistService.persist(event.getDatabaseName(), event.getSchemaName());
+        persistService.persistSchema(event.getDatabaseName(), event.getSchemaName());
     }
 }
