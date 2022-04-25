@@ -150,14 +150,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereDatabase> databaseMap) {
-        databaseMap.forEach((databaseName, schemas) ->
-            schemas.getSchemas().forEach((schemaName, tables) -> {
-                if (tables.getTables().isEmpty()) {
-                    metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
-                } else {
-                    metaDataPersistService.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables);
-                }
-            }));
+        databaseMap.forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
+            if (tables.getTables().isEmpty()) {
+                metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
+            } else {
+                metaDataPersistService.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables);
+            }
+        }));
     }
     
     private ContextManager createContextManager(final ClusterPersistRepository repository, final MetaDataPersistService metaDataPersistService,
