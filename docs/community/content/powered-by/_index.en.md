@@ -13,11 +13,12 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 182 companies.
+Total: 184 companies.
 
 ### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+    <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
 </ul>
 
@@ -44,6 +45,7 @@ Total: 182 companies.
 ### FinTech
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
+    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li>    
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>

@@ -13,11 +13,12 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 182 家公司。
+共计 184 家公司。
 
 ### 基础软件
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+    <li><a href="https://www.opengauss.org/zh/" rel="nofollow">华为 openGauss</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">云和恩墨 MogDB</a></li>
 </ul>
 
@@ -44,6 +45,7 @@ chapter = true
 ### 互联网金融
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
+    <li><a href="http://www.sunline.cn/" rel="nofollow">长亮科技</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
