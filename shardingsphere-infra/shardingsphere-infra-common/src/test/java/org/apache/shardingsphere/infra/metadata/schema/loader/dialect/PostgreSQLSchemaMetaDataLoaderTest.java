@@ -131,6 +131,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         when(result.getString("data_type")).thenReturn("integer", "character varying");
         when(result.getString("udt_name")).thenReturn("int4", "varchar");
         when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", "");
+        when(result.getString("table_schema")).thenReturn("public", "public");
         return result;
     }
     
@@ -147,6 +148,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("tablename")).thenReturn("tbl");
         when(result.getString("indexname")).thenReturn("id");
+        when(result.getString("schemaname")).thenReturn("public");
         return result;
     }
     
