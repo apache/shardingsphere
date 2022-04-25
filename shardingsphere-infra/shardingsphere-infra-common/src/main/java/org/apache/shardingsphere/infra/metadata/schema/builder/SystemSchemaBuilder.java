@@ -53,9 +53,6 @@ public final class SystemSchemaBuilder {
         TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
             Collection<InputStream> schemaStreams = getSchemaStreams(each, databaseType);
-            if (schemaStreams.isEmpty()) {
-                continue;
-            }
             result.put(each, createSchema(schemaStreams, swapper));
         }
         return result;

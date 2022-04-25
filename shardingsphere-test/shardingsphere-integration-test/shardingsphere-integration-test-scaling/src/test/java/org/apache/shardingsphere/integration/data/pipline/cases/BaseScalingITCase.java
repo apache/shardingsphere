@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipline.cases;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -87,7 +86,7 @@ public abstract class BaseScalingITCase {
                 connection.createStatement().execute(String.format(commonSQLCommand.getAddResource(), dbIndex, getDatabaseUrl(), value));
                 dbIndex++;
             }
-            for (String sql : Splitter.on(";").splitToList(commonSQLCommand.getCreateShardingAlgorithm()).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
+            for (String sql : commonSQLCommand.getCreateShardingAlgorithm()) {
                 connection.createStatement().execute(sql);
             }
             // TODO sleep to wait for sharding algorithm table created，otherwise, the next sql will fail.
