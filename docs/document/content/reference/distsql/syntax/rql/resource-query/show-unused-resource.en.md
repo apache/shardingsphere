@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `SHOW UNUSED RESOURCE` syntax is used to query resources that have been added by the specified schema but not yet referenced by rules.
+The `SHOW UNUSED RESOURCE` syntax is used to query resources in the specified schema that have not been referenced by rules.
 
 ### Syntax
 

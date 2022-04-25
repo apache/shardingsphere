@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`SHOW UNUSED RESOURCE` 语法用于查询指定逻辑库已经添加但还未被规则引用的资源。
+`SHOW UNUSED RESOURCE` 语法用于查询指定逻辑库中还未被规则引用的资源。
 
 ### 语法
 
