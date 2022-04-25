@@ -40,7 +40,8 @@ jobs:
           java-version: 8
 
       - name: Build Project
-        run: ./mvnw clean install -Dmaven.javadoc.skip=true -B -Drat.skip=true -Djacoco.skip=true -Dmaven.test.skip=true -T1C -Prelease
+        run: |
+          ./mvnw -B -Prelease -DskipTests clean install
 
       - name: rsync
         uses: burnett01/rsync-deployments@5.2
