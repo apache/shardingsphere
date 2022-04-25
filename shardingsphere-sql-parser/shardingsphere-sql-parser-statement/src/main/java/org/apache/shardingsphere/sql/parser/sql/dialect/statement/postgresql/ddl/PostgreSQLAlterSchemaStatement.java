@@ -17,13 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
+import java.util.Optional;
+
 /**
- * PostgreSQL drop schema statement.
+ * PostgreSQL alter schema statement.
  */
+@Getter
+@Setter
 @ToString
-public final class PostgreSQLDropSchemaStatement extends DropSchemaStatement implements PostgreSQLStatement {
+public final class PostgreSQLAlterSchemaStatement extends AlterSchemaStatement implements PostgreSQLStatement {
+    
+    private String renameSchema;
+    
+    /**
+     * Get rename schema.
+     *
+     * @return rename schema
+     */
+    public Optional<String> getRenameSchema() {
+        return Optional.ofNullable(renameSchema);
+    }
 }

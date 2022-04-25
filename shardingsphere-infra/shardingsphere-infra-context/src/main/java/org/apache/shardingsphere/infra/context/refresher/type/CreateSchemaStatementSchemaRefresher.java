@@ -24,13 +24,16 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateSchemaStatementHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Schema refresher for create schema statement.
@@ -42,9 +45,14 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        database.put(sqlStatement.getSchemaName(), new TableMetaData());
+        Optional<String> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
+        if (!schema.isPresent()) {
+            return;
+        }
+        schemaMetaData.getSchemas().put(schema.get(), new ShardingSphereSchema());
+        database.put(schema.get(), new TableMetaData());
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getDatabaseName(), sqlStatement.getSchemaName());
+        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getDatabaseName(), schema.get());
         ShardingSphereEventBus.getInstance().post(event);
     }
     
