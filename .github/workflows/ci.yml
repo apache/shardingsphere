@@ -46,7 +46,7 @@ on:
   repository_dispatch:
     types: [rerun-ci]
   schedule:
-    - cron: '0 0 */1 * *'  # once a day. UTC time
+    - cron: '0 16 */1 * *'  # once a day. UTC time
 
 concurrency:
   group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}

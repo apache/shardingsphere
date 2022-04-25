@@ -17,7 +17,7 @@
 
 on:
   schedule:
-    - cron: '0 3 */1 * *'  # once a day. UTC time
+    - cron: '0 19 */1 * *'  # once a day. UTC time
 
 jobs:
   upload_to_nightlies:
