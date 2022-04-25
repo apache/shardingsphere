@@ -58,6 +58,11 @@ public final class SchemaMetaDataPersistService {
         persistTables(databaseName, schemaName, schema.getTables());
     }
     
+    private void persistTables(final String databaseName, final String schemaName, final Map<String, TableMetaData> tables) {
+        tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key),
+                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
+    }
+    
     /**
      * Persist table meta data.
      *
@@ -105,11 +110,6 @@ public final class SchemaMetaDataPersistService {
         if (!cachedLocalTables.isEmpty()) {
             persistTables(databaseName, schemaName, cachedLocalTables);
         }
-    }
-    
-    private void persistTables(final String databaseName, final String schemaName, final Map<String, TableMetaData> tables) {
-        tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
     }
     
     /**
