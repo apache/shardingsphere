@@ -55,6 +55,19 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
         }
     }
     
+    private Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
+            if (resultSet.next()) {
+                String masterHost = resultSet.getString("Master_Host");
+                String masterPort = resultSet.getString("Master_Port");
+                if (null != masterHost && null != masterPort) {
+                    return Optional.of(String.join(":", masterHost, masterPort));
+                }
+            }
+            return Optional.empty();
+        }
+    }
+    
     @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) {
     }
@@ -70,19 +83,6 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
                 return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
             }
             return false;
-        }
-    }
-    
-    private Optional<String> loadPrimaryDatabaseInstanceURL(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                String masterHost = resultSet.getString("Master_Host");
-                String masterPort = resultSet.getString("Master_Port");
-                if (null != masterHost && null != masterPort) {
-                    return Optional.of(String.join(":", masterHost, masterPort));
-                }
-            }
-            return Optional.empty();
         }
     }
     
