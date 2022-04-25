@@ -22,11 +22,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -116,19 +114,19 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        return new ReplicaDataSourceStatus(isOnlineDataSource(replicaDataSource), 0L);
     }
     
-    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
+    private boolean isOnlineDataSource(final DataSource replicaDataSource) {
         try (Connection connection = replicaDataSource.getConnection()) {
             if (isOnlineDataSource(connection, new MySQLDataSourceMetaData(connection.getMetaData().getURL()))) {
-                return false;
+                return true;
             }
         } catch (final SQLException ex) {
-            log.error("An exception occurred while find data source urls", ex);
+            log.error("An exception occurred while detected data source online: ", ex);
         }
-        return true;
+        return false;
     }
     
     private boolean isOnlineDataSource(final Connection connection, final MySQLDataSourceMetaData metaData) throws SQLException {

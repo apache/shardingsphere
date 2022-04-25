@@ -22,10 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -77,19 +75,17 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     }
     
     @Override
-    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try (
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
-            StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
-                    ? StorageNodeStatus.ENABLED
-                    : StorageNodeStatus.DISABLED;
-            return new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds);
+            boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"));
+            return new ReplicaDataSourceStatus(!isDelay, replicationDelayMilliseconds);
         } catch (SQLException ex) {
-            log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
+            log.error("An exception occurred while detected data source online: ", ex);
         }
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
+        return new ReplicaDataSourceStatus(false, 0L);
     }
     
     private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {

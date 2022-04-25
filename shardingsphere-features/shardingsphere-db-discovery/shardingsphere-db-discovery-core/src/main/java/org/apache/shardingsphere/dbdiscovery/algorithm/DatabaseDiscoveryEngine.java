@@ -20,10 +20,14 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -101,9 +105,13 @@ public final class DatabaseDiscoveryEngine {
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {
-                ShardingSphereEventBus.getInstance().post(
-                        new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), databaseDiscoveryProviderAlgorithm.getStorageNodeDataSource(entry.getValue())));
+                StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(databaseDiscoveryProviderAlgorithm.loadReplicaStatus(entry.getValue()));
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
             }
         }
+    }
+    
+    private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
     }
 }
