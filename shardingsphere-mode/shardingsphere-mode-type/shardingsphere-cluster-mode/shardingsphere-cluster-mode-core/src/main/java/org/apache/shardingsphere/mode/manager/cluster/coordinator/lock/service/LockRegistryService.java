@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -73,7 +74,7 @@ public final class LockRegistryService {
             repository.releaseLock(lockName);
             return;
         }
-        repository.delete(lockName);
+        repository.delete(LockNodeUtil.generateGlobalLockReleasedNodePath(lockName));
     }
     
     /**
