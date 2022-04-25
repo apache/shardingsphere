@@ -17,16 +17,28 @@
 
 package org.apache.shardingsphere.spring.namespace.factorybean;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.springframework.beans.factory.FactoryBean;
+
+import java.util.Properties;
 
 /**
  * ShardingSphere algorithm factory bean.
  */
-public interface ShardingSphereAlgorithmFactoryBean<T extends ShardingSphereAlgorithm> extends FactoryBean<T> {
+@RequiredArgsConstructor
+@Getter
+public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSphereAlgorithm> implements FactoryBean<T> {
+    
+    private final String type;
+    
+    private final Properties props;
+    
+    private final Class<T> objectType;
     
     @Override
-    default boolean isSingleton() {
+    public final boolean isSingleton() {
         return true;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -28,20 +27,14 @@ import java.util.Properties;
 /**
  * Sharding algorithm factory bean.
  */
-@RequiredArgsConstructor
-public final class ShardingAlgorithmFactoryBean implements ShardingSphereAlgorithmFactoryBean<ShardingAlgorithm> {
+public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShardingAlgorithm> {
     
-    private final String type;
-    
-    private final Properties props;
-    
-    @Override
-    public ShardingAlgorithm getObject() {
-        return ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(type, props));
+    public ShardingAlgorithmFactoryBean(final String type, final Properties props) {
+        super(type, props, ShardingAlgorithm.class);
     }
     
     @Override
-    public Class<ShardingAlgorithm> getObjectType() {
-        return ShardingAlgorithm.class;
+    public ShardingAlgorithm getObject() {
+        return ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
     }
 }
