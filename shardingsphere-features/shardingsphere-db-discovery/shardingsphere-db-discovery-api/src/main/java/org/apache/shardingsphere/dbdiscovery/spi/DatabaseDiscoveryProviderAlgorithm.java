@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbdiscovery.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,10 +46,11 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
     boolean isPrimaryInstance(DataSource dataSource) throws SQLException;
     
     /**
-     * Get storage node data source.
+     * Load replica data source status.
      * 
-     * @param replicaDataSource replica data source
-     * @return storage node data source
+     * @param replicaDataSource to be loaded replica data source
+     * @return replica data source status
+     * @throws SQLException SQL exception
      */
-    StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
+    ReplicaDataSourceStatus loadReplicaStatus(DataSource replicaDataSource) throws SQLException;
 }

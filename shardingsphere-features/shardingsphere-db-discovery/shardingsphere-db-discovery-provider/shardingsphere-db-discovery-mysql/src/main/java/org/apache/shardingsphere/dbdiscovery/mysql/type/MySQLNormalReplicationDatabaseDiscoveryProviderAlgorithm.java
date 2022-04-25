@@ -22,10 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,7 +38,7 @@ import java.util.Properties;
 @Getter
 @Setter
 @Slf4j
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
@@ -77,22 +75,17 @@ public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm
     }
     
     @Override
-    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) throws SQLException {
         try (
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            long replicationDelayMilliseconds = loadReplicationDelayMilliseconds(statement);
-            StorageNodeStatus storageNodeStatus = replicationDelayMilliseconds < Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
-                    ? StorageNodeStatus.ENABLED
-                    : StorageNodeStatus.DISABLED;
-            return new StorageNodeDataSource(StorageNodeRole.MEMBER, storageNodeStatus, replicationDelayMilliseconds);
-        } catch (SQLException ex) {
-            log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
+            long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
+            boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"));
+            return new ReplicaDataSourceStatus(!isDelay, replicationDelayMilliseconds);
         }
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
     }
     
-    private long loadReplicationDelayMilliseconds(final Statement statement) throws SQLException {
+    private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
         }

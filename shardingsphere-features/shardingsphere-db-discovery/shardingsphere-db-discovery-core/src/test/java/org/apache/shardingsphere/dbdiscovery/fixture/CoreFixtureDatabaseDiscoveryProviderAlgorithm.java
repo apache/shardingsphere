@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.fixture;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
 
@@ -36,8 +34,8 @@ public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements Data
     }
     
     @Override
-    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        return new ReplicaDataSourceStatus(true, 0L);
     }
     
     @Override

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,17 +74,11 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     }
     
     @Test
-    public void assertGetDisabledStorageNodeDataSource() throws SQLException {
+    public void assertLoadReplicaStatus() throws SQLException {
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
-        StorageNodeDataSource actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().getStorageNodeDataSource(dataSource);
-        assertThat(actual.getRole(), is("member"));
-        assertThat(actual.getStatus(), is("disabled"));
+        ReplicaDataSourceStatus actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().loadReplicaStatus(dataSource);
+        assertFalse(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(0L));
-    }
-    
-    @Test
-    public void assertGetEnabledStorageNodeDataSource() {
-        // TODO
     }
 }

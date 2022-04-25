@@ -21,9 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,22 +57,18 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public StorageNodeDataSource getStorageNodeDataSource(final DataSource replicaDataSource) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisabledDataSource(replicaDataSource) ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
-    }
-    
-    private boolean isDisabledDataSource(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) throws SQLException {
         try (
                 Connection connection = replicaDataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
-                return false;
-            }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while find data source urls", ex);
+                Statement statement = connection.createStatement()) {
+            return new ReplicaDataSourceStatus(isOnlineDataSource(statement), 0L);
         }
-        return true;
+    }
+    
+    private boolean isOnlineDataSource(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
+            return resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal");
+        }
     }
     
     @Override
