@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Data
 @XmlRootElement(name = "command")
@@ -39,7 +40,7 @@ public final class CommonSQLCommand {
     private String useDatabase;
     
     @XmlElement(name = "create-sharding-algorithm")
-    private String createShardingAlgorithm;
+    private List<String> createShardingAlgorithm;
     
     @XmlElement(name = "create-sharding-table")
     private String createShardingTable;

@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.cases.BaseScalingITCase;
-import org.apache.shardingsphere.integration.data.pipline.cases.command.mysql.MySQLCommand;
+import org.apache.shardingsphere.integration.data.pipline.cases.command.CreateTableSQLCommand;
 import org.apache.shardingsphere.integration.data.pipline.util.TableCrudUtil;
 
 import javax.xml.bind.JAXB;
@@ -30,16 +30,16 @@ import java.util.List;
 public abstract class BaseMySQLScalingCase extends BaseScalingITCase {
     
     @Getter
-    private final MySQLCommand mySQLCommand;
+    private final CreateTableSQLCommand createTableSQLCommand;
     
     public BaseMySQLScalingCase() {
         super(new MySQLDatabaseType());
-        mySQLCommand = JAXB.unmarshal(BaseMySQLScalingCase.class.getClassLoader().getResource("env/mysql/sql.xml"), MySQLCommand.class);
+        createTableSQLCommand = JAXB.unmarshal(BaseMySQLScalingCase.class.getClassLoader().getResource("env/mysql/sql.xml"), CreateTableSQLCommand.class);
     }
     
     protected void initTableAndData() {
-        getJdbcTemplate().execute(mySQLCommand.getCreateTableOrder());
-        getJdbcTemplate().execute(mySQLCommand.getCreateTableOrderItem());
+        getJdbcTemplate().execute(createTableSQLCommand.getCreateTableOrder());
+        getJdbcTemplate().execute(createTableSQLCommand.getCreateTableOrderItem());
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateInsertDataList(3000);
         getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());

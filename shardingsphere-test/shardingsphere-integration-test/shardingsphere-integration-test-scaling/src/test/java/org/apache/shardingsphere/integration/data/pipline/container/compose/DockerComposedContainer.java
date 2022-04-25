@@ -53,9 +53,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
-        String jdbcUrl = StringUtils.appendIfMissing(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), getProxyContainer().getHost(),
-                getProxyContainer().getFirstMappedPort(), databaseName), "&rewriteBatchedStatements=true");
-        result.setJdbcUrl(jdbcUrl);
+        String jdbcUrl = DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
+        result.setJdbcUrl(StringUtils.appendIfMissing(jdbcUrl, "&rewriteBatchedStatements=true"));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);

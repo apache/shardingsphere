@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
  * MySQL manual scaling test case.
  */
 @Slf4j
-public final class MySQLManualScalingTest extends BaseMySQLScalingCase {
+public final class MySQLManualScalingCase extends BaseMySQLScalingCase {
     
     private Thread increaseTaskThread;
     
