@@ -19,27 +19,37 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * MetaDataRefresher for testing.
+ * Schema refresher for create schema statement.
  */
-public final class DummyDropDatabaseMetaDataRefresher implements MetaDataRefresher<DropDatabaseStatement> {
+public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefresher<CreateSchemaStatement> {
+    
+    private static final String TYPE = CreateSchemaStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final String schemaName, final DropDatabaseStatement sqlStatement, final ConfigurationProperties props) {
-        sqlStatement.getDatabaseName();
+                        final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        database.put(sqlStatement.getSchemaName(), new TableMetaData());
+        optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getDatabaseName(), sqlStatement.getSchemaName());
+        ShardingSphereEventBus.getInstance().post(event);
     }
     
     @Override
     public String getType() {
-        return DropDatabaseStatement.class.getName();
+        return TYPE;
     }
 }

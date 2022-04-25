@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+package org.apache.shardingsphere.infra.binder.statement.ddl;
 
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * PostgreSQL create schema statement.
+ * Create schema statement context.
  */
-@ToString
-@Setter
-public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement implements DDLStatement, PostgreSQLStatement {
+public final class CreateSchemaStatementContext extends CommonSQLStatementContext<CreateSchemaStatement> {
+    
+    public CreateSchemaStatementContext(final CreateSchemaStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

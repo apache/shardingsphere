@@ -76,7 +76,17 @@ public final class SchemaMetaDataPersistService {
      * @param databaseName database name
      */
     public void persist(final String databaseName) {
-        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, databaseName), "");
+        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
+    }
+    
+    /**
+     * Persist schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    public void persist(final String databaseName, final String schemaName) {
+        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
     }
     
     private void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema, final ShardingSphereSchema originalSchema) {
@@ -109,6 +119,16 @@ public final class SchemaMetaDataPersistService {
      */
     public void delete(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
+    }
+    
+    /**
+     * Delete schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    public void delete(final String databaseName, final String schemaName) {
+        repository.delete(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName));
     }
     
     /**

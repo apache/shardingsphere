@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+package org.apache.shardingsphere.infra.metadata.schema.event;
 
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
 
 /**
- * PostgreSQL create schema statement.
+ * add schema event.
  */
-@ToString
-@Setter
-public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement implements DDLStatement, PostgreSQLStatement {
+@Getter
+public final class AddSchemaEvent {
+    
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    public AddSchemaEvent(final String databaseName, final String schemaName) {
+        this.databaseName = databaseName;
+        this.schemaName = schemaName;
+    }
 }

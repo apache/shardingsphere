@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
+import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
@@ -57,5 +58,12 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         schemaMetaDataRegistrySubscriber.update(event);
         verify(persistService).persist("foo_db", "foo_schema", tableMetaData);
         verify(persistService).delete("foo_db", "foo_schema", "foo_table");
+    }
+    
+    @Test
+    public void assertAddSchemaEvent() {
+        AddSchemaEvent event = new AddSchemaEvent("foo_db", "foo_schema");
+        schemaMetaDataRegistrySubscriber.addSchema(event);
+        verify(persistService).persist("foo_db", "foo_schema");
     }
 }
