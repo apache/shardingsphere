@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.storage.StorageNodeRole;
@@ -33,8 +34,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Properties;
 
 /**
@@ -61,52 +60,45 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     private Properties props = new Properties();
     
     @Override
-    public MGRHighlyAvailableStatus loadHighlyAvailableStatus(final DataSource dataSource) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            return new MGRHighlyAvailableStatus(queryMemberInstanceURLs(statement));
-        }
-    }
-    
-    @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            Preconditions.checkState(queryIsPluginActive(statement), "MGR plugin is not active in database `%s`.", databaseName);
-            Preconditions.checkState(queryIsSinglePrimaryMode(statement), "MGR is not in single primary mode in database `%s`.", databaseName);
-            Preconditions.checkState(props.getProperty("group-name", "").equals(queryGroupName(statement)),
+            checkPluginActive(databaseName, statement);
+            checkSinglePrimaryMode(databaseName, statement);
+            checkGroupName(databaseName, statement);
+            checkMemberInstanceURL(databaseName, connection.getMetaData().getURL(), statement);
+        }
+    }
+    
+    private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
+            Preconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), "MGR plugin is not active in database `%s`.", databaseName);
+        }
+    }
+    
+    private void checkSinglePrimaryMode(final String databaseName, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
+            Preconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), "MGR is not in single primary mode in database `%s`.", databaseName);
+        }
+    }
+    
+    private void checkGroupName(final String databaseName, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
+            Preconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
                     "Group name in MGR is not same with configured one `%s` in database `%s`.", props.getProperty("group-name"), databaseName);
         }
     }
     
-    private boolean queryIsPluginActive(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            return resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"));
-        }
-    }
-    
-    private boolean queryIsSinglePrimaryMode(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            return resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE"));
-        }
-    }
-    
-    private String queryGroupName(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
-            return resultSet.next() ? resultSet.getString("VARIABLE_VALUE") : "";
-        }
-    }
-    
-    private Collection<String> queryMemberInstanceURLs(final Statement statement) throws SQLException {
-        Collection<String> result = new LinkedList<>();
+    private void checkMemberInstanceURL(final String databaseName, final String url, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_MEMBER_LIST)) {
             while (resultSet.next()) {
-                result.add(String.join(":", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+                if (url.contains(String.join(":", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")))) {
+                    return;
+                }
             }
         }
-        return result;
+        throw new ShardingSphereConfigurationException("`%s` is not in MGR replication group member in database `%s`.", url, databaseName);
     }
     
     @Override
