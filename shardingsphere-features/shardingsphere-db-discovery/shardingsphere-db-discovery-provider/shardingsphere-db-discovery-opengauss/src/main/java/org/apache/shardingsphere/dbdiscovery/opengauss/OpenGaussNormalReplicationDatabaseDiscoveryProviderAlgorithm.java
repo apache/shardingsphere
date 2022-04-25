@@ -57,22 +57,18 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
-        return new ReplicaDataSourceStatus(isOnlineDataSource(replicaDataSource), 0L);
-    }
-    
-    private boolean isOnlineDataSource(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) throws SQLException {
         try (
                 Connection connection = replicaDataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
-            if (resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
-                return true;
-            }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while detected data source online: ", ex);
+                Statement statement = connection.createStatement()) {
+            return new ReplicaDataSourceStatus(isOnlineDataSource(statement), 0L);
         }
-        return false;
+    }
+    
+    private boolean isOnlineDataSource(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
+            return resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal");
+        }
     }
     
     @Override

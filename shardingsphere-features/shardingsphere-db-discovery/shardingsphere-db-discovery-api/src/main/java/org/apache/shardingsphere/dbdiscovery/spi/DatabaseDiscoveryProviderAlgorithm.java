@@ -50,6 +50,7 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * 
      * @param replicaDataSource to be loaded replica data source
      * @return replica data source status
+     * @throws SQLException SQL exception
      */
-    ReplicaDataSourceStatus loadReplicaStatus(DataSource replicaDataSource);
+    ReplicaDataSourceStatus loadReplicaStatus(DataSource replicaDataSource) throws SQLException;
 }

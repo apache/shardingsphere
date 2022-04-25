@@ -114,19 +114,10 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
-        return new ReplicaDataSourceStatus(isOnlineDataSource(replicaDataSource), 0L);
-    }
-    
-    private boolean isOnlineDataSource(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) throws SQLException {
         try (Connection connection = replicaDataSource.getConnection()) {
-            if (isOnlineDataSource(connection, new MySQLDataSourceMetaData(connection.getMetaData().getURL()))) {
-                return true;
-            }
-        } catch (final SQLException ex) {
-            log.error("An exception occurred while detected data source online: ", ex);
+            return new ReplicaDataSourceStatus(isOnlineDataSource(connection, new MySQLDataSourceMetaData(connection.getMetaData().getURL())), 0L);
         }
-        return false;
     }
     
     private boolean isOnlineDataSource(final Connection connection, final MySQLDataSourceMetaData metaData) throws SQLException {

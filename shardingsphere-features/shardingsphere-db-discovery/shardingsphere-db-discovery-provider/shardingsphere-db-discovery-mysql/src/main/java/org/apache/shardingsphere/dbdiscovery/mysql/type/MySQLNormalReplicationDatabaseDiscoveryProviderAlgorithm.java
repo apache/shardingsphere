@@ -75,17 +75,14 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     }
     
     @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) throws SQLException {
         try (
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
             boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"));
             return new ReplicaDataSourceStatus(!isDelay, replicationDelayMilliseconds);
-        } catch (SQLException ex) {
-            log.error("An exception occurred while detected data source online: ", ex);
         }
-        return new ReplicaDataSourceStatus(false, 0L);
     }
     
     private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {

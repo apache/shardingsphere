@@ -105,13 +105,21 @@ public final class DatabaseDiscoveryEngine {
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {
-                StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(databaseDiscoveryProviderAlgorithm.loadReplicaStatus(entry.getValue()));
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), createStorageNodeDataSource(loadReplicaStatus(entry.getValue()))));
             }
         }
     }
     
     private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
+    }
+    
+    private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        try {
+            return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
+        } catch (SQLException ex) {
+            log.error("Load data source replica status error: ", ex);
+            return new ReplicaDataSourceStatus(false, 0L);
+        }
     }
 }
