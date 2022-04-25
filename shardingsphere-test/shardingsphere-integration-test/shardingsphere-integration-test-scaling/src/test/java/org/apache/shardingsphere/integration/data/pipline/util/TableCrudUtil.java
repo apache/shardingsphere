@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.integration.data.pipline.util;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class TableCrudUtil {
@@ -34,67 +34,36 @@ public final class TableCrudUtil {
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
     
     /**
-     * insert order data.
+     * Generate insert data.
      *
-     * @param orderStatement prepared statement of order
-     * @param itemStatement prepared statement of item
      * @param insertRows insert rows
-     * @throws SQLException SQL exception
+     * @return insert data list
      */
-    public static void batchInsertOrderAndOrderItem(final PreparedStatement orderStatement, final PreparedStatement itemStatement, final int insertRows) throws SQLException {
+    public static Pair<List<Object[]>, List<Object[]>> generateInsertDataList(final int insertRows) {
         if (insertRows < 0) {
-            return;
+            return Pair.of(null, null);
         }
+        List<Object[]> orderData = new ArrayList<>(insertRows);
+        List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 1; i <= insertRows; i++) {
-            orderStatement.setLong(1, (Long) SNOWFLAKE_GENERATE.generateKey());
             int orderId = RANDOM.nextInt(0, 5);
-            orderStatement.setInt(2, orderId);
             int userId = RANDOM.nextInt(0, 5);
-            orderStatement.setInt(3, userId);
-            orderStatement.setString(4, "varchar" + i);
-            orderStatement.setByte(5, (byte) 1);
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            orderStatement.setTimestamp(6, timestamp);
-            orderStatement.setTimestamp(7, timestamp);
-            orderStatement.setBytes(8, "hello".getBytes(StandardCharsets.UTF_8));
-            orderStatement.setBinaryStream(9, null);
-            orderStatement.setBigDecimal(10, new BigDecimal("100.00"));
-            orderStatement.setString(11, "test");
-            orderStatement.setDouble(12, Math.random());
-            orderStatement.setString(13, "{}");
-            orderStatement.addBatch();
-            itemStatement.setLong(1, (Long) SNOWFLAKE_GENERATE.generateKey());
-            itemStatement.setInt(2, orderId);
-            itemStatement.setInt(3, userId);
-            itemStatement.setString(4, "SUCCESS");
-            itemStatement.addBatch();
+            orderData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "varchar" + i, (byte) 1, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),
+                    "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}"});
+            orderItemData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "SUCCESS"});
         }
+        return Pair.of(orderData, orderItemData);
     }
     
     /**
-     * insert order data.
+     * Generate simple insert data.
      *
-     * @param connection connection
-     * @param insertOrderSimpleSql insert order sql
-     * @param insertOrderItemSimpleSql insert order item sql
-     * @return primary key
-     * @throws SQLException SQL exception
+     * @return insert data
      */
-    public static long insertOrderAndOrderItem(final Connection connection, final String insertOrderSimpleSql, final String insertOrderItemSimpleSql) throws SQLException {
-        long primaryKey = (Long) SNOWFLAKE_GENERATE.generateKey();
+    public static Pair<Object[], Object[]> generateSimpleInsertData() {
+        long uniqueKey = (Long) SNOWFLAKE_GENERATE.generateKey();
         int orderId = RANDOM.nextInt(0, 5);
         int userId = RANDOM.nextInt(0, 5);
-        try (PreparedStatement orderStatement = connection.prepareStatement(insertOrderSimpleSql); PreparedStatement itemStatement = connection.prepareStatement(insertOrderItemSimpleSql)) {
-            orderStatement.setLong(1, primaryKey);
-            orderStatement.setInt(2, orderId);
-            orderStatement.setInt(3, userId);
-            orderStatement.execute();
-            itemStatement.setLong(1, primaryKey);
-            itemStatement.setInt(2, orderId);
-            itemStatement.setInt(3, userId);
-            itemStatement.setString(4, "OK");
-            itemStatement.execute();
-        }
-        return primaryKey;
+        return Pair.of(new Object[]{uniqueKey, orderId, userId}, new Object[]{uniqueKey, orderId, userId, "OK"});
     }
 }

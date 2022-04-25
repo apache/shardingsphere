@@ -19,8 +19,6 @@ package org.apache.shardingsphere.integration.data.pipline.env;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.data.pipline.util.ExecuteUtil;
-import org.apache.shardingsphere.integration.data.pipline.util.ScalingUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,25 +50,6 @@ public final class IntegrationTestEnvironment {
             result.setProperty(each, System.getProperty(each));
         }
         return result;
-    }
-    
-    /**
-     * Wait for environment ready.
-     */
-    public void waitForEnvironmentReady() {
-        log.info("wait begin scaling environment");
-        new ExecuteUtil(this::isScalingReady, Integer.parseInt(props.getProperty("scaling.retry", "30")),
-                Long.parseLong(props.getProperty("scaling.waitMs", "1000"))).execute();
-    }
-    
-    private boolean isScalingReady() {
-        try {
-            ScalingUtil.getJobList();
-        } catch (final IOException ignore) {
-            return false;
-        }
-        log.info("it scaling environment success");
-        return true;
     }
     
     /**

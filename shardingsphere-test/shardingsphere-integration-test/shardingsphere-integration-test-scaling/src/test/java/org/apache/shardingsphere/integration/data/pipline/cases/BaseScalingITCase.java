@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipline.cases;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -32,15 +32,17 @@ import org.apache.shardingsphere.integration.data.pipline.container.compose.Dock
 import org.apache.shardingsphere.integration.data.pipline.container.compose.LocalComposedContainer;
 import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -71,7 +73,7 @@ public abstract class BaseScalingITCase {
     @SneakyThrows
     protected void initScalingEnvironment() {
         commonSQLCommand = JAXB.unmarshal(BaseScalingITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
-        try (Connection connection = getProxyConnection("")) {
+        try (Connection connection = getProxyDataSource("").getConnection()) {
             connection.createStatement().execute(commonSQLCommand.getCreateDatabase());
             connection.createStatement().execute(commonSQLCommand.getUseDatabase());
             int dbIndex = 0;
@@ -95,14 +97,13 @@ public abstract class BaseScalingITCase {
     }
     
     /**
-     * Get proxy database connection.
+     * Get proxy database datasource.
      *
      * @param dataSourceName data source names
      * @return proxy database connection
      */
-    @SneakyThrows(SQLException.class)
-    public Connection getProxyConnection(final String dataSourceName) {
-        return composedContainer.getProxyConnection(dataSourceName);
+    public DataSource getProxyDataSource(final String dataSourceName) {
+        return composedContainer.getProxyDataSource(dataSourceName);
     }
     
     /**
@@ -139,49 +140,44 @@ public abstract class BaseScalingITCase {
     /**
      * Check data match consistency.
      *
-     * @param connection proxy database connection
+     * @param jdbcTemplate jdbc template
      * @param jobId job id
      * @throws InterruptedException if interrupted
      * @throws SQLException if any SQL exception
      */
-    protected void checkMatchConsistency(final Connection connection, final String jobId) throws InterruptedException, SQLException {
+    protected void checkMatchConsistency(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException, SQLException {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
-            try (ResultSet statusResult = connection.createStatement().executeQuery(String.format(commonSQLCommand.getShowScalingStatus(), jobId));) {
-                boolean finished = true;
-                while (statusResult.next()) {
-                    String datasourceName = statusResult.getString(2);
-                    String status = statusResult.getString(3);
-                    actualStatusMap.put(datasourceName, status);
-                    assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
-                    assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-                    assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
-                    if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                        finished = false;
-                        break;
-                    }
-                }
-                if (finished) {
+            List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format(commonSQLCommand.getShowScalingStatus(), jobId));
+            boolean finished = true;
+            for (Map<String, Object> entry : showScalingStatusResMap) {
+                String status = entry.get("status").toString();
+                assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
+                assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
+                assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
+                String datasourceName = entry.get("data_source").toString();
+                actualStatusMap.put(datasourceName, status);
+                
+                if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                    finished = false;
                     break;
-                } else {
-                    TimeUnit.SECONDS.sleep(2);
                 }
+            }
+            if (finished) {
+                break;
+            } else {
+                TimeUnit.SECONDS.sleep(2);
             }
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        connection.createStatement().execute(String.format(getCommonSQLCommand().getStopScalingSourceWriting(), jobId));
-        try (ResultSet checkScalingResult = connection.createStatement().executeQuery(String.format(commonSQLCommand.getCheckScalingDataMatch(), jobId))) {
-            while (checkScalingResult.next()) {
-                assertTrue(checkScalingResult.getBoolean(5));
-            }
+        jdbcTemplate.execute(String.format(getCommonSQLCommand().getStopScalingSourceWriting(), jobId));
+        List<Map<String, Object>> checkScalingResList = jdbcTemplate.queryForList(String.format(commonSQLCommand.getCheckScalingDataMatch(), jobId));
+        for (Map<String, Object> entry : checkScalingResList) {
+            assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
-        connection.createStatement().execute(String.format(getCommonSQLCommand().getApplyScaling(), jobId));
-        List<String> actualTargetNodes = Lists.newLinkedList();
-        try (ResultSet previewResult = connection.createStatement().executeQuery(getCommonSQLCommand().getPreviewSelectOrder())) {
-            while (previewResult.next()) {
-                actualTargetNodes.add(previewResult.getString(1));
-            }
-        }
-        assertThat(actualTargetNodes, is(Lists.newArrayList("ds_2", "ds_3", "ds_4")));
+        jdbcTemplate.execute(String.format(getCommonSQLCommand().getApplyScaling(), jobId));
+        List<Map<String, Object>> previewResList = jdbcTemplate.queryForList(getCommonSQLCommand().getPreviewSelectOrder());
+        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSourceList, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
     }
 }

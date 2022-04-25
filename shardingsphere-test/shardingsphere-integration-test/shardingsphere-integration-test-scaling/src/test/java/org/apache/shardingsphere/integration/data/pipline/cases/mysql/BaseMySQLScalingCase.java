@@ -18,36 +18,35 @@
 package org.apache.shardingsphere.integration.data.pipline.cases.mysql;
 
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.cases.BaseScalingITCase;
 import org.apache.shardingsphere.integration.data.pipline.cases.command.mysql.MySQLCommand;
 import org.apache.shardingsphere.integration.data.pipline.util.TableCrudUtil;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.xml.bind.JAXB;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.List;
 
 public abstract class BaseMySQLScalingCase extends BaseScalingITCase {
     
     @Getter
-    private MySQLCommand mySQLCommand;
+    private final MySQLCommand mySQLCommand;
+    
+    @Getter
+    private final JdbcTemplate jdbcTemplate;
     
     public BaseMySQLScalingCase() {
         super(new MySQLDatabaseType());
+        jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
+        mySQLCommand = JAXB.unmarshal(BaseMySQLScalingCase.class.getClassLoader().getResource("env/mysql/sql.xml"), MySQLCommand.class);
     }
     
-    protected void initTableAndData() throws SQLException {
-        mySQLCommand = JAXB.unmarshal(BaseMySQLScalingCase.class.getClassLoader().getResource("env/mysql/sql.xml"), MySQLCommand.class);
-        try (Connection connection = getProxyConnection("sharding_db")) {
-            connection.createStatement().execute(mySQLCommand.getCreateTableOrder());
-            connection.createStatement().execute(mySQLCommand.getCreateTableOrderItem());
-            // init date, need more than 3000 rows, in order to test certain conditions
-            PreparedStatement orderStatement = connection.prepareStatement(getCommonSQLCommand().getInsertOrder());
-            PreparedStatement itemStatement = connection.prepareStatement(getCommonSQLCommand().getInsertOrderItem());
-            TableCrudUtil.batchInsertOrderAndOrderItem(orderStatement, itemStatement, 3000);
-            orderStatement.executeBatch();
-            itemStatement.executeBatch();
-        }
+    protected void initTableAndData() {
+        jdbcTemplate.execute(mySQLCommand.getCreateTableOrder());
+        jdbcTemplate.execute(mySQLCommand.getCreateTableOrderItem());
+        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateInsertDataList(3000);
+        jdbcTemplate.batchUpdate(getCommonSQLCommand().getInsertOrder(), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());
     }
 }

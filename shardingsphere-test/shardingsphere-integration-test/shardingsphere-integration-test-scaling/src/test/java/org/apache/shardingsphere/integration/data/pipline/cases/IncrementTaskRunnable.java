@@ -19,10 +19,11 @@ package org.apache.shardingsphere.integration.data.pipline.cases;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.integration.data.pipline.cases.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.data.pipline.util.TableCrudUtil;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.List;
 @AllArgsConstructor
 public final class IncrementTaskRunnable implements Runnable {
     
-    private final Connection connection;
+    private final JdbcTemplate jdbcTemplate;
     
     private final CommonSQLCommand commonSQLCommand;
     
@@ -53,26 +54,23 @@ public final class IncrementTaskRunnable implements Runnable {
         } catch (final SQLException ex) {
             log.error("IncrementTaskThread error", ex);
             throw new RuntimeException(ex);
-        } finally {
-            try {
-                connection.close();
-            } catch (final SQLException ex) {
-                log.error("IncrementTaskThread error", ex);
-            }
         }
     }
     
     private long insertOrderAndOrderItem() throws SQLException {
-        return TableCrudUtil.insertOrderAndOrderItem(connection, commonSQLCommand.getSimpleInsertOrder(), commonSQLCommand.getInsertOrderItem());
+        Pair<Object[], Object[]> dataPair = TableCrudUtil.generateSimpleInsertData();
+        jdbcTemplate.update(commonSQLCommand.getSimpleInsertOrder(), dataPair.getLeft());
+        jdbcTemplate.update(commonSQLCommand.getInsertOrderItem(), dataPair.getRight());
+        return Long.parseLong(dataPair.getLeft()[0].toString());
     }
     
     private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        connection.createStatement().execute(String.format(commonSQLCommand.getUpdateOrder(), primaryKey));
-        connection.createStatement().execute(String.format(commonSQLCommand.getUpdateOrderItem(), primaryKey));
+        jdbcTemplate.execute(String.format(commonSQLCommand.getUpdateOrder(), primaryKey));
+        jdbcTemplate.execute(String.format(commonSQLCommand.getUpdateOrderItem(), primaryKey));
     }
     
     private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
-        connection.createStatement().execute(String.format(commonSQLCommand.getDeleteOrder(), primaryKey));
-        connection.createStatement().execute(String.format(commonSQLCommand.getDeleteOrderItem(), primaryKey));
+        jdbcTemplate.execute(String.format(commonSQLCommand.getDeleteOrder(), primaryKey));
+        jdbcTemplate.execute(String.format(commonSQLCommand.getDeleteOrderItem(), primaryKey));
     }
 }
