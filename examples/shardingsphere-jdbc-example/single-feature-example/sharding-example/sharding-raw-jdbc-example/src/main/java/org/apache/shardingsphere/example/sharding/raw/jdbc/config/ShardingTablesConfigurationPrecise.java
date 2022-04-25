@@ -65,7 +65,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(1, 1);
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
         return result;
     }

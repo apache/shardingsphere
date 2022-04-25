@@ -72,7 +72,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
