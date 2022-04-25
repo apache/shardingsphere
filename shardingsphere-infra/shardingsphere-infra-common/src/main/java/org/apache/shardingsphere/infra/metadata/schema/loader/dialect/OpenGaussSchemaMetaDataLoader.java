@@ -83,7 +83,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
         return result;
     }
     
-    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, 
+    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables))) {

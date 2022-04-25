@@ -40,7 +40,7 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
-    private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog", 
+    private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog",
             "blockchain", "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor");
     
     static {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;

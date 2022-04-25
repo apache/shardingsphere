@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.opengauss.replication;
+package org.apache.shardingsphere.dbdiscovery.opengauss;
 
 import lombok.Getter;
 import lombok.Setter;

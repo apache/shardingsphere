@@ -87,7 +87,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         return result;
     }
     
-    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, 
+    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(dataSource, tables);
@@ -180,7 +180,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     private String getLoadRoleTableGrantsSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL 
+        return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL
                 : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
