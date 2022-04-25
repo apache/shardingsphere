@@ -55,7 +55,7 @@ public final class DatabaseDiscoveryEngine {
      * @throws SQLException SQL exception
      */
     public void checkHighlyAvailableStatus(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<HighlyAvailableStatus> statuses = loadHighlyAvailableStatuses(dataSourceMap);
+        Collection<HighlyAvailableStatus> statuses = loadHighlyAvailableStatuses(databaseName, dataSourceMap);
         Preconditions.checkState(!statuses.isEmpty(), "No database instance in database cluster `%s`.", databaseName);
         HighlyAvailableStatus sample = statuses.iterator().next();
         if (sample instanceof GlobalHighlyAvailableStatus) {
@@ -65,10 +65,11 @@ public final class DatabaseDiscoveryEngine {
         }
     }
     
-    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private Collection<HighlyAvailableStatus> loadHighlyAvailableStatuses(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<HighlyAvailableStatus> result = new HashSet<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             // TODO query with multiple threads
+            databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, entry.getValue());
             result.add(databaseDiscoveryProviderAlgorithm.loadHighlyAvailableStatus(entry.getValue()));
         }
         return result;
