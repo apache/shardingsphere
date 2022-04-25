@@ -114,9 +114,10 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
+                    String schemaName = resultSet.getString("table_schema");
                     String tableName = resultSet.getString("table_name");
                     String columnName = resultSet.getString("column_name");
-                    result.add(tableName + "," + columnName);
+                    result.add(schemaName + "," + tableName + "," + columnName);
                 }
             }
         }
@@ -128,10 +129,11 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Set<String> primaryKeys, final ResultSet resultSet) throws SQLException {
+        String schemaName = resultSet.getString("table_schema");
         String tableName = resultSet.getString("table_name");
         String columnName = resultSet.getString("column_name");
         String dataType = resultSet.getString("udt_name");
-        boolean isPrimaryKey = primaryKeys.contains(tableName + "," + columnName);
+        boolean isPrimaryKey = primaryKeys.contains(schemaName + "," + tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false

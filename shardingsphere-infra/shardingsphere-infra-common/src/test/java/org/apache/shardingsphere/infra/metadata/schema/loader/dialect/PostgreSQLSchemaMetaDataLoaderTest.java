@@ -140,6 +140,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("table_name")).thenReturn("tbl");
         when(result.getString("column_name")).thenReturn("id");
+        when(result.getString("table_schema")).thenReturn("public");
         return result;
     }
     
