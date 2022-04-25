@@ -30,9 +30,9 @@ import javax.sql.DataSource;
 /**
  * Composed container, include governance container and database container.
  */
+@Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
-    @Getter
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
     public DockerComposedContainer(final DatabaseType databaseType) {
