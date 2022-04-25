@@ -38,7 +38,7 @@ import java.util.Properties;
 @Getter
 @Setter
 @Slf4j
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     

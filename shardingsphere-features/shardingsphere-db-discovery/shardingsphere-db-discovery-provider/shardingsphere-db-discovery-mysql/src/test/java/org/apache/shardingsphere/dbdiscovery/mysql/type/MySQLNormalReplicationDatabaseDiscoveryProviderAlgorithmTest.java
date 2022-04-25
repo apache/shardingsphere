@@ -28,16 +28,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithmTest {
+public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", mockDataSource());
+        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", mockDataSource());
     }
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MySQLNormalReplicationMySQLDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSource()));
+        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSource()));
     }
     
     private DataSource mockDataSource() throws SQLException {
