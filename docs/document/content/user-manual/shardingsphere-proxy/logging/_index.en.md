@@ -3,9 +3,9 @@ title = "Logging"
 weight = 4
 +++
 
-This chapter will introduce the detailed syntax of Logging which is used when users need to distinguish database or users in the log. To achieve a specific goal, following configurations can be added to logback.xml:
+This chapter will introduce the detailed syntax of Logging which is used when users need to distinguish databases or users in the log. To achieve a specific goal, following configurations can be added to logback.xml:
 
-## To distinguish database in the same log
+## To distinguish databases in the same log
 ```
 <appender name="databaseConsole" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -18,7 +18,7 @@ This chapter will introduce the detailed syntax of Logging which is used when us
 </logger>
 ```
 
-## To distinguish database and users in the same log
+## To distinguish databases and users in the same log
 ```
 <appender name="databaseConsole" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
