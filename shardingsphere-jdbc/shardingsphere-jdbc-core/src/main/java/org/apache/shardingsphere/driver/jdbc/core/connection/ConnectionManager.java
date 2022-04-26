@@ -191,9 +191,6 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public Savepoint setSavepoint(final String savepointName) throws SQLException {
-        if (!connectionTransaction.isInTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
-        }
         ShardingSphereSavepoint result = new ShardingSphereSavepoint(savepointName);
         for (Connection each : cachedConnections.values()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
@@ -209,9 +206,6 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public Savepoint setSavepoint() throws SQLException {
-        if (!connectionTransaction.isInTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
-        }
         ShardingSphereSavepoint result = new ShardingSphereSavepoint();
         for (Connection each : cachedConnections.values()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, result.getSavepointName());
@@ -227,9 +221,6 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
-        if (!connectionTransaction.isInTransaction()) {
-            return;
-        }
         for (Connection each : cachedConnections.values()) {
             ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
         }
