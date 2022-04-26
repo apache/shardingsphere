@@ -128,7 +128,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName schema name
      */
     public void deleteSchema(final String databaseName, final String schemaName) {
-        repository.delete(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName));
+        repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
     
     /**

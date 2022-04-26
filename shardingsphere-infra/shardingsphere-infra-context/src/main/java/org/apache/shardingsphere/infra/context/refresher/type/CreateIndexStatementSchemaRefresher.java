@@ -41,16 +41,16 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     private static final String TYPE = CreateIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIdentifier().getValue() : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());
         if (Strings.isNullOrEmpty(indexName)) {
             return;
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        schemaMetaData.getSchemaByName(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getDatabaseName(), schemaName);
-        event.getAlteredTables().add(schemaMetaData.getSchemaByName(schemaName).get(tableName));
+        metaData.getSchemaByName(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        event.getAlteredTables().add(metaData.getSchemaByName(schemaName).get(tableName));
         ShardingSphereEventBus.getInstance().post(event);
     }
     

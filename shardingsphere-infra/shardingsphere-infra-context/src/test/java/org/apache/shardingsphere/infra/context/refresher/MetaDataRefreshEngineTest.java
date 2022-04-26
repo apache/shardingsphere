@@ -54,7 +54,7 @@ public final class MetaDataRefreshEngineTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getDatabaseName()).thenReturn("database");
-        Field field = metaDataRefreshEngine.getClass().getDeclaredField("schemaMetaData");
+        Field field = metaDataRefreshEngine.getClass().getDeclaredField("metaData");
         field.setAccessible(true);
         field.set(metaDataRefreshEngine, shardingSphereMetaData);
         for (int i = 0; i < dropTimes; i++) {

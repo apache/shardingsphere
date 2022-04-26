@@ -20,14 +20,16 @@ package org.apache.shardingsphere.infra.metadata.schema.event;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Add schema event.
+ * Drop schema event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddSchemaEvent {
+public final class DropSchemaEvent {
     
     private final String databaseName;
     
-    private final String schemaName;
+    private final Collection<String> schemaNames;
 }

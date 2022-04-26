@@ -45,15 +45,15 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String logicTableName = getLogicTableName(schemaMetaData.getSchemaByName(schemaName), sqlStatement).orElse("");
-        TableMetaData tableMetaData = schemaMetaData.getSchemaByName(schemaName).get(logicTableName);
+        String logicTableName = getLogicTableName(metaData.getSchemaByName(schemaName), sqlStatement).orElse("");
+        TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(logicTableName);
         if (null != tableMetaData) {
             for (String each : getIndexNames(sqlStatement)) {
                 tableMetaData.getIndexes().remove(each);
             }
-            post(schemaMetaData.getDatabaseName(), schemaName, tableMetaData);
+            post(metaData.getDatabaseName(), schemaName, tableMetaData);
         }
     }
     

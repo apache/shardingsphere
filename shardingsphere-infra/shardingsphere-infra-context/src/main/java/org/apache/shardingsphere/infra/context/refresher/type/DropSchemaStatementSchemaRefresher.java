@@ -21,37 +21,31 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Schema refresher for drop view statement.
+ * Schema refresher for drop schema statement.
  */
-public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
+public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
-    private static final String TYPE = DropViewStatement.class.getName();
+    private static final String TYPE = DropSchemaStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
-        sqlStatement.getViews().forEach(each -> {
-            metaData.getSchemaByName(schemaName).remove(each.getTableName().getIdentifier().getValue());
-            event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
+                        final Collection<String> logicDataSourceNames, final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        sqlStatement.getSchemaNames().forEach(each -> {
+            database.remove(each);
+            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
-        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
-        for (SimpleTableSegment each : sqlStatement.getViews()) {
-            rules.forEach(rule -> rule.remove(each.getTableName().getIdentifier().getValue()));
-        }
-        ShardingSphereEventBus.getInstance().post(event);
+        ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(metaData.getDatabaseName(), sqlStatement.getSchemaNames()));
     }
     
     @Override
