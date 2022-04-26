@@ -48,7 +48,7 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(metaData.getName()).thenReturn("sharding_db");
+        when(metaData.getDatabaseName()).thenReturn("sharding_db");
         DistSQLResultSet resultSet = new ShardingTableRulesUsedAlgorithmQueryResultSet();
         ShowShardingTableRulesUsedAlgorithmStatement statement = mock(ShowShardingTableRulesUsedAlgorithmStatement.class);
         when(statement.getAlgorithmName()).thenReturn(Optional.of("t_order_inline"));

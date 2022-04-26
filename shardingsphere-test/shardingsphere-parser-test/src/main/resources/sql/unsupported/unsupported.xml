@@ -4035,10 +4035,6 @@
     <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case289" value="ALTER RULE NewInsertRule ON rule_v1 RENAME TO &quot;_RETURN&quot;;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case290" value="ALTER RULE rules_parted_table_insert ON rules_parted_table RENAME TO rules_parted_table_insert_redirect;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case291" value="ALTER SCHEMA pub_test1 RENAME to pub_test1_renamed;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case292" value="ALTER SCHEMA pub_test1_renamed RENAME to pub_test1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case293" value="ALTER SCHEMA tableam_display OWNER TO regress_display_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case294" value="ALTER SCHEMA test_ns_schema_1 RENAME TO test_ns_schema_renamed;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case295" value="ALTER SEQUENCE itest6_a_seq OWNED BY NONE;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case296" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case297" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv3;" db-types="PostgreSQL"/>
@@ -7141,7 +7137,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case56" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias1);" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case57" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias2);" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case58" value="alter operator family integer_ops using btree add   operator 3 = (int8alias2, int8alias2);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case59" value="alter schema testpart owner to regress_partitioning_role;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case60" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab alter column atcol1 drop default;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL"/>

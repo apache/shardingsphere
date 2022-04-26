@@ -61,7 +61,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkRuleNames(databaseName, rules, currentRuleConfig);
         checkResources(databaseName, rules, metaData);

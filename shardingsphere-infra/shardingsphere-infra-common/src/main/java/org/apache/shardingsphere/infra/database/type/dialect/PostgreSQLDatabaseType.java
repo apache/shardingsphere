@@ -87,4 +87,9 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     public Collection<String> getSystemSchemas() {
         return SYSTEM_SCHEMAS;
     }
+    
+    @Override
+    public String getDefaultSchema(final String databaseName) {
+        return "public";
+    }
 }
