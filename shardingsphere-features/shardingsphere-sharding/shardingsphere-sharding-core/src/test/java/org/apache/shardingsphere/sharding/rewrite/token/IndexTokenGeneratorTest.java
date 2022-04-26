@@ -59,7 +59,7 @@ public final class IndexTokenGeneratorTest {
     
     @Test
     public void assertGenerateSQLTokens() {
-        IndexSegment indexSegment = mock(IndexSegment.class);
+        IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         int testStartIndex = 1;
         when(indexSegment.getStartIndex()).thenReturn(testStartIndex);
         int testStopIndex = 3;
