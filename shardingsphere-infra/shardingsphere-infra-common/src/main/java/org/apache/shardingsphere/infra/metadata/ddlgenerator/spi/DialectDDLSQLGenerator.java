@@ -25,8 +25,8 @@ import java.sql.Connection;
  * Dialect DDL SQL generator.
  */
 public interface DialectDDLSQLGenerator extends StatelessTypedSPI {
-   
-   /**
+    
+    /**
     * Generate DDL SQL.
     * 
     * @param tableName table name
