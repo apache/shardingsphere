@@ -24,25 +24,31 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, Void> {
+public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, String> {
 
     public static final String DATABASE_NAME = "databaseName";
+
+    private static final String SUCCEED = "succeed";
 
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
 
     @Override
-    public Collection<Void> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+    public Collection<String> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+        List<String> result = new LinkedList<>();
         String databaseName = (String) dataMap.get(DATABASE_NAME);
         inputs.forEach(dataSource -> {
             try {
                 databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSource);
+                result.add("succeed");
             } catch (SQLException e) {
                 throw new IllegalStateException(String.format("Error while loading highly available Status with %s", dataSource), e);
             }
         });
-        return null;
+        return result;
     }
 }
