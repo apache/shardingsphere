@@ -44,7 +44,7 @@ public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataS
         inputs.forEach(dataSource -> {
             try {
                 databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSource);
-                result.add("succeed");
+                result.add(SUCCEED);
             } catch (SQLException e) {
                 throw new IllegalStateException(String.format("Error while loading highly available Status with %s", dataSource), e);
             }
