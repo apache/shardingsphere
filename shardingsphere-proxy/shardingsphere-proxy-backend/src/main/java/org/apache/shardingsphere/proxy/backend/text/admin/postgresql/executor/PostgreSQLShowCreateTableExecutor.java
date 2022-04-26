@@ -69,7 +69,7 @@ public final class PostgreSQLShowCreateTableExecutor {
     private String getReSqlForTable(final Map<String, Object> context, final Connection connection) {
         formatter(context, connection);
         formatColumnList(context, connection);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(String.format("-- Table: %s.%s\n\n-- ", context.get("schema"), context.get("name")));
         result.append(getSqlFromTemplate(context, "table/default/delete.ftl"));
         result.append("\n");
@@ -505,10 +505,16 @@ public final class PostgreSQLShowCreateTableExecutor {
     
     private void fetchTableProperties(final Map<String, Object> context, final Connection connection) throws SQLException, IOException, TemplateException {
         appendFirstRow(executeByTemplate(connection, context, "table/12_plus/properties.ftl"), context);
+        context.put("coll_inherits", convertToList(context.get("coll_inherits")));
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
         setRowsCount(context);
         fetchPrivileges(context);
+    }
+    
+    @SneakyThrows
+    private Object convertToList(final Object array) {
+        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     
     private void fetchPrivileges(final Map<String, Object> context) {

@@ -1,18 +1,18 @@
-<#macro PRIMARY_KEY>
-   <#if columns?size gt 0 >
+<#macro PRIMARY_KEY data>
+   <#if data.columns?size gt 0 >
 
-    <#if name?? >CONSTRAINT ${name} </#if>PRIMARY KEY (<#list columns as c>
-    <#if c?counter != 1 >, </#if>${c.column}</#list>)<#if include?size gt 0 >
+    <#if data.name?? >CONSTRAINT ${data.name} </#if>PRIMARY KEY (<#list data.columns as c>
+    <#if c?counter != 1 >, </#if>${c.column}</#list>)<#if data.include?size gt 0 >
 
-    INCLUDE(<#list include as col ><#if col?counter != 1 >, </#if>${col}</#list>)</#if>
-    <#if fillfactor?? >
+    INCLUDE(<#list data.include as col ><#if col?counter != 1 >, </#if>${col}</#list>)</#if>
+    <#if data.fillfactor?? >
 
-    WITH (FILLFACTOR=${fillfactor})</#if>
-    <#if spcname?? && spcname != "pg_default" >
+    WITH (FILLFACTOR=${data.fillfactor})</#if>
+    <#if data.spcname?? && data.spcname != "pg_default" >
 
-    USING INDEX TABLESPACE ${spcname }</#if>
-    <#if condeferrable!false >
+    USING INDEX TABLESPACE ${data.spcname }</#if>
+    <#if data.condeferrable!false >
 
-    DEFERRABLE<#if condeferred!false > INITIALLY DEFERRED</#if></#if>
+    DEFERRABLE<#if data.condeferred!false > INITIALLY DEFERRED</#if></#if>
    </#if>
 </#macro>
