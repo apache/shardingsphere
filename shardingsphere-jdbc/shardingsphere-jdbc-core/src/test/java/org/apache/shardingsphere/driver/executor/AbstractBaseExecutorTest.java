@@ -60,7 +60,7 @@ public abstract class AbstractBaseExecutorTest {
     @Before
     public void setUp() throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
-        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
+        executorEngine = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors());
         TransactionTypeHolder.set(TransactionType.LOCAL);
         connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockContextManager());
     }
@@ -93,8 +93,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private TransactionContexts mockTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class);
-        when(result.getEngines()).thenReturn(mock(Map.class));
+        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         when(result.getEngines().get(DefaultSchema.LOGIC_NAME)).thenReturn(new ShardingSphereTransactionManagerEngine());
         return result;
     }

@@ -41,10 +41,34 @@ import java.util.concurrent.ExecutionException;
 @Getter
 public final class ExecutorEngine implements AutoCloseable {
     
+    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
+    
     private final ExecutorServiceManager executorServiceManager;
     
-    public ExecutorEngine(final int executorSize) {
+    private ExecutorEngine(final int executorSize) {
         executorServiceManager = new ExecutorServiceManager(executorSize);
+    }
+    
+    /**
+     * Create executor engine with executor size.
+     *
+     * @param executorSize executor size
+     * @return created executor engine
+     */
+    public static ExecutorEngine createExecutorEngineWithSize(final int executorSize) {
+        return new ExecutorEngine(executorSize);
+    }
+    
+    /**
+     * Create executor engine with CPU and resources.
+     * 
+     * @param resourceCount resource count
+     * @return created executor engine
+     */
+    public static ExecutorEngine createExecutorEngineWithCPUAndResources(final int resourceCount) {
+        int cpuThreadCount = CPU_CORES * 2 -1;
+        int resourceThreadCount = Math.max(resourceCount, 1);
+        return new ExecutorEngine(Math.min(cpuThreadCount, resourceThreadCount));
     }
     
     /**

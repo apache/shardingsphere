@@ -63,7 +63,7 @@ public final class DatabaseDiscoveryEngine {
      * @throws SQLException SQL exception
      */
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        ExecutorEngine executorEngine = new ExecutorEngine(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
+        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSourceMap.size());
         ExecutorDataMap.getValue().put(DatabaseDiscoveryExecutorCallback.DATABASE_NAME, databaseName);
         Collection<String> result = executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
         if (!result.isEmpty()) {
