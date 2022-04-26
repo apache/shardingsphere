@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -40,12 +40,12 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             return;
         }
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getIndexes()) {
-            if (!isSchemaContainsIndex(schema, each)) {
+            if (!isSchemaContainsIndex(metaData.getDefaultSchema(), each)) {
                 throw new ShardingSphereException("Index '%s' does not exist.", each.getIdentifier().getValue());
             }
         }
@@ -53,14 +53,14 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
         Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(table -> table.getTableName().getIdentifier().getValue());
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexNames, logicTableName.get());
         } else {
             for (String each : indexNames) {
-                logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each)).findFirst();
+                logicTableName = metaData.getDefaultSchema().getAllTableNames().stream().filter(tableName -> metaData.getDefaultSchema().get(tableName).getIndexes().containsKey(each)).findFirst();
                 logicTableName.ifPresent(tableName -> validateDropIndexRouteUnit(shardingRule, routeContext, indexNames, tableName));
             }
         }
