@@ -43,8 +43,6 @@ public final class DatabaseDiscoveryExecutorCallback implements ExecutorCallback
                 databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, each);
             } catch (final SQLException ex) {
                 result.add(String.format("Error while loading highly available Status with %s", databaseName));
-            } catch (final Exception ex) {
-                result.add(ex.getMessage());
             }
         }
         return result;
