@@ -21,11 +21,17 @@ import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class EncryptSpringBootJpaExample {
     
     public static void main(final String[] args) throws SQLException {
