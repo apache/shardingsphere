@@ -32,7 +32,7 @@ import java.util.Set;
  * Postgre constraints loader.
  */
 @RequiredArgsConstructor
-public class PostgreConstraintsLoader extends PostgreAbstractLoader {
+public final class PostgreConstraintsLoader extends PostgreAbstractLoader {
     
     private final Connection connection;
     

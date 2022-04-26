@@ -32,7 +32,7 @@ import java.util.Objects;
  * Freemarker manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FreemarkerManager {
+public final class FreemarkerManager {
     
     private static final FreemarkerManager INSTANCE = new FreemarkerManager();
     

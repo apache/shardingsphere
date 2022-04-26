@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Postgre column properties loader.
  */
 @RequiredArgsConstructor
-public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
+public final class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
     
     private final Connection connection;
     
