@@ -18,8 +18,8 @@ chapter = true
 ### 基础软件
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
-    <li><a href="https://www.opengauss.org/zh/" rel="nofollow">华为 openGauss</a></li>
-    <li><a href="https://www.mogdb.io/" rel="nofollow">云和恩墨 MogDB</a></li>
+    <li><a href="https://www.opengauss.org/zh/" rel="nofollow">华为 openGauss</a>：<a href="https://mp.weixin.qq.com/s/r7OfiuL2zqES66Y2r00nAw" rel="nofollow">用户案例</a></li>
+    <li><a href="https://www.mogdb.io/" rel="nofollow">云和恩墨 MogDB</a>：<a href="https://mp.weixin.qq.com/s/x25xPc352tt0i7E2YtsqIA" rel="nofollow">用户案例</a></li>
 </ul>
 
 ### 银行
@@ -134,13 +134,13 @@ chapter = true
     <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a>：<a href="https://mp.weixin.qq.com/s/UoMHNdPFj_kfwC-RAYazAg" rel="nofollow">用户案例</a></li></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
     <li><a href="http://www.c-wms.net/" rel="nofollow">弘人网络科技</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">喜百年供应链科技</a></li>
-    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a></li>
 </ul>
 
 ### 旅游服务
