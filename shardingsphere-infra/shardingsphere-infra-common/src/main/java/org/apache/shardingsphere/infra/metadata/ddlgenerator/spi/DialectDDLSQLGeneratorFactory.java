@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.infra.metadata.ddlgenerator.spi;
 
-import freemarker.template.Configuration;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.io.File;
-import java.util.Objects;
+import java.util.Optional;
 
+/**
+ * Dialect DDL SQL generator factory.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FreemarkerManager {
+public final class DialectDDLSQLGeneratorFactory {
     
-    private static final FreemarkerManager INSTANCE = new FreemarkerManager();
-    
-    @Getter
-    private final Configuration templateConfig = createTemplateConfiguration();
-    
-    public static FreemarkerManager getInstance() {
-        return INSTANCE;
+    static {
+        ShardingSphereServiceLoader.register(DialectDDLSQLGenerator.class);
     }
     
-    @SneakyThrows
-    private Configuration createTemplateConfiguration() {
-        Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(FreemarkerManager.class.getClassLoader().getResource("template")).getFile()));
-        result.setDefaultEncoding("UTF-8");
-        return result;
+    /**
+     * Create new instance of dialect DDL SQL generator.
+     *
+     * @param databaseType database type
+     * @return new instance of dialect DDL SQL generator
+     */
+    public static Optional<DialectDDLSQLGenerator> newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectDDLSQLGenerator.class, databaseType.getName());
     }
 }

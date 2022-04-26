@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
+package org.apache.shardingsphere.infra.metadata.ddlgenerator.spi;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import freemarker.template.TemplateException;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLShowCreateTableExecutorTest {
+/**
+ * Dialect DDL SQL generator.
+ */
+public interface DialectDDLSQLGenerator extends StatelessTypedSPI {
     
-    @Test
-    public void assertDoCreateSQL() {
-    }
+   String generateDDLSQL(String tableName, String schemaName, Connection connection) throws SQLException, IOException, TemplateException;
 }
