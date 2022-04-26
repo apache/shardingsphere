@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Scaling release schema name lock event.
+ * Scaling release database level lock event.
  */
 @RequiredArgsConstructor
 @Getter
-// TODO rename
-public final class ScalingReleaseSchemaNameLockEvent {
-    private final String schemaName;
+public final class ScalingReleaseDatabaseLevelLockEvent {
+    
+    private final String databaseName;
 }

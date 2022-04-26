@@ -120,7 +120,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private boolean filter(final String database, final AbstractRowsEvent event) {
-        return !event.getSchemaName().equals(database) || !dumperConfig.getTableNameMap().containsKey(event.getTableName());
+        return !event.getDatabaseName().equals(database) || !dumperConfig.getTableNameMap().containsKey(event.getTableName());
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {

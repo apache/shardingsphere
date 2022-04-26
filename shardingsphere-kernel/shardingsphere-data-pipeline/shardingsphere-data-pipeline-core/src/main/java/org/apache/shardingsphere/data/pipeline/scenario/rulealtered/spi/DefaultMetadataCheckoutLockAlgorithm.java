@@ -28,10 +28,10 @@ public final class DefaultMetadataCheckoutLockAlgorithm implements RuleBasedJobL
     
     // TODO impl default checkoutLockAlgorithm
     @Override
-    public void lock(final String schemaName, final String jobId) {
+    public void lock(final String databaseName, final String jobId) {
     }
     
     @Override
-    public void releaseLock(final String schemaName, final String jobId) {
+    public void releaseLock(final String databaseName, final String jobId) {
     }
 }

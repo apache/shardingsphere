@@ -91,7 +91,7 @@ public final class JobConfiguration {
         WorkflowConfiguration workflowConfig = getWorkflowConfig();
         jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
         jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
-        jobId.setSchemaName(workflowConfig.getSchemaName());
+        jobId.setDatabaseName(workflowConfig.getDatabaseName());
         return jobId.marshal();
     }
 }
