@@ -57,7 +57,7 @@ public final class DatabaseDiscoveryEngine {
     /**
      * Check environment of database cluster.
      *
-     * @param databaseName  database name
+     * @param databaseName database name
      * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
@@ -79,11 +79,11 @@ public final class DatabaseDiscoveryEngine {
     /**
      * Change primary data source.
      *
-     * @param databaseName                  database name
-     * @param groupName                     group name
+     * @param databaseName database name
+     * @param groupName group name
      * @param originalPrimaryDataSourceName original primary data source name
-     * @param dataSourceMap                 data source map
-     * @param disabledDataSourceNames       disabled data source names
+     * @param dataSourceMap data source map
+     * @param disabledDataSourceNames disabled data source names
      * @return changed primary data source name
      */
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
@@ -96,7 +96,7 @@ public final class DatabaseDiscoveryEngine {
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap);
         return result;
     }
-
+    
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         for (Entry<String, DataSource> entry : getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames).entrySet()) {
             try {
@@ -109,7 +109,7 @@ public final class DatabaseDiscoveryEngine {
         }
         return Optional.empty();
     }
-
+    
     private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
@@ -117,7 +117,7 @@ public final class DatabaseDiscoveryEngine {
         }
         return result;
     }
-
+    
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {
@@ -125,11 +125,11 @@ public final class DatabaseDiscoveryEngine {
             }
         }
     }
-
+    
     private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
     }
-
+    
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try {
             return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
