@@ -28,13 +28,13 @@ weight = 2
 
 功能支持情况：
 
-| 功能                   | MySQL         | PostgreSQL    | openGauss     |
-| --------------------- | ------------- | ------------- | ------------- |
+| 功能                   | MySQL         | PostgreSQL   | openGauss     |
+| --------------------- | ------------- |--------------| ------------- |
 | 全量迁移               | 支持           | 支持           | 支持           |
 | 增量迁移               | 支持           | 支持           | 支持           |
-| 自动建表               | 支持           | 不支持         | 支持           |
+| 自动建表               | 支持           | 支持           | 支持            |
 | DATA_MATCH一致性校验   | 支持           | 支持           | 支持           |
-| CRC32_MATCH一致性校验  | 支持           | 不支持         | 不支持          |
+| CRC32_MATCH一致性校验  | 支持           | 不支持          | 不支持          |
 
 **注意**：
 
@@ -281,11 +281,9 @@ mysql> preview SELECT COUNT(1) FROM t_order;
 #### 其他 DistSQL
 详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
-### DistSQL 手动模式接口
-
-数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
-
 ### DistSQL 手动模式完整流程示例
+
+手动模式下，数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 本示例演示从已有 MySQL 数据库迁移到 proxy。
 
