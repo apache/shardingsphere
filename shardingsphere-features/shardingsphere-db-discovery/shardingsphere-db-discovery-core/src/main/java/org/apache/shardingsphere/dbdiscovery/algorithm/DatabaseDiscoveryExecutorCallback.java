@@ -19,36 +19,31 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public final class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, String> {
+public final class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, Void> {
     
-    public static final String DATABASE_NAME = "databaseName";
+    private final String databaseName;
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
     
     @Override
-    public Collection<String> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        String databaseName = (String) dataMap.get(DATABASE_NAME);
+    public Collection<Void> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
         for (DataSource each : inputs) {
             try {
                 databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, each);
             } catch (final SQLException ex) {
-                result.add(String.format("Error while loading highly available Status with %s", databaseName));
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                result.add(ex.getMessage());
+                throw new ShardingSphereConfigurationException("Check environment error with database `%s`", databaseName);
             }
         }
-        return result;
+        return Collections.emptyList();
     }
 }
