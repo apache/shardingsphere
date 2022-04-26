@@ -56,7 +56,7 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         if (sqlStatementContext instanceof IndexAvailable) {
             for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
-                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier(), sqlStatementContext, shardingRule, schema));
+                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, shardingRule, schema));
             }
         }
         return result;
