@@ -19,31 +19,21 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * Index segment.
+ * Index name segment.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class IndexSegment implements SQLSegment, OwnerAvailable {
+@ToString
+public final class IndexNameSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final IndexNameSegment indexName;
-    
-    private OwnerSegment owner;
-    
-    @Override
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
-    }
+    private final IdentifierValue identifier;
 }

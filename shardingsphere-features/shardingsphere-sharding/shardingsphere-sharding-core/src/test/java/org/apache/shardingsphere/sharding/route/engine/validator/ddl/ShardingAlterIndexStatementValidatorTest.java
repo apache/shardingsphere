@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
@@ -52,8 +53,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
     @Test
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
@@ -67,8 +68,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
@@ -81,8 +82,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);

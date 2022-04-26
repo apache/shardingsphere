@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -54,12 +55,12 @@ public final class AlterIndexStatementContextTest {
     }
     
     private void assertNewInstance(final AlterIndexStatement alterIndexStatement) {
-        IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("index_1"));
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_1")));
         when(alterIndexStatement.getIndex()).thenReturn(Optional.of(indexSegment));
         AlterIndexStatementContext actual = new AlterIndexStatementContext(alterIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterIndexStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.emptyList()));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
     }
 }
