@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
@@ -187,6 +188,58 @@ public final class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload, times(2)).writeInt4(23);
         verify(mockPayload, times(3)).writeInt4(18);
         assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+    }
+    
+    @Test
+    public void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        final String statementId = "S_2";
+        when(packet.getName()).thenReturn(statementId);
+        final int connectionId = 1;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        String sql = "insert into t_order (iD, k, c, PaD) values (1, ?, ?, ?), (?, 2, ?, '')";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+        }
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statementId, sql, sqlStatement, parameterTypes);
+        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(2));
+        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        actualParameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(5);
+        verify(mockPayload, times(2)).writeInt4(23);
+        verify(mockPayload, times(3)).writeInt4(18);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+    }
+    
+    @Test
+    public void assertDescribePreparedStatementInsertWithUndefinedColumns() {
+        when(packet.getType()).thenReturn('S');
+        final String statementId = "S_2";
+        when(packet.getName()).thenReturn(statementId);
+        final int connectionId = 1;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        String sql = "insert into t_order (undefined_column, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+        }
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statementId, sql, sqlStatement, parameterTypes);
+        SQLException actual = null;
+        try {
+            executor.execute();
+        } catch (final SQLException ex) {
+            actual = ex;
+        }
+        assertThat(actual.getSQLState(), is(PostgreSQLErrorCode.UNDEFINED_COLUMN.getErrorCode()));
+        assertThat(actual.getMessage(), is("Column \"undefined_column\" of relation \"t_order\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA."));
     }
     
     @Test
