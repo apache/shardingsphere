@@ -51,7 +51,7 @@ public final class MetaDataRefreshEngine {
     
     private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final ShardingSphereMetaData schemaMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final FederationDatabaseMetaData federationMetaData;
     
@@ -74,8 +74,8 @@ public final class MetaDataRefreshEngine {
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(getSchemaName(sqlStatementContext.getDatabaseType(), schemaMetaData.getDatabaseName()));
-            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(getSchemaName(sqlStatementContext.getDatabaseType(), metaData.getDatabaseName()));
+            schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         }

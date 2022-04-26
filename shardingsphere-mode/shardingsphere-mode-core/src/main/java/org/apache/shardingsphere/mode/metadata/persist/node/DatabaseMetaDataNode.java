@@ -94,7 +94,18 @@ public final class DatabaseMetaDataNode {
      * @return tables path
      */
     public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataSchemasPath(databaseName), schemaName, TABLES_NODE);
+        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), TABLES_NODE);
+    }
+    
+    /**
+     * Get schema path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return tables path
+     */
+    public static String getMetaDataSchemaPath(final String databaseName, final String schemaName) {
+        return String.join("/", getMetaDataSchemasPath(databaseName), schemaName);
     }
     
     /**
@@ -103,7 +114,7 @@ public final class DatabaseMetaDataNode {
      * @param databaseName database name
      * @return schemas path
      */
-    public static String getMetaDataSchemasPath(final String databaseName) {
+    private static String getMetaDataSchemasPath(final String databaseName) {
         return String.join("/", getDatabaseNamePath(databaseName), SCHEMAS_NODE);
     }
     

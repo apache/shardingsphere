@@ -43,16 +43,16 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     private static final String TYPE = CreateSchemaStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<String> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
         if (!schema.isPresent()) {
             return;
         }
-        schemaMetaData.getSchemas().put(schema.get(), new ShardingSphereSchema());
+        metaData.getSchemas().put(schema.get(), new ShardingSphereSchema());
         database.put(schema.get(), new TableMetaData());
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-        AddSchemaEvent event = new AddSchemaEvent(schemaMetaData.getDatabaseName(), schema.get());
+        AddSchemaEvent event = new AddSchemaEvent(metaData.getDatabaseName(), schema.get());
         ShardingSphereEventBus.getInstance().post(event);
     }
     
