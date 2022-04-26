@@ -170,7 +170,7 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        if (!isUncompletedJobOfSameSchemaInJobList(event.getDatabaseName())) {
+        if (!hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
@@ -290,8 +290,8 @@ public final class RuleAlteredJobWorker {
         return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }
     
-    private boolean isUncompletedJobOfSameSchemaInJobList(final String databaseName) {
-        boolean isUncompletedJobOfSameSchema = false;
+    private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
+        boolean result = false;
         for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
             if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
@@ -299,11 +299,11 @@ public final class RuleAlteredJobWorker {
             }
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
             if (hasUncompletedJobOfSameDatabaseName(jobConfiguration, each.getJobId(), databaseName)) {
-                isUncompletedJobOfSameSchema = true;
+                result = true;
                 break;
             }
         }
-        return !isUncompletedJobOfSameSchema;
+        return !result;
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final JobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {

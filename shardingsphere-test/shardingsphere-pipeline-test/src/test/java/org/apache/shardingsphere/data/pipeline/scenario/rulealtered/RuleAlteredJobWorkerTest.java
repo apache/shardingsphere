@@ -97,7 +97,7 @@ public final class RuleAlteredJobWorkerTest {
         URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
         assertNotNull(jobConfigUrl);
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
-        Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "isUncompletedJobOfSameSchemaInJobList", new Class[]{String.class},
+        Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "hasUncompletedJobOfSameDatabaseName", new Class[]{String.class},
                 new String[]{jobConfiguration.getWorkflowConfig().getDatabaseName()});
         assertFalse((Boolean) result);
     }
