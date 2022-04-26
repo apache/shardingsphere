@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 184 家公司。
+共计 187 家公司。
 
 ### 基础软件
 <ul>
@@ -42,7 +42,7 @@ chapter = true
     <li><a href="https://www.cucloud.cn/" rel="nofollow">联通云</a></li>
 </ul>
 
-### 互联网金融
+### 金融科技
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.sunline.cn/" rel="nofollow">长亮科技</a></li>
@@ -50,6 +50,7 @@ chapter = true
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
+    <li><a href="http://www.gzclearing.com/" rel="nofollow">广州金融科技</a>：<a href="https://mp.weixin.qq.com/s/L5oBI1qN6LX8jG9qU_YT1w" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
@@ -111,6 +112,8 @@ chapter = true
     <li><a href="http://www.meicloud.com/" rel="nofollow">美云智数</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">万江龙智慧商圈</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
+    <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
+    <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
 </ul>
 
 ### 出行
