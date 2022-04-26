@@ -42,22 +42,23 @@ import java.util.Optional;
 public final class RenameSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
     
     private static final String TYPE = AlterSchemaStatement.class.getName();
+    
     @Override
-    public void refresh(ShardingSphereMetaData metaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        Collection<String> logicDataSourceNames, String schemaName, AlterSchemaStatement sqlStatement, ConfigurationProperties props) throws SQLException {
-        Optional<String> renameSchemaName = sqlStatement instanceof PostgreSQLAlterSchemaStatement ?
-                ((PostgreSQLAlterSchemaStatement) sqlStatement).getRenameSchema() : ((OpenGaussAlterSchemaStatement) sqlStatement).getRenameSchema();
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                        final Collection<String> logicDataSourceNames, final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        Optional<String> renameSchemaName = sqlStatement instanceof PostgreSQLAlterSchemaStatement ? ((PostgreSQLAlterSchemaStatement) sqlStatement).getRenameSchema()
+                : ((OpenGaussAlterSchemaStatement) sqlStatement).getRenameSchema();
         if (!renameSchemaName.isPresent()) {
             return;
         }
         Optional<FederationSchemaMetaData> schemaMetadata = database.getSchemaMetadata(sqlStatement.getSchemaName());
         if (schemaMetadata.isPresent()) {
-            AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), sqlStatement.getSchemaName(), renameSchemaName.get(),
-                    new ShardingSphereSchema(metaData.getSchemaByName(sqlStatement.getSchemaName()).getTables()));
-            metaData.getSchemas().remove(sqlStatement.getSchemaName());
             database.remove(sqlStatement.getSchemaName());
             database.put(renameSchemaName.get(), schemaMetadata.get());
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+            AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), sqlStatement.getSchemaName(), renameSchemaName.get(),
+                    new ShardingSphereSchema(metaData.getSchemaByName(sqlStatement.getSchemaName()).getTables()));
+            metaData.getSchemas().remove(sqlStatement.getSchemaName());
             ShardingSphereEventBus.getInstance().post(event);
             // TODO Maybe need to refresh tables for SingleTableRule
         }
