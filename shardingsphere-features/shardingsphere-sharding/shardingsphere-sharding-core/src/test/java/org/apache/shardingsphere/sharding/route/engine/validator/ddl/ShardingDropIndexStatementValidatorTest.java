@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -53,8 +54,8 @@ public final class ShardingDropIndexStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Mock
-    private ShardingSphereSchema schema;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereMetaData metaData;
     
     @Mock
     private RouteContext routeContext;
@@ -67,11 +68,11 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
-        new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+        new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -82,10 +83,10 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
-        new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+        new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
     @Test
@@ -96,8 +97,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -106,7 +107,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement),
-                Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -117,8 +118,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -126,7 +127,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement),
-                Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -137,8 +138,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
-        when(schema.get("t_config")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
+        when(metaData.getDefaultSchema().get("t_config")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_config_index")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -147,7 +148,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement),
-                Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -158,8 +159,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
-        when(schema.get("t_config")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
+        when(metaData.getDefaultSchema().get("t_config")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_config_index")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -167,6 +168,6 @@ public final class ShardingDropIndexStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement),
-                Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
 }

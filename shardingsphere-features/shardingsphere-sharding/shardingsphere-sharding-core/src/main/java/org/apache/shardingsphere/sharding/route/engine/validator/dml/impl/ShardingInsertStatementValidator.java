@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -52,7 +52,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }
@@ -83,7 +83,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
         Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();

@@ -102,7 +102,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         if (null == metaData) {
             throw new SchemaNotExistedException(databaseName);
         }
-        return metaData.getDefaultSchema();
+        String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
