@@ -41,11 +41,11 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
         if (index.isPresent() && !isSchemaContainsIndex(metaData.getDefaultSchema(), index.get())) {
-            throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIdentifier().getValue());
+            throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIndexName().getIdentifier().getValue());
         }
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatementContext.getSqlStatement());
         if (renameIndex.isPresent() && isSchemaContainsIndex(metaData.getDefaultSchema(), renameIndex.get())) {
-            throw new ShardingSphereException("Index '%s' already exists.", renameIndex.get().getIdentifier().getValue());
+            throw new ShardingSphereException("Index '%s' already exists.", renameIndex.get().getIndexName().getIdentifier().getValue());
         }
     }
     

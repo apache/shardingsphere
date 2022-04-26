@@ -64,7 +64,7 @@ public final class ConstraintDefinitionAssert {
         }
         if (null != expected.getIndexName()) {
             assertTrue(assertContext.getText("Actual index name should exist."), actual.getIndexName().isPresent());
-            assertThat(assertContext.getText("Actual index name assertion error."), actual.getIndexName().get().getIdentifier().getValue(), is(expected.getIndexName()));
+            assertThat(assertContext.getText("Actual index name assertion error."), actual.getIndexName().get().getIndexName().getIdentifier().getValue(), is(expected.getIndexName()));
         } else {
             assertFalse(assertContext.getText("Actual index name should not exist."), actual.getIndexName().isPresent());
         }
