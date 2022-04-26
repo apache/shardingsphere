@@ -22,36 +22,45 @@
 #
 ######################################################################################################
 #
-schemaName: readwrite_splitting_db
-
-dataSources:
-  primary_ds:
-    url: jdbc:postgresql://117.48.121.21:55555/postgres
-    username: postgres
-    password: sphereEx@2021
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-  replica_ds_0:
-    url: jdbc:postgresql://117.48.121.21:55555/postgres
-    username: postgres
-    password: sphereEx@2021
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-
-rules:
-  - !READWRITE_SPLITTING
-    dataSources:
-      readwrite_ds:
-        type: Static
-        props:
-          write-data-source-name: primary_ds
-          read-data-source-names: replica_ds_0
+#databaseName: readwrite_splitting_db
+#
+#dataSources:
+#  primary_ds:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#  replica_ds_0:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#  replica_ds_1:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#
+#rules:
+#- !READWRITE_SPLITTING
+#  dataSources:
+#    readwrite_ds:
+#      type: Static
+#      props:
+#        write-data-source-name: primary_ds
+#        read-data-source-names: replica_ds_0,replica_ds_1
 
 ######################################################################################################
 #
@@ -59,7 +68,7 @@ rules:
 #
 ######################################################################################################
 
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  write_ds:
