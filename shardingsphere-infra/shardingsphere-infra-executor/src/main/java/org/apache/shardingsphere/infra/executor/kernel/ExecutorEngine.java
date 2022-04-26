@@ -77,7 +77,7 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return created executor engine
      */
     public static ExecutorEngine createExecutorEngineWithCPU() {
-        int cpuThreadCount = CPU_CORES * 2 -1;
+        int cpuThreadCount = CPU_CORES * 2 - 1;
         return new ExecutorEngine(cpuThreadCount);
     }
     
