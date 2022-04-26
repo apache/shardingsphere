@@ -20,16 +20,22 @@ package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+/**
+ * Postgre table properties loader.
+ */
 @RequiredArgsConstructor
 public class PostgreTablePropertiesLoader extends PostgreAbstractLoader {
     
@@ -39,6 +45,11 @@ public class PostgreTablePropertiesLoader extends PostgreAbstractLoader {
     
     private final String schemaName;
     
+    /**
+     * Load table properties.
+     * 
+     * @return table properties
+     */
     @SneakyThrows
     public Map<String, Object> loadTableProperties() {
         Map<String, Object> result = new LinkedHashMap<>();
@@ -76,11 +87,16 @@ public class PostgreTablePropertiesLoader extends PostgreAbstractLoader {
     
     private void fetchTableProperties(final Map<String, Object> context) {
         appendFirstRow(executeByTemplate(connection, context, "table/12_plus/properties.ftl"), context);
-        context.put("coll_inherits", convertToList(context.get("coll_inherits")));
+        context.put("coll_inherits", convertPgArrayToList(context.get("coll_inherits")));
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
         setRowsCount(context);
         fetchPrivileges(context);
+    }
+    
+    @SneakyThrows
+    private Collection<String> convertPgArrayToList(final Object array) {
+        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     
     private void updateAutovacuumProperties(final Map<String, Object> context) {
@@ -146,5 +162,17 @@ public class PostgreTablePropertiesLoader extends PostgreAbstractLoader {
             }
         }
         return false;
+    }
+    
+    private void appendToMap(final ResultSet resultSet, final Map<String, Object> map) throws SQLException {
+        List<Map<String, Object>> rows = getRows(resultSet);
+        appendFirstRow(rows, map);
+    }
+    
+    private void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
+        for (Map<String, Object> each : rows) {
+            context.putAll(each);
+            break;
+        }
     }
 }

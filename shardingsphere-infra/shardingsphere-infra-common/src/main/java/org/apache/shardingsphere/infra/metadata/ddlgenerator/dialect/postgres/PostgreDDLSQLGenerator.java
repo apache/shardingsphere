@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.ddlgenerator.spi.DialectDDLSQLGe
 import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
 
 import java.sql.Connection;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -29,18 +29,16 @@ import java.util.Map;
  */
 public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
     
+    // TODO support version, partitions, comments etc.
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final Connection connection) {
         Map<String, Object> context = new PostgreTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
-        return getReverseEngineeredSql(context, connection);
+        new PostgreColumnPropertiesLoader(connection).loadColumnProperties(context);
+        new PostgreConstraintsLoader(connection).loadConstraints(context);
+        return doGenerateDDLSQL(context);
     }
     
-    private String getReverseEngineeredSql(final Map<String, Object> context, final Connection connection) {
-        return getReSqlForTable(context, connection);
-    }
-    
-    private String getReSqlForTable(final Map<String, Object> context, final Connection connection) {
-        formatter(context, connection);
+    private String doGenerateDDLSQL(final Map<String, Object> context) {
         formatColumnList(context);
         StringBuilder result = new StringBuilder();
         result.append(String.format("-- Table: %s.%s\n\n-- ", context.get("schema"), context.get("name")));
@@ -51,11 +49,12 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
         return result.toString();
     }
     
+    @SuppressWarnings("unchecked")
     private void formatColumnList(final Map<String, Object> context) {
-        List<Map<String, Object>> columns = (List<Map<String, Object>>) context.get("columns");
-        for (Map<String, Object> c : columns) {
-            if (c.containsKey("cltype")) {
-                typeFormatter(c, (String) c.get("cltype"));
+        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        for (Map<String, Object> each : columns) {
+            if (each.containsKey("cltype")) {
+                typeFormatter(each, (String) each.get("cltype"));
             }
         }
     }
@@ -67,11 +66,6 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
         } else {
             c.put("hasSqrBracket", false);
         }
-    }
-    
-    private void formatter(final Map<String, Object> context, final Connection connection) {
-        new PostgreColumnPropertiesLoader(connection).loadColumnProperties(context);
-        new PostgreConstraintsLoader(connection).loadConstraints(context);
     }
     
     @Override

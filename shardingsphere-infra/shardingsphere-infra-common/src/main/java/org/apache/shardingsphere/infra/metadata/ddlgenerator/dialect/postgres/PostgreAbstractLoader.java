@@ -20,45 +20,17 @@ package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class PostgreAbstractLoader {
-    
-    protected void appendToMap(final ResultSet resultSet, final Map<String, Object> map) throws SQLException {
-        List<Map<String, Object>> rows = getRows(resultSet);
-        appendFirstRow(rows, map);
-    }
-    
-    protected void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
-        for (Map<String, Object> each : rows) {
-            context.putAll(each);
-            break;
-        }
-    }
-    
-    private List<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        List<Map<String, Object>> result = new LinkedList<>();
-        while (resultSet.next()) {
-            Map<String, Object> row = new LinkedHashMap<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                row.put(metaData.getColumnName(i), resultSet.getObject(i));
-            }
-            result.add(row);
-        }
-        return result;
-    }
     
     @SneakyThrows
     protected List<Map<String, Object>> executeByTemplate(final Connection connection, final Map<String, Object> param, final String path) {
@@ -69,8 +41,16 @@ public abstract class PostgreAbstractLoader {
         }
     }
     
-    @SneakyThrows
-    protected Object convertToList(final Object array) {
-        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
+    protected List<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        List<Map<String, Object>> result = new LinkedList<>();
+        while (resultSet.next()) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                row.put(metaData.getColumnName(i), resultSet.getObject(i));
+            }
+            result.add(row);
+        }
+        return result;
     }
 }

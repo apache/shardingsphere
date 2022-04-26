@@ -24,7 +24,8 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,46 +33,54 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Postgre column properties loader.
+ */
 @RequiredArgsConstructor
 public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
     
     private final Connection connection;
     
-    public void loadColumnProperties(final Map<String, Object> context) {
-        getFormattedColumns(context, connection);
-    }
-    
+    /**
+     * Load column properties.
+     * 
+     * @param context load context
+     */
     @SneakyThrows
-    private void getFormattedColumns(final Map<String, Object> context, final Connection connection) {
+    public void loadColumnProperties(final Map<String, Object> context) {
         List<Map<String, Object>> allColumns = executeByTemplate(connection, context, "columns/12_plus/properties.ftl");
-        Map<String, Object> editTypes = new HashMap<>();
-        for (Map<String, Object> each : allColumns) {
-            editTypes.put(each.get("atttypid").toString(), new LinkedList<>());
+        if (!allColumns.isEmpty()) {
+            Map<String, Collection<String>> editTypes = getEditTypes(allColumns);
+            for (Map<String, Object> each : allColumns) {
+                columnFormatter(each, editTypes.getOrDefault(each.get("atttypid").toString(), new LinkedList<>()));
+            }
         }
         context.put("columns", allColumns);
-        Map<String, Object> param = new HashMap<>();
-        param.put("type_ids", String.join(",", editTypes.keySet()));
-        if (!allColumns.isEmpty()) {
-            for (Map<String, Object> each : executeByTemplate(connection, param, "columns/default/edit_mode_types_multi.ftl")) {
-                editTypes.put(each.get("main_oid").toString(), each.get("edit_types"));
-            }
-            for (Map<String, Object> each : allColumns) {
-                columnFormatter(each, editTypes.get(each.get("atttypid").toString()));
-            }
-        }
     }
     
-    private void columnFormatter(final Map<String, Object> column, final Object editTypeList) throws SQLException {
-        checkPrimaryColumn(column);
+    private Map<String, Collection<String>> getEditTypes(final List<Map<String, Object>> allColumns) throws SQLException {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        Map<String, Object> param = new LinkedHashMap<>();
+        param.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
+        for (Map<String, Object> each : executeByTemplate(connection, param, "columns/default/edit_mode_types_multi.ftl")) {
+            result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
+        }
+        return result;
+    }
+    
+    private Collection<String> covertPgArrayAndSort(final Object editTypes) throws SQLException {
+        return Arrays.stream((String[]) ((Array) editTypes).getArray()).sorted(String::compareTo).collect(Collectors.toList());
+    }
+    
+    private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) {
+        handlePrimaryColumn(column);
         fetchLengthPrecision(column);
-        List<String> editTypes = Arrays.stream((String[]) ((Array) editTypeList).getArray()).collect(Collectors.toList());
         editTypes.add(column.get("cltype").toString());
-        editTypes.sort(String::compareTo);
         column.put("edit_types", editTypes);
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
     }
     
-    private void checkPrimaryColumn(final Map<String, Object> column) {
+    private void handlePrimaryColumn(final Map<String, Object> column) {
         if (column.containsKey("attnum") && column.containsKey("indkey")) {
             if (Arrays.stream(column.get("indkey").toString().split(" ")).collect(Collectors.toList()).contains(column.get("attnum").toString())) {
                 column.put("is_pk", true);
@@ -86,17 +95,17 @@ public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
     private void fetchLengthPrecision(final Map<String, Object> column) {
         String fullType = getFullDataType(column);
         if (column.containsKey("elemoid")) {
-            getLengthPrecision((Long) column.get("elemoid"), column, fullType);
+            handleLengthPrecision((Long) column.get("elemoid"), column, fullType);
         }
     }
     
-    private void getLengthPrecision(final Long elemoid, final Map<String, Object> column, final String fullType) {
+    private void handleLengthPrecision(final Long elemoid, final Map<String, Object> column, final String fullType) {
         boolean precision = false;
         boolean length = false;
         String typeval = "";
-        Long[] l = {1560L,1561L,1562L,1563L,1042L,1043L,1014L,1015L};
-        Long[] d = {1083L,1114L,1115L,1183L,1184L,1185L,1186L,1187L,1266L,1270L};
-        Long[] p = {1231L,1700L};
+        Long[] l = {1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L};
+        Long[] d = {1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L};
+        Long[] p = {1231L, 1700L};
         if (0 != elemoid) {
             if (Arrays.asList(l).contains(elemoid)) {
                 typeval = "L";
@@ -133,21 +142,14 @@ public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
     }
     
     private String getFullDataType(final Map<String, Object> column) {
-//        data['typnspname'], data['typname'],
-//                data['isdup'], data['attndims'], data['atttypmod']
         String nsp = (String) column.get("typnspname");
         String typname = (String) column.get("typname");
-        Boolean is_dup = (Boolean) column.get("isdup");
         Integer numdims = (Integer) column.get("attndims");
-        Integer typmod = (Integer) column.get("atttypmod");
-        
         String schema = null != nsp ? nsp : "";
         String name = "";
         String array = "";
         String length = "";
-        
         name = checkSchemaInName(typname, schema);
-        
         if (name.startsWith("_")) {
             if (null == numdims || 0 == numdims) {
                 numdims = 1;
@@ -166,6 +168,7 @@ public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
         if (numdims == 1) {
             array = "[]";
         }
+        Integer typmod = (Integer) column.get("atttypmod");
         if (-1 != typmod) {
             length = checkTypmod(typmod, name);
         }
@@ -228,33 +231,34 @@ public class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
         return length;
     }
     
-    private String parseTypeName(String typeName) {
+    private String parseTypeName(final String name) {
+        String result = name;
         boolean isArray = false;
-        if (typeName.endsWith("[]")) {
+        if (result.endsWith("[]")) {
             isArray = true;
-            typeName = typeName.substring(0, typeName.lastIndexOf("[]"));
+            result = result.substring(0, result.lastIndexOf("[]"));
         }
-        int idx = typeName.indexOf("(");
-        if (idx > 0 && typeName.endsWith(")")) {
-            typeName = typeName.substring(0, idx);
-        } else if (idx > 0 && typeName.startsWith("time")) {
-            int endIdx = typeName.indexOf(")");
+        int idx = result.indexOf("(");
+        if (idx > 0 && result.endsWith(")")) {
+            result = result.substring(0, idx);
+        } else if (idx > 0 && result.startsWith("time")) {
+            int endIdx = result.indexOf(")");
             if (1 != endIdx) {
                 Pattern pattern = Pattern.compile("(\\(\\d+\\))");
-                Matcher matcher = pattern.matcher(typeName);
+                Matcher matcher = pattern.matcher(result);
                 StringBuffer buffer = new StringBuffer();
                 while (matcher.find()) {
                     matcher.appendReplacement(buffer, "");
                 }
                 matcher.appendTail(buffer);
-                typeName = buffer.toString();
+                result = buffer.toString();
             }
-        } else if (typeName.startsWith("interval")) {
-            typeName = "interval";
+        } else if (result.startsWith("interval")) {
+            result = "interval";
         }
         if (isArray) {
-            typeName += "[]";
+            result += "[]";
         }
-        return typeName;
+        return result;
     }
 }

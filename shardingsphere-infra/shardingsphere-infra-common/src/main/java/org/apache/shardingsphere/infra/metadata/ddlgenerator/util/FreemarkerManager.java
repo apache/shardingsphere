@@ -28,6 +28,9 @@ import java.io.StringWriter;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Freemarker manager.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FreemarkerManager {
     
@@ -35,6 +38,11 @@ public class FreemarkerManager {
     
     private final Configuration templateConfig = createTemplateConfiguration();
     
+    /**
+     * Get freemarker manager instance.
+     * 
+     * @return freemarker manager instance
+     */
     public static FreemarkerManager getInstance() {
         return INSTANCE;
     }
@@ -47,6 +55,13 @@ public class FreemarkerManager {
         return result;
     }
     
+    /**
+     * Get sql from template.
+     * 
+     * @param data data
+     * @param path path
+     * @return sql
+     */
     @SneakyThrows
     public static String getSqlFromTemplate(final Map<String, Object> data, final String path) {
         Template template = FreemarkerManager.getInstance().templateConfig.getTemplate(path);
