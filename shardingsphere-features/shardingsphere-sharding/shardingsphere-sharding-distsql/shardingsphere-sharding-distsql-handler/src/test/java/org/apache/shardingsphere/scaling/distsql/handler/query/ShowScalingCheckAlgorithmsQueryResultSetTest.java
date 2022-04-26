@@ -56,7 +56,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
         Set<Object> algorithmTypes = new LinkedHashSet<>();
         while (resultSet.next()) {
             Collection<Object> actual = resultSet.getRowData();
-            assertThat(actual.size(), is(4));
+            assertThat(actual.size(), is(3));
             Iterator<Object> rowData = actual.iterator();
             algorithmTypes.add(rowData.next());
         }

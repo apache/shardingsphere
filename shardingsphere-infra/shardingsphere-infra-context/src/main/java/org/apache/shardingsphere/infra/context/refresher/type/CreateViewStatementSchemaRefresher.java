@@ -21,9 +21,13 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -31,7 +35,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Schema refresher for create view statement.
@@ -42,16 +48,24 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                        final Collection<String> logicDataSourceNames, final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = new TableMetaData();
-        schemaMetaData.getDefaultSchema().put(viewName, tableMetaData);
         if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
             schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
         }
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
-        event.getAlteredTables().add(tableMetaData);
-        ShardingSphereEventBus.getInstance().post(event);
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaName);
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(viewName), materials);
+        Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
+        actualViewMetaData.ifPresent(viewMetaData -> {
+            schemaMetaData.getSchemaByName(schemaName).put(viewName, viewMetaData);
+            database.put(schemaName, viewMetaData);
+            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+            // TODO Get real schema name
+            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getDatabaseName(), schemaName);
+            event.getAlteredTables().add(viewMetaData);
+            ShardingSphereEventBus.getInstance().post(event);
+        });
     }
     
     private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {

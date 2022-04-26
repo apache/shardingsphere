@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.infra.context.refresher;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -35,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataRefreshEngineTest {
@@ -43,20 +47,28 @@ public final class MetaDataRefreshEngineTest {
     private MetaDataRefreshEngine metaDataRefreshEngine;
     
     @Test
-    public void assertRefreshNonIgnorableSQLStatement() throws SQLException {
+    public void assertRefreshNonIgnorableSQLStatement() throws Exception {
         final int dropTimes = 10;
-        DropDatabaseStatement dropDatabaseStatement = mock(DropDatabaseStatement.class);
+        SQLStatementContext<DropDatabaseStatement> sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropDatabaseStatement.class));
+        when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("database");
+        Field field = metaDataRefreshEngine.getClass().getDeclaredField("schemaMetaData");
+        field.setAccessible(true);
+        field.set(metaDataRefreshEngine, shardingSphereMetaData);
         for (int i = 0; i < dropTimes; i++) {
-            metaDataRefreshEngine.refresh(dropDatabaseStatement, Collections::emptyList);
+            metaDataRefreshEngine.refresh(sqlStatementContext, Collections::emptyList);
         }
-        verify(dropDatabaseStatement, times(dropTimes)).getDatabaseName();
+        verify(sqlStatementContext.getSqlStatement(), times(dropTimes)).getDatabaseName();
     }
     
     @Test
     public void assertRefreshIgnorableSQLStatement() throws SQLException {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        metaDataRefreshEngine.refresh(selectStatement, Collections::emptyList);
-        assertTrue(getIgnorableSQLStatementClasses().contains(selectStatement.getClass()));
+        SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        metaDataRefreshEngine.refresh(sqlStatementContext, Collections::emptyList);
+        assertTrue(getIgnorableSQLStatementClasses().contains(sqlStatementContext.getSqlStatement().getClass()));
     }
     
     @SneakyThrows

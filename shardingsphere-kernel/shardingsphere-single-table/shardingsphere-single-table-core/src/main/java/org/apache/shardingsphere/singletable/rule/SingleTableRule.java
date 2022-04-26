@@ -32,11 +32,13 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -60,7 +62,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, String> tableNames;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
+    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
@@ -224,12 +226,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return tableNames.values();
+        return new HashSet<>(tableNames.values());
     }
     
     @Override
     public Collection<String> getTables() {
-        return tableNames.values();
+        return new HashSet<>(tableNames.values());
     }
     
     @Override

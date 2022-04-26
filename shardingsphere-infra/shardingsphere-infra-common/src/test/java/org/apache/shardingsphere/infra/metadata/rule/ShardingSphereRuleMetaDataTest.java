@@ -31,31 +31,31 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereRuleMetaDataTest {
-
+    
     private Collection<RuleConfiguration> configurations;
-
+    
     private Collection<ShardingSphereRule> rules;
-
+    
     private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
-
+    
     @Before
     public void init() {
         rules = Arrays.asList(new ShardingSphereRuleFixture());
         shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(configurations, rules);
     }
-
+    
     @Test
     public void assertFilterRulesReturnOneItem() {
         Collection<ShardingSphereRuleFixture> clazzList = shardingSphereRuleMetaData.findRules(ShardingSphereRuleFixture.class);
         assertThat(1, equalTo(clazzList.size()));
     }
-
+    
     @Test
     public void assertFindSingleRuleReturnsIsPresent() {
         Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);
         assertTrue(clazzOptional.isPresent());
     }
-
+    
     @Test
     public void assertFindSingleRuleHasValue() {
         Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);

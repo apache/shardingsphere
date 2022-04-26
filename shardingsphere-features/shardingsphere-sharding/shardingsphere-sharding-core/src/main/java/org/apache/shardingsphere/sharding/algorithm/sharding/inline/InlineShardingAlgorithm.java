@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 
 import java.util.Collection;
 import java.util.Properties;

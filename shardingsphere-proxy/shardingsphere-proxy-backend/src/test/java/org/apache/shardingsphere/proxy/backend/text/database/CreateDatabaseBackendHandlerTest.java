@@ -53,7 +53,7 @@ public final class CreateDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         handler = new CreateDatabaseBackendHandler(statement);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
     }
     
     @SneakyThrows

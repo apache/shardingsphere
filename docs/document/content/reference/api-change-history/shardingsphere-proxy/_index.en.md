@@ -180,7 +180,7 @@ encryptRule:
         <logic-column-name>:
           plainColumn: # plaintext column name.
           cipherColumn: # ciphertext column name.
-          assistedQueryColumn: # AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data.
+          assistedQueryColumn: # AssistedColumns for query, when use ShardingQueryAssistedEncryptor, it can help query encrypted data.
           encryptor: # encrypt name.
 props:
   query.with.cipher.column: true #Whether use cipherColumn to query or not

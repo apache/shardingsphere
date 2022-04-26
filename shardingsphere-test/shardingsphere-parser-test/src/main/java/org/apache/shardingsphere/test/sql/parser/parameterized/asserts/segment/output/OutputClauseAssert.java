@@ -69,7 +69,7 @@ public final class OutputClauseAssert {
         }
     }
     
-    private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) { 
+    private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Output column");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
@@ -85,7 +85,7 @@ public final class OutputClauseAssert {
                 actual.getTableColumns().size(), is(expected.getOutputTableColumns().getColumns().size()));
         int count = 0;
         for (ColumnSegment each : actual.getTableColumns()) {
-            assertThat(assertContext.getText("Output table column name assertion error: "), 
+            assertThat(assertContext.getText("Output table column name assertion error: "),
                     each.getIdentifier().getValue(), is(expected.getOutputTableColumns().getColumns().get(count).getName()));
             SQLSegmentAssert.assertIs(assertContext, each, expected.getOutputTableColumns().getColumns().get(count));
             count++;

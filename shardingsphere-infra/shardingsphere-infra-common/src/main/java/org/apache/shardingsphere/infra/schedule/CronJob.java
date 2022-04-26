@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 public final class CronJob {
     
     private final String jobName;
-
+    
     @SuppressWarnings("rawtypes")
     private final Consumer job;
     

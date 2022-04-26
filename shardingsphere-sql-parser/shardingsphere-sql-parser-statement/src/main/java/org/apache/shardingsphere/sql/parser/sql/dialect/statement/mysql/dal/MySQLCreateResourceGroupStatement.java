@@ -31,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Setter
 @ToString
 public final class MySQLCreateResourceGroupStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private String groupName;
 }

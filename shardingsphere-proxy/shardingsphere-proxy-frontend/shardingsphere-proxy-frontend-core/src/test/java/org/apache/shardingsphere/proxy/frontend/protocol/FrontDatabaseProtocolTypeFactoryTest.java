@@ -51,7 +51,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.emptyMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         setContextManager(metaDataContexts);
         assertTrue(metaDataContexts.getMetaDataMap().isEmpty());
@@ -60,13 +60,13 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), mockMetaDataMap(), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), mockMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         setContextManager(metaDataContexts);
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertTrue(configuredDatabaseType.isEmpty());
-        assertTrue(metaDataContexts.getAllSchemaNames().contains(DefaultSchema.LOGIC_NAME));
+        assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultSchema.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getName(), is("MySQL"));
@@ -82,7 +82,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertThat(configuredDatabaseType, is("PostgreSQL"));
-        assertTrue(metaDataContexts.getAllSchemaNames().contains(DefaultSchema.LOGIC_NAME));
+        assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultSchema.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getName(), is("PostgreSQL"));

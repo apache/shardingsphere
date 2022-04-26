@@ -34,6 +34,6 @@ public final class ShardingStrategySegment implements ASTNode {
     private final String shardingColumn;
     
     private final String shardingAlgorithmName;
-
+    
     private final AlgorithmSegment algorithmSegment;
 }

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mode.manager.listener;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
  * Context manager lifecycle listener.
@@ -28,7 +27,8 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPI;
  *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
  * </p>
  */
-public interface ContextManagerLifecycleListener extends TypedSPI, SingletonSPI {
+@SingletonSPI
+public interface ContextManagerLifecycleListener {
     
     /**
      * Callback on initialized.

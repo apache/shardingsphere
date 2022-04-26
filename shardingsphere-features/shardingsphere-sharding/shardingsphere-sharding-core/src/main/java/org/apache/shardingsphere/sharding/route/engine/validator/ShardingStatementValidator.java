@@ -53,6 +53,6 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param props props
      * @param routeContext route context
      */
-    void postValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters, 
+    void postValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters,
                       ShardingSphereSchema schema, ConfigurationProperties props, RouteContext routeContext);
 }

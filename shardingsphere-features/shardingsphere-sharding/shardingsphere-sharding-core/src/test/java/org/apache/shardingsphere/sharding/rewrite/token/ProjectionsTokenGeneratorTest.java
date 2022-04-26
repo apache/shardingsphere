@@ -52,23 +52,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ProjectionsTokenGeneratorTest {
-
+    
     private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION = "TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION";
-
+    
     private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS = "TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS";
-
+    
     private static final String TEST_DERIVED_PROJECTION_ALIAS = "TEST_DERIVED_PROJECTION_ALIAS";
-
+    
     private static final String TEST_LOGIC_TABLE_NAME = "TEST_LOGIC_TABLE_NAME";
-
+    
     private static final String TEST_ACTUAL_TABLE_NAME_WRAPPED = "TEST_ACTUAL_TABLE_NAME_WRAPPED";
-
+    
     private static final String TEST_OTHER_DERIVED_PROJECTION_ALIAS = "TEST_OTHER_DERIVED_PROJECTION_ALIAS";
-
+    
     private static final String TEST_OTHER_DERIVED_PROJECTION_EXPRESSION = "TEST_OTHER_DERIVED_PROJECTION_EXPRESSION";
-
+    
     private RouteUnit routeUnit;
-
+    
     @Before
     public void setup() {
         RouteMapper routeMapper = mock(RouteMapper.class);
@@ -79,7 +79,7 @@ public final class ProjectionsTokenGeneratorTest {
         routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(routeMapperCollection);
     }
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         ProjectionsTokenGenerator projectionsTokenGenerator = getProjectionsTokenGenerator();
@@ -94,7 +94,7 @@ public final class ProjectionsTokenGeneratorTest {
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projectionCollection);
         assertTrue(projectionsTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         Collection<Projection> projectionCollection = new LinkedList<>();
@@ -115,7 +115,7 @@ public final class ProjectionsTokenGeneratorTest {
                 + ", " + TEST_ACTUAL_TABLE_NAME_WRAPPED + ".null" + " AS " + TEST_DERIVED_PROJECTION_ALIAS + " "
                 + ", " + TEST_OTHER_DERIVED_PROJECTION_EXPRESSION + " AS " + TEST_OTHER_DERIVED_PROJECTION_ALIAS + " "));
     }
-
+    
     private ProjectionsTokenGenerator getProjectionsTokenGenerator() {
         Collection<RouteUnit> routeUnitCollection = new LinkedList<>();
         routeUnitCollection.add(routeUnit);
@@ -125,7 +125,7 @@ public final class ProjectionsTokenGeneratorTest {
         result.setRouteContext(routeContext);
         return result;
     }
-
+    
     private AggregationProjection getAggregationProjection() {
         AggregationDistinctProjection derivedAggregationDistinctProjection = mock(AggregationDistinctProjection.class);
         when(derivedAggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION);
@@ -136,7 +136,7 @@ public final class ProjectionsTokenGeneratorTest {
         when(aggregationProjection.getDerivedAggregationProjections()).thenReturn(derivedAggregationProjectionList);
         return aggregationProjection;
     }
-
+    
     private DerivedProjection getDerivedProjection() {
         OwnerSegment ownerSegment = mock(OwnerSegment.class, RETURNS_DEEP_STUBS);
         when(ownerSegment.getIdentifier().getValue()).thenReturn(TEST_LOGIC_TABLE_NAME);
@@ -152,7 +152,7 @@ public final class ProjectionsTokenGeneratorTest {
         when(derivedProjection.getDerivedProjection()).thenReturn(oldColumnOrderByItemSegment);
         return derivedProjection;
     }
-
+    
     private DerivedProjection getOtherDerivedProjection() {
         DerivedProjection result = mock(DerivedProjection.class);
         when(result.getDerivedProjection()).thenReturn(null);

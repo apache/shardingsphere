@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -60,28 +59,28 @@ public final class SchemaMetaDataPersistServiceTest {
         TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", tableMetaData);
-        new SchemaMetaDataPersistService(repository).persist("foo_db", "foo_db", schema);
-        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables/t_order"), anyString());
+        new SchemaMetaDataPersistService(repository).persistTables("foo_db", "foo_schema", schema);
+        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
     
     @Test
-    public void assertPersistSchemaTables() {
-        new SchemaMetaDataPersistService(repository).persist("foo_db");
-        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables"), anyString());
+    public void assertPersistDatabase() {
+        new SchemaMetaDataPersistService(repository).persistDatabase("foo_db");
+        verify(repository).persist(eq("/metadata/foo_db"), anyString());
     }
     
     @Test
-    public void assertDelete() {
-        new SchemaMetaDataPersistService(repository).delete("foo_db");
+    public void assertDeleteDatabase() {
+        new SchemaMetaDataPersistService(repository).deleteDatabase("foo_db");
         verify(repository).delete("/metadata/foo_db");
     }
     
     @Test
     public void assertLoad() {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/foo_db/tables")).thenReturn(Lists.newArrayList("t_order"));
-        when(repository.get("/metadata/foo_db/foo_db/tables/t_order")).thenReturn(readYAML());
-        Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db", "foo_db");
+        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Lists.newArrayList("t_order"));
+        when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
+        Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db", "foo_schema");
         assertTrue(schemaOptional.isPresent());
         Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test", "test");
         assertThat(empty, is(Optional.empty()));
@@ -93,9 +92,9 @@ public final class SchemaMetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertLoadAllNames() {
-        when(repository.getChildrenKeys("/metadata")).thenReturn(Arrays.asList("foo_db"));
-        Collection<String> actual = new SchemaMetaDataPersistService(repository).loadAllNames();
+    public void assertLoadAllDatabaseNames() {
+        when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
+        Collection<String> actual = new SchemaMetaDataPersistService(repository).loadAllDatabaseNames();
         assertThat(actual.size(), is(1));
         assertThat(actual, hasItems("foo_db"));
     }
@@ -103,8 +102,8 @@ public final class SchemaMetaDataPersistServiceTest {
     @Test
     public void assertPersistTableMetaData() {
         TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new SchemaMetaDataPersistService(repository).persist("foo_db", tableMetaData);
-        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables/foo_table"), anyString());
+        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", tableMetaData);
+        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

@@ -13,11 +13,13 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 175 家公司。
+共计 184 家公司。
 
 ### 基础软件
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+    <li><a href="https://www.opengauss.org/zh/" rel="nofollow">华为 openGauss</a></li>
+    <li><a href="https://www.mogdb.io/" rel="nofollow">云和恩墨 MogDB</a></li>
 </ul>
 
 ### 银行
@@ -25,6 +27,7 @@ chapter = true
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
+    <li><a href="https://www.psbc.com/cn/" rel="nofollow">中国邮政储蓄银行</a></li>
 </ul>
 
 ### 支付
@@ -42,6 +45,7 @@ chapter = true
 ### 互联网金融
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
+    <li><a href="http://www.sunline.cn/" rel="nofollow">长亮科技</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
@@ -53,6 +57,7 @@ chapter = true
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
+    <li><a href="https://www.airstar.com/" rel="nofollow">天星金融</a></li>
 </ul>
 
 ### 互联网
@@ -60,6 +65,7 @@ chapter = true
     <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">得物</a></li>
+    <li><a href="http://game.163.com/" rel="nofollow">网易游戏</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
@@ -83,6 +89,7 @@ chapter = true
     <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
+    <li><a href="https://www.danchuangglobal.com/" rel="nofollow">浙江单创品牌管理有限公司</a></li>
 </ul>
 
 ### 数字化与云服务
@@ -110,6 +117,7 @@ chapter = true
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
+    <li><a href="https://www.hello-inc.com/" rel="nofollow">哈啰出行</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a>：<a href="https://mp.weixin.qq.com/s/EWhgaT_63lVuwVAJNpqLbw" rel="nofollow">用户案例</a></li>
@@ -132,6 +140,7 @@ chapter = true
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
     <li><a href="http://www.c-wms.net/" rel="nofollow">弘人网络科技</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">喜百年供应链科技</a></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a></li>
 </ul>
 
 ### 旅游服务

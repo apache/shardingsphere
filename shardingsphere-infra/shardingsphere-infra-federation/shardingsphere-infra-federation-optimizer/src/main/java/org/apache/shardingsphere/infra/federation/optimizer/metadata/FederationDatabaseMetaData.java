@@ -49,6 +49,7 @@ public final class FederationDatabaseMetaData {
      *
      * @param metaData table meta data to be updated
      */
+    // TODO Remove this when search path are finished
     public void put(final TableMetaData metaData) {
         if (schemas.containsKey(name)) {
             schemas.get(name).put(metaData);
@@ -60,13 +61,42 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
+     * Add table meta data.
+     *
+     * @param schemaName schema name
+     * @param metaData table meta data to be updated
+     */
+    public void put(final String schemaName, final TableMetaData metaData) {
+        if (schemas.containsKey(schemaName)) {
+            schemas.get(schemaName).put(metaData);
+        } else {
+            Map<String, TableMetaData> tableMetaData = new LinkedHashMap<>();
+            tableMetaData.put(schemaName, metaData);
+            schemas.put(schemaName, new FederationSchemaMetaData(schemaName, tableMetaData));
+        }
+    }
+    
+    /**
      * Remove table meta data.
      *
      * @param tableName table name to be removed
      */
+    // TODO Remove this when search path are finished
     public void remove(final String tableName) {
-        if (schemas.containsKey(name)) {
+        if (schemas.containsKey(tableName)) {
             schemas.get(name).remove(tableName);
+        }
+    }
+    
+    /**
+     * Remove table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableName table name to be removed
+     */
+    public void remove(final String schemaName, final String tableName) {
+        if (schemas.containsKey(schemaName)) {
+            schemas.get(schemaName).remove(tableName);
         }
     }
 }

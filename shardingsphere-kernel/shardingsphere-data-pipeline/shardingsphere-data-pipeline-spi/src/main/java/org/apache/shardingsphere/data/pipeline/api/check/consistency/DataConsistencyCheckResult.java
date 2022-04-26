@@ -18,28 +18,18 @@
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * Data consistency check result.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
+@ToString(callSuper = true)
 public final class DataConsistencyCheckResult {
     
-    private final long sourceRecordsCount;
+    private final DataConsistencyCountCheckResult countCheckResult;
     
-    private final long targetRecordsCount;
-    
-    private final boolean recordsCountMatched;
-    
-    private boolean recordsContentMatched;
-    
-    public DataConsistencyCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
-        this.sourceRecordsCount = sourceRecordsCount;
-        this.targetRecordsCount = targetRecordsCount;
-        recordsCountMatched = sourceRecordsCount == targetRecordsCount;
-    }
+    private final DataConsistencyContentCheckResult contentCheckResult;
 }

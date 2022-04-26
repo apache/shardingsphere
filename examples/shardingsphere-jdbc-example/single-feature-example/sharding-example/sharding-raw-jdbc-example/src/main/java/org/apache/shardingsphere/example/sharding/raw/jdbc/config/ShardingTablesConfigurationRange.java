@@ -47,24 +47,24 @@ public final class ShardingTablesConfigurationRange implements ExampleConfigurat
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
-        result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
-    private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
+    private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds.t_order_${[0, 1]}");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     
-    private static ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
+    private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "demo_ds.t_order_item_${[0, 1]}");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
         return result;
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
         return result;

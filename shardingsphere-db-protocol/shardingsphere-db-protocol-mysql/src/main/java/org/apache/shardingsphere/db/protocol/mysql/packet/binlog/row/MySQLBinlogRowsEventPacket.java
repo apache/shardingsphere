@@ -71,7 +71,7 @@ public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPa
     
     private boolean isRowsEventVersion2(final int eventType) {
         return MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue() == eventType || MySQLBinlogEventType.UPDATE_ROWS_EVENTv2.getValue() == eventType
-            || MySQLBinlogEventType.DELETE_ROWS_EVENTv2.getValue() == eventType;
+                || MySQLBinlogEventType.DELETE_ROWS_EVENTv2.getValue() == eventType;
     }
     
     private MySQLNullBitmap readUpdateColumnsPresentBitmap(final MySQLPacketPayload payload) {

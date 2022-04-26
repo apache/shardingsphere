@@ -17,14 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
  * OpenGauss create schema statement.
  */
+@Getter
+@Setter
 @ToString
-public final class OpenGaussCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
+public final class OpenGaussCreateSchemaStatement extends CreateSchemaStatement implements OpenGaussStatement {
+    
+    private String username;
+    
+    /**
+     * Get username.
+     *
+     * @return username
+     */
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(username);
+    }
 }

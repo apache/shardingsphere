@@ -41,7 +41,7 @@ public final class ShowCurrentDatabaseExecutor implements DatabaseAdminQueryExec
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(connectionSession.getSchemaName()));
+        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(connectionSession.getDatabaseName()));
     }
     
     @Override

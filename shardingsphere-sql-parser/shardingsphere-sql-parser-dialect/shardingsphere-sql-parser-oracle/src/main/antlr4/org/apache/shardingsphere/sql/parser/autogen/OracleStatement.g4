@@ -68,5 +68,13 @@ execute
     | dropDimension
     | createFunction
     | dropDatabaseLink
+    | dropDirectory
+    | dropView
+    | dropTrigger
+    | alterView
+    | alterTrigger
+    | createEdition
+    | alterDatabaseLink
+    | alterDatabaseDictionary
     ) SEMI_?
     ;

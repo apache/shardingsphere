@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     
     private final String expression;
-
+    
     private final ExpressionSegment expr;
     
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
@@ -44,7 +44,7 @@ public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
         this.expression = expression;
         this.expr = null;
     }
-
+    
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final ExpressionSegment expr) {
         super(startIndex, stopIndex, orderDirection, OrderDirection.ASC);
         this.expression = expression;

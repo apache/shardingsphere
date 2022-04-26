@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
@@ -84,8 +84,9 @@ public abstract class BatchITCase extends BaseITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
+            try (
+                    Connection connection = dataSource.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetaData);
             }
         }

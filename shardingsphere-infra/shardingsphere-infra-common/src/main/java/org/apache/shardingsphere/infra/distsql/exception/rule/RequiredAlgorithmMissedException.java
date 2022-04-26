@@ -25,20 +25,20 @@ import java.util.Collection;
 public final class RequiredAlgorithmMissedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1952698375135777585L;
-
+    
     public RequiredAlgorithmMissedException() {
         super(1115, "No sharding algorithm definition in current statement");
     }
     
-    public RequiredAlgorithmMissedException(final String schemaName) {
-        super(1115, String.format("Sharding algorithm does not exist in schema `%s`.", schemaName));
+    public RequiredAlgorithmMissedException(final String databaseName) {
+        super(1115, String.format("Sharding algorithm does not exist in database `%s`.", databaseName));
     }
     
-    public RequiredAlgorithmMissedException(final String schemaName, final Collection<String> algorithmNames) {
-        super(1115, String.format("Sharding algorithms `%s` do not exist in schema `%s`.", algorithmNames, schemaName));
+    public RequiredAlgorithmMissedException(final String databaseName, final Collection<String> algorithmNames) {
+        super(1115, String.format("Sharding algorithms `%s` do not exist in database `%s`.", algorithmNames, databaseName));
     }
     
-    public RequiredAlgorithmMissedException(final String type, final String schemaName, final Collection<String> algorithmNames) {
-        super(1115, String.format("%s algorithms `%s` do not exist in schema `%s`.", type, algorithmNames, schemaName));
+    public RequiredAlgorithmMissedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
+        super(1115, String.format("%s algorithms `%s` do not exist in database `%s`.", type, algorithmNames, databaseName));
     }
 }

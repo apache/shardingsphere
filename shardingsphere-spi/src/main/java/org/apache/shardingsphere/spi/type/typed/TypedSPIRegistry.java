@@ -22,8 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Typed SPI registry.
@@ -111,5 +114,16 @@ public final class TypedSPIRegistry {
             return result.get();
         }
         throw new ServiceProviderNotFoundException(spiClass, type);
+    }
+    
+    /**
+     * Get registered service meta data map.
+     *
+     * @param spiClass stateless typed SPI class
+     * @param <T> SPI class type
+     * @return registered service meta data map, key is type name, value is meta data it self
+     */
+    public static <T extends TypedSPIMetadataAware & TypedSPI> Map<String, T> getRegisteredServiceMetaDataMap(final Class<T> spiClass) {
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
 }

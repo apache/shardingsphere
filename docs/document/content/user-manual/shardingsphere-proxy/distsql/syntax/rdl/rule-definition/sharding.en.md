@@ -110,7 +110,7 @@ keyGeneratorDefinition:
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
-- `strategyType` specifies the sharding strategy，please refer to[Sharding Strategy](/en/features/sharding/concept/sharding/#sharding-strategy)
+- `strategyType` specifies the sharding strategy, please refer to[Sharding Strategy](/en/features/sharding/concept/sharding/#sharding-strategy)
 - `Sharding Table Rule` supports both `Auto Table` and `Table` at the same time. The two types are different in syntax. For the corresponding configuration file, please refer to [Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)
 - When using the `autoCreativeAlgorithm` way to specify `shardingStrategy`, a new sharding algorithm will be created automatically. The algorithm naming rule is `tableName_strategyType_shardingAlgorithmType`, such as `t_order_database_inline`
 

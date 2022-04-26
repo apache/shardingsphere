@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -70,6 +69,12 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     public List<Connection> getConnections(final String schemaName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
         DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources().get(dataSourceName);
+        if (dataSourceName.contains(".")) {
+            String dataSourceStr = dataSourceName.split("\\.")[0];
+            if (GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceStr)) {
+                dataSource = GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().get(dataSourceStr);
+            }
+        }
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));
@@ -100,16 +105,14 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingSphereTransactionManager transactionManager
-                = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
-        boolean isDataSourceAggregation = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getProps().containsKey("data-source-aggregation-enabled")
-                ? ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED) : false;
-        Connection connection = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
-        if (isDataSourceAggregation) {
-            String databaseName = GlobalDataSourceRegistry.getInstance().getDataSourceSchema().get(schemaName + "." + dataSourceName);
-            connection.setCatalog(databaseName);
+        ShardingSphereTransactionManager transactionManager =
+                ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
+        Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        if (dataSourceName.contains(".")) {
+            String databaseName = dataSourceName.split("\\.")[1];
+            result.setCatalog(databaseName);
         }
-        return connection;
+        return result;
     }
     
     private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {

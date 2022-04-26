@@ -66,7 +66,7 @@ public final class FrontendChannelInboundHandlerTest {
     @Before
     public void setup() {
         when(frontendEngine.getAuthenticationEngine()).thenReturn(authenticationEngine);
-        when(frontendEngine.getDatabaseType()).thenReturn("MySQL");
+        when(frontendEngine.getType()).thenReturn("MySQL");
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
         channel = new EmbeddedChannel(false, true);
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
@@ -95,7 +95,7 @@ public final class FrontendChannelInboundHandlerTest {
         when(authenticationEngine.authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class))).thenReturn(authenticationResult);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(connectionSession.getGrantee(), is(new Grantee("username", "hostname")));
-        assertThat(connectionSession.getSchemaName(), is("database"));
+        assertThat(connectionSession.getDatabaseName(), is("database"));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

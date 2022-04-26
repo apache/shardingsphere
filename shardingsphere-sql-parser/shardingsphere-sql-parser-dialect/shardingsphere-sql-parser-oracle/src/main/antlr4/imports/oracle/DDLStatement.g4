@@ -23,6 +23,10 @@ createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
     ;
 
+createEdition
+    : CREATE EDITION editionName (AS CHILD OF editionName)?
+    ;
+
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
@@ -35,12 +39,37 @@ alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
     ;
 
+alterTrigger
+    : ALTER TRIGGER triggerName (
+    | triggerCompileClause
+    | ( ENABLE | DISABLE)
+    | RENAME TO name
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;    
+
+triggerCompileClause
+    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterValue
+    ;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
+    ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
     ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
+    ;
+
+dropView
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
 truncateTable
@@ -1026,6 +1055,17 @@ alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
     ;
 
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
 deallocateUnusedClause
     : DEALLOCATE UNUSED (KEEP sizeClause)?
     ;
@@ -1247,6 +1287,14 @@ defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
 
+alterDatabaseDictionary
+    : ALTER DATABASE DICTIONARY (
+    | ENCRYPT CREDENTIALS
+    | REKEY CREDENTIALS
+    | DELETE CREDENTIALS KEY
+    )
+    ;
+    
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses
@@ -2015,6 +2063,13 @@ createDatabaseLink
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
     
+alterDatabaseLink
+    : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
+    | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
+    | dbLinkAuthentication
+    )
+    ;
+
 dropDatabaseLink
     : DROP PUBLIC? DATABASE LINK dbLink 
     ;
@@ -2067,6 +2122,10 @@ alterDimensionDropClause
 
 dropDimension
     : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
     ;
 
 createFunction

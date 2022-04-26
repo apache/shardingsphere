@@ -33,16 +33,16 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlProxyDataSourceConfigurationSwapperTest {
-
+    
     @Test
     public void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
-        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlProxyConfig.getSchemaConfigurations().get("swapper_test").getDataSources().get("foo_db");
-        DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig, "swapper_test", "foo_db", false);
+        YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
+        DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig);
         assertConnectionConfig(actualDataSourceConfig);
         assertPoolConfig(actualDataSourceConfig);
     }
-
+    
     private void assertConnectionConfig(final DataSourceConfiguration actualDataSourceConfig) {
         ConnectionConfiguration actualConnection = actualDataSourceConfig.getConnection();
         assertNotNull(actualConnection);
@@ -50,7 +50,7 @@ public final class YamlProxyDataSourceConfigurationSwapperTest {
         assertThat(actualConnection.getUsername(), is("sa"));
         assertThat(actualConnection.getPassword(), is(""));
     }
-
+    
     private void assertPoolConfig(final DataSourceConfiguration actualDataSourceConfig) {
         PoolConfiguration actualPool = actualDataSourceConfig.getPool();
         assertNotNull(actualPool);

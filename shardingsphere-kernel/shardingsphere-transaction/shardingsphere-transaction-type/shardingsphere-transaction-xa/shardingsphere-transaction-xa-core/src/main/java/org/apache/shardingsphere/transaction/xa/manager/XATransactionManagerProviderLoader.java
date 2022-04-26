@@ -55,6 +55,7 @@ public final class XATransactionManagerProviderLoader {
      */
     public XATransactionManagerProvider getXATransactionManagerProvider(final String type) {
         return null == type
-                ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class) : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, type, new Properties());
+                ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
+                : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, type, new Properties());
     }
 }

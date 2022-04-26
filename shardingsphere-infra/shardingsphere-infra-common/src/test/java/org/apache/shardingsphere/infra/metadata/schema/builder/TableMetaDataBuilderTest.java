@@ -51,14 +51,15 @@ public final class TableMetaDataBuilderTest {
     public void assertLoadWithExistedTableName() throws SQLException {
         assertFalse(TableMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
-                new DataNodeContainedFixtureRule()), props)).isEmpty());
+                        new DataNodeContainedFixtureRule()),
+                props, "sharding_db")).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         assertTrue(TableMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                props)).isEmpty());
+                props, "sharding_db")).isEmpty());
     }
     
 }

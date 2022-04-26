@@ -51,7 +51,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -102,12 +102,12 @@ public final class JDBCPortal implements Portal<Void> {
                     preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
             return;
         }
-        String schemaName = backendConnection.getConnectionSession().getDefaultSchemaName();
+        String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, schemaName);
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, databaseName);
         if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames())) {
             databaseCommunicationEngine = null;
-            DatabaseType databaseType = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDatabaseType();
+            DatabaseType databaseType = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDatabaseType();
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType,
                     preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
             return;

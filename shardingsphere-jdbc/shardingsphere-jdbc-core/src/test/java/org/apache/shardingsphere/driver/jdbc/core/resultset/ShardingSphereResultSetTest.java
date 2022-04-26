@@ -214,13 +214,13 @@ public final class ShardingSphereResultSetTest {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
         assertThat(shardingSphereResultSet.getString("label"), is("value"));
     }
-
+    
     @Test
     public void assertGetNStringWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
         assertThat(shardingSphereResultSet.getNString(1), is("value"));
     }
-
+    
     @Test
     public void assertGetNStringWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
@@ -253,14 +253,14 @@ public final class ShardingSphereResultSetTest {
     
     @Test
     public void assertGetBytesWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, byte[].class)).thenReturn(new byte[] {(byte) 1});
-        assertThat(shardingSphereResultSet.getBytes(1), is(new byte[] {(byte) 1}));
+        when(mergeResultSet.getValue(1, byte[].class)).thenReturn(new byte[]{(byte) 1});
+        assertThat(shardingSphereResultSet.getBytes(1), is(new byte[]{(byte) 1}));
     }
     
     @Test
     public void assertGetBytesWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue(1, byte[].class)).thenReturn(new byte[] {(byte) 1});
-        assertThat(shardingSphereResultSet.getBytes("label"), is(new byte[] {(byte) 1}));
+        when(mergeResultSet.getValue(1, byte[].class)).thenReturn(new byte[]{(byte) 1});
+        assertThat(shardingSphereResultSet.getBytes("label"), is(new byte[]{(byte) 1}));
     }
     
     @Test
@@ -498,7 +498,7 @@ public final class ShardingSphereResultSetTest {
         Byte result = new Byte((byte) 1);
         when(mergeResultSet.getValue(1, byte.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, byte.class), is(result));
-    }  
+    }
     
     @Test
     public void assertGetObjectWithByteArray() throws SQLException {

@@ -63,7 +63,7 @@ public final class ProjectionAssert {
     
     /**
      * Assert actual projections segment is correct with expected projections.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual projection
      * @param expected expected projections
@@ -83,7 +83,7 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Projections distinct row assertion error: "), actual.isDistinctRow(), is(expected.isDistinctRow()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
-
+    
     /**
      * Assert actual projection segment is correct with expected projection.
      * @param assertContext assert context
@@ -146,7 +146,7 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (actual instanceof AggregationDistinctProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationDistinctProjection.class));
-            assertThat(assertContext.getText("Aggregation projection alias assertion error: "), 
+            assertThat(assertContext.getText("Aggregation projection alias assertion error: "),
                     ((AggregationDistinctProjectionSegment) actual).getDistinctExpression(), is(((ExpectedAggregationDistinctProjection) expected).getDistinctExpression()));
         }
     }
@@ -155,7 +155,8 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Expression projection alias assertion error: "),
                 actual.getAlias().orElse(null), is(expected.getAlias()));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
-                ? expected.getLiteralText() : expected.getText();
+                ? expected.getLiteralText()
+                : expected.getText();
         assertThat(assertContext.getText("Expression projection text assertion error: "),
                 actual.getText(), is(expectedText));
         if (expected.getExpr() != null) {
@@ -165,10 +166,10 @@ public final class ProjectionAssert {
     
     private static void assertTopProjection(final SQLCaseAssertContext assertContext, final TopProjectionSegment actual, final ExpectedTopProjection expected) {
         if (actual.getTop() instanceof NumberLiteralRowNumberValueSegment) {
-            assertThat(assertContext.getText("Expression projection top value assertion error: "), 
+            assertThat(assertContext.getText("Expression projection top value assertion error: "),
                     ((NumberLiteralRowNumberValueSegment) actual.getTop()).getValue(), is(expected.getTopValue().getValue()));
         } else {
-            assertThat(assertContext.getText("Expression projection top parameter index assertion error: "), 
+            assertThat(assertContext.getText("Expression projection top parameter index assertion error: "),
                     ((ParameterMarkerRowNumberValueSegment) actual.getTop()).getParameterIndex(), is(expected.getTopValue().getParameterIndex()));
         }
         assertThat(assertContext.getText("Expression projection alias assertion error: "), actual.getAlias(), is(expected.getAlias()));

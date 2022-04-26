@@ -29,23 +29,23 @@ public final class LockNodeUtil {
     private static final String LOCK_DELIMITER = "-";
     
     /**
-     * Generate schema lock name.
+     * Generate database ack lock name.
      *
-     * @param schema schema name
+     * @param database database name
      * @param instanceId instance id
-     * @return lock name
+     * @return ack lock name
      */
-    public static String generateSchemaLockName(final String schema, final String instanceId) {
-        return schema + LOCK_DELIMITER + instanceId;
+    public static String generateDatabaseLockName(final String database, final String instanceId) {
+        return database + LOCK_DELIMITER + instanceId;
     }
     
     /**
-     * Parse schema lock name.
+     * Parse database lock name.
      *
      * @param lockedName locked name
-     * @return string array of schema name and instance id
+     * @return string array of database name and instance id
      */
-    public static String[] parseSchemaLockName(final String lockedName) {
+    public static String[] parseDatabaseLockName(final String lockedName) {
         return lockedName.trim().split(LOCK_DELIMITER);
     }
 }

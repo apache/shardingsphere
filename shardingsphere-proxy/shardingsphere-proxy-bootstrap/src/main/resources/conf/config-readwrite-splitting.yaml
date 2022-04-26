@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 #
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  primary_ds:
@@ -68,7 +68,7 @@
 #
 ######################################################################################################
 
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  write_ds:

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -37,26 +38,19 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecuti
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -68,21 +62,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Rule altered job API impl.
+ */
 @Slf4j
 public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
-    }
-    
-    private static final Map<String, DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_MAP = new TreeMap<>(
-            SingletonSPIRegistry.getTypedSingletonInstancesMap(DataConsistencyCheckAlgorithm.class));
     
     @Override
     public List<JobInfo> list() {
@@ -145,8 +133,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Map<Integer, JobProgress> getProgress(final String jobId) {
         checkModeConfig();
-        JobConfiguration jobConfig = getJobConfig(jobId);
-        return getProgress(jobConfig);
+        return getProgress(getJobConfig(jobId));
     }
     
     @Override
@@ -178,7 +165,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        ShardingSphereLock lock = lockContext.getDatabaseLock(schemaName);
         if (null == lock || !lock.isLocked(schemaName)) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
@@ -200,7 +187,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String schemaName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateSchemaLock(schemaName);
+        ShardingSphereLock lock = lockContext.getOrCreateDatabaseLock(schemaName);
         if (lock.isLocked(schemaName)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
@@ -226,7 +213,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void restoreClusterWriteDB(final String schemaName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        ShardingSphereLock lock = lockContext.getDatabaseLock(schemaName);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
             return;
@@ -243,15 +230,13 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()
-                .stream().map(each -> {
-                    DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
-                    algorithmInfo.setType(each.getType());
-                    algorithmInfo.setDescription(each.getDescription());
-                    algorithmInfo.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-                    algorithmInfo.setProvider(each.getProvider());
-                    return algorithmInfo;
-                }).collect(Collectors.toList());
+        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream().map(each -> {
+            DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
+            result.setType(each.getType());
+            result.setDescription(each.getDescription());
+            result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
+            return result;
+        }).collect(Collectors.toList());
     }
     
     @Override
@@ -268,21 +253,15 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private boolean isDataConsistencyCheckNeeded(final RuleAlteredContext ruleAlteredContext) {
-        return null != ruleAlteredContext.getDataConsistencyCheckAlgorithm();
-    }
-    
-    private void verifyDataConsistencyCheck(final JobConfigurationPOJO jobConfigPOJO, final JobConfiguration jobConfig) {
-        verifyManualMode(jobConfig);
-        verifySourceWritingStopped(jobConfig);
+        return null != ruleAlteredContext.getDataConsistencyCalculateAlgorithm();
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
-        verifyDataConsistencyCheck(jobConfigPOJO, jobConfig);
+        JobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
+        verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig);
     }
     
@@ -290,48 +269,45 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         if (!isDataConsistencyCheckNeeded(ruleAlteredContext)) {
-            log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
+            log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck0(jobConfig, ruleAlteredContext.getDataConsistencyCheckAlgorithm());
+        return dataConsistencyCheck(jobConfig, ruleAlteredContext.getDataConsistencyCalculateAlgorithm());
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
-        verifyDataConsistencyCheck(jobConfigPOJO, jobConfig);
-        TypedSPIConfiguration typedSPIConfig = new ShardingSphereAlgorithmConfiguration(algorithmType, new Properties());
-        DataConsistencyCheckAlgorithm checkAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(typedSPIConfig, DataConsistencyCheckAlgorithm.class);
-        return dataConsistencyCheck0(jobConfig, checkAlgorithm);
+        JobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
+        verifyDataConsistencyCheck(jobConfig);
+        return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, new Properties()));
     }
     
-    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck0(final JobConfiguration jobConfig, final DataConsistencyCheckAlgorithm checkAlgorithm) {
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getHandleConfig().getJobId();
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobConfig);
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.checkRecordsCount();
-        if (result.values().stream().allMatch(DataConsistencyCheckResult::isRecordsCountMatched)) {
-            Map<String, Boolean> contentCheckResult = dataConsistencyChecker.checkRecordsContent(checkAlgorithm);
-            result.forEach((key, value) -> value.setRecordsContentMatched(contentCheckResult.getOrDefault(key, false)));
-        }
-        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, checkAlgorithm.getClass().getName(), result);
+        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig).check(calculator);
+        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
+    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
+        verifyManualMode(jobConfig);
+        verifySourceWritingStopped(jobConfig);
+    }
+    
     @Override
-    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
-        if (checkResultMap.isEmpty()) {
+    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
+        if (checkResults.isEmpty()) {
             return false;
         }
-        for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
-            boolean recordsCountMatched = entry.getValue().isRecordsCountMatched();
-            boolean recordsContentMatched = entry.getValue().isRecordsContentMatched();
-            if (!recordsContentMatched || !recordsCountMatched) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, recordsContentMatched: {}, recordsCountMatched: {}",
-                    jobId, entry.getKey(), recordsContentMatched, recordsCountMatched);
+        for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
+            DataConsistencyCheckResult checkResult = entry.getValue();
+            boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
+            boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
+            if (!isCountMatched || !isContentMatched) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
                 return false;
             }
         }
@@ -364,20 +340,13 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getActiveVersion(), workflowConfig.getNewVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        // TODO rewrite job status update after job progress structure refactor
+        RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
+        RuleAlteredJobSchedulerCenter.stop(jobId);
         stop(jobId);
-        // TODO clean up should be done after the task is complete.
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (final InterruptedException ex) {
-            log.error(ex.getMessage());
-        }
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
-        RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
-        jobPreparer.cleanup(jobContext);
-        jobContext.close();
     }
     
     @Override
@@ -389,7 +358,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         try {
             new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobConfigPOJO));
         } catch (final SQLException ex) {
-            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
+            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId, ex);
         }
     }
     

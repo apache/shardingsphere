@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -34,14 +34,15 @@ import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScaling
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.type.singleton.TypedSingletonSPIHolder;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Create sharding scaling rule statement updater.
@@ -52,35 +53,26 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
     }
-    
-    private static final TypedSingletonSPIHolder<JobRateLimitAlgorithm> RATE_LIMIT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobRateLimitAlgorithm.class);
-    
-    private static final TypedSingletonSPIHolder<PipelineChannelFactory> PIPELINE_CHANNEL_FACTORY_HOLDER = new TypedSingletonSPIHolder<>(PipelineChannelFactory.class);
-    
-    private static final TypedSingletonSPIHolder<JobCompletionDetectAlgorithm> COMPLETION_DETECT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobCompletionDetectAlgorithm.class);
-    
-    private static final TypedSingletonSPIHolder<DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(DataConsistencyCheckAlgorithm.class);
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkDuplicate(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithms(sqlStatement.getConfigurationSegment());
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", databaseName);
         }
     }
     
-    private void checkDuplicate(final String schemaName, final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicate(final String databaseName, final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new DuplicateRuleException("Scaling", schemaName, Collections.singletonList(sqlStatement.getScalingName()));
+            throw new DuplicateRuleException("Scaling", databaseName, Collections.singletonList(sqlStatement.getScalingName()));
         }
     }
     
@@ -91,7 +83,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         checkRateLimiterExist(segment);
         checkStreamChannelExist(segment);
         checkCompletionDetectorExist(segment);
-        checkDataConsistencyCheckerExist(segment);
+        checkDataConsistencyCalculatorExist(segment);
     }
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
@@ -105,31 +97,34 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkRateLimiterAlgorithm(final AlgorithmSegment rateLimiter) throws DistSQLException {
         if (null != rateLimiter) {
-            checkAlgorithm(RATE_LIMIT_ALGORITHM_HOLDER, "rate limiter", rateLimiter);
+            checkAlgorithm(JobRateLimitAlgorithm.class, "rate limiter", rateLimiter);
         }
     }
     
     private void checkStreamChannelExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getStreamChannel()) {
-            checkAlgorithm(PIPELINE_CHANNEL_FACTORY_HOLDER, "stream channel", segment.getStreamChannel());
+            checkAlgorithm(PipelineChannelFactory.class, "stream channel", segment.getStreamChannel());
         }
     }
     
     private void checkCompletionDetectorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getCompletionDetector()) {
-            checkAlgorithm(COMPLETION_DETECT_ALGORITHM_HOLDER, "completion detector", segment.getCompletionDetector());
+            checkAlgorithm(JobCompletionDetectAlgorithm.class, "completion detector", segment.getCompletionDetector());
         }
     }
     
-    private void checkDataConsistencyCheckerExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getDataConsistencyChecker()) {
-            checkAlgorithm(DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER, "data consistency checker", segment.getDataConsistencyChecker());
+    private void checkDataConsistencyCalculatorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
+        if (null != segment.getDataConsistencyCalculator()) {
+            try {
+                DataConsistencyCalculateAlgorithmFactory.newInstance(segment.getDataConsistencyCalculator().getName(), new Properties());
+            } catch (final ServiceProviderNotFoundException ex) {
+                throw new InvalidAlgorithmConfigurationException("data consistency calculator", segment.getDataConsistencyCalculator().getName());
+            }
         }
     }
     
-    private <T extends TypedSPI & SingletonSPI> void checkAlgorithm(
-            final TypedSingletonSPIHolder<T> singletonSPIHolder, final String algorithmType, final AlgorithmSegment segment) throws DistSQLException {
-        Optional<T> service = singletonSPIHolder.get(segment.getName());
+    private <T extends StatefulTypedSPI> void checkAlgorithm(final Class<T> algorithmClass, final String algorithmType, final AlgorithmSegment segment) throws DistSQLException {
+        Optional<T> service = TypedSPIRegistry.findRegisteredService(algorithmClass, segment.getName(), new Properties());
         if (!service.isPresent()) {
             throw new InvalidAlgorithmConfigurationException(algorithmType, segment.getName());
         }

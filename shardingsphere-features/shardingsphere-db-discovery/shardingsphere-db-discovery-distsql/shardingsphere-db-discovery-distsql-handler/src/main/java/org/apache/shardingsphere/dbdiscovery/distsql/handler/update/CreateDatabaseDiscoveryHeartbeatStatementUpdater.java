@@ -49,11 +49,11 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkDuplicateHeartbeat(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkDuplicateHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkDuplicateHeartbeat(final String schemaName, final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement,
+    private void checkDuplicateHeartbeat(final String databaseName, final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                          final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig) {
             return;
@@ -62,7 +62,7 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
         Collection<String> duplicateRuleNames = sqlStatement.getHeartbeats().stream().map(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName)
                 .filter(existRuleNames::contains).collect(Collectors.toSet());
         duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, schemaName, duplicateRuleNames));
+        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement) {

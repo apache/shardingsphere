@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public final class RQLBackendHandlerTest {
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);

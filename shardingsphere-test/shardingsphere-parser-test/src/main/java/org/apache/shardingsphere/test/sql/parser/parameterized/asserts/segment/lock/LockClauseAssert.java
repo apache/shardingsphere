@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockClauseAssert {
-
+    
     /**
      * Assert lock segment index and forTables.
      * @param assertContext assert context

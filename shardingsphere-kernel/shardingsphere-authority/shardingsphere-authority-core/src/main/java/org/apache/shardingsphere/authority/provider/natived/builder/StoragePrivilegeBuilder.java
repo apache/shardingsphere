@@ -93,7 +93,7 @@ public final class StoragePrivilegeBuilder {
         save(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         checkConsistent(result);
-        return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+        return StoragePrivilegeMerger.merge(result, metaData.getDatabaseName(), metaData.getRuleMetaData().getRules());
     }
     
     private static void save(final Collection<DataSource> dataSources,
@@ -125,7 +125,7 @@ public final class StoragePrivilegeBuilder {
         }
     }
     
-    private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources, 
+    private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources,
                                                                               final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler handler) {
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));

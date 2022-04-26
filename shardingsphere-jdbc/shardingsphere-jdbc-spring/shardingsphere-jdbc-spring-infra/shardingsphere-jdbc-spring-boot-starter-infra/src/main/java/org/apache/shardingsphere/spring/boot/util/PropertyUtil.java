@@ -114,7 +114,7 @@ public final class PropertyUtil {
         Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
         return resultGetMethod.invoke(bindResultObject);
     }
-
+    
     /**
      * Convert keys of map to camel case.
      *
@@ -129,7 +129,7 @@ public final class PropertyUtil {
         }
         return result;
     }
-
+    
     /**
      * Return the specified Java Bean property name in dashed form.
      *

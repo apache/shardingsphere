@@ -47,11 +47,11 @@ public final class InsertValueContextTest {
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Method getValueExpressionsMethod = InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
-        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[] {assignments});
+        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[]{assignments});
         assertThat(insertValueContext.getValueExpressions(), is(getValueExpressionsResult));
         Method getParametersMethod = InsertValueContext.class.getDeclaredMethod("getParameters", List.class, int.class);
         getParametersMethod.setAccessible(true);
-        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext, new Object[] {parameters, parametersOffset});
+        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext, new Object[]{parameters, parametersOffset});
         assertThat(insertValueContext.getParameters(), is(getParametersResult));
     }
     
@@ -83,15 +83,14 @@ public final class InsertValueContextTest {
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         return Collections.singleton(new LiteralExpressionSegment(0, 10, literalObject));
     }
-
+    
     @Test
     public void assertGetParameterCount() {
         Collection<ExpressionSegment> expressions = Arrays.asList(
                 new LiteralExpressionSegment(0, 10, null),
                 new ExpressionProjectionSegment(0, 10, ""),
                 new ParameterMarkerExpressionSegment(0, 10, 5),
-                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("")), new ParameterMarkerExpressionSegment(0, 10, 5), "=", "")
-        );
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("")), new ParameterMarkerExpressionSegment(0, 10, 5), "=", ""));
         List<Object> parameters = Arrays.asList("", "");
         InsertValueContext insertValueContext = new InsertValueContext(expressions, parameters, 0);
         assertThat(insertValueContext.getParameterCount(), is(2));

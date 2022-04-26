@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
@@ -43,7 +43,7 @@ import java.util.Optional;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String name;
+    private final String databaseName;
     
     private final ShardingSphereResource resource;
     
@@ -56,16 +56,16 @@ public final class ShardingSphereMetaData {
      * 
      * @param databaseName database name
      * @param schemas schemas
-     * @param schemaConfig schema configuration
+     * @param databaseConfig database configuration
      * @param rules rules
      * @param defaultDatabaseType default database type
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final SchemaConfiguration schemaConfig, 
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
-        ShardingSphereResource resource = createResource(schemaConfig.getDataSources(), defaultDatabaseType);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
+        ShardingSphereResource resource = createResource(databaseConfig.getDataSources(), defaultDatabaseType);
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
         return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
     }
     
@@ -109,7 +109,9 @@ public final class ShardingSphereMetaData {
      * @return ShardingSphereSchema default schema
      */
     public ShardingSphereSchema getDefaultSchema() {
-        return schemas.get(name);
+        // FIXME optimize this logic when mode event contains schemaName
+        ShardingSphereSchema defaultSchema = schemas.values().isEmpty() ? null : schemas.get("public");
+        return schemas.getOrDefault(databaseName, defaultSchema);
     }
     
     /**

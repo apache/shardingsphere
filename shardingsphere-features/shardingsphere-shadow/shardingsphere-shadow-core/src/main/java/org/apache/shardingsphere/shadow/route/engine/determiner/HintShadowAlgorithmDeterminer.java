@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +55,7 @@ public final class HintShadowAlgorithmDeterminer {
     private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
         ShadowOperationType shadowOperationType = shadowDetermineCondition.getShadowOperationType();
         String tableName = shadowDetermineCondition.getTableName();
-        return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each))
-                .collect(Collectors.toCollection(LinkedList::new));
+        return shadowDetermineCondition.getSqlComments().stream()
+                .<PreciseHintShadowValue<Comparable<?>>>map(each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
     }
 }

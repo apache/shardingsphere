@@ -19,6 +19,7 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
 import java.util.ArrayList;
@@ -54,6 +55,17 @@ public final class ShardingSphereServiceLoader {
             result.add(each);
         }
         return result;
+    }
+    
+    /**
+     * Get service instances.
+     * 
+     * @param serviceClass service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    public static <T> Collection<T> getServiceInstances(final Class<T> serviceClass) {
+        return null == serviceClass.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceClass) : getSingletonServiceInstances(serviceClass);
     }
     
     /**

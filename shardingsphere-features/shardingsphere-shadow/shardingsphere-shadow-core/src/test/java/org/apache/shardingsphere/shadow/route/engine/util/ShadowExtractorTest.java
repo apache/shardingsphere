@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShadowExtractorTest {
-
+    
     @Test
     public void assertExtractValuesSimpleExpressionSegment() {
         SimpleExpressionSegment simpleExpressionSegment = new LiteralExpressionSegment(1, 2, "expected");

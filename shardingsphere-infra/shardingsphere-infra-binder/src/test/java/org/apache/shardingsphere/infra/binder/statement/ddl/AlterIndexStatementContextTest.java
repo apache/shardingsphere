@@ -37,22 +37,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlterIndexStatementContextTest {
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAlterIndexStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleAlterIndexStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerAlterIndexStatement.class));
     }
-
+    
     private void assertNewInstance(final AlterIndexStatement alterIndexStatement) {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("index_1"));
         when(alterIndexStatement.getIndex()).thenReturn(Optional.of(indexSegment));

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sharding</artifactId>
-        <version>5.1.1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-core</artifactId>
     <name>${project.artifactId}</name>
@@ -126,5 +126,10 @@
             <groupId>me.ahoo.cosid</groupId>
             <artifactId>cosid-core</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.aventrix.jnanoid</groupId>
+            <artifactId>jnanoid</artifactId>
+        </dependency>        
     </dependencies>
 </project>

@@ -46,27 +46,27 @@ public final class GroupByContextEngineTest {
     public void assertCreateGroupByContextWithoutGroupByForMySQL() {
         assertCreateGroupByContextWithoutGroupBy(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithoutGroupByForOracle() {
         assertCreateGroupByContextWithoutGroupBy(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithoutGroupByForPostgreSQL() {
         assertCreateGroupByContextWithoutGroupBy(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithoutGroupByForSQL92() {
         assertCreateGroupByContextWithoutGroupBy(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithoutGroupByForSQLServer() {
         assertCreateGroupByContextWithoutGroupBy(new SQLServerSelectStatement());
     }
-
+    
     private void assertCreateGroupByContextWithoutGroupBy(final SelectStatement selectStatement) {
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
@@ -76,27 +76,27 @@ public final class GroupByContextEngineTest {
     public void assertCreateGroupByContextWithGroupByForMySQL() {
         assertCreateGroupByContextWithGroupBy(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithGroupByForOracle() {
         assertCreateGroupByContextWithGroupBy(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithGroupByForPostgreSQL() {
         assertCreateGroupByContextWithGroupBy(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithGroupByForSQL92() {
         assertCreateGroupByContextWithGroupBy(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateGroupByContextWithGroupByForSQLServer() {
         assertCreateGroupByContextWithGroupBy(new SQLServerSelectStatement());
     }
-
+    
     private void assertCreateGroupByContextWithGroupBy(final SelectStatement selectStatement) {
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, OrderDirection.DESC);

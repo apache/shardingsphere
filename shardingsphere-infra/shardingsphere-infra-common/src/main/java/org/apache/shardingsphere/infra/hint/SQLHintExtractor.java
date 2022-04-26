@@ -66,4 +66,13 @@ public final class SQLHintExtractor {
     public boolean isHintWriteRouteOnly() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY);
     }
+    
+    /**
+     * Judge whether hint skip encrypt rewrite or not.
+     *
+     * @return whether hint skip encrypt rewrite or not
+     */
+    public boolean isHintSkipEncryptRewrite() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
+    }
 }

@@ -29,6 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Getter
 @Setter
 public abstract class AlterSequenceStatement extends AbstractSQLStatement implements DDLStatement {
-
+    
     private String sequenceName;
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -29,11 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Pipeline data source manager.
  */
-@NoArgsConstructor
 @Slf4j
 public final class PipelineDataSourceManager implements AutoCloseable {
-    
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
     private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
@@ -53,7 +49,7 @@ public final class PipelineDataSourceManager implements AutoCloseable {
             if (null != result) {
                 return result;
             }
-            result = dataSourceFactory.newInstance(dataSourceConfig);
+            result = PipelineDataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }

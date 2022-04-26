@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -49,12 +49,12 @@ public final class NativeAuthorityProviderAlgorithmTest {
     
     @BeforeClass
     public static void setUp() {
-        ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
+        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
     }
     
     @Test
     public void assertAlgorithmType() {
-        Optional<AuthorityProvideAlgorithm> algorithm = TypedSPIRegistry.findRegisteredService(AuthorityProvideAlgorithm.class, "NATIVE", new Properties());
+        Optional<AuthorityProviderAlgorithm> algorithm = TypedSPIRegistry.findRegisteredService(AuthorityProviderAlgorithm.class, "NATIVE", new Properties());
         assertTrue(algorithm.isPresent());
         assertThat(algorithm.get().getType(), is("NATIVE"));
     }

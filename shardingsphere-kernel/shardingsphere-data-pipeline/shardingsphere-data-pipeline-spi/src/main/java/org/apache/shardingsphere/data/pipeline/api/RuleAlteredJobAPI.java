@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.singleton.SingletonSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.Optional;
 /**
  * Rule altered job API.
  */
-public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, SingletonSPI {
+public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     
     /**
      * List all jobs.
@@ -148,10 +147,10 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
      * Aggregate data consistency check results.
      *
      * @param jobId job id
-     * @param checkResultMap check result map
+     * @param checkResults check results
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
     
     /**
      * Switch job source schema's configuration to job target configuration.

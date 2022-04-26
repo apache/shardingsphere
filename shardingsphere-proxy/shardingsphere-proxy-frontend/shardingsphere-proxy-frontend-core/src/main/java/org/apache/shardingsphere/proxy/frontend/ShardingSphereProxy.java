@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTy
  */
 @Slf4j
 public final class ShardingSphereProxy {
-
+    
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
@@ -98,6 +98,7 @@ public final class ShardingSphereProxy {
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .option(ChannelOption.SO_REUSEADDR, true)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))

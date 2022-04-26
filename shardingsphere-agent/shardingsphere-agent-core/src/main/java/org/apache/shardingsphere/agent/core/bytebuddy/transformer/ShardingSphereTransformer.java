@@ -102,8 +102,8 @@ public final class ShardingSphereTransformer implements Transformer {
         return result;
     }
     
-    private ShardingSphereTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(
-            final Collection<ConstructorPoint> constructorPoints, final InDefinedShape methodDescription) {
+    private ShardingSphereTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorPoint> constructorPoints,
+                                                                                                              final InDefinedShape methodDescription) {
         List<ConstructorPoint> matchedConstructorPoints = constructorPoints.stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (matchedConstructorPoints.isEmpty()) {
             return null;

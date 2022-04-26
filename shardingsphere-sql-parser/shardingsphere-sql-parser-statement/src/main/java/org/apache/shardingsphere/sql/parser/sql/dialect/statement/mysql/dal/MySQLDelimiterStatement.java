@@ -31,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Getter
 @Setter
 public final class MySQLDelimiterStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private String delimiterName;
 }

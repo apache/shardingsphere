@@ -49,7 +49,7 @@ public final class CreateEncryptRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateEncryptRuleStatement actual, final CreateEncryptRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);   
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertEncryptRules(assertContext, actual.getRules(), expected.getRules());

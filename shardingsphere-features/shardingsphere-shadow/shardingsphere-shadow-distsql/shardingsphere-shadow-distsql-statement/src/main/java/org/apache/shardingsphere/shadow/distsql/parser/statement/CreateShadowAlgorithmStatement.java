@@ -31,6 +31,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class CreateShadowAlgorithmStatement extends CreateRuleStatement implements ShadowSubjectSupplier {
-
+    
     private final Collection<ShadowAlgorithmSegment> algorithms;
 }

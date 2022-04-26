@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -27,12 +28,13 @@ import java.util.Properties;
  * Sharding algorithm factory bean.
  */
 public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShardingAlgorithm> {
-
-    static {
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-    }
     
     public ShardingAlgorithmFactoryBean(final String type, final Properties props) {
-        super(ShardingAlgorithm.class, type, props);
+        super(type, props, ShardingAlgorithm.class);
+    }
+    
+    @Override
+    public ShardingAlgorithm getObject() {
+        return ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
     }
 }

@@ -48,17 +48,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class PrepareStatementContextTest {
-
+    
     private ColumnSegment column;
-
+    
     private SimpleTableSegment table;
-
+    
     @Before
     public void setUp() {
         table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         column = new ColumnSegment(0, 0, new IdentifierValue("col_1"));
     }
-
+    
     @Test
     public void assertNewInstance() {
         PostgreSQLPrepareStatement postgreSQLPrepare = mock(PostgreSQLPrepareStatement.class);
@@ -72,19 +72,19 @@ public final class PrepareStatementContextTest {
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_1", "tbl_1", "tbl_1")));
     }
-
+    
     private SelectStatement getSelect() {
         SelectStatement select = new PostgreSQLSelectStatement();
         select.setFrom(table);
         return select;
     }
-
+    
     private InsertStatement getInsert() {
         InsertStatement insert = new PostgreSQLInsertStatement();
         insert.setTable(table);
         return insert;
     }
-
+    
     private UpdateStatement getUpdate() {
         UpdateStatement update = new PostgreSQLUpdateStatement();
         update.setTableSegment(table);
@@ -92,7 +92,7 @@ public final class PrepareStatementContextTest {
         update.setSetAssignment(setAssignmentSegment);
         return update;
     }
-
+    
     private DeleteStatement getDelete() {
         DeleteStatement delete = new PostgreSQLDeleteStatement();
         delete.setTableSegment(table);

@@ -37,7 +37,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
-
+    
     private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
     
     @Test

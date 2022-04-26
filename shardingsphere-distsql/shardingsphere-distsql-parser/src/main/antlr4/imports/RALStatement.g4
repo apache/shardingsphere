@@ -135,12 +135,12 @@ typeName
     : IDENTIFIER
     ;
 
-exportSchemaConfiguration
-    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
+exportDatabaseConfiguration
+    : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
     ;
 
-importSchemaConfiguration
-    : IMPORT SCHEMA (CONFIGURATION | CONFIG) FILE EQ filePath
+importDatabaseConfiguration
+    : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
 filePath
@@ -184,7 +184,7 @@ instanceDefination
     ;
 
 instanceId
-    : ip AT port | IDENTIFIER | STRING
+    : ip AT port
     ;
 
 refreshScope

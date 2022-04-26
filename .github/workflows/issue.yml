@@ -19,7 +19,7 @@ name: ISSUE Standardized Process
 
 on:
   schedule:
-    - cron: '0 0 */1 * *'  # once a day
+    - cron: '0 16 */1 * *'  # once a day
   issue_comment:
     types: [created,edited]
   issues:
@@ -30,9 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'issue_comment' }}
     steps:
-      - name: Print Issue Comment
-        run: |
-          echo ${{ github.event.comment.body }}
       - name: Trigger The CI Workflow
         if: ${{ contains( github.event.comment.body , '/run ci') }} 
         uses: mvasigh/dispatch-action@main

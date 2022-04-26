@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+CREDENTIALS
+    : C R E D E N T I A L S
+    ;
+
 EDITION
     : E D I T I O N
     ;
@@ -929,6 +933,10 @@ LOG
 
 REUSE
     : R E U S E
+    ;
+
+SETTINGS
+    : S E T T I N G S
     ;
 
 STORAGE

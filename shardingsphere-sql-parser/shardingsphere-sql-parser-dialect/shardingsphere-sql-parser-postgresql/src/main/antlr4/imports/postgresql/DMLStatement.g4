@@ -215,10 +215,6 @@ qualifiedNameList
     | qualifiedNameList COMMA_ qualifiedName
     ;
 
-qualifiedName
-    : colId | colId indirection
-    ;
-
 selectLimit
     : limitClause offsetClause
     | offsetClause limitClause

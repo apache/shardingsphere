@@ -38,7 +38,7 @@ public final class MySQLBinaryResultSetRowPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Test 
+    @Test
     public void assertWrite() {
         BinaryRow row = new BinaryRow(Arrays.asList(new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, "value"), new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, null)));
         MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(1, row);

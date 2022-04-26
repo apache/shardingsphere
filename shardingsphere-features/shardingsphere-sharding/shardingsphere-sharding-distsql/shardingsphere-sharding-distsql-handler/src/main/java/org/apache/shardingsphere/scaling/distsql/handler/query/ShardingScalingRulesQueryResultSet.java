@@ -70,7 +70,7 @@ public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSe
         result.add(null == shardingScalingRule ? "" : getString(shardingScalingRule.getOutput()));
         result.add(null == shardingScalingRule ? "" : getString(shardingScalingRule.getStreamChannel()));
         result.add(null == shardingScalingRule ? "" : getString(shardingScalingRule.getCompletionDetector()));
-        result.add(null == shardingScalingRule ? "" : getString(shardingScalingRule.getDataConsistencyChecker()));
+        result.add(null == shardingScalingRule ? "" : getString(shardingScalingRule.getDataConsistencyCalculator()));
         return result;
     }
     

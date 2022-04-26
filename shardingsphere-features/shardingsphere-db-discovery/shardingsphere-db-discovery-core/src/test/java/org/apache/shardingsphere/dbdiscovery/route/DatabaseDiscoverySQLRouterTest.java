@@ -73,13 +73,13 @@ public final class DatabaseDiscoverySQLRouterTest {
     
     @Before
     public void setUp() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig 
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "TEST");
-        ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
+                DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "CORE.FIXTURE");
+        ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties());
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                Collections.singletonMap("TEST", algorithmConfig));
-        rule = new DatabaseDiscoveryRule("TEST", Collections.singletonMap("ds", mock(DataSource.class)), config);
+                Collections.singletonMap("CORE.FIXTURE", algorithmConfig));
+        rule = new DatabaseDiscoveryRule(DATA_SOURCE_NAME, Collections.singletonMap(PRIMARY_DATA_SOURCE, mock(DataSource.class)), config);
         sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     

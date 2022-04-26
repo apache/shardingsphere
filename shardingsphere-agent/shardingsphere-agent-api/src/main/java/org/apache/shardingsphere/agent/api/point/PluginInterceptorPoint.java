@@ -232,7 +232,7 @@ public final class PluginInterceptorPoint {
             private final Builder builder;
             
             private final ElementMatcher<? super MethodDescription> matcher;
-
+            
             private String classNameOfAdvice;
             
             private ConstructorPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {

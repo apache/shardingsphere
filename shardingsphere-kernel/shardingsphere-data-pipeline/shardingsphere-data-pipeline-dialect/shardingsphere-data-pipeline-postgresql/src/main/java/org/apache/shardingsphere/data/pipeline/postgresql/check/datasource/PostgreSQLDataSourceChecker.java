@@ -18,13 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -34,29 +29,6 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        try {
-            for (DataSource dataSource : dataSources) {
-                String tableName;
-                try (Connection connection = dataSource.getConnection();
-                     ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"})) {
-                    if (resultSet.next()) {
-                        tableName = resultSet.getString(3);
-                    } else {
-                        throw new PipelineJobPrepareFailedException("No resultSet find in the source data source.");
-                    }
-                    checkTableExisted(tableName, connection);
-                }
-            }
-        } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Data sources privilege check failed.", ex);
-        }
-    }
-    
-    private void checkTableExisted(final String tableName, final Connection connection) throws SQLException {
-        String sql = "SELECT * FROM " + tableName + " LIMIT 1";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeQuery();
-        }
     }
     
     @Override

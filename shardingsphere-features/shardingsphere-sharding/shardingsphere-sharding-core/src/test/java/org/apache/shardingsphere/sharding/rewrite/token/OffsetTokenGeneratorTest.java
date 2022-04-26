@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OffsetTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
@@ -54,7 +54,7 @@ public final class OffsetTokenGeneratorTest {
         when(selectStatementContext.getPaginationContext().getOffsetSegment().get()).thenReturn(numberLiteralPaginationValueSegment);
         assertTrue(offsetTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         PaginationValueSegment paginationValueSegment = mock(PaginationValueSegment.class);

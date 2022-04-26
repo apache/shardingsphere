@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 public final class OpenGaussComBatchBindExecutorTest {
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss", 
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss",
             new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
     
     private ContextManager contextManagerBefore;

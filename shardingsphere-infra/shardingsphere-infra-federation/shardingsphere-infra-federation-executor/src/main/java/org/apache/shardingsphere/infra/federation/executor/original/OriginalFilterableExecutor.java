@@ -72,7 +72,7 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     }
     
     @Override
-    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         LogicSQL logicSQL = federationContext.getLogicSQL();
         Connection connection = createConnection(prepareEngine, callback, federationContext);
@@ -82,14 +82,14 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
         return preparedStatement.executeQuery();
     }
     
-    private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+    private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                         final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(databaseName).getDialectProps());
         addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, federationContext);
         return result;
     }
     
-    private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+    private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext);

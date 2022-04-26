@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyGlobalConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -36,11 +36,11 @@ import java.util.Map.Entry;
  * YAML proxy configuration swapper.
  */
 public final class YamlProxyConfigurationSwapper {
-
+    
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-
+    
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-
+    
     /**
      * Swap YAML proxy configuration to proxy configuration.
      *
@@ -48,29 +48,27 @@ public final class YamlProxyConfigurationSwapper {
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = swapSchemaConfigurations(yamlConfig);
+        Map<String, DataSourceGeneratedDatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig);
         ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()),
                 yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
-        return new ProxyConfiguration(schemaConfigs, globalConfig);
+        return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
-
-    private Map<String, DataSourceGeneratedSchemaConfiguration> swapSchemaConfigurations(final YamlProxyConfiguration yamlConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> result = new LinkedHashMap<>(yamlConfig.getSchemaConfigurations().size(), 1);
-        boolean isDataSourceAggregation = yamlConfig.getServerConfiguration().getProps().containsKey("data-source-aggregation-enabled")
-                && (boolean) yamlConfig.getServerConfiguration().getProps().get("data-source-aggregation-enabled");
-        for (Entry<String, YamlProxySchemaConfiguration> entry : yamlConfig.getSchemaConfigurations().entrySet()) {
-            Map<String, DataSourceConfiguration> schemaDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getSchemaName(), isDataSourceAggregation);
-            Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
-            result.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(schemaDataSourceConfigs, schemaRuleConfigs));
+    
+    private Map<String, DataSourceGeneratedDatabaseConfiguration> swapDatabaseConfigurations(final YamlProxyConfiguration yamlConfig) {
+        Map<String, DataSourceGeneratedDatabaseConfiguration> result = new LinkedHashMap<>(yamlConfig.getDatabaseConfigurations().size(), 1);
+        for (Entry<String, YamlProxyDatabaseConfiguration> entry : yamlConfig.getDatabaseConfigurations().entrySet()) {
+            Map<String, DataSourceConfiguration> databaseDataSourceConfigs =
+                    swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName());
+            Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
+            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
         }
         return result;
     }
-
-    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String schemaName,
-                                                                              final boolean isDataSourceAggregation) {
+    
+    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs, final String databaseName) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlConfigs.entrySet()) {
-            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue(), schemaName, entry.getKey(), isDataSourceAggregation));
+            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue()));
         }
         return result;
     }

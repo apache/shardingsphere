@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Drop trigger statement test case.
+ * Drop view statement test case.
  */
 public final class DropViewStatementTestCase extends SQLParserTestCase {
 }

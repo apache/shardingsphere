@@ -33,7 +33,7 @@ import java.sql.SQLException;
 public final class PreparedQueryExecutionUnitBuilder implements VertxExecutionUnitBuilder {
     
     @Override
-    public VertxExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorVertxStatementManager statementManager, 
+    public VertxExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorVertxStatementManager statementManager,
                                     final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) throws SQLException {
         return new VertxExecutionUnit(executionUnit, connectionMode, connection.compose(sqlClient -> Future.succeededFuture(sqlClient.preparedQuery(executionUnit.getSqlUnit().getSql()))));
     }

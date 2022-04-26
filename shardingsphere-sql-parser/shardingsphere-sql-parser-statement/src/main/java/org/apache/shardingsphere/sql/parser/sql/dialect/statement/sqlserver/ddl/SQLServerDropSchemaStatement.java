@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer drop schema statement.
  */
 @ToString
-public final class SQLServerDropSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerDropSchemaStatement extends DropSchemaStatement implements SQLServerStatement {
 }

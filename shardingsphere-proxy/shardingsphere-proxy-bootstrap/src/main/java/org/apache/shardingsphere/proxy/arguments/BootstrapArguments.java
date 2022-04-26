@@ -18,6 +18,11 @@
 package org.apache.shardingsphere.proxy.arguments;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+
+import java.io.IOException;
 
 /**
  * Bootstrap arguments.
@@ -40,7 +45,7 @@ public final class BootstrapArguments {
     
     private int getPort(final String[] args) {
         if (0 == args.length) {
-            return DEFAULT_PORT;
+            return getProxyDefaultPort(DEFAULT_CONFIG_PATH);
         }
         try {
             return Integer.parseInt(args[0]);
@@ -62,5 +67,20 @@ public final class BootstrapArguments {
             result.append('/');
         }
         return result.toString();
+    }
+    
+    private static int getProxyDefaultPort(final String configurationPath) {
+        YamlProxyConfiguration yamlConfig;
+        try {
+            yamlConfig = ProxyConfigurationLoader.load(configurationPath);
+            return yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey()) == null
+                    ? Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue())
+                    : Integer.parseInt(
+                            yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey()).toString());
+        } catch (IOException e) {
+            return DEFAULT_PORT;
+        } catch (NullPointerException e) {
+            return DEFAULT_PORT;
+        }
     }
 }

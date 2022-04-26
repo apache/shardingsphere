@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -87,23 +87,24 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         boolean isOverwrite = parameter.getModeConfig().isOverwrite();
         if (!parameter.isEmpty()) {
-            metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
+            metaDataPersistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
         metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
     }
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
-        Optional<String> schemaName = metaDataContexts.getAllSchemaNames().stream().findFirst();
+        Optional<String> databaseName = metaDataContexts.getAllDatabaseNames().stream().findFirst();
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
-                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType()) : Optional.empty();
-        if (!schemaName.isPresent() || !fileGenerator.isPresent()) {
+                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType())
+                : Optional.empty();
+        if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
-                new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
+                new DataSourceProvidedDatabaseConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
         Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
         Preconditions.checkState(transactionRuleConfig.isPresent());
         transactionRuleConfig.get().getProps().clear();
@@ -124,31 +125,38 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+                ? parameter.getDatabaseConfigs().keySet()
+                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getSchemaConfigs(), new ConfigurationProperties(parameter.getProps()));
-        for (String each : schemaNames) {
+        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
+        for (String each : databaseNames) {
             if (databaseType.getSystemSchemas().contains(each)) {
                 continue;
             }
-            result.addSchema(each, databaseType, createSchemaConfiguration(each, metaDataPersistService, parameter), props);
+            result.addDatabase(each, databaseType, createDatabaseConfiguration(each, metaDataPersistService, parameter), props);
         }
-        result.addSystemSchemas(databaseType);
+        result.addSystemDatabases(databaseType);
         return result;
     }
     
-    private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
-                                                          final ContextManagerBuilderParameter parameter) {
-        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
-        Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
-        return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
+    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName, final MetaDataPersistService metaDataPersistService,
+                                                              final ContextManagerBuilderParameter parameter) {
+        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
+        Collection<RuleConfiguration> databaseRuleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(databaseName);
+        return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
     private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereDatabase> databaseMap) {
-        databaseMap.forEach((key, value) -> value.getSchemas().forEach((key1, value1) -> metaDataPersistService.getSchemaMetaDataService().persist(key, key1, value1)));
+        databaseMap.forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
+            if (tables.getTables().isEmpty()) {
+                metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
+            } else {
+                metaDataPersistService.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables);
+            }
+        }));
     }
     
     private ContextManager createContextManager(final ClusterPersistRepository repository, final MetaDataPersistService metaDataPersistService,

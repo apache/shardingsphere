@@ -40,7 +40,7 @@ public final class SQLParserSpringNamespaceTest extends AbstractJUnit4SpringCont
         assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
         assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
     }
-
+    
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));

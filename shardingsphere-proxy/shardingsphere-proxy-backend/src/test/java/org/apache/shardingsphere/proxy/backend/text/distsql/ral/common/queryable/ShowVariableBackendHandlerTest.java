@@ -64,7 +64,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowTransactionType() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("transaction_type")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
@@ -78,7 +78,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowCachedConnections() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connections")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
@@ -92,7 +92,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertShowCachedConnectionFailed() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connectionss")).setConnectionSession(connectionSession));
         backendHandler.execute();
@@ -101,7 +101,7 @@ public final class ShowVariableBackendHandlerTest {
     @Test
     public void assertShowAgentPluginsEnabled() throws SQLException {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
@@ -115,7 +115,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowPropsVariable() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.getInstance().init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
@@ -137,7 +137,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowAllVariables() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.getInstance().init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);

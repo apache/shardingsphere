@@ -26,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum OperationScope {
-
+    
     GLOBAL("GLOBAL"),
     SESSION("SESSION");
-
+    
     private final String scope;
 }

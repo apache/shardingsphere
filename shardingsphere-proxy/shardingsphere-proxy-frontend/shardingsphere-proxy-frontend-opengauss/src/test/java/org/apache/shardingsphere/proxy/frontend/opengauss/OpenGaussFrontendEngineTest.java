@@ -88,6 +88,6 @@ public final class OpenGaussFrontendEngineTest {
     
     @Test
     public void assertGetDatabaseType() {
-        assertThat(openGaussFrontendEngine.getDatabaseType(), is("openGauss"));
+        assertThat(openGaussFrontendEngine.getType(), is("openGauss"));
     }
 }

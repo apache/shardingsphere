@@ -24,7 +24,7 @@ on:
   push:
     branches: [ master, dev ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/ci.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
@@ -35,7 +35,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/ci.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '**/src/test/**'
@@ -46,7 +46,7 @@ on:
   repository_dispatch:
     types: [rerun-ci]
   schedule:
-    - cron: '0 0 */1 * *'  # once a day. UTC time
+    - cron: '0 16 */1 * *'  # once a day. UTC time
 
 concurrency:
   group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}

@@ -21,6 +21,7 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
+import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
@@ -53,13 +54,14 @@ public final class ExampleGeneratorFactory {
     
     /**
      * Generate directories and files by template.
-     * 
+     *
      * @throws TemplateException template exception
      * @throws IOException IO exception
      */
     @SuppressWarnings("unchecked")
     public void generate() throws TemplateException, IOException {
         YamlExampleConfiguration exampleConfiguration = swapConfigToObject();
+        YamlExampleConfigurationValidator.validate(exampleConfiguration);
         Collection<String> products = exampleConfiguration.getProducts();
         for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
             if (products.contains(each.getType())) {

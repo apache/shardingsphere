@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.statement.dcl.RevokeStatementConte
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CommentStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateProcedureStatementContext;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementC
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateSchemaStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
@@ -65,11 +67,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -164,6 +168,9 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
+        if (sqlStatement instanceof CreateSchemaStatement) {
+            return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
+        }
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
         }
@@ -205,6 +212,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof PrepareStatement) {
             return new PrepareStatementContext((PrepareStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CommentStatement) {
+            return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

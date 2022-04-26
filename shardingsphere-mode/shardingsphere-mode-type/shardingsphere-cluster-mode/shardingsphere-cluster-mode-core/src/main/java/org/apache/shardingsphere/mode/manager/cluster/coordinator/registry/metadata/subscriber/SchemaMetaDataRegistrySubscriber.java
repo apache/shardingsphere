@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -42,7 +43,17 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
-        event.getAlteredTables().forEach(each -> persistService.persist(event.getSchemaName(), each));
-        event.getDroppedTables().forEach(each -> persistService.delete(event.getSchemaName(), each));
+        event.getAlteredTables().forEach(each -> persistService.persistTable(event.getDatabaseName(), event.getSchemaName(), each));
+        event.getDroppedTables().forEach(each -> persistService.deleteTable(event.getDatabaseName(), event.getSchemaName(), each));
+    }
+    
+    /**
+     * Add schema.
+     *
+     * @param event schema add event
+     */
+    @Subscribe
+    public void addSchema(final AddSchemaEvent event) {
+        persistService.persistSchema(event.getDatabaseName(), event.getSchemaName());
     }
 }
