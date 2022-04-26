@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -36,12 +36,13 @@ import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database discovery engine.
@@ -49,11 +50,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public final class DatabaseDiscoveryEngine {
-
+    
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
+    
     /**
      * Check environment of database cluster.
      *
@@ -64,18 +65,16 @@ public final class DatabaseDiscoveryEngine {
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         ExecutorEngine executorEngine = new ExecutorEngine(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
         ExecutorDataMap.getValue().put(DatabaseDiscoveryExecutorCallback.DATABASE_NAME, databaseName);
-        executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
-    }
-
-    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
-        Collection<ExecutionGroup<DataSource>> inputGroups = new ArrayList<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            ExecutionGroup<DataSource> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry.getValue()));
-            inputGroups.add(executionGroup);
+        Collection<String> result = executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
+        if (!result.isEmpty()) {
+            throw new ShardingSphereConfigurationException(String.join(System.lineSeparator(), result));
         }
-        return new ExecutionGroupContext<>(inputGroups);
     }
-
+    
+    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
+        return new ExecutionGroupContext<>(dataSourceMap.values().stream().map(each -> new ExecutionGroup<>(Collections.singletonList(each))).collect(Collectors.toList()));
+    }
+    
     /**
      * Change primary data source.
      *
