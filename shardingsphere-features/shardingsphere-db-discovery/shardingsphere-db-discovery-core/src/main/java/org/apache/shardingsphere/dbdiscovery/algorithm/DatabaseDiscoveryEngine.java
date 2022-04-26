@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DatabaseDiscoveryEngine {
     
-    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
-    
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
     
     /**

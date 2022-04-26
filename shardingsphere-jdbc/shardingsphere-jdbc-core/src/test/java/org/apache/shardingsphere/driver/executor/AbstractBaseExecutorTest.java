@@ -60,7 +60,7 @@ public abstract class AbstractBaseExecutorTest {
     @Before
     public void setUp() throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
-        executorEngine = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors());
+        executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
         TransactionTypeHolder.set(TransactionType.LOCAL);
         connection = new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, mockContextManager());
     }
