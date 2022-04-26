@@ -25,16 +25,16 @@ public interface JobLock {
     /**
      * Lock.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param jobId job id
      */
-    void lock(String schemaName, String jobId);
+    void lock(String databaseName, String jobId);
     
     /**
      * Release lock.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param jobId job id
      */
-    void releaseLock(String schemaName, String jobId);
+    void releaseLock(String databaseName, String jobId);
 }

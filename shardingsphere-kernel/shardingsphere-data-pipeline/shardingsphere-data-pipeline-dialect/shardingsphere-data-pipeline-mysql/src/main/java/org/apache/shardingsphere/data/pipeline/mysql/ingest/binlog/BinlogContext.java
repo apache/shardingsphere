@@ -70,12 +70,12 @@ public final class BinlogContext {
     }
     
     /**
-     * Get schema name by table id.
+     * Get database name by table id.
      *
      * @param tableId table id
-     * @return schema name
+     * @return database name
      */
-    public String getSchemaName(final long tableId) {
+    public String getDatabaseName(final long tableId) {
         return tableMap.get(tableId).getSchemaName();
     }
     

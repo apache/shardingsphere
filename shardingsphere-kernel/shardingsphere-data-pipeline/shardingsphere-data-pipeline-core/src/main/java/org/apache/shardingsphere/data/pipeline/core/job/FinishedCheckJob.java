@@ -67,10 +67,10 @@ public final class FinishedCheckJob implements SimpleJob {
                 }
                 log.info("scaling job {} almost finished.", jobId);
                 RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
-                String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+                String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
                 try {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.lock(databaseName, jobId + "");
                     }
                     if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
                         log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
@@ -82,10 +82,10 @@ public final class FinishedCheckJob implements SimpleJob {
                         continue;
                     }
                     RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
-                    switchClusterConfiguration(schemaName, jobConfig, checkoutLockAlgorithm);
+                    switchClusterConfiguration(databaseName, jobConfig, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.releaseLock(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.releaseLock(databaseName, jobId + "");
                     }
                 }
                 log.info("job {} finished", jobId);
@@ -115,16 +115,16 @@ public final class FinishedCheckJob implements SimpleJob {
         return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, ruleAlteredJobAPI.dataConsistencyCheck(jobConfig));
     }
     
-    private void switchClusterConfiguration(final String schemaName, final JobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String databaseName, final JobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         try {
             if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.lock(schemaName, jobId + "");
+                checkoutLockAlgorithm.lock(databaseName, jobId + "");
             }
             ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
         } finally {
             if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.releaseLock(schemaName, jobId + "");
+                checkoutLockAlgorithm.releaseLock(databaseName, jobId + "");
             }
         }
     }

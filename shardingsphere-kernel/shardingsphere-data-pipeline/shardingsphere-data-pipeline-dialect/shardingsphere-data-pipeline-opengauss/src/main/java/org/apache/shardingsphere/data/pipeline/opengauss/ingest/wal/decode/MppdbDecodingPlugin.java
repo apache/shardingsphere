@@ -98,7 +98,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = mppTableData.getTableName().split("\\.");
-        result.setSchemaName(tableMetaData[0]);
+        result.setDatabaseName(tableMetaData[0]);
         result.setTableName(tableMetaData[1]);
         return result;
     }

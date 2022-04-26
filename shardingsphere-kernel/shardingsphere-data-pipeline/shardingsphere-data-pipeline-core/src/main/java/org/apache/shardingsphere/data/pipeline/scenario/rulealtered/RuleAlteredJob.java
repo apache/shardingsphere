@@ -26,7 +26,7 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 
 /**
  * Rule altered job.
@@ -56,7 +56,7 @@ public final class RuleAlteredJob implements SimpleJob {
             RuleAlteredJobSchedulerCenter.stop(shardingContext.getJobName());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
-            ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
+            ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getWorkflowConfig().getDatabaseName());
             ShardingSphereEventBus.getInstance().post(event);
             throw ex;
         }

@@ -53,12 +53,12 @@ public final class RuleAlteredJobId extends AbstractJobId {
     /**
      * Marshal job id.
      *
-     * @return job id text. Format: {type} + hex({formatVersion}|{sortedSubTypes}|{currentMetadataVersion}T{newMetadataVersion}|{schemaName})
+     * @return job id text. Format: {type} + hex({formatVersion}|{sortedSubTypes}|{currentMetadataVersion}T{newMetadataVersion}|{databaseName})
      */
     public String marshal() {
         List<String> subTypes = getSubTypes();
         Collections.sort(subTypes);
-        String text = getFormatVersion() + "|" + Joiner.on('-').join(subTypes) + "|" + getCurrentMetadataVersion() + "T" + getNewMetadataVersion() + "|" + getSchemaName();
+        String text = getFormatVersion() + "|" + Joiner.on('-').join(subTypes) + "|" + getCurrentMetadataVersion() + "T" + getNewMetadataVersion() + "|" + getDatabaseName();
         return getType() + Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
     }
     
@@ -80,14 +80,14 @@ public final class RuleAlteredJobId extends AbstractJobId {
         Preconditions.checkState("01".equals(formatVersion), "Unknown formatVersion=" + formatVersion);
         List<String> subTypes = Splitter.on('-').splitToList(splittedText.get(1));
         List<Integer> metadataVersions = Splitter.on('T').splitToList(splittedText.get(2)).stream().map(Integer::parseInt).collect(Collectors.toList());
-        String schemaName = splittedText.get(3);
+        String databaseName = splittedText.get(3);
         RuleAlteredJobId result = new RuleAlteredJobId();
         result.setType(type);
         result.setFormatVersion(formatVersion);
         result.setSubTypes(subTypes);
         result.setCurrentMetadataVersion(metadataVersions.get(0));
         result.setNewMetadataVersion(metadataVersions.get(1));
-        result.setSchemaName(schemaName);
+        result.setDatabaseName(databaseName);
         return result;
     }
 }

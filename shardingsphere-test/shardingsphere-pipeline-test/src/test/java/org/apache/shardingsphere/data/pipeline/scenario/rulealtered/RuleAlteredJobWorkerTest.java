@@ -98,7 +98,7 @@ public final class RuleAlteredJobWorkerTest {
         assertNotNull(jobConfigUrl);
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "isUncompletedJobOfSameSchemaInJobList", new Class[]{String.class},
-                new String[]{jobConfiguration.getWorkflowConfig().getSchemaName()});
+                new String[]{jobConfiguration.getWorkflowConfig().getDatabaseName()});
         assertFalse((Boolean) result);
     }
 }
