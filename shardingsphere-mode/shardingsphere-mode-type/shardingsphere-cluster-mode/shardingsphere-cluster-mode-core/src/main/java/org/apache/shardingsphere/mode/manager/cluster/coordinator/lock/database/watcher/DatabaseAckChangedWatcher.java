@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.service.DatabaseLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -31,13 +31,15 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Global locks changed watcher.
+ * Database ack changed watcher.
  */
-public final class GlobalLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class DatabaseAckChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+    
+    private final DatabaseLockNodeService lockNode = new DatabaseLockNodeService();
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(LockNode.getGlobalDatabaseLocksNodePath());
+        return Collections.singleton(lockNode.getGlobalLockedAckNodePath());
     }
     
     @Override
@@ -47,18 +49,18 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = LockNode.parseGlobalDatabaseLocksNodePath(event.getKey());
-        if (lockedName.isPresent()) {
-            return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
+        Optional<String> ackLockedName = lockNode.parseGlobalLockedAckNodePath(event.getKey());
+        if (ackLockedName.isPresent()) {
+            return handleGlobalAckEvent(event.getType(), ackLockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalSchemaLocksEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleGlobalAckEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
-            return Optional.of(new LockedEvent(lockedName));
+            return Optional.of(new AckLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
-            return Optional.of(new LockReleasedEvent(lockedName));
+            return Optional.of(new AckLockReleasedEvent(lockedName));
         }
         return Optional.empty();
     }

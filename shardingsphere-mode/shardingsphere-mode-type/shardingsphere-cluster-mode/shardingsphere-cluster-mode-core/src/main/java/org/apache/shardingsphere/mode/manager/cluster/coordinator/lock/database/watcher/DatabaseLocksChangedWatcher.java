@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.watcher;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -31,13 +31,15 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Global locks changed watcher.
+ * Database locks changed watcher.
  */
-public final class GlobalLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class DatabaseLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+    
+    private final DatabaseLockNodeService lockNode = new DatabaseLockNodeService();
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(LockNode.getGlobalDatabaseLocksNodePath());
+        return Collections.singleton(lockNode.getGlobalLocksNodePath());
     }
     
     @Override
@@ -47,7 +49,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = LockNode.parseGlobalDatabaseLocksNodePath(event.getKey());
+        Optional<String> lockedName = lockNode.parseGlobalLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
             return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
         }

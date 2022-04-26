@@ -29,6 +29,16 @@ public final class LockNodeUtil {
     private static final String LOCK_DELIMITER = "-";
     
     /**
+     * Generate global Lock leases node path.
+     *
+     * @param lockName lock name
+     * @return global Lock leases name
+     */
+    public static String generateGlobalLockReleasedNodePath(final String lockName) {
+        return lockName + "/leases";
+    }
+    
+    /**
      * Generate database ack lock name.
      *
      * @param database database name
