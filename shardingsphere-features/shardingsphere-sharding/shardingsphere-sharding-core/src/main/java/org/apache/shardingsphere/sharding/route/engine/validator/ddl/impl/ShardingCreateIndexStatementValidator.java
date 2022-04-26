@@ -40,7 +40,7 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         validateTableExist(metaData.getDefaultSchema(), Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIdentifier().getValue()).findFirst().orElse(null);
+        String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
         if (metaData.getDefaultSchema().get(tableName).getIndexes().containsKey(indexName)) {
             throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }

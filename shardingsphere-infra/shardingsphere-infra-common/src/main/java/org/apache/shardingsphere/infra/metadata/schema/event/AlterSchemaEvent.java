@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
+package org.apache.shardingsphere.infra.metadata.schema.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Index segment.
+ * Alter schema event.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class IndexSegment implements SQLSegment, OwnerAvailable {
+public final class AlterSchemaEvent {
     
-    private final int startIndex;
+    private final String databaseName;
     
-    private final int stopIndex;
+    private final String schemaName;
     
-    private final IndexNameSegment indexName;
+    private final String renameSchemaName;
     
-    private OwnerSegment owner;
-    
-    @Override
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
-    }
+    private final ShardingSphereSchema schema;
 }

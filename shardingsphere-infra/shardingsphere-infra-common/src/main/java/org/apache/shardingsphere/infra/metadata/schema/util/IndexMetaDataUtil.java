@@ -85,7 +85,7 @@ public class IndexMetaDataUtil {
     public static Collection<String> getTableNamesFromMetaData(final ShardingSphereSchema schema, final Collection<IndexSegment> indexes) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : indexes) {
-            findLogicTableNameFromMetaData(schema, each.getIdentifier().getValue()).ifPresent(result::add);
+            findLogicTableNameFromMetaData(schema, each.getIndexName().getIdentifier().getValue()).ifPresent(result::add);
         }
         return result;
     }

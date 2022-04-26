@@ -66,7 +66,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
-        return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        return dropIndexStatement.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList());
     }
     
     private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
