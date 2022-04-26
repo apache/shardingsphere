@@ -25,30 +25,28 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, String> {
-
+public final class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, String> {
+    
     public static final String DATABASE_NAME = "databaseName";
-
-    private static final String SUCCEED = "succeed";
-
+    
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
+    
     @Override
     public Collection<String> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        List<String> result = new LinkedList<>();
+        Collection<String> result = new LinkedList<>();
         String databaseName = (String) dataMap.get(DATABASE_NAME);
-        inputs.forEach(dataSource -> {
+        for (DataSource each : inputs) {
             try {
-                databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSource);
-                result.add("succeed");
-            } catch (SQLException e) {
-                throw new IllegalStateException(String.format("Error while loading highly available Status with %s", dataSource), e);
+                databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, each);
+            } catch (final SQLException ex) {
+                result.add(String.format("Error while loading highly available Status with %s", databaseName));
+            } catch (final Exception ex) {
+                result.add(ex.getMessage());
             }
-        });
+        }
         return result;
     }
 }
