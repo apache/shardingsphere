@@ -65,7 +65,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Arrays.asList(shardingRule, singleTableRule));
         ShardingSphereResource resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", resource, ruleMetaData, schemas);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, resource, ruleMetaData, schemas);
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatementParserEngine.parse(sql, false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
@@ -85,6 +85,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(
                 new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tableMetaDataMap.put("t_category", new TableMetaData("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap("sharding_db", new ShardingSphereSchema(tableMetaDataMap));
+        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereSchema(tableMetaDataMap));
     }
 }
