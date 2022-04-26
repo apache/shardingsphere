@@ -42,9 +42,11 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         sqlStatement.getSchemaNames().forEach(each -> {
+            metaData.getSchemas().remove(each);
             database.remove(each);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
+        // TODO remove tables for SingleTableRule
         ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(metaData.getDatabaseName(), sqlStatement.getSchemaNames()));
     }
     
