@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -31,6 +36,7 @@ import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,9 +49,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public final class DatabaseDiscoveryEngine {
+
+    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-    
+
     /**
      * Check environment of database cluster.
      *
@@ -54,12 +62,20 @@ public final class DatabaseDiscoveryEngine {
      * @throws SQLException SQL exception
      */
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            // TODO query with multiple threads
-            databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, entry.getValue());
-        }
+        ExecutorEngine executorEngine = new ExecutorEngine(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
+        ExecutorDataMap.getValue().put(DatabaseDiscoveryExecutorCallback.DATABASE_NAME, databaseName);
+        executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
     }
-    
+
+    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
+        Collection<ExecutionGroup<DataSource>> inputGroups = new ArrayList<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            ExecutionGroup<DataSource> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry.getValue()));
+            inputGroups.add(executionGroup);
+        }
+        return new ExecutionGroupContext<>(inputGroups);
+    }
+
     /**
      * Change primary data source.
      *
