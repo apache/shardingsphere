@@ -43,8 +43,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryExecutorCallback.DATABASE_NAME;
-
 /**
  * Database discovery engine.
  */
@@ -52,9 +50,9 @@ import static org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryE
 @Slf4j
 public final class DatabaseDiscoveryEngine {
 
-    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
+    
+    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
 
     /**
      * Check environment of database cluster.
@@ -65,11 +63,11 @@ public final class DatabaseDiscoveryEngine {
      */
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         ExecutorEngine executorEngine = new ExecutorEngine(Math.min(CPU_CORES * 2, dataSourceMap.isEmpty() ? 1 : dataSourceMap.entrySet().size()));
-        ExecutorDataMap.getValue().put(DATABASE_NAME, databaseName);
+        ExecutorDataMap.getValue().put(DatabaseDiscoveryExecutorCallback.DATABASE_NAME, databaseName);
         executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
     }
 
-    private ExecutionGroupContext<DataSource> createExecutionGroupContext(Map<String, DataSource> dataSourceMap) {
+    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
         Collection<ExecutionGroup<DataSource>> inputGroups = new ArrayList<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             ExecutionGroup<DataSource> executionGroup = new ExecutionGroup<>(Lists.newArrayList(entry.getValue()));

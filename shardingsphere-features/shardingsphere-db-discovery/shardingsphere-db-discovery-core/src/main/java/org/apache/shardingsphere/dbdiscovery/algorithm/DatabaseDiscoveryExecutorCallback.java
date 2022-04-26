@@ -29,12 +29,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, Void> {
 
-    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
     public static final String DATABASE_NAME = "databaseName";
 
+    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
+
     @Override
-    public Collection<Void> execute(Collection<DataSource> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException {
+    public Collection<Void> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         String databaseName = (String) dataMap.get(DATABASE_NAME);
         inputs.forEach(dataSource -> {
             try {
