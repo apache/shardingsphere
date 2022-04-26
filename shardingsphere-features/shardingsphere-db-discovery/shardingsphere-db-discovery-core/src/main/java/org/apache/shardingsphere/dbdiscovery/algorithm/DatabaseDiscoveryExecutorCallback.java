@@ -30,13 +30,13 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class DatabaseDiscoveryExecutorCallback implements ExecutorCallback<DataSource, String> {
-
+    
     public static final String DATABASE_NAME = "databaseName";
-
+    
     private static final String SUCCEED = "succeed";
-
+    
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
+    
     @Override
     public Collection<String> execute(final Collection<DataSource> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         List<String> result = new LinkedList<>();

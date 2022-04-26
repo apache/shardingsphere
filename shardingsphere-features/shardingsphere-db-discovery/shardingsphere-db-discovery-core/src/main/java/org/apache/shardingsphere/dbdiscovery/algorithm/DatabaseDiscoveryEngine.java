@@ -49,11 +49,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public final class DatabaseDiscoveryEngine {
-
+    
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
-
+    
     /**
      * Check environment of database cluster.
      *
@@ -66,7 +66,7 @@ public final class DatabaseDiscoveryEngine {
         ExecutorDataMap.getValue().put(DatabaseDiscoveryExecutorCallback.DATABASE_NAME, databaseName);
         executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseDiscoveryProviderAlgorithm));
     }
-
+    
     private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
         Collection<ExecutionGroup<DataSource>> inputGroups = new ArrayList<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -75,7 +75,7 @@ public final class DatabaseDiscoveryEngine {
         }
         return new ExecutionGroupContext<>(inputGroups);
     }
-
+    
     /**
      * Change primary data source.
      *
