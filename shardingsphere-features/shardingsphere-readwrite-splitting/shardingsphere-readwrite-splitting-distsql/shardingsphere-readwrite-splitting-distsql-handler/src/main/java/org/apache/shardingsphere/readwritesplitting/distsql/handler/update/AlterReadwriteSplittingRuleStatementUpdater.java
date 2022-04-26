@@ -52,7 +52,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData);

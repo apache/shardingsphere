@@ -46,7 +46,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

@@ -51,7 +51,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Before
     public void setUp() throws Exception {
-        when(shardingSphereMetaData.getName()).thenReturn("sharding_db");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
     }
     

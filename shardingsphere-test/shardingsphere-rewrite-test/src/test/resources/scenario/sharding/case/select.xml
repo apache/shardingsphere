@@ -130,12 +130,12 @@
     
     <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_parameters" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM public.t_account WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = $2 OR amount = $1 UNION ALL SELECT * FROM t_account_1 WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
+        <output sql="SELECT * FROM public.t_account_0 WHERE amount = $2 OR amount = $1 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_literals" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM public.t_account WHERE amount = 1000 OR amount = 900" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 OR amount = 900 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000 OR amount = 900" />
+        <output sql="SELECT * FROM public.t_account_0 WHERE amount = 1000 OR amount = 900 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = 1000 OR amount = 900" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_for_literals_with_order_by" db-types="MySQL">
@@ -585,11 +585,11 @@
 
     <rewrite-assertion id="select_with_schema_name_in_table" db-types="PostgreSQL,openGauss">
         <input sql="SELECT account_id FROM public.t_account WHERE account_id = ?" parameters="100" />
-        <output sql="SELECT account_id FROM t_account_0 WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_database_name_and_schema_name_in_table" db-types="PostgreSQL,openGauss">
         <input sql="SELECT account_id FROM public.public.t_account WHERE account_id = ?" parameters="100" />
-        <output sql="SELECT account_id FROM t_account_0 WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
 </rewrite-assertions>

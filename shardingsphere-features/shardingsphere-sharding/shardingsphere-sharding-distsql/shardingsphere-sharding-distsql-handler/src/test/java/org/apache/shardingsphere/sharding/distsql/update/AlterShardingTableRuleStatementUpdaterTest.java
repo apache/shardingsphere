@@ -74,7 +74,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getName()).thenReturn("schema");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("schema");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(createShardingSphereRule());

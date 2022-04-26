@@ -13,11 +13,13 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 177 companies.
+Total: 184 companies.
 
 ### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+    <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a></li>
+    <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
 </ul>
 
 ### Bank
@@ -25,6 +27,7 @@ Total: 177 companies.
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
+    <li><a href="https://www.psbc.com/en/" rel="nofollow">Postal Savings Bank of China</a></li>
 </ul>
 
 ### Payment
@@ -42,6 +45,7 @@ Total: 177 companies.
 ### FinTech
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
+    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li>    
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
@@ -53,6 +57,7 @@ Total: 177 companies.
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
+    <li><a href="https://www.airstar.com/" rel="nofollow">Airstar</a></li>
 </ul>
 
 ### Internet
@@ -112,6 +117,7 @@ Total: 177 companies.
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
+    <li><a href="https://www.hello-inc.com/" rel="nofollow">Hello Inc</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
@@ -134,6 +140,7 @@ Total: 177 companies.
     <li><a href="https://www.keking.com" rel="nofollow">KeKing</a></li>
     <li><a href="http://www.c-wms.net/" rel="nofollow">C-WMS</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">Xbnwl</a></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">HuiMin</a></li>
 </ul>
 
 ### Travel

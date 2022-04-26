@@ -59,7 +59,7 @@
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.8</commons-lang3.version>
-        <commons-collections4.version>4.2</commons-collections4.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
         
         <antlr4.version>4.9.2</antlr4.version>
@@ -1055,10 +1055,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>src/resources/shardingsphere_eclipse_formatter.xml</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/shardingsphere_eclipse_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>src/resources/license-header</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
                         </licenseHeader>
                     </java>
                 </configuration>

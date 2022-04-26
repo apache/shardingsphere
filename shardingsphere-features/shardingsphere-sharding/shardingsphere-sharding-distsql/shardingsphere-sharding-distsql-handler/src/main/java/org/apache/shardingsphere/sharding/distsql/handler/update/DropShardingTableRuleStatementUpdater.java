@@ -45,7 +45,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

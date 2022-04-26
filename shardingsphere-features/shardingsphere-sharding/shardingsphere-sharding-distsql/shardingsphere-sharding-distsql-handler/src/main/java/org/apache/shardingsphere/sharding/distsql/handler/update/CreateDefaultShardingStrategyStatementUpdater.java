@@ -46,7 +46,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkAlgorithm(databaseName, currentRuleConfig, sqlStatement);
         checkExist(databaseName, sqlStatement, currentRuleConfig);

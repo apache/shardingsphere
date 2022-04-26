@@ -46,21 +46,20 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                        final Collection<String> logicDataSourceNames, final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
         }
         String indexName = sqlStatement.getIndex().get().getIdentifier().getValue();
-        Optional<String> logicTableName = findLogicTableName(schemaMetaData.getDefaultSchema(), indexName);
+        Optional<String> logicTableName = findLogicTableName(schemaMetaData.getSchemaByName(schemaName), indexName);
         if (logicTableName.isPresent()) {
-            TableMetaData tableMetaData = schemaMetaData.getDefaultSchema().get(logicTableName.get());
+            TableMetaData tableMetaData = schemaMetaData.getSchemaByName(schemaName).get(logicTableName.get());
             Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
-            // TODO Get real schema name
-            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+            SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getDatabaseName(), schemaName);
             event.getAlteredTables().add(tableMetaData);
             ShardingSphereEventBus.getInstance().post(event);
         }

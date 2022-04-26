@@ -48,7 +48,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getKeyGeneratorNames());
         checkDuplicate(databaseName, keyGeneratorNames);
         checkExist(databaseName, keyGeneratorNames, currentRuleConfig, sqlStatement);

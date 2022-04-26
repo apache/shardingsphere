@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop schema statement.
  */
 @ToString
-public final class PostgreSQLDropSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLDropSchemaStatement extends DropSchemaStatement implements PostgreSQLStatement {
 }

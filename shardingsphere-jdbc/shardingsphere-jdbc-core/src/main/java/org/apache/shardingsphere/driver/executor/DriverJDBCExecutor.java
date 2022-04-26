@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -99,7 +98,7 @@ public final class DriverJDBCExecutor {
         try {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-            List<Integer> results = doExecute(executionGroupContext, sqlStatementContext.getSqlStatement(), routeUnits, callback);
+            List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
@@ -139,7 +138,7 @@ public final class DriverJDBCExecutor {
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
-            List<Boolean> results = doExecute(executionGroupContext, logicSQL.getSqlStatementContext().getSqlStatement(), routeUnits, callback);
+            List<Boolean> results = doExecute(executionGroupContext, logicSQL.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
@@ -148,15 +147,15 @@ public final class DriverJDBCExecutor {
         }
     }
     
-    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits,
+    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        refreshMetaData(sqlStatement, routeUnits);
+        refreshMetaData(sqlStatementContext, routeUnits);
         return results;
     }
     
-    private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        metadataRefreshEngine.refresh(sqlStatement, () -> routeUnits.stream()
+    private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
+        metadataRefreshEngine.refresh(sqlStatementContext, () -> routeUnits.stream()
                 .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
     }
 }

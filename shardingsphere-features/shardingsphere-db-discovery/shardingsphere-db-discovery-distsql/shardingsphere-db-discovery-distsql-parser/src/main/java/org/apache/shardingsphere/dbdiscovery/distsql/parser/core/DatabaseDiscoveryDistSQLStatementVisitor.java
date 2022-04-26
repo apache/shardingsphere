@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractData
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
@@ -141,13 +141,13 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
         return new AlterDatabaseDiscoveryTypeStatement(buildAlgorithmEntry(ctx.databaseDiscoveryTypeDefinition()));
     }
     
-    private Collection<DatabaseDiscoveryTypeSegment> buildAlgorithmEntry(final List<DatabaseDiscoveryTypeDefinitionContext> ctx) {
-        return ctx.stream().map(each -> (DatabaseDiscoveryTypeSegment) visit(each)).collect(Collectors.toList());
+    private Collection<DatabaseDiscoveryProviderAlgorithmSegment> buildAlgorithmEntry(final List<DatabaseDiscoveryTypeDefinitionContext> ctx) {
+        return ctx.stream().map(each -> (DatabaseDiscoveryProviderAlgorithmSegment) visit(each)).collect(Collectors.toList());
     }
     
     @Override
     public ASTNode visitDatabaseDiscoveryTypeDefinition(final DatabaseDiscoveryTypeDefinitionContext ctx) {
-        return new DatabaseDiscoveryTypeSegment(getIdentifierValue(ctx.discoveryTypeName()), (AlgorithmSegment) visit(ctx.typeDefinition()));
+        return new DatabaseDiscoveryProviderAlgorithmSegment(getIdentifierValue(ctx.discoveryTypeName()), (AlgorithmSegment) visit(ctx.typeDefinition()));
     }
     
     @Override
