@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.DistributeLockContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -164,7 +163,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                 final Properties transactionProps, final ModeConfiguration modeConfiguration) {
         ComputeNodeInstance computeNodeInstance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition);
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, metaDataPersistService, instanceDefinition);
-        DistributeLockContext distributeLockContext = new DistributeLockContext(new LockRegistryService(repository));
+        DistributeLockContext distributeLockContext = new DistributeLockContext(repository, computeNodeInstance);
         InstanceContext instanceContext = new InstanceContext(computeNodeInstance, clusterWorkerIdGenerator, modeConfiguration, distributeLockContext);
         instanceContext.initLockContext();
         repository.watchSessionConnection(instanceContext);
