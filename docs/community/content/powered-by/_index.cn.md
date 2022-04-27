@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 187 家公司。
+共计 188 家公司。
 
 ### 基础软件
 <ul>
@@ -210,12 +210,13 @@ chapter = true
 
 ### 公共事业
 <ul>
+    <li><a href="http://www.electricpower.com.cn/" rel="nofollow">中国电力</a>：<a href="https://mp.weixin.qq.com/s/pKojxodMYQPf1AKRTPDz5A" rel="nofollow">用户案例</a></li>
+    <li><a href="https://hulucc.com/" rel="nofollow">葫芦</a>：<a href="https://mp.weixin.qq.com/s/fqJ1ecEOYiaNiMKYH7YGVQ" rel="nofollow">用户案例</a></li>    
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">广西壮族自治区自然资源信息中心</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">葫芦</a>：<a href="https://mp.weixin.qq.com/s/fqJ1ecEOYiaNiMKYH7YGVQ" rel="nofollow">用户案例</a></li>
 </ul>
 
 ### 通信科技
