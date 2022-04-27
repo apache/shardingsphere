@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -36,7 +37,7 @@ import java.util.Optional;
  */
 public final class DatabaseLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
-    private final LockNodeService lockNode = new DatabaseLockNodeService();
+    private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockType.DATABASE);
     
     @Override
     public Collection<String> getWatchingKeys() {
