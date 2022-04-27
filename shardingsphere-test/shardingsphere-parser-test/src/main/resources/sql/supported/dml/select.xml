@@ -125,4 +125,5 @@
     <sql-case id="select_with_for_xml_clause" value="SELECT o.order_id, o.status, i.item_id FROM t_order o INNER JOIN t_order_item i ON o.user_id = i.user_id FOR XML AUTO" db-types="SQLServer" />
     <sql-case id="select_with_for_xml_clause_with_directive" value="SELECT user_id, status FROM t_order WHERE order_id = 1 FOR XML RAW, ELEMENTS XSINIL" db-types="SQLServer" />
     <sql-case id="select_with_for_json_clause" value="SELECT order_id, status FROM t_order FOR JSON AUTO, INCLUDE_NULL_VALUES" db-types="SQLServer" />
+    <sql-case id="select_with_keyword_target" value="SELECT m.target FROM sys_menu m" />
 </sql-cases>
