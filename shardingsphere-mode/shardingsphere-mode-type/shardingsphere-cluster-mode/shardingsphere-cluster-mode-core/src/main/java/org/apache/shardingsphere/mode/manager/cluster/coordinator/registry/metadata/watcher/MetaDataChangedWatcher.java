@@ -69,6 +69,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        // TODO Maybe can reduce once regular
         if (isLogicDatabaseChanged(event)) {
             return buildLogicDatabaseChangedEvent(event);
         } else if (isLogicSchemaChanged(event)) {
@@ -82,23 +83,23 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isLogicDatabaseChanged(final DataChangedEvent event) {
-        return DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent();
+        return DatabaseMetaDataNode.getDatabaseName(event.getKey()).isPresent();
     }
     
     private boolean isLogicSchemaChanged(final DataChangedEvent event) {
-        return DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).isPresent();
+        return DatabaseMetaDataNode.getSchemaName(event.getKey()).isPresent();
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
-        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey());
-        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(event.getKey());
+        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey());
+        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey());
         Optional<String> tableName = DatabaseMetaDataNode.getTableName(event.getKey());
         return databaseName.isPresent() && tableName.isPresent() && schemaName.isPresent()
                 && !SystemSchemaBuilderRule.isSystemTable(databaseName.get(), tableName.get()) && !Strings.isNullOrEmpty(event.getValue());
     }
     
     private Optional<GovernanceEvent> buildLogicDatabaseChangedEvent(final DataChangedEvent event) {
-        String databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).get();
+        String databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey()).get();
         if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
             return Optional.of(new DatabaseAddedEvent(databaseName));
         }
@@ -109,8 +110,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {
-        String databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey()).get();
-        String schemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).get();
+        String databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).get();
+        String schemaName = DatabaseMetaDataNode.getSchemaName(event.getKey()).get();
         if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
             return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
         }
@@ -163,8 +164,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private Optional<GovernanceEvent> buildTableMetaDataChangedEvent(final DataChangedEvent event) {
-        String databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey()).get();
-        String schemaName = DatabaseMetaDataNode.getSchemaName(event.getKey()).get();
+        String databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).get();
+        String schemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).get();
         String tableName = DatabaseMetaDataNode.getTableName(event.getKey()).get();
         if (DataChangedEvent.Type.DELETED == event.getType()) {
             return Optional.of(new SchemaChangedEvent(databaseName, schemaName, null, tableName));

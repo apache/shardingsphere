@@ -79,13 +79,6 @@ public class DatabaseMetaDataNodeTest {
     }
     
     @Test
-    public void assertGetSchemaNameBySchemaPath() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath("/metadata/logic_db/schemas/logic_schema");
-        assertTrue(actualSchemaName.isPresent());
-        assertThat(actualSchemaName.get(), is("logic_schema"));
-    }
-    
-    @Test
     public void assertGetVersionByDatabasePath() {
         Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/dataSources");
         assertTrue(actualVersion.isPresent());
