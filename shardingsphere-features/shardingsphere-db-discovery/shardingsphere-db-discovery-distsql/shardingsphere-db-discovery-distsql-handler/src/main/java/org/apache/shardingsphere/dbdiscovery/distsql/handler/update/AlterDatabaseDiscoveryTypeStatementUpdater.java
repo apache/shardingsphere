@@ -19,9 +19,9 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -29,12 +29,9 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -44,15 +41,10 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     
     private static final String RULE_TYPE = "database discovery";
     
-    static {
-        // TODO consider about register once only
-        ShardingSphereServiceLoader.register(DatabaseDiscoveryProviderAlgorithm.class);
-    }
-    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryTypeStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicateDiscoveryType(databaseName, sqlStatement);
         checkNotExistDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
@@ -62,7 +54,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     private void checkNotExistDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement,
                                             final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> existTypes = currentRuleConfig.getDiscoveryTypes().keySet();
-        Collection<String> notExistTypes = sqlStatement.getTypes().stream().map(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName)
+        Collection<String> notExistTypes = sqlStatement.getProviders().stream().map(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName)
                 .filter(each -> !existTypes.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistTypes.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
         
@@ -78,19 +70,19 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     }
     
     private Collection<String> getToBeAlteredDuplicateTypeNames(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
-        return sqlStatement.getTypes().stream().collect(Collectors.toMap(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName, e -> 1, Integer::sum))
+        return sqlStatement.getProviders().stream().collect(Collectors.toMap(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
     private void checkInvalidDiscoverType(final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
-        Collection<String> invalidType = sqlStatement.getTypes().stream().map(each -> each.getAlgorithmSegment().getName()).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+        Collection<String> invalidType = sqlStatement.getProviders().stream().map(each -> each.getAlgorithm().getName()).distinct()
+                .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
     }
     
     @Override
     public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
-        return DatabaseDiscoveryRuleStatementConverter.convertDiscoveryType(sqlStatement.getTypes());
+        return DatabaseDiscoveryRuleStatementConverter.convertDiscoveryProviderAlgorithm(sqlStatement.getProviders());
     }
     
     @Override

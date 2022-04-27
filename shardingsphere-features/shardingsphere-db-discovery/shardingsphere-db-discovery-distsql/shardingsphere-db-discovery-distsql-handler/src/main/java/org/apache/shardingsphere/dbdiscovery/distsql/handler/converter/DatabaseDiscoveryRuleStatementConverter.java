@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractData
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
@@ -94,15 +94,15 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     }
     
     /**
-     * Convert database discovery type segment to database discovery heartbeat configuration.
+     * Convert database discovery provider algorithm segment to database discovery heartbeat configuration.
      *
-     * @param typeSegment database discovery type segments
+     * @param algorithmSegments database discovery provider algorithm segments
      * @return database discovery type configuration
      */
-    public static DatabaseDiscoveryRuleConfiguration convertDiscoveryType(final Collection<DatabaseDiscoveryTypeSegment> typeSegment) {
+    public static DatabaseDiscoveryRuleConfiguration convertDiscoveryProviderAlgorithm(final Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments) {
         final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        typeSegment.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryTypeName(),
-                new ShardingSphereAlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
+        algorithmSegments.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryProviderName(),
+                new ShardingSphereAlgorithmConfiguration(each.getAlgorithm().getName(), each.getAlgorithm().getProps())));
         return result;
     }
 }

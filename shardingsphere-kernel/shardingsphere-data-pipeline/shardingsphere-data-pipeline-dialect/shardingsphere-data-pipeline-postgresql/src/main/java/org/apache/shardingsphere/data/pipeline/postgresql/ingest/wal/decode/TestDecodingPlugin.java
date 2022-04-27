@@ -77,7 +77,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = tableName.split("\\.");
-        result.setSchemaName(tableMetaData[0]);
+        result.setDatabaseName(tableMetaData[0]);
         result.setTableName(tableMetaData[1].substring(0, tableMetaData[1].length() - 1));
         return result;
     }

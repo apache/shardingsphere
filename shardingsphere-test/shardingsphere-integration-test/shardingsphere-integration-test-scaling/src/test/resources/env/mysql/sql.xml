@@ -20,10 +20,10 @@
         `id` BIGINT NOT NULL COMMENT 'pk id',
         `order_id` INT NOT NULL,
         `user_id` INT NOT NULL,
-        `t_varchar` VARCHAR ( 255 ) NOT NULL,
+        `t_varchar` VARCHAR ( 255 ) NULL,
         `t_tinyint` TINYINT ( 1 ) NULL,
         `t_timestamp` TIMESTAMP NULL,
-        `t_datetime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+        `t_datetime` datetime NULL ON UPDATE CURRENT_TIMESTAMP,
         `t_binary` BINARY(255) NULL,
         `t_blob` BLOB NULL,
         `t_decimal` DECIMAL ( 10, 2 ) NULL,
@@ -31,31 +31,11 @@
         `t_double` DOUBLE NULL,
         `t_json` json NULL COMMENT 'json test',
         PRIMARY KEY ( `id` ),
-        UNIQUE INDEX ( `t_varchar` ),
         INDEX ( `order_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
     
-    <insert-order>
-        INSERT INTO `t_order` (
-        `id`,
-        `order_id`,
-        `user_id`,
-        `t_varchar`,
-        `t_tinyint`,
-        `t_timestamp`,
-        `t_datetime`,
-        `t_binary`,
-        `t_blob`,
-        `t_decimal`,
-        `t_char`,
-        `t_double`,
-        `t_json`
-        )
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);
-    </insert-order>
-    
-    <create-table-orderitem>
+    <create-table-order-item>
         CREATE TABLE t_order_item (
         item_id bigint NOT NULL,
         order_id int NOT NULL,
@@ -63,9 +43,5 @@
         status varchar(50) DEFAULT NULL,
         PRIMARY KEY (item_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    </create-table-orderitem>
-    
-    <insert-order-item>
-        INSERT INTO t_order_item(item_id, order_id, user_id, status) VALUES(?,?,?,?);
-    </insert-order-item>
+    </create-table-order-item>
 </command>

@@ -50,13 +50,13 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
-    private SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+    private final SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
     
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = Runtime.getRuntime().availableProcessors() * 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber * 4;
         keyGenerateAlgorithm.setProps(new Properties());
         keyGenerateAlgorithm.init();
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);

@@ -32,14 +32,15 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -164,11 +165,18 @@ public final class EncryptRuleTest {
     @Test
     public void assertSetUpEncryptorSchema() {
         EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap());
-        encryptRule.setUpEncryptorSchema(mock(ShardingSphereSchema.class));
+        Map<String, ShardingSphereSchema> schemas = mockSchemaMap();
+        encryptRule.setUpEncryptorSchema(schemas, "test");
         Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(CustomizedEncryptAlgorithm.class));
-        assertNotNull(((CustomizedEncryptAlgorithm) actual.get()).getSchema());
+        assertFalse(((CustomizedEncryptAlgorithm) actual.get()).getSchemas().isEmpty());
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

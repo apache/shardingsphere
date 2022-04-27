@@ -28,12 +28,10 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,10 +65,6 @@ public final class DatabaseDiscoverySQLRouterTest {
     
     private DatabaseDiscoverySQLRouter sqlRouter;
     
-    static {
-        ShardingSphereServiceLoader.register(SQLRouter.class);
-    }
-    
     @Before
     public void setUp() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
@@ -79,8 +73,8 @@ public final class DatabaseDiscoverySQLRouterTest {
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("CORE.FIXTURE", algorithmConfig));
-        rule = new DatabaseDiscoveryRule("CORE.FIXTURE", Collections.singletonMap("ds", mock(DataSource.class)), config);
-        sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+        rule = new DatabaseDiscoveryRule(DATA_SOURCE_NAME, Collections.singletonMap(PRIMARY_DATA_SOURCE, mock(DataSource.class)), config);
+        sqlRouter = (DatabaseDiscoverySQLRouter) SQLRouterFactory.newInstance(Collections.singleton(rule)).get(rule);
     }
     
     @Test

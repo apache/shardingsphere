@@ -41,17 +41,16 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropTableStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        // TODO Get real schema name
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                        final Collection<String> logicDataSourceNames, final String schemaName, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
-            schemaMetaData.getDefaultSchema().remove(each.getTableName().getIdentifier().getValue());
-            database.remove(each.getTableName().getIdentifier().getValue());
+            metaData.getSchemaByName(schemaName).remove(each.getTableName().getIdentifier().getValue());
+            database.remove(schemaName, each.getTableName().getIdentifier().getValue());
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
-        Collection<MutableDataNodeRule> rules = schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             rules.forEach(rule -> rule.remove(each.getTableName().getIdentifier().getValue()));
         }

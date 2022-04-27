@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.spring.namespace;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.mgr.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,9 +37,6 @@ import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/database-discovery-application-context.xml")
 public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4SpringContextTests {
-    
-    @Resource
-    private DatabaseDiscoveryProviderAlgorithm mgrDatabaseDiscoveryProviderAlgorithm;
     
     @Resource
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration mgrDatabaseDiscoveryRule;

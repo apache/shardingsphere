@@ -43,7 +43,7 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithm(sqlStatement);
     }

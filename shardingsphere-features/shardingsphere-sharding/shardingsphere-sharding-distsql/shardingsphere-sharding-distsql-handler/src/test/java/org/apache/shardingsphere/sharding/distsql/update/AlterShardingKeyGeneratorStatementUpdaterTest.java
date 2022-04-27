@@ -49,7 +49,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getName()).thenReturn("test");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
     }
     
     @Test(expected = DuplicateRuleException.class)

@@ -59,7 +59,7 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkAlgorithms(databaseName, sqlStatement, currentRuleConfig);
     }

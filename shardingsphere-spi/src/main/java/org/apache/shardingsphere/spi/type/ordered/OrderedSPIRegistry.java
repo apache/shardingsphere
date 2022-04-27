@@ -73,16 +73,16 @@ public final class OrderedSPIRegistry {
      * @param types types
      * @param <K> type of key
      * @param <V> type of ordered SPI class
-     * @param comparator comparator
+     * @param orderComparator order comparator
      * @return registered services
      */
     @SuppressWarnings("unchecked")
-    public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Class<V> spiClass, final Collection<K> types, final Comparator<Integer> comparator) {
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getRegisteredServices(final Class<V> spiClass, final Collection<K> types, final Comparator<Integer> orderComparator) {
         Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(spiClass, types).map(optional -> (Map<K, V>) optional);
         if (cachedServices.isPresent()) {
             return cachedServices.get();
         }
-        Collection<V> registeredServices = getRegisteredServices(spiClass, comparator);
+        Collection<V> registeredServices = getRegisteredServices(spiClass, orderComparator);
         Map<K, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
         for (V each : registeredServices) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));

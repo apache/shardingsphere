@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -63,6 +64,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +113,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         tryDescribePreparedStatementByJDBC(preparedStatement);
     }
     
-    private void describeInsertStatementByShardingSphereMetaData(final PostgreSQLPreparedStatement preparedStatement) {
+    private void describeInsertStatementByShardingSphereMetaData(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
         if (!preparedStatement.describeRows().isPresent()) {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
@@ -128,6 +130,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(databaseName).getDefaultSchema().get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
+        Map<String, ColumnMetaData> caseInsensitiveColumnMetaData = null;
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {
             columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
@@ -149,7 +152,18 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     continue;
                 }
                 String columnName = columnNames.get(columnIndex);
-                PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(columnMetaData.get(columnName).getDataType());
+                ColumnMetaData column = columnMetaData.get(columnName);
+                if (null == column) {
+                    if (null == caseInsensitiveColumnMetaData) {
+                        caseInsensitiveColumnMetaData = convertToCaseInsensitiveColumnMetaDataMap(columnMetaData);
+                    }
+                    column = caseInsensitiveColumnMetaData.get(columnName);
+                }
+                if (null == column) {
+                    String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
+                    throw new SQLException(reason, PostgreSQLErrorCode.UNDEFINED_COLUMN.getErrorCode());
+                }
+                PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(column.getDataType());
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);
             }
         }
@@ -164,6 +178,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             }
         }
         return unspecifiedTypeParameterIndexes;
+    }
+    
+    private Map<String, ColumnMetaData> convertToCaseInsensitiveColumnMetaDataMap(final Map<String, ColumnMetaData> columnMetaDataMap) {
+        Map<String, ColumnMetaData> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        result.putAll(columnMetaDataMap);
+        return result;
     }
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {

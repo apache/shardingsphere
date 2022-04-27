@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
-import org.apache.shardingsphere.dbdiscovery.spi.status.HighlyAvailableStatus;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database discovery provider algorithm.
@@ -32,41 +28,29 @@ import java.util.Optional;
 public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Load highly available status.
+     * Check environment.
      * 
+     * @param databaseName database name
      * @param dataSource data source
-     * @return loaded highly available status
      * @throws SQLException SQL exception
      */
-    HighlyAvailableStatus loadHighlyAvailableStatus(DataSource dataSource) throws SQLException;
+    void checkEnvironment(String databaseName, DataSource dataSource) throws SQLException;
     
     /**
-     * Find primary data source name.
+     * Judge whether database instance is primary.
      * 
-     * @param dataSourceMap data source map
-     * @return found name of primary data source
+     * @param dataSource data source to be judged
+     * @return is primary database instance or not
+     * @throws SQLException SQL exception
      */
-    Optional<String> findPrimaryDataSourceName(Map<String, DataSource> dataSourceMap);
+    boolean isPrimaryInstance(DataSource dataSource) throws SQLException;
     
     /**
-     * Get storage node data source.
+     * Load replica data source status.
      * 
-     * @param replicaDataSource replica data source
-     * @return storage node data source
+     * @param replicaDataSource to be loaded replica data source
+     * @return replica data source status
+     * @throws SQLException SQL exception
      */
-    StorageNodeDataSource getStorageNodeDataSource(DataSource replicaDataSource);
-    
-    /**
-     * Get primary data source.
-     *
-     * @return primary data source
-     */
-    String getPrimaryDataSource();
-    
-    /**
-     * Set primary data source.
-     *
-     * @param primaryDataSource primary data source
-     */
-    void setPrimaryDataSource(String primaryDataSource);
+    ReplicaDataSourceStatus loadReplicaStatus(DataSource replicaDataSource) throws SQLException;
 }

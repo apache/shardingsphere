@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -37,10 +38,12 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema));
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIdentifier().getValue()).findFirst().orElse(null);
+        String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
         if (schema.get(tableName).getIndexes().containsKey(indexName)) {
             throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
@@ -48,6 +51,6 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

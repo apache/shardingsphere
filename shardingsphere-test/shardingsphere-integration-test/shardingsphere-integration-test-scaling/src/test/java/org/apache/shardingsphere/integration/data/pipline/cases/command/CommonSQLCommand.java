@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Data
 @XmlRootElement(name = "command")
@@ -39,7 +40,7 @@ public final class CommonSQLCommand {
     private String useDatabase;
     
     @XmlElement(name = "create-sharding-algorithm")
-    private String createShardingAlgorithm;
+    private List<String> createShardingAlgorithm;
     
     @XmlElement(name = "create-sharding-table")
     private String createShardingTable;
@@ -73,4 +74,28 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "apply-scaling")
     private String applyScaling;
+    
+    @XmlElement(name = "auto-alter-table-rule")
+    private String autoAlterTableRule;
+    
+    @XmlElement(name = "insert-order")
+    private String insertOrder;
+    
+    @XmlElement(name = "insert-order-item")
+    private String insertOrderItem;
+    
+    @XmlElement(name = "simple-insert-order")
+    private String simpleInsertOrder;
+    
+    @XmlElement(name = "update-order")
+    private String updateOrder;
+    
+    @XmlElement(name = "update-order-item")
+    private String updateOrderItem;
+    
+    @XmlElement(name = "delete-order")
+    private String deleteOrder;
+    
+    @XmlElement(name = "delete-order-item")
+    private String deleteOrderItem;
 }

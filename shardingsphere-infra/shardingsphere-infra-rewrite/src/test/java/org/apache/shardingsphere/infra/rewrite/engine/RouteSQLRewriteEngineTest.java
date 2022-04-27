@@ -33,6 +33,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,7 +48,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithStandardParameterBuilder() {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), mock(SQLStatementContext.class), "SELECT ?", Collections.singletonList(1));
+                mockSchemaMap(), mock(SQLStatementContext.class), "SELECT ?", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
@@ -62,7 +64,7 @@ public final class RouteSQLRewriteEngineTest {
         when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), statementContext, "SELECT ?", Collections.singletonList(1));
+                mockSchemaMap(), statementContext, "SELECT ?", Collections.singletonList(1));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteUnit secondRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_1")));
@@ -80,7 +82,7 @@ public final class RouteSQLRewriteEngineTest {
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+                mockSchemaMap(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
@@ -96,7 +98,7 @@ public final class RouteSQLRewriteEngineTest {
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+                mockSchemaMap(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
@@ -114,7 +116,7 @@ public final class RouteSQLRewriteEngineTest {
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+                mockSchemaMap(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
@@ -133,7 +135,7 @@ public final class RouteSQLRewriteEngineTest {
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
-                mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+                mockSchemaMap(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
@@ -142,5 +144,11 @@ public final class RouteSQLRewriteEngineTest {
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertTrue(actual.getSqlRewriteUnits().get(routeUnit).getParameters().isEmpty());
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
 }

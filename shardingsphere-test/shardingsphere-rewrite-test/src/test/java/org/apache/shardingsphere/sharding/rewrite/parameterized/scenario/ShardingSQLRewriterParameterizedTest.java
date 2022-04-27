@@ -86,7 +86,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
+        indexMetaDataMap.put("status_idx_exist", new IndexMetaData("status_idx_exist"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);

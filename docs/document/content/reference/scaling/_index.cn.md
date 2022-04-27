@@ -8,7 +8,7 @@ weight = 4
 
 考虑到 Apache ShardingSphere 的弹性伸缩模块的几个挑战，目前的弹性伸缩解决方案为：临时地使用两个数据库集群，伸缩完成后切换的方式实现。
 
-![伸缩总揽](https://shardingsphere.apache.org/document/current/img/scaling/scaling-principle-overview.cn.png)
+![伸缩总揽](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
 
 这种实现方式有以下优点：
 

@@ -23,20 +23,11 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.DatabaseLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.ShardingSphereGeneralLock;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -44,73 +35,52 @@ import static org.mockito.Mockito.mock;
 public final class DistributeLockContextTest {
     
     @Test
-    public void assertGetOrCreateDatabaseLock() {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
+    public void assertTryLockWriteDatabase() {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
         instanceContext.initLockContext();
-        ShardingSphereLock databaseLock = distributeLockContext.getOrCreateDatabaseLock("database");
+        ShardingSphereLock databaseLock = distributeLockContext.getOrCreateGlobalLock("database");
         assertNotNull(databaseLock);
+        assertTrue(distributeLockContext.tryLockWriteDatabase("database", 1000));
     }
     
     @Test
-    public void assertGetDatabaseLock() {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
+    public void assertReleaseLockWriteDatabase() {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
         instanceContext.initLockContext();
-        distributeLockContext.getOrCreateDatabaseLock("database");
-        ShardingSphereLock databaseLock = distributeLockContext.getDatabaseLock("database");
-        assertTrue(databaseLock instanceof ShardingSphereDistributeGlobalLock);
+        distributeLockContext.releaseLockWriteDatabase("database");
     }
     
     @Test
     public void assertIsLockedDatabase() {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
+        InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
+        instanceContext.initLockContext();
+        distributeLockContext.isLockedDatabase("database");
+    }
+    
+    @Test
+    public void assertGetOrCreateGlobalLock() {
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), mock(ComputeNodeInstance.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
         instanceContext.initLockContext();
-        distributeLockContext.getOrCreateDatabaseLock("database");
-        assertFalse(distributeLockContext.isLockedDatabase("database"));
+        ShardingSphereLock databaseLock = distributeLockContext.getOrCreateGlobalLock("database");
+        assertNotNull(databaseLock);
     }
     
     @Test
-    public void assertAddGlobalLock() throws IllegalAccessException, NoSuchFieldException {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
-        Field declaredField = DistributeLockContext.class.getDeclaredField("currentInstance");
-        declaredField.setAccessible(true);
-        declaredField.set(distributeLockContext, new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307")));
-        Field computeNodeInstancesDeclaredField = DistributeLockContext.class.getDeclaredField("computeNodeInstances");
-        computeNodeInstancesDeclaredField.setAccessible(true);
-        computeNodeInstancesDeclaredField.set(distributeLockContext, Arrays.asList(new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"))));
-        distributeLockContext.renew(new DatabaseLockedEvent("database1-127.0.0.1@3308"));
-    }
-    
-    @Test
-    public void assertRemoveGlobalLock() throws IllegalAccessException, NoSuchFieldException {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
-        Field declaredField = DistributeLockContext.class.getDeclaredField("currentInstance");
-        declaredField.setAccessible(true);
-        declaredField.set(distributeLockContext, new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307")));
-        Map<String, ShardingSphereGlobalLock> globalLocks = new ConcurrentHashMap<>();
-        globalLocks.put("database", mock(ShardingSphereGlobalLock.class));
-        Field globalLocksDeclaredField = DistributeLockContext.class.getDeclaredField("globalLocks");
-        globalLocksDeclaredField.setAccessible(true);
-        globalLocksDeclaredField.set(distributeLockContext, globalLocks);
-        assertNotNull(distributeLockContext.getDatabaseLock("database"));
-        distributeLockContext.renew(new AckLockReleasedEvent("database-127.0.0.1@3307"));
-        assertNotNull(distributeLockContext.getDatabaseLock("database"));
-    }
-    
-    @Test
-    public void assertRenew() throws IllegalAccessException, NoSuchFieldException {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(LockRegistryService.class));
-        Map<String, ShardingSphereGlobalLock> globalLocks = new ConcurrentHashMap<>();
-        globalLocks.put("database", mock(ShardingSphereGlobalLock.class));
-        Field declaredField = DistributeLockContext.class.getDeclaredField("globalLocks");
-        declaredField.setAccessible(true);
-        declaredField.set(distributeLockContext, globalLocks);
-        AckLockedEvent event = new AckLockedEvent("database-127.0.0.1@3307");
-        distributeLockContext.renew(event);
+    public void assertGetGlobalLock() {
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), mock(ComputeNodeInstance.class));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        InstanceContext instanceContext = new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext);
+        instanceContext.initLockContext();
+        distributeLockContext.getOrCreateGlobalLock("database");
+        ShardingSphereLock databaseLock = distributeLockContext.getGlobalLock("database");
+        assertTrue(databaseLock instanceof ShardingSphereGeneralLock);
     }
 }

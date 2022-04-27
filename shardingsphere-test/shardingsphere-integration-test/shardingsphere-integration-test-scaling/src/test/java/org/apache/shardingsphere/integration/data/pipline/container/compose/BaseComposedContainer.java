@@ -27,8 +27,7 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.gov
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 @Getter
 public abstract class BaseComposedContainer implements Startable {
@@ -46,13 +45,12 @@ public abstract class BaseComposedContainer implements Startable {
     }
     
     /**
-     * Get proxy connection.
-     * 
+     * Get proxy data source.
+     *
      * @param databaseName database name
-     * @return sql connection.
-     * @throws SQLException sql exception
+     * @return proxy data source
      */
-    public abstract Connection getProxyConnection(String databaseName) throws SQLException;
+    public abstract DataSource getProxyDataSource(String databaseName);
     
     @Override
     public void start() {
