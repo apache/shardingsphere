@@ -30,6 +30,9 @@ public final class MySQLUnsignedMediumintHandler implements MySQLDataTypeHandler
     
     @Override
     public Serializable handle(final Serializable value) {
+        if (value == null) {
+            return null;
+        }
         int intValue = (int) value;
         return 0 > intValue ? MEDIUMINT_MODULO + intValue : intValue;
     }
