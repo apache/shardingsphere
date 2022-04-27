@@ -34,12 +34,12 @@ public final class TableCrudUtil {
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
     
     /**
-     * Generate insert data.
+     * Generate MySQL insert data.
      *
      * @param insertRows insert rows
      * @return insert data list
      */
-    public static Pair<List<Object[]>, List<Object[]>> generateInsertDataList(final int insertRows) {
+    public static Pair<List<Object[]>, List<Object[]>> generateMySQLInsertDataList(final int insertRows) {
         if (insertRows < 0) {
             return Pair.of(null, null);
         }
@@ -56,14 +56,32 @@ public final class TableCrudUtil {
     }
     
     /**
-     * Generate simple insert data.
+     * Generate MySQL simple insert data.
      *
      * @return insert data
      */
-    public static Pair<Object[], Object[]> generateSimpleInsertData() {
+    public static Pair<Object[], Object[]> generateMySQLSimpleInsertData() {
         long uniqueKey = (Long) SNOWFLAKE_GENERATE.generateKey();
         int orderId = RANDOM.nextInt(0, 5);
         int userId = RANDOM.nextInt(0, 5);
         return Pair.of(new Object[]{uniqueKey, orderId, userId}, new Object[]{uniqueKey, orderId, userId, "OK"});
+    }
+    
+    /**
+     * Generate PostgreSQL simple insert data.
+     *
+     * @param insertRows insert rows
+     * @return insert data
+     */
+    public static Pair<List<Object[]>, List<Object[]>> generatePostgresSQLInsertDataList(final int insertRows) {
+        List<Object[]> orderData = new ArrayList<>(insertRows);
+        List<Object[]> orderItemData = new ArrayList<>(insertRows);
+        for (int i = 1; i <= insertRows; i++) {
+            int orderId = RANDOM.nextInt(0, 5);
+            int userId = RANDOM.nextInt(0, 5);
+            orderData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "OK"});
+            orderItemData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "SUCCESS"});
+        }
+        return Pair.of(orderData, orderItemData);
     }
 }

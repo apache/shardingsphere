@@ -18,17 +18,30 @@
 package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
-// TODO not complete yet
-public class PostgreSQLContainer extends DockerDatabaseContainer {
+public final class PostgreSQLContainer extends DockerDatabaseContainer {
     
     public PostgreSQLContainer(final String dockerImageName) {
         super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
     @Override
-    public void start() {
-        
+    protected void configure() {
+        withCommand("--max_connections=600");
+        withCommand("--wal_level=logical");
+        addEnv("POSTGRES_USER", "root");
+        addEnv("POSTGRES_PASSWORD", "root");
+        super.configure();
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        withExposedPorts(5432);
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
+            addFixedExposedPort(5432, 5432);
+        }
     }
     
     @Override

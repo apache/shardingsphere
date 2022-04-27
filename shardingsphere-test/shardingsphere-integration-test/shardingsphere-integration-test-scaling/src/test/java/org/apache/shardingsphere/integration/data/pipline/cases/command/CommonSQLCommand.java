@@ -30,14 +30,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class CommonSQLCommand {
     
-    @XmlElement(name = "add-resource")
-    private String addResource;
-    
     @XmlElement(name = "create-database")
     private String createDatabase;
-    
-    @XmlElement(name = "use-database")
-    private String useDatabase;
     
     @XmlElement(name = "create-sharding-algorithm")
     private List<String> createShardingAlgorithm;
@@ -77,9 +71,6 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "auto-alter-table-rule")
     private String autoAlterTableRule;
-    
-    @XmlElement(name = "insert-order")
-    private String insertOrder;
     
     @XmlElement(name = "insert-order-item")
     private String insertOrderItem;

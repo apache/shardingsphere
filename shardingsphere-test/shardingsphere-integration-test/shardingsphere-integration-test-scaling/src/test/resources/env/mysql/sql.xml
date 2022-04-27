@@ -44,4 +44,31 @@
         PRIMARY KEY (item_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order-item>
+    
+    <use-database>
+        USE sharding_db
+    </use-database>
+    
+    <add-resource>
+        ADD RESOURCE %s (URL="jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false&amp;rewriteBatchedStatements=true",USER=root,PASSWORD=root)
+    </add-resource>
+    
+    <insert-order>
+        INSERT INTO t_order (
+        id,
+        order_id,
+        user_id,
+        t_varchar,
+        t_tinyint,
+        t_timestamp,
+        t_datetime,
+        t_binary,
+        t_blob,
+        t_decimal,
+        t_char,
+        t_double,
+        t_json
+        )
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+    </insert-order>
 </command>

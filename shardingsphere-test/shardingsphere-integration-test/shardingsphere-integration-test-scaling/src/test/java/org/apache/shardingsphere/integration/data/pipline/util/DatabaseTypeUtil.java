@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipline.cases.command;
+package org.apache.shardingsphere.integration.data.pipline.util;
 
-import lombok.Data;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@Data
-@XmlRootElement(name = "command")
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class CreateTableSQLCommand {
+public final class DatabaseTypeUtil {
     
-    @XmlElement(name = "create-table-order")
-    private String createTableOrder;
+    /**
+     * Check MySQL database type.
+     *
+     * @param databaseType database type
+     * @return true if database type is MySQL, false otherwise
+     */
+    public static boolean isMySQL(final DatabaseType databaseType) {
+        return databaseType.getName().equals("MySQL");
+    }
     
-    @XmlElement(name = "create-table-order-item")
-    private String createTableOrderItem;
+    /**
+     * Check PostgreSQL database type.
+     *
+     * @param databaseType database type
+     * @return true if database type is PostgreSQL, false otherwise
+     */
+    public static boolean isPostgreSQL(final DatabaseType databaseType) {
+        return databaseType.getName().equals("PostgreSQL");
+    }
 }
