@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -44,7 +45,9 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
-            validateTableExist(metaData.getDefaultSchema(), sqlStatementContext.getTablesContext().getTables());
+            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema));
+            validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
     

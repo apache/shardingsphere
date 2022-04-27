@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -40,11 +41,14 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
-        if (index.isPresent() && !isSchemaContainsIndex(metaData.getDefaultSchema(), index.get())) {
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        ShardingSphereSchema schema = index.isPresent() ? index.get().getOwner().map(optional -> optional.getIdentifier().getValue())
+                .map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema)) : metaData.getSchemaByName(defaultSchema);
+        if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
             throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIndexName().getIdentifier().getValue());
         }
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatementContext.getSqlStatement());
-        if (renameIndex.isPresent() && isSchemaContainsIndex(metaData.getDefaultSchema(), renameIndex.get())) {
+        if (renameIndex.isPresent() && isSchemaContainsIndex(schema, renameIndex.get())) {
             throw new ShardingSphereException("Index '%s' already exists.", renameIndex.get().getIndexName().getIdentifier().getValue());
         }
     }

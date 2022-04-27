@@ -62,7 +62,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
             event.getDroppedTables().add(viewName);
         } else {
             putTableMetaData(metaData, database, optimizerPlanners, logicDataSourceNames, schemaName, viewName, props);
-            event.getAlteredTables().add(metaData.getDefaultSchema().get(viewName));
+            event.getAlteredTables().add(metaData.getSchemaByName(schemaName).get(viewName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }

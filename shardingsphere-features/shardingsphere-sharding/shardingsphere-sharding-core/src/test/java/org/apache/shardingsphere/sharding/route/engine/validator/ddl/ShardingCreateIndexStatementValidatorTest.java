@@ -59,9 +59,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
@@ -73,7 +73,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(false);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
@@ -82,9 +82,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
@@ -97,9 +97,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
@@ -111,7 +111,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(false);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
@@ -121,9 +121,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
+        when(metaData.getSchemaByName("public").containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("content_idx")).thenReturn(true);
