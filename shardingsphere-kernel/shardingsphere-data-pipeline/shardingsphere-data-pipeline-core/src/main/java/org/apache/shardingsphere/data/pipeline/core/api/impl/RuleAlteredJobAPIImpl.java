@@ -164,9 +164,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
-        ShardingSphereLock lock = lockContext.getDatabaseLock(databaseName);
-        if (null == lock || !lock.isLocked(databaseName)) {
+        String schemaName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ShardingSphereLock lock = lockContext.getGlobalLock(schemaName);
+        if (null == lock || !lock.isLocked(schemaName)) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
@@ -187,7 +187,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateDatabaseLock(databaseName);
+        ShardingSphereLock lock = lockContext.getOrCreateGlobalLock(databaseName);
         if (lock.isLocked(databaseName)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
@@ -213,7 +213,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void restoreClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getDatabaseLock(databaseName);
+        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
             return;
