@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,10 +36,6 @@ import static org.mockito.Mockito.mock;
 
 public final class AlgorithmProvidedShardingRuleBuilderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
-    }
-    
     private AlgorithmProvidedShardingRuleConfiguration ruleConfig;
     
     @SuppressWarnings("rawtypes")
@@ -49,7 +44,7 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     @Before
     public void setUp() {
         ruleConfig = new AlgorithmProvidedShardingRuleConfiguration();
-        builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
+        builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")
