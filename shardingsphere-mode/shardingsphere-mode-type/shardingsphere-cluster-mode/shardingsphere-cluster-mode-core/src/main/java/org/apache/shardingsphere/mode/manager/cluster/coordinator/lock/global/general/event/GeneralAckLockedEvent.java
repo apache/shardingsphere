@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Lock
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Ack locked event.
+ * General ack locked event.
  */
 @Getter
 public final class GeneralAckLockedEvent implements GovernanceEvent {

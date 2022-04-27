@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
 
+/**
+ * Timeout milliseconds.
+ */
 public final class TimeoutMilliseconds {
     
     public static final int CHECK_ACK_INTERVAL = 1000;

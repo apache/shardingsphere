@@ -23,6 +23,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeS
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
+/**
+ * Sharding sphere sequenced semaphore lock.
+ */
 @RequiredArgsConstructor
 public final class ShardingSphereSequencedSemaphoreLock implements ShardingSphereLock {
     

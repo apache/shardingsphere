@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
+/**
+ * Lock registry service.
+ */
 public interface LockRegistryService {
     
     /**

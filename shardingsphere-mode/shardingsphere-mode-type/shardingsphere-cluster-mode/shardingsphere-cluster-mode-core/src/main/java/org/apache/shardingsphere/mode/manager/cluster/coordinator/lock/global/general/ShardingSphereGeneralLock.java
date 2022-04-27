@@ -30,6 +30,9 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 
 import java.util.Collection;
 
+/**
+ * General lock of ShardingSphere.
+ */
 public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock {
     
     private final LockNodeService lockNodeService;

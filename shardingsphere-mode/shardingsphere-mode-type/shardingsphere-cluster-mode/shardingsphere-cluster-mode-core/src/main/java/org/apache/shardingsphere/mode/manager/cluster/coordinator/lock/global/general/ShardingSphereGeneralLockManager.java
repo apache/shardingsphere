@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * General lock manager of ShardingSphere.
+ */
 public final class ShardingSphereGeneralLockManager implements ShardingSphereLockManager {
     
     private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();

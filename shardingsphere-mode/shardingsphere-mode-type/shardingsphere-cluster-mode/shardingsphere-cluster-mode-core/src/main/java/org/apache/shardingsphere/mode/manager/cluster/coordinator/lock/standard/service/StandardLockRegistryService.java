@@ -23,6 +23,9 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Standard lock registry service.
+ */
 @RequiredArgsConstructor
 public final class StandardLockRegistryService implements LockRegistryService {
     
