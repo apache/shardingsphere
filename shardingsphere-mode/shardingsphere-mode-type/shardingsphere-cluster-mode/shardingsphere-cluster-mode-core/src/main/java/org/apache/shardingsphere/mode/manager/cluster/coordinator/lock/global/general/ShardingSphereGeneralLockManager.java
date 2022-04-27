@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GeneralLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -38,15 +38,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereGeneralLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereGeneralLock> locks;
     
-    private final LockNodeService lockNodeService = new GeneralLockNodeService();
+    private final LockNodeService lockNodeService;
     
     private ClusterPersistRepository clusterRepository;
     
     private ComputeNodeInstance currentInstance;
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
+    
+    public ShardingSphereGeneralLockManager() {
+        locks = new ConcurrentHashMap<>();
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {
