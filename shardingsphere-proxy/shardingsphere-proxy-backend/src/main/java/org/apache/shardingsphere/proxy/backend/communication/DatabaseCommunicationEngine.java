@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -103,8 +103,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     public abstract T execute();
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        metadataRefreshEngine.refresh(sqlStatement, () -> executionContext.getRouteContext().getRouteUnits().stream()
+        metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
                 .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
@@ -154,7 +153,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabaseName()).getResource().getDatabaseType(),
                 metaData.getDefaultSchema(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
@@ -219,20 +218,20 @@ public abstract class DatabaseCommunicationEngine<T> {
         return !JDBCDriverType.STATEMENT.equals(driverType);
     }
     
-    protected void checkLockedSchema(final ExecutionContext executionContext) {
-        if (isLockedSchema(backendConnection.getConnectionSession().getDatabaseName())) {
+    protected void checkDatabaseSchema(final ExecutionContext executionContext) {
+        if (isLockedDatabase(backendConnection.getConnectionSession().getDatabaseName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
     }
     
-    private boolean isLockedSchema(final String schemaName) {
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedSchema(schemaName);
+    private boolean isLockedDatabase(final String databaseName) {
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return;
         }
-        throw new SchemaLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
     }
 }

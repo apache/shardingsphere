@@ -32,26 +32,26 @@ public interface LockContext {
     void initLockState(InstanceContext instanceContext);
     
     /**
-     * Get or create schema lock.
+     * Get or create database lock.
      *
-     * @param schemaName schema name
-     * @return schema lock
+     * @param databaseName database name
+     * @return database lock
      */
-    ShardingSphereLock getOrCreateSchemaLock(String schemaName);
+    ShardingSphereLock getOrCreateDatabaseLock(String databaseName);
     
     /**
-     * Get schema lock.
+     * Get database lock.
      *
-     * @param schemaName schema name
-     * @return schema lock
+     * @param databaseName database name
+     * @return database name
      */
-    ShardingSphereLock getSchemaLock(String schemaName);
+    ShardingSphereLock getDatabaseLock(String databaseName);
     
     /**
-     *  Is locked schema.
+     *  Is locked database.
      *
-     * @param schemaName schema name
-     * @return is locked schema or not
+     * @param databaseName database name
+     * @return is locked database or not
      */
-    boolean isLockedSchema(String schemaName);
+    boolean isLockedDatabase(String databaseName);
 }

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -51,52 +49,50 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = AlterViewStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                        final Collection<String> logicDataSourceNames, final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        // TODO Get real schema name
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName(), schemaMetaData.getName());
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
-            putTableMetaData(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, renameViewName, props);
-            removeTableMetaData(schemaMetaData, database, optimizerPlanners, viewName);
-            event.getAlteredTables().add(schemaMetaData.getDefaultSchema().get(renameViewName));
+            putTableMetaData(metaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameViewName, props);
+            removeTableMetaData(metaData, database, optimizerPlanners, schemaName, viewName);
+            event.getAlteredTables().add(metaData.getSchemaByName(schemaName).get(renameViewName));
             event.getDroppedTables().add(viewName);
         } else {
-            putTableMetaData(schemaMetaData, database, optimizerPlanners, logicDataSourceNames, viewName, props);
-            event.getAlteredTables().add(schemaMetaData.getDefaultSchema().get(viewName));
+            putTableMetaData(metaData, database, optimizerPlanners, logicDataSourceNames, schemaName, viewName, props);
+            event.getAlteredTables().add(metaData.getDefaultSchema().get(viewName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
-    private void removeTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database,
-                                     final Map<String, OptimizerPlannerContext> optimizerPlanners, final String viewName) {
-        schemaMetaData.getDefaultSchema().remove(viewName);
-        schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(viewName));
-        database.remove(viewName);
+    private void removeTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
+                                     final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
+        metaData.getSchemaByName(schemaName).remove(viewName);
+        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(viewName));
+        database.remove(schemaName, viewName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
-    private void putTableMetaData(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                  final Collection<String> logicDataSourceNames, final String viewName, final ConfigurationProperties props) throws SQLException {
-        if (!containsInDataNodeContainedRule(viewName, schemaMetaData)) {
-            schemaMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
+    private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                  final Collection<String> logicDataSourceNames, final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
+        if (!containsInDataNodeContainedRule(viewName, metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                schemaMetaData.getResource().getDatabaseType(), schemaMetaData.getResource().getDataSources(), schemaMetaData.getRuleMetaData().getRules(), props, schemaMetaData.getName());
-        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(Collections.singletonList(viewName), materials);
-        String schemaName = materials.getDatabaseType() instanceof PostgreSQLDatabaseType || materials.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : schemaMetaData.getName();
-        Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(schemaMetaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
+                metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
+        Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(viewName), materials);
+        Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
         actualViewMetaData.ifPresent(viewMetaData -> {
-            schemaMetaData.getDefaultSchema().put(viewName, viewMetaData);
-            database.put(viewMetaData);
+            metaData.getSchemaByName(schemaName).put(viewName, viewMetaData);
+            database.put(schemaName, viewMetaData);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
     
-    private boolean containsInDataNodeContainedRule(final String viewName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(viewName));
+    private boolean containsInDataNodeContainedRule(final String viewName, final ShardingSphereMetaData metaData) {
+        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(viewName));
     }
     
     @Override

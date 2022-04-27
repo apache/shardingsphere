@@ -5,14 +5,14 @@ weight = 9
 chapter = true
 +++
 
-## DatabaseDiscoveryType
+## DatabaseDiscoveryProviderAlgorithm
 
-| *SPI Name*                            | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| DatabaseDiscoveryType                 | Database discovery type                                 |
+| *SPI Name*                                                   | *Description*                                                    |
+| ------------------------------------------------------------ | ---------------------------------------------------------------- |
+| DatabaseDiscoveryProviderAlgorithm                           | Database discovery provider algorithm                            |
 
-| *Implementation Class*                | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| MGRDatabaseDiscoveryType              | Database discovery of MySQL's MGR                       |
-| ShowSlaveStatusDatabaseDiscoveryType  | Database discovery of MySQL's master-slave delay        |
-| OpenGaussDatabaseDiscoveryType        | Database discovery of openGauss                         |
+| *Implementation Class*                                       | *Description*                                                    |
+| ------------------------------------------------------------ | ---------------------------------------------------------------- |
+| MGRDatabaseDiscoveryProviderAlgorithm                        | Database discovery provider algorithm of MySQL's MGR             |
+| MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm     | Database discovery provider algorithm of MySQL's replication     |
+| OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm | Database discovery provider algorithm of openGauss's replication |

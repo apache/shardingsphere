@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
@@ -36,9 +38,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -65,27 +65,31 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Collection<SchemaMetaData> result = new LinkedList<>();
         Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeRegistry.getActualDatabaseType(getType()));
-        Map<String, Map<String, Collection<IndexMetaData>>> indexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
-        for (Entry<String, Map<String, Collection<ColumnMetaData>>> entry : loadColumnMetaDataMap(dataSource, tables, schemaNames).entrySet()) {
-            String schemaName = entry.getKey();
-            Collection<TableMetaData> tablesMeta = new LinkedList<>();
-            Map<String, Collection<IndexMetaData>> tableIndexMetaDataMap = indexMetaDataMap.getOrDefault(schemaName, Collections.emptyMap());
-            for (Entry<String, Collection<ColumnMetaData>> tableEntry : entry.getValue().entrySet()) {
-                String tableName = tableEntry.getKey();
-                Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.getOrDefault(tableName, Collections.emptyList());
-                tablesMeta.add(new TableMetaData(tableName, tableEntry.getValue(), indexMetaDataList, Collections.emptyList()));
-            }
-            Map<String, TableMetaData> tableMetaDataMap = tablesMeta.stream().collect(Collectors.toMap(TableMetaData::getName, Function.identity(), (oldValue, newValue) -> newValue));
-            result.add(new SchemaMetaData(entry.getKey(), tableMetaDataMap));
+        Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
+        Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, schemaNames);
+        Collection<SchemaMetaData> result = new LinkedList<>();
+        for (String each : schemaNames) {
+            Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
+            Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
+            result.add(new SchemaMetaData(each, createTableMetaDataMap(tableIndexMetaDataMap, tableColumnMetaDataMap)));
         }
         return result;
     }
     
-    private Map<String, Map<String, Collection<ColumnMetaData>>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
-                                                                                       final Collection<String> schemaNames) throws SQLException {
-        Map<String, Map<String, Collection<ColumnMetaData>>> result = new LinkedHashMap<>();
+    private Map<String, TableMetaData> createTableMetaDataMap(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (String each : tableColumnMetaDataMap.keySet()) {
+            Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
+            Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
+            result.put(each, new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
+        }
+        return result;
+    }
+    
+    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
+                                                                                final Collection<String> schemaNames) throws SQLException {
+        Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(dataSource, tables);
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
@@ -97,9 +101,8 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
                         continue;
                     }
                     String schemaName = resultSet.getString("table_schema");
-                    Map<String, Collection<ColumnMetaData>> columnMetaDataMap = result.computeIfAbsent(schemaName, key -> new LinkedHashMap<>());
-                    Collection<ColumnMetaData> columns = columnMetaDataMap.computeIfAbsent(tableName, key -> new LinkedList<>());
-                    columns.add(loadColumnMetaData(dataTypes, primaryKeys, resultSet));
+                    Multimap<String, ColumnMetaData> columnMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
+                    columnMetaDataMap.put(tableName, loadColumnMetaData(dataTypes, primaryKeys, resultSet));
                 }
             }
         }
@@ -111,9 +114,10 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
+                    String schemaName = resultSet.getString("table_schema");
                     String tableName = resultSet.getString("table_name");
                     String columnName = resultSet.getString("column_name");
-                    result.add(tableName + "," + columnName);
+                    result.add(schemaName + "," + tableName + "," + columnName);
                 }
             }
         }
@@ -125,10 +129,11 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Set<String> primaryKeys, final ResultSet resultSet) throws SQLException {
+        String schemaName = resultSet.getString("table_schema");
         String tableName = resultSet.getString("table_name");
         String columnName = resultSet.getString("column_name");
         String dataType = resultSet.getString("udt_name");
-        boolean isPrimaryKey = primaryKeys.contains(tableName + "," + columnName);
+        boolean isPrimaryKey = primaryKeys.contains(schemaName + "," + tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false
@@ -142,17 +147,16 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
                 : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Map<String, Collection<IndexMetaData>>> loadIndexMetaDataMap(final DataSource dataSource, final Collection<String> schemaNames) throws SQLException {
-        Map<String, Map<String, Collection<IndexMetaData>>> result = new LinkedHashMap<>();
+    private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final Collection<String> schemaNames) throws SQLException {
+        Map<String, Multimap<String, IndexMetaData>> result = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(schemaNames))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String schemaName = resultSet.getString("schemaname");
                     String tableName = resultSet.getString("tablename");
                     String indexName = resultSet.getString("indexname");
-                    Map<String, Collection<IndexMetaData>> indexMetaDataMap = result.computeIfAbsent(schemaName, key -> new LinkedHashMap<>());
-                    Collection<IndexMetaData> indexes = indexMetaDataMap.computeIfAbsent(tableName, key -> new LinkedList<>());
-                    indexes.add(new IndexMetaData(indexName));
+                    Multimap<String, IndexMetaData> indexMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
+                    indexMetaDataMap.put(tableName, new IndexMetaData(indexName));
                 }
             }
         }
@@ -165,8 +169,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     private Collection<String> loadRoleTableGrants(final DataSource dataSource, final Collection<String> tables) throws SQLException {
         Collection<String> result = new HashSet<>(tables.size(), 1);
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getLoadRoleTableGrantsSQL(tables))) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getLoadRoleTableGrantsSQL(tables))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString("table_name"));
@@ -178,8 +181,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     private String getLoadRoleTableGrantsSQL(final Collection<String> tables) {
         return tables.isEmpty() ? LOAD_ALL_ROLE_TABLE_GRANTS_SQL
-                : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL,
-                        tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(LOAD_FILTED_ROLE_TABLE_GRANTS_SQL, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override

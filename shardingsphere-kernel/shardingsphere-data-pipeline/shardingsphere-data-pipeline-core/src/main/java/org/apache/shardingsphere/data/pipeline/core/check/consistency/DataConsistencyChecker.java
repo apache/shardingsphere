@@ -103,8 +103,9 @@ public final class DataConsistencyChecker {
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>(logicTableNames.size(), 1);
-        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
+        try (
+                PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+                PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             for (String each : logicTableNames) {
                 result.put(each, checkCount(each, sourceDataSource, targetDataSource, executor));
             }
@@ -131,9 +132,10 @@ public final class DataConsistencyChecker {
     }
     
     private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
@@ -148,9 +150,10 @@ public final class DataConsistencyChecker {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(logicTableNames.size(), 1);
-        try (PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
-             PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
+        try (
+                PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+                PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
+            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getDatabaseName());
             logicTableNames.forEach(each -> {
                 // TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
@@ -213,12 +216,12 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private Map<String, TableMetaData> getTableMetaDataMap(final String schemaName) {
+    private Map<String, TableMetaData> getTableMetaDataMap(final String databaseName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
         if (null == metaData) {
-            throw new RuntimeException("Can not get meta data by schema name " + schemaName);
+            throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         return metaData.getDefaultSchema().getTables();
     }

@@ -45,16 +45,15 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String logicTableName = getLogicTableName(schemaMetaData.getDefaultSchema(), sqlStatement).orElse("");
-        TableMetaData tableMetaData = schemaMetaData.getDefaultSchema().get(logicTableName);
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                        final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        String logicTableName = getLogicTableName(metaData.getSchemaByName(schemaName), sqlStatement).orElse("");
+        TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(logicTableName);
         if (null != tableMetaData) {
             for (String each : getIndexNames(sqlStatement)) {
                 tableMetaData.getIndexes().remove(each);
             }
-            // TODO Get real schema name
-            post(schemaMetaData.getName(), schemaMetaData.getName(), tableMetaData);
+            post(metaData.getDatabaseName(), schemaName, tableMetaData);
         }
     }
     
@@ -67,7 +66,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
-        return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        return dropIndexStatement.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList());
     }
     
     private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {

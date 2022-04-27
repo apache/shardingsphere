@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL rewrite context.
@@ -40,9 +41,9 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
-    private final String schemaName;
+    private final String databaseName;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -57,9 +58,10 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final String schemaName, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
-        this.schemaName = schemaName;
-        this.schema = schema;
+    public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
+                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.databaseName = databaseName;
+        this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
@@ -83,6 +85,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, schema));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters));
     }
 }

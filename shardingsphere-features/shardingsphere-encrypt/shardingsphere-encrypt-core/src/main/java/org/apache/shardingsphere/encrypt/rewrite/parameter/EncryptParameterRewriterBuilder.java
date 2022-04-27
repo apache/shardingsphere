@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Parameter rewriter builder for encrypt.
@@ -46,7 +47,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final String schemaName;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -73,7 +74,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     @SuppressWarnings("rawtypes")
     private void setUpParameterRewriter(final ParameterRewriter toBeAddedParameterRewriter) {
         if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
+            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchemas(schemas);
         }
         if (toBeAddedParameterRewriter instanceof EncryptRuleAware) {
             ((EncryptRuleAware) toBeAddedParameterRewriter).setEncryptRule(encryptRule);

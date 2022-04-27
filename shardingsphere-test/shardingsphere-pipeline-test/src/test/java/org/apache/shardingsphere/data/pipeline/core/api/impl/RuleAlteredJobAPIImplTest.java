@@ -129,10 +129,10 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
+        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
-        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -142,10 +142,10 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
+        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
-        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
@@ -243,8 +243,9 @@ public final class RuleAlteredJobAPIImplTest {
     }
     
     private void initTableData(final DataSource pipelineDataSource) throws SQLException {
-        try (Connection connection = pipelineDataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = pipelineDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");

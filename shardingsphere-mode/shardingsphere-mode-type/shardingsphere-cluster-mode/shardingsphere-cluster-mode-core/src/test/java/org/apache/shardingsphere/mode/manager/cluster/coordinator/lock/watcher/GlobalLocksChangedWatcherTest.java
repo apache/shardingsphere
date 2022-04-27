@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.junit.Test;
@@ -33,17 +33,17 @@ public final class GlobalLocksChangedWatcherTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/schema/locks/schema/leases/c_l_0000000", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/database/locks/database/leases/c_l_0000000", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> add = new GlobalLocksChangedWatcher().createGovernanceEvent(addDataChangedEvent);
         assertTrue(add.isPresent());
         GovernanceEvent addEvent = add.get();
-        assertTrue(addEvent instanceof SchemaLockedEvent);
-        assertThat(((SchemaLockedEvent) addEvent).getSchema(), is("schema"));
-        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/schema/locks/schema/leases/c_l_0000000", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        assertTrue(addEvent instanceof LockedEvent);
+        assertThat(((LockedEvent) addEvent).getDatabase(), is("database"));
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/database/locks/database/leases/c_l_0000000", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> delete = new GlobalLocksChangedWatcher().createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(delete.isPresent());
         GovernanceEvent deleteEvent = delete.get();
-        assertTrue(deleteEvent instanceof SchemaLockReleasedEvent);
-        assertThat(((SchemaLockReleasedEvent) deleteEvent).getSchema(), is("schema"));
+        assertTrue(deleteEvent instanceof LockReleasedEvent);
+        assertThat(((LockReleasedEvent) deleteEvent).getDatabase(), is("database"));
     }
 }

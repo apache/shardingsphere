@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -38,8 +39,8 @@ public final class LockRegistryService {
      */
     public void initGlobalLockRoot() {
         repository.persist(LockNode.getStandardLocksNodePath(), "");
-        repository.persist(LockNode.getGlobalSchemaLocksNodePath(), "");
-        repository.persist(LockNode.getGlobalSchemaLockedAckNodePath(), "");
+        repository.persist(LockNode.getGlobalDatabaseLocksNodePath(), "");
+        repository.persist(LockNode.getGlobalDatabaseLockedAckNodePath(), "");
     }
     
     /**
@@ -47,8 +48,8 @@ public final class LockRegistryService {
      *
      * @return all global locks
      */
-    public Collection<String> getAllGlobalSchemaLocks() {
-        return repository.getChildrenKeys(LockNode.getGlobalSchemaLocksNodePath());
+    public Collection<String> getAllGlobalDatabaseLocks() {
+        return repository.getChildrenKeys(LockNode.getGlobalDatabaseLocksNodePath());
     }
     
     /**
@@ -73,7 +74,7 @@ public final class LockRegistryService {
             repository.releaseLock(lockName);
             return;
         }
-        repository.delete(lockName);
+        repository.delete(LockNodeUtil.generateGlobalLockReleasedNodePath(lockName));
     }
     
     /**

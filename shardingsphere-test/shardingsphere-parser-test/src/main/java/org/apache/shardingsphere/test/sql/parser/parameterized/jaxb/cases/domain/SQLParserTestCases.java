@@ -152,6 +152,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseLinkStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseDictionaryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
@@ -561,6 +562,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-database-link")
     private final List<AlterDatabaseLinkStatementTestCase> alterDatabaseLinkTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-database-dictionary")
+    private final List<AlterDatabaseDictionaryStatementTestCase> alterDatabaseDictionaryTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-view")
     private final List<AlterViewStatementTestCase> alterViewTestCases = new LinkedList<>();
@@ -1366,6 +1370,7 @@ public final class SQLParserTestCases {
         putAll(createDatabaseTestCase, result);
         putAll(createDatabaseLinkTestCase, result);
         putAll(dropDatabaseLinkTestCase, result);
+        putAll(alterDatabaseDictionaryTestCase, result);
         putAll(alterDatabaseLinkTestCase, result);
         putAll(alterViewTestCases, result);
         putAll(createDimensionTestCase, result);

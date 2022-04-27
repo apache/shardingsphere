@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class AckLockReleasedEvent implements GovernanceEvent {
     
-    private final String schema;
+    private final String database;
     
     private final String lockedInstance;
     
     public AckLockReleasedEvent(final String lockName) {
-        String[] schemaInstance = LockNodeUtil.parseSchemaLockName(lockName);
-        this.schema = schemaInstance[0];
-        this.lockedInstance = schemaInstance[1];
+        String[] databaseInstance = LockNodeUtil.parseDatabaseLockName(lockName);
+        this.database = databaseInstance[0];
+        this.lockedInstance = databaseInstance[1];
     }
 }

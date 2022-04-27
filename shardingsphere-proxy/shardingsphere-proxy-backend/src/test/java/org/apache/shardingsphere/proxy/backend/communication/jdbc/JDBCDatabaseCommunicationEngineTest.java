@@ -147,7 +147,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getName()).thenReturn("sharding_schema");
+        when(result.getDatabaseName()).thenReturn("sharding_schema");
         return result;
     }
     

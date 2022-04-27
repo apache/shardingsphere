@@ -62,9 +62,10 @@ public final class RuleAlteredJobTest {
     @SneakyThrows(SQLException.class)
     private void initTableData(final JobConfiguration jobConfig) {
         YamlPipelineDataSourceConfiguration source = jobConfig.getPipelineConfig().getSource();
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
-             Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");

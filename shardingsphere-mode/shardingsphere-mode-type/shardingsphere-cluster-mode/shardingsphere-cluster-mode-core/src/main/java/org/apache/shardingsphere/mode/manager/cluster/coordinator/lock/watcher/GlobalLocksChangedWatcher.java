@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.SchemaLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -37,7 +37,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(LockNode.getGlobalSchemaLocksNodePath());
+        return Collections.singleton(LockNode.getGlobalDatabaseLocksNodePath());
     }
     
     @Override
@@ -47,7 +47,7 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = LockNode.parseGlobalSchemaLocksNodePath(event.getKey());
+        Optional<String> lockedName = LockNode.parseGlobalDatabaseLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
             return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
         }
@@ -56,9 +56,9 @@ public final class GlobalLocksChangedWatcher implements GovernanceWatcher<Govern
     
     private Optional<GovernanceEvent> handleGlobalSchemaLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
-            return Optional.of(new SchemaLockedEvent(lockedName));
+            return Optional.of(new LockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
-            return Optional.of(new SchemaLockReleasedEvent(lockedName));
+            return Optional.of(new LockReleasedEvent(lockedName));
         }
         return Optional.empty();
     }

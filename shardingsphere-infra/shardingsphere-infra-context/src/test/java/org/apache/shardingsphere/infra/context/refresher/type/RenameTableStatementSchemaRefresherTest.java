@@ -54,7 +54,7 @@ public final class RenameTableStatementSchemaRefresherTest {
         RenameTableLister listener = new RenameTableLister(2);
         ShardingSphereEventBus.getInstance().register(listener);
         new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
-                new HashMap<>(), Collections.singleton("foo_ds"), createRenameTableStatement(), mock(ConfigurationProperties.class));
+                new HashMap<>(), Collections.singleton("foo_ds"), "foo_schema", createRenameTableStatement(), mock(ConfigurationProperties.class));
         assertThat(listener.getActualCount(), is(listener.getRenameCount()));
         ShardingSphereEventBus.getInstance().unregister(listener);
     }
@@ -75,7 +75,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         return new ShardingSphereMetaData("foo_database",
-                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_database", mock(ShardingSphereSchema.class)));
+                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
     }
     
     private ShardingSphereResource mockShardingSphereResource() {

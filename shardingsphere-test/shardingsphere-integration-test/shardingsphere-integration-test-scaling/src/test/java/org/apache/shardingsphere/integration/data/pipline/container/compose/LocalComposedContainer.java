@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.integration.data.pipline.container.compose;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.container.proxy.ShardingSphereProxyLocalContainer;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
  * Local composed container.
@@ -46,7 +46,15 @@ public final class LocalComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public Connection getProxyConnection() throws SQLException {
-        return DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), "localhost", 3307, ""), "root", "root");
+    public DataSource getProxyDataSource(final String databaseName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
+        String jdbcUrl = StringUtils.appendIfMissing(DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), "localhost", 3307, databaseName), "&rewriteBatchedStatements=true");
+        result.setJdbcUrl(jdbcUrl);
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(2);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        return result;
     }
 }

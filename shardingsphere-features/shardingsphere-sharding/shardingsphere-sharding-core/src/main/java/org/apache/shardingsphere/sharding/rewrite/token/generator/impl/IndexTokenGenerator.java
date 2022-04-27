@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Index token generator.
@@ -39,7 +40,9 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     private ShardingRule shardingRule;
     
-    private ShardingSphereSchema schema;
+    private Map<String, ShardingSphereSchema> schemas;
+    
+    private String databaseName;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
@@ -49,9 +52,11 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         if (sqlStatementContext instanceof IndexAvailable) {
             for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
-                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier(), sqlStatementContext, shardingRule, schema));
+                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, shardingRule, schema));
             }
         }
         return result;

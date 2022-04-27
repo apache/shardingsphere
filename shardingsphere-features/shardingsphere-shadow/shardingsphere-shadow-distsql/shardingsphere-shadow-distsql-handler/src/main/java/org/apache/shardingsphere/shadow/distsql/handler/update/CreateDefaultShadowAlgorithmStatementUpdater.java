@@ -47,7 +47,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateDefaultShadowAlgorithmStatement sqlStatement,
                                   final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         checkAlgorithmExist(databaseName, sqlStatement, currentRuleConfig);
     }
     

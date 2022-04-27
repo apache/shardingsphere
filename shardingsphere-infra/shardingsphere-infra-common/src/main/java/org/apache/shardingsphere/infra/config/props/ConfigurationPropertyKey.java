@@ -120,14 +120,14 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
     
     /**
-     * Whether enable data source aggregation, default false.
-     */
-    DATA_SOURCE_AGGREGATION_ENABLED("data-source-aggregation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
-    
-    /**
      * Proxy mysql default version, default 5.7.22.
      */
-    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false);
+    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
+    
+    /**
+     * Proxy default port, default 3307.
+     */
+    PROXY_DEFAULT_PORT("proxy-default-port", "3307", String.class, false);
     
     private final String key;
     

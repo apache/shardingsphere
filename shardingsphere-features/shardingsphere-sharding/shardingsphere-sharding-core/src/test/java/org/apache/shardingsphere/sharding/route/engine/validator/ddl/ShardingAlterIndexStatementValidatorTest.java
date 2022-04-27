@@ -19,16 +19,18 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -45,50 +47,50 @@ public final class ShardingAlterIndexStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Mock
-    private ShardingSphereSchema schema;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereMetaData metaData;
     
     @Test
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index_new")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(schema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(schema.get("t_order")).thenReturn(tableMetaData);
+        when(metaData.getDefaultSchema().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
 }

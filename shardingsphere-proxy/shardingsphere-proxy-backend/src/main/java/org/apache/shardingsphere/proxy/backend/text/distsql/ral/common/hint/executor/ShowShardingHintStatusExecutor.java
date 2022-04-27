@@ -66,7 +66,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
-        String schemaName = connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType 
+        String schemaName = connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType
                 || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : connectionSession.getDatabaseName();
         Collection<String> tableNames = metaData.getSchemaByName(schemaName).getAllTableNames();
         for (String each : tableNames) {

@@ -132,9 +132,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         if (null == storageNodeDataSource) {
             return Arrays.asList(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
         } else {
-            Long replicationDelayTime = storageNodeDataSource.getReplicationDelayMilliseconds();
+            long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
             String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
-            return Arrays.asList(resource, status, null != replicationDelayTime ? Long.toString(replicationDelayTime) : "0");
+            return Arrays.asList(resource, status, Long.toString(replicationDelayMilliseconds));
         }
     }
 }
