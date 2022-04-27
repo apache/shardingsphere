@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * MDC constants of log.
+ * Index name segment.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogMDCConstants {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class IndexNameSegment implements SQLSegment {
     
-    public static final String DATABASE_KEY = "database";
+    private final int startIndex;
     
-    public static final String USER_KEY = "user";
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

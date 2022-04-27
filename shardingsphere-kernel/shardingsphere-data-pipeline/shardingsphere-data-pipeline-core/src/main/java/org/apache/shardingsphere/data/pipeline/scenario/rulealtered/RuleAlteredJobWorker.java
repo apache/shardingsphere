@@ -55,7 +55,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
 import java.util.Collection;
@@ -170,8 +170,8 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
-            log.warn("There is uncompleted job with the same schema name, please handle it first, current job will be ignored");
+        if (!hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
+            log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
@@ -179,15 +179,15 @@ public final class RuleAlteredJobWorker {
             PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
         } else {
             log.info("Switch rule configuration immediately.");
-            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getActiveVersion(), event.getNewVersion());
+            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
-            ShardingSphereEventBus.getInstance().post(new ScalingReleaseSchemaNameLockEvent(event.getSchemaName()));
+            ShardingSphereEventBus.getInstance().post(new ScalingReleaseDatabaseLevelLockEvent(event.getDatabaseName()));
         }
     }
     
     private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
-        YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getSourceDataSource(), event.getSourceRule());
-        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
+        YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getSourceDataSource(), event.getSourceRule());
+        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getTargetDataSource(), event.getTargetRule());
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             YamlRuleConfiguration yamlRuleConfig = null == each.getLeft() ? each.getRight() : each.getLeft();
@@ -209,7 +209,7 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getDatabaseName(), alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
         PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
@@ -290,52 +290,52 @@ public final class RuleAlteredJobWorker {
         return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }
     
-    private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
-        boolean isUncompletedJobOfSameSchema = false;
+    private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
+        boolean result = false;
         for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
             if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
-            if (isUncompletedJobOfSameSchema(jobConfiguration, each.getJobId(), schema)) {
-                isUncompletedJobOfSameSchema = true;
+            if (hasUncompletedJobOfSameDatabaseName(jobConfiguration, each.getJobId(), databaseName)) {
+                result = true;
                 break;
             }
         }
-        return !isUncompletedJobOfSameSchema;
+        return !result;
     }
     
-    private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
+    private boolean hasUncompletedJobOfSameDatabaseName(final JobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
         HandleConfiguration handleConfig = jobConfig.getHandleConfig();
         WorkflowConfiguration workflowConfig;
         if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
             log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
             return false;
         }
-        return currentSchema.equals(workflowConfig.getSchemaName());
+        return currentDatabaseName.equals(workflowConfig.getDatabaseName());
     }
     
     /**
-     * scaling release schema name lock.
+     * scaling release database level lock.
      *
-     * @param event scaling release schema name lock event
+     * @param event scaling release database level lock event
      */
     @Subscribe
-    public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
-        String schemaName = event.getSchemaName();
+    public void scalingReleaseDatabaseLevelLock(final ScalingReleaseDatabaseLevelLockEvent event) {
+        String databaseName = event.getDatabaseName();
         try {
-            restoreSourceWriting(schemaName);
+            restoreSourceWriting(databaseName);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            log.error("restore source writing failed, schemaName={}", schemaName, ex);
+            log.error("restore source writing failed, databaseName={}", databaseName, ex);
         }
-        PipelineSimpleLock.getInstance().releaseLock(event.getSchemaName());
+        PipelineSimpleLock.getInstance().releaseLock(event.getDatabaseName());
     }
     
-    private void restoreSourceWriting(final String schemaName) {
-        log.info("restoreSourceWriting, schemaName={}", schemaName);
+    private void restoreSourceWriting(final String databaseName) {
+        log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getGlobalLock(schemaName);
         if (null != lock && lock.isLocked(schemaName)) {

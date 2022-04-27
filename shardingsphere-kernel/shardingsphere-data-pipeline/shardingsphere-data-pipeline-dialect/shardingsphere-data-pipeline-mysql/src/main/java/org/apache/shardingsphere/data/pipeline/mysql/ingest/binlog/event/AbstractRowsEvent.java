@@ -27,7 +27,7 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractRowsEvent extends AbstractBinlogEvent {
     
-    private String schemaName;
+    private String databaseName;
     
     private String tableName;
 }

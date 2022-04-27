@@ -153,7 +153,7 @@ public final class DataConsistencyChecker {
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
+            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getDatabaseName());
             logicTableNames.forEach(each -> {
                 // TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
@@ -216,12 +216,12 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private Map<String, TableMetaData> getTableMetaDataMap(final String schemaName) {
+    private Map<String, TableMetaData> getTableMetaDataMap(final String databaseName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
         if (null == metaData) {
-            throw new RuntimeException("Can not get meta data by schema name " + schemaName);
+            throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         return metaData.getDefaultSchema().getTables();
     }

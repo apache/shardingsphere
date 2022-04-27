@@ -42,5 +42,5 @@ public abstract class AbstractJobId implements JobId {
     private List<String> subTypes;
     
     @NonNull
-    private String schemaName;
+    private String databaseName;
 }

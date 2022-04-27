@@ -46,9 +46,9 @@ public interface JobId {
     List<String> getSubTypes();
     
     /**
-     * Get schema name.
+     * Get database name.
      *
-     * @return schema name
+     * @return database name
      */
-    String getSchemaName();
+    String getDatabaseName();
 }

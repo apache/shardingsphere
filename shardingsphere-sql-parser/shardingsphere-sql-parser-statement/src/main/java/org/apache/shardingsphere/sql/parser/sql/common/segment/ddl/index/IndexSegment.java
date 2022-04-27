@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -39,7 +38,7 @@ public final class IndexSegment implements SQLSegment, OwnerAvailable {
     
     private final int stopIndex;
     
-    private final IdentifierValue identifier;
+    private final IndexNameSegment indexName;
     
     private OwnerSegment owner;
     

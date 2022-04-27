@@ -124,7 +124,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockWriteRowEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -132,7 +132,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockUpdateRowEvent() {
         UpdateRowEvent result = new UpdateRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -140,7 +140,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockDeleteRowEvent() {
         DeleteRowEvent result = new DeleteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
@@ -148,7 +148,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockUnknownTableEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_other");
         return result;
     }

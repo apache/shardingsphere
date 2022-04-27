@@ -51,13 +51,13 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
         }
-        String indexName = sqlStatement.getIndex().get().getIdentifier().getValue();
+        String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
         Optional<String> logicTableName = findLogicTableName(metaData.getSchemaByName(schemaName), indexName);
         if (logicTableName.isPresent()) {
             TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(logicTableName.get());
             Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
             tableMetaData.getIndexes().remove(indexName);
-            String renameIndexName = renameIndex.get().getIdentifier().getValue();
+            String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
             SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
             event.getAlteredTables().add(tableMetaData);

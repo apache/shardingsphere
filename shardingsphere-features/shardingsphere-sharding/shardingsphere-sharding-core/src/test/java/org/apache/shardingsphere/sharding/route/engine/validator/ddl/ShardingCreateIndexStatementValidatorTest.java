@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -57,7 +58,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWhenTableExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
         when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);
@@ -71,7 +72,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
     }
@@ -80,7 +81,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
+        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(metaData.getDefaultSchema().containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
         when(metaData.getDefaultSchema().get("t_order")).thenReturn(tableMetaData);

@@ -46,7 +46,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
         }
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getIndexes()) {
             if (!isSchemaContainsIndex(metaData.getDefaultSchema(), each)) {
-                throw new ShardingSphereException("Index '%s' does not exist.", each.getIdentifier().getValue());
+                throw new ShardingSphereException("Index '%s' does not exist.", each.getIndexName().getIdentifier().getValue());
             }
         }
     }
@@ -54,7 +54,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
-        Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList());
         Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(table -> table.getTableName().getIdentifier().getValue());
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexNames, logicTableName.get());
