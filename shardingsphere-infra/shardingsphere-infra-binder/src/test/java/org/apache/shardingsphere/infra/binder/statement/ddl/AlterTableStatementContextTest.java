@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -95,7 +96,7 @@ public final class AlterTableStatementContextTest {
         when(alterTableStatement.getModifyColumnDefinitions()).thenReturn(Collections.singletonList(modifyColumnDefinition));
         ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
-        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IdentifierValue("index"))));
+        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index")))));
         AddConstraintDefinitionSegment addConstraintDefinition = mock(AddConstraintDefinitionSegment.class);
         when(addConstraintDefinition.getConstraintDefinition()).thenReturn(constraintDefinition);
         ConstraintSegment constraint = new ConstraintSegment(0, 0, new IdentifierValue("constraint"));
@@ -108,14 +109,14 @@ public final class AlterTableStatementContextTest {
         when(dropConstraintDefinition.getConstraintName()).thenReturn(constraint);
         when(alterTableStatement.getDropConstraintDefinitions()).thenReturn(Collections.singletonList(dropConstraintDefinition));
         DropIndexDefinitionSegment dropIndexDefinitionSegment = mock(DropIndexDefinitionSegment.class);
-        when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IdentifierValue("drop_index")));
+        when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("drop_index"))));
         when(alterTableStatement.getDropIndexDefinitions()).thenReturn(Collections.singletonList(dropIndexDefinitionSegment));
         AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "rename_tbl_1", "tbl_1", "tbl_1", "tbl_1")));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Lists.newArrayList("index", "drop_index")));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Lists.newArrayList("index", "drop_index")));
         assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("constraint", "constraint", "constraint")));
     }

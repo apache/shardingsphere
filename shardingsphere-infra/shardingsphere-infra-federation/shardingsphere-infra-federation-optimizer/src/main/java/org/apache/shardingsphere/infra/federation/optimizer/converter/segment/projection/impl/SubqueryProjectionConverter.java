@@ -40,8 +40,6 @@ import java.util.Optional;
  */
 public final class SubqueryProjectionConverter implements SQLSegmentConverter<SubqueryProjectionSegment, SqlNode> {
     
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
     @Override
     public Optional<SqlNode> convertToSQLNode(final SubqueryProjectionSegment segment) {
         if (null == segment) {
@@ -66,7 +64,7 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
             int startIndex = getStartIndex(sqlNode) - 1;
             int stopIndex = getStopIndex(sqlNode) + 1;
             String text = "(" + sqlNode + ")";
-            String originalText = text.replace(LINE_SEPARATOR, " ").replace(Quoting.BACK_TICK.string, "");
+            String originalText = text.replace(System.lineSeparator(), " ").replace(Quoting.BACK_TICK.string, "");
             return Optional.of(new SubqueryProjectionSegment(new SubquerySegment(startIndex, stopIndex, selectStatement), originalText));
         }
         return Optional.empty();

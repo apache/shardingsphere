@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTablespaceStatement;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
@@ -43,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablespaceStatement;
@@ -87,6 +90,7 @@ public enum PostgreSQLCommand {
     ALTER_FUNCTION(AlterFunctionStatement.class),
     ALTER_INDEX(AlterIndexStatement.class),
     ALTER_PROCEDURE(AlterProcedureStatement.class),
+    ALTER_SCHEMA(AlterSchemaStatement.class),
     ALTER_SEQUENCE(AlterSequenceStatement.class),
     ALTER_TABLESPACE(AlterTablespaceStatement.class),
     ALTER_TABLE(AlterTableStatement.class),
@@ -95,6 +99,7 @@ public enum PostgreSQLCommand {
     CREATE_FUNCTION(CreateFunctionStatement.class),
     CREATE_INDEX(CreateIndexStatement.class),
     CREATE_PROCEDURE(CreateProcedureStatement.class),
+    CREATE_SCHEMA(CreateSchemaStatement.class),
     CREATE_SEQUENCE(CreateSequenceStatement.class),
     CREATE_TABLESPACE(CreateTablespaceStatement.class),
     CREATE_TABLE(CreateTableStatement.class),
@@ -103,6 +108,7 @@ public enum PostgreSQLCommand {
     DROP_FUNCTION(DropFunctionStatement.class),
     DROP_INDEX(DropIndexStatement.class),
     DROP_PROCEDURE(DropProcedureStatement.class),
+    DROP_SCHEMA(DropSchemaStatement.class),
     DROP_SEQUENCE(DropSequenceStatement.class),
     DROP_TABLESPACE(DropTablespaceStatement.class),
     DROP_TABLE(DropTableStatement.class),

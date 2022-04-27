@@ -188,18 +188,27 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
         return connectionManager.setSavepoint(name);
     }
     
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
         return connectionManager.setSavepoint();
     }
     
     @Override
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            return;
+        }
         connectionManager.releaseSavepoint(savepoint);
     }
     

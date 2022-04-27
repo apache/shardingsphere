@@ -33,7 +33,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -72,7 +72,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                     log.info("isJobSuccessful=true");
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
                 }
-                ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
+                ScalingReleaseDatabaseLevelLockEvent releaseLockEvent = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getWorkflowConfig().getDatabaseName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
@@ -80,11 +80,11 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-                    if (PipelineSimpleLock.getInstance().tryLock(schemaName, 1000)) {
+                    String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+                    if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
                         execute(jobConfigPOJO);
                     } else {
-                        log.info("tryLock failed, schemaName={}", schemaName);
+                        log.info("tryLock failed, databaseName={}", databaseName);
                     }
                     break;
                 default:

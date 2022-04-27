@@ -31,14 +31,14 @@ public final class DefaultSourceWritingStopAlgorithm implements RowBasedJobLockA
     private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
     
     @Override
-    public void lock(final String schemaName, final String jobId) {
-        log.info("lock, schemaName={}, jobId={}", schemaName, jobId);
-        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId);
+    public void lock(final String databaseName, final String jobId) {
+        log.info("lock, databaseName={}, jobId={}", databaseName, jobId);
+        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId);
     }
     
     @Override
-    public void releaseLock(final String schemaName, final String jobId) {
-        log.info("releaseLock, schemaName={}, jobId={}", schemaName, jobId);
-        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId);
+    public void releaseLock(final String databaseName, final String jobId) {
+        log.info("releaseLock, databaseName={}, jobId={}", databaseName, jobId);
+        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId);
     }
 }

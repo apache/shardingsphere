@@ -70,20 +70,36 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized ShardingSphereLock getOrCreateDatabaseLock(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Get or create database lock args database name can not be null.");
-        return lockManagers.get(LockType.DATABASE).getOrCreateLock(databaseName);
+    public synchronized boolean tryLockWriteDatabase(final String databaseName, final long timeoutMillis) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
+        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
+        return lock.tryLock(databaseName, timeoutMillis);
     }
     
     @Override
-    public ShardingSphereLock getDatabaseLock(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Get database lock args database name can not be null.");
-        return lockManagers.get(LockType.DATABASE).getLock(databaseName);
+    public void releaseLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
+        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
+        lock.releaseLock(databaseName);
     }
     
     @Override
     public boolean isLockedDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
         return lockManagers.get(LockType.DATABASE).isLocked(databaseName);
+    }
+    
+    @Override
+    public synchronized ShardingSphereLock getOrCreateGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
+    }
+    
+    @Override
+    public ShardingSphereLock getGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getLock(lockName);
     }
 }

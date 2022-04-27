@@ -23,6 +23,8 @@ org.apache.shardingsphere.infra.context.refresher.type.CreateSchemaStatementSche
 org.apache.shardingsphere.infra.context.refresher.type.CreateTableStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.CreateViewStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.DropIndexStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.DropSchemaStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.DropTableStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.DropViewStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.RenameSchemaStatementSchemaRefresher
 org.apache.shardingsphere.infra.context.refresher.type.RenameTableStatementSchemaRefresher

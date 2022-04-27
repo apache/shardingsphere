@@ -114,7 +114,7 @@ public final class ShardingResultMergerEngineTest {
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDefaultSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
         return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
     }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
@@ -59,13 +60,13 @@ public final class IndexTokenGeneratorTest {
     
     @Test
     public void assertGenerateSQLTokens() {
-        IndexSegment indexSegment = mock(IndexSegment.class);
+        IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         int testStartIndex = 1;
         when(indexSegment.getStartIndex()).thenReturn(testStartIndex);
         int testStopIndex = 3;
         when(indexSegment.getStopIndex()).thenReturn(testStopIndex);
-        IdentifierValue identifierValue = mock(IdentifierValue.class);
-        when(indexSegment.getIdentifier()).thenReturn(identifierValue);
+        IndexNameSegment indexNameSegment = new IndexNameSegment(testStartIndex, testStopIndex, mock(IdentifierValue.class));
+        when(indexSegment.getIndexName()).thenReturn(indexNameSegment);
         Collection<IndexSegment> indexSegments = new LinkedList<>();
         indexSegments.add(indexSegment);
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class, RETURNS_DEEP_STUBS);

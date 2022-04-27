@@ -51,6 +51,7 @@ public enum PostgreSQLErrorCode {
     INVALID_PASSWORD("28P01", "invalid_password"),
     INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
     INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),
+    UNDEFINED_COLUMN("42703", "undefined_column"),
     SYSTEM_ERROR("58000", "system_error");
     
     private final String errorCode;

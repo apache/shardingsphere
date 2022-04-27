@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecutorEngineTest {
     
-    private final ExecutorEngine executorEngine = new ExecutorEngine(10);
+    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(10);
     
     private final CountDownLatch latch = new CountDownLatch(4);
     

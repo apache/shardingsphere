@@ -39,8 +39,6 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -140,10 +138,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 throw new SchemaNotExistedException(databaseName);
             }
         }
-        // FIXME get postgresql/opengauss schemaName from search_path
-        String defaultSchemaName = getDatabaseType() instanceof PostgreSQLDatabaseType || getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : databaseName;
-        String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
-        return metaData.getSchemaByName(schemaName);
+        String defaultSchemaName = getDatabaseType().getDefaultSchema(databaseName);
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchemaName));
     }
     
     /**

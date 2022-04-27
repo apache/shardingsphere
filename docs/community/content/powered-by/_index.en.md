@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 184 companies.
+Total: 188 companies.
 
 ### Infra Software
 <ul>
@@ -50,6 +50,7 @@ Total: 184 companies.
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
+    <li><a href="http://www.gzclearing.com/" rel="nofollow">GZ FIN TECH</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
@@ -111,6 +112,8 @@ Total: 184 companies.
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
+    <li><a href="https://www.zego.im/" rel="nofollow">ZEGO</a></li>
+    <li><a href="http://www.sdjictec.com" rel="nofollow">Sdjic Tec</a></li>
 </ul>
 
 ### Transportation
@@ -207,12 +210,13 @@ Total: 184 companies.
 
 ### Public Utilities
 <ul>
+    <li><a href="http://www.electricpower.com.cn/" rel="nofollow">China Electric Power</a></li>
+    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>    
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">GUANG DONG DA XIN</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>
 </ul>
 
 ### ICT (Information and Communications Technology)

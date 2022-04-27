@@ -114,7 +114,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     @Setter
     private static class YamlParameterConfiguration implements YamlConfiguration {
         
-        private String schemaName;
+        private String databaseName;
         
         private Map<String, Map<String, Object>> dataSources = new HashMap<>();
         
