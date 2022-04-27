@@ -4337,4 +4337,15 @@
             <column-projection name="status" start-index="17" stop-index="22"/>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_keyword_target">
+        <from>
+            <simple-table name="sys_menu" start-index="21" stop-index="30" alias="m" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="target" start-index="7" stop-index="14">
+                <owner name="m" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
