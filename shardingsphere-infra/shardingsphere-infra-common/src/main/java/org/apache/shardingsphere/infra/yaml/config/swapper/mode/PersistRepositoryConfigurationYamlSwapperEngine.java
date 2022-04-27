@@ -44,7 +44,7 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      * @param yamlConfig YAML persist repository configuration
      * @return persist repository configuration
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
         return PersistRepositoryConfigurationYamlSwapperFactory.findInstance(type).map(optional -> (PersistRepositoryConfiguration) optional.swapToObject(yamlConfig)).orElse(null);
     }
