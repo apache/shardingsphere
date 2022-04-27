@@ -61,7 +61,8 @@ public final class EncryptResultDecoratorEngineTest {
     @Test
     public void assertNewInstanceWithSelectStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.newInstance(Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(databaseType, DefaultSchema.LOGIC_NAME, schema, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+        ResultDecorator<?> actual = engine.newInstance(
+                databaseType, DefaultSchema.LOGIC_NAME, schema, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
     }
     
