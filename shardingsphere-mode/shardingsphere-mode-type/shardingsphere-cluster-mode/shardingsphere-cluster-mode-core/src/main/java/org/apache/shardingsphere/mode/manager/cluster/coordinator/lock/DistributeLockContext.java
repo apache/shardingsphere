@@ -92,14 +92,14 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized ShardingSphereLock getOrCreateGlobalLock(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Get or create database lock args database name can not be null.");
-        return lockManagers.get(LockType.GENERAL).getOrCreateLock(databaseName);
+    public synchronized ShardingSphereLock getOrCreateGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
     }
     
     @Override
-    public ShardingSphereLock getGlobalLock(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Get database lock args database name can not be null.");
-        return lockManagers.get(LockType.GENERAL).getLock(databaseName);
+    public ShardingSphereLock getGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getLock(lockName);
     }
 }
