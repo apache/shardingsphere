@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
 /**
- * Create function statement.
+ * Function name segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-public abstract class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
+public final class FunctionNameSegment implements SQLSegment, OwnerAvailable {
     
-    private FunctionNameSegment functionName;
+    private final int startIndex;
     
-    /**
-     * Get function name segment.
-     *
-     * @return function name segment
-     */
-    public Optional<FunctionNameSegment> getFunctionName() {
-        return Optional.ofNullable(functionName);
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
+    
+    private OwnerSegment owner;
+    
+    @Override
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -30,8 +31,6 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,10 +43,6 @@ import java.util.Optional;
  * Merge engine.
  */
 public final class MergeEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
-    }
     
     private final String schemaName;
     
@@ -65,7 +60,7 @@ public final class MergeEngine {
         this.databaseType = databaseType;
         this.schema = schema;
         this.props = props;
-        engines = OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, rules);
+        engines = ResultProcessEngineFactory.newInstance(rules);
     }
     
     /**

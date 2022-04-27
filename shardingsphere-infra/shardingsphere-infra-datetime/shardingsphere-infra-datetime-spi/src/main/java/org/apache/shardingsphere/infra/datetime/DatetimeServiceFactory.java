@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl;
+package org.apache.shardingsphere.infra.datetime;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
-
-import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * MySQL unsigned tinyint handler.
+ * Datetime service factory.
  */
-public final class MySQLUnsignedTinyintHandler implements MySQLDataTypeHandler {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatetimeServiceFactory {
     
-    private static final int TINYINT_MODULO = 256;
-    
-    @Override
-    public Serializable handle(final Serializable value) {
-        if (null == value) {
-            return null;
-        }
-        byte byteValue = (byte) value;
-        return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
+    static {
+        ShardingSphereServiceLoader.register(DatetimeService.class);
     }
     
-    @Override
-    public String getType() {
-        return "TINYINT UNSIGNED";
+    /**
+     * Create new instance of datetime service.
+     * 
+     * @return new instance of datetime service
+     */
+    public static DatetimeService newInstance() {
+        return RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
     }
 }
