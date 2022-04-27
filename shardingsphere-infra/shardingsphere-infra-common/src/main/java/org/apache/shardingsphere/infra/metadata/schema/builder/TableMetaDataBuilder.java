@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSche
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,10 +37,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataBuilder {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
-    }
-    
     /**
      * Load table metadata.
      *
@@ -54,7 +48,7 @@ public final class TableMetaDataBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
-        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, materials.getRules()).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.newInstance(materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedSchemaMetaDataBuilder<TableContainedRule> builder = entry.getValue();
@@ -79,7 +73,7 @@ public final class TableMetaDataBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
-        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, materials.getRules()).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.newInstance(materials.getRules()).entrySet()) {
             if (!(entry.getKey() instanceof TableContainedRule)) {
                 continue;
             }

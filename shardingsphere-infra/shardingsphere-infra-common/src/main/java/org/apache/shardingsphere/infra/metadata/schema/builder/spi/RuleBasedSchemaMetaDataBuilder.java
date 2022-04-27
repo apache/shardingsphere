@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Schema meta data builder for ShardingSphere rule.
+ * Rule based schema meta data builder.
  * 
  * @param <T> type of ShardingSphere rule
  */
