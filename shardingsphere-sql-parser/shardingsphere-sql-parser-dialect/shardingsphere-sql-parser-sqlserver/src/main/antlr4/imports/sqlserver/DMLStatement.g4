@@ -81,7 +81,7 @@ aggregationClause
     ;
 
 selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -245,4 +245,28 @@ commonDirectivesForXml
 
 forJsonClause
     : JSON ((AUTO | PATH) ((COMMA_ ROOT (LP_ stringLiterals RP_)?)? (COMMA_ INCLUDE_NULL_VALUES)? (COMMA_ WITHOUT_ARRAY_WRAPPER)?)?)
+    ;
+
+selectWithClause
+    : WITH (xmlNamespacesClause COMMA_?)?
+    ;
+
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ xmlNamespaceDeclarationItem (COMMA_ xmlNamespaceDeclarationItem)* RP_
+    ;
+
+xmlNamespaceDeclarationItem
+    : xmlNamespaceUri AS xmlNamespacePrefix | xmlDefaultNamespaceDeclarationItem
+    ;
+
+xmlNamespaceUri
+    : stringLiterals
+    ;
+
+xmlNamespacePrefix
+    : identifier
+    ;
+
+xmlDefaultNamespaceDeclarationItem
+    : DEFAULT xmlNamespaceUri
     ;
