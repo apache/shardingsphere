@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -42,13 +43,18 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
-        if (routineBodySegment.isPresent()) {
-            TableExtractor extractor = new TableExtractor();
-            validateTableNotExist(metaData.getDefaultSchema(), extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
-            Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
-            validateShardingTable(shardingRule, existTables);
-            validateTableExist(metaData.getDefaultSchema(), existTables);
+        if (!routineBodySegment.isPresent()) {
+            return;
         }
+        TableExtractor extractor = new TableExtractor();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getProcedureName().flatMap(optional -> optional.getOwner()
+                .map(owner -> metaData.getSchemaByName(owner.getIdentifier().getValue()))).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
+        Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
+        validateShardingTable(shardingRule, existTables);
+        validateTableExist(schema, existTables);
+        Collection<SimpleTableSegment> notExistTables = extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get());
+        validateTableNotExist(schema, notExistTables);
     }
     
     @Override
