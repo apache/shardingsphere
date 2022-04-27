@@ -19,11 +19,11 @@ package org.apache.shardingsphere.integration.data.pipline.container.compose;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipline.container.cluster.ZookeeperContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
@@ -40,7 +40,7 @@ public abstract class BaseComposedContainer implements Startable {
     
     public BaseComposedContainer(final DatabaseType databaseType) {
         this.containers = new ITContainers("");
-        this.governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), NetworkAliasUtil.getNetworkAlias("zk"));
+        this.governanceContainer = containers.registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
         this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType), NetworkAliasUtil.getNetworkAlias("db"));
     }
     

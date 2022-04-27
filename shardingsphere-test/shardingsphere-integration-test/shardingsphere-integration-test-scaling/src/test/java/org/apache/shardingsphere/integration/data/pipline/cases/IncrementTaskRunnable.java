@@ -58,7 +58,7 @@ public final class IncrementTaskRunnable implements Runnable {
     }
     
     private long insertOrderAndOrderItem() throws SQLException {
-        Pair<Object[], Object[]> dataPair = TableCrudUtil.generateSimpleInsertData();
+        Pair<Object[], Object[]> dataPair = TableCrudUtil.generateMySQLSimpleInsertData();
         jdbcTemplate.update(commonSQLCommand.getSimpleInsertOrder(), dataPair.getLeft());
         jdbcTemplate.update(commonSQLCommand.getInsertOrderItem(), dataPair.getRight());
         return Long.parseLong(dataPair.getLeft()[0].toString());

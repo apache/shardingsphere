@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.integration.data.pipline.cases;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.cases.command.CommonSQLCommand;
+import org.apache.shardingsphere.integration.data.pipline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipline.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipline.container.compose.LocalComposedContainer;
@@ -35,7 +36,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,52 +49,29 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseScalingITCase {
+@Getter(AccessLevel.PROTECTED)
+public abstract class BaseScalingIT {
     
     @Getter(AccessLevel.NONE)
     private final BaseComposedContainer composedContainer;
     
-    @Getter(AccessLevel.PROTECTED)
-    private CommonSQLCommand commonSQLCommand;
+    private final List<String> sourceDataSourceNames = Lists.newArrayList("ds_0", "ds_1");
     
-    @Getter(AccessLevel.PROTECTED)
-    private JdbcTemplate jdbcTemplate;
+    private final List<String> targetDataSourceNames = Lists.newArrayList("ds_2", "ds_3", "ds_4");
     
-    public BaseScalingITCase(final DatabaseType databaseType) {
-        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
+    private final CommonSQLCommand commonSQLCommand;
+    
+    private final ExtraSQLCommand extraSQLCommand;
+    
+    public BaseScalingIT(final DatabaseType databaseType) {
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(databaseType);
         } else {
             composedContainer = new LocalComposedContainer(databaseType);
         }
         composedContainer.start();
-        initScalingEnvironment();
-    }
-    
-    @SneakyThrows
-    protected void initScalingEnvironment() {
-        commonSQLCommand = JAXB.unmarshal(BaseScalingITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
-        try (Connection connection = getProxyDataSource("").getConnection()) {
-            connection.createStatement().execute(commonSQLCommand.getCreateDatabase());
-            connection.createStatement().execute(commonSQLCommand.getUseDatabase());
-            int dbIndex = 0;
-            for (String dbName : listSourceDatabaseName()) {
-                connection.createStatement().execute(String.format(commonSQLCommand.getAddResource(), dbIndex, getDatabaseUrl(), dbName));
-                dbIndex++;
-            }
-            for (String value : listTargetDatabaseName()) {
-                connection.createStatement().execute(String.format(commonSQLCommand.getAddResource(), dbIndex, getDatabaseUrl(), value));
-                dbIndex++;
-            }
-            for (String sql : commonSQLCommand.getCreateShardingAlgorithm()) {
-                connection.createStatement().execute(sql);
-            }
-            // TODO sleep to wait for sharding algorithm table created，otherwise, the next sql will fail.
-            TimeUnit.SECONDS.sleep(2);
-            connection.createStatement().execute(commonSQLCommand.getCreateShardingTable());
-            connection.createStatement().execute(commonSQLCommand.getCreateShardingBinding());
-            connection.createStatement().execute(commonSQLCommand.getCreateShardingScalingRule());
-        }
-        jdbcTemplate = new JdbcTemplate(composedContainer.getProxyDataSource("sharding_db"));
+        commonSQLCommand = JAXB.unmarshal(BaseScalingIT.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(BaseScalingIT.class.getClassLoader().getResource(String.format("env/%s/sql.xml", databaseType.getName().toLowerCase())), ExtraSQLCommand.class);
     }
     
     /**
@@ -103,7 +80,7 @@ public abstract class BaseScalingITCase {
      * @param dataSourceName data source names
      * @return proxy database connection
      */
-    public DataSource getProxyDataSource(final String dataSourceName) {
+    protected DataSource getProxyDataSource(final String dataSourceName) {
         return composedContainer.getProxyDataSource(dataSourceName);
     }
     
@@ -113,29 +90,11 @@ public abstract class BaseScalingITCase {
      * @return database url
      */
     public String getDatabaseUrl() {
-        if (StringUtils.equalsIgnoreCase(IntegrationTestEnvironment.getInstance().getItEnvType(), ITEnvTypeEnum.DOCKER.name())) {
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.DOCKER) {
             return Joiner.on(":").join("db.host", composedContainer.getDatabaseContainer().getPort());
         } else {
-            return Joiner.on(":").join(composedContainer.getDatabaseContainer().getHost(), composedContainer.getDatabaseContainer().getFirstMappedPort());
+            return Joiner.on(":").join("localhost", composedContainer.getDatabaseContainer().getFirstMappedPort());
         }
-    }
-    
-    /**
-     * Query actual source database name.
-     *
-     * @return actual source database name list
-     */
-    public List<String> listSourceDatabaseName() {
-        return composedContainer.getDatabaseContainer().getSourceDatabaseNames();
-    }
-    
-    /**
-     * Query actual target database name.
-     *
-     * @return actual target database name list
-     */
-    public List<String> listTargetDatabaseName() {
-        return composedContainer.getDatabaseContainer().getTargetDatabaseNames();
     }
     
     /**
@@ -178,5 +137,9 @@ public abstract class BaseScalingITCase {
         List<Map<String, Object>> previewResList = jdbcTemplate.queryForList(getCommonSQLCommand().getPreviewSelectOrder());
         Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
+    }
+    
+    protected void stopContainer() {
+        composedContainer.stop();
     }
 }

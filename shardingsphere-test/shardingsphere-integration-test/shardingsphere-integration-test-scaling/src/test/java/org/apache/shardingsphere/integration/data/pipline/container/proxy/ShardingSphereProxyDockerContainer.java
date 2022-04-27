@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.integration.data.pipline.container.proxy;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ShardingSphere proxy container.
@@ -47,34 +44,22 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        withExposedPorts(3307);
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
+        } else {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
+        }
     }
     
     private void mapConfigurationFiles() {
-        withClasspathResourceMapping("/env/conf/", "/opt/shardingsphere-proxy/conf", BindMode.READ_ONLY);
-    }
-    
-    @Slf4j
-    @RequiredArgsConstructor
-    private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
-        
-        private final Callable<Connection> connectionSupplier;
-        
-        @Override
-        protected void waitUntilReady() {
-            Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, () -> {
-                getRateLimiter().doWhenReady(() -> {
-                    try (Connection unused = connectionSupplier.call()) {
-                        log.info("Container ready");
-                        // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
-                        // CHECKSTYLE:ON
-                        throw new RuntimeException("Not Ready yet.", ex);
-                    }
-                });
-                return true;
-            });
+        // TODO PostgreSQL JDBC create databases not success, use config file instead. need to fix it.
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            withClasspathResourceMapping("/env/postgresql/config-sharding.yaml", "/opt/shardingsphere-proxy/conf/config-sharding.yaml", BindMode.READ_ONLY);
+        }
+        withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getName().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
+            addFixedExposedPort(3307, 3307);
+            addFixedExposedPort(3308, 3308);
         }
     }
 }

@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import lombok.Getter;
-import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Docker storage container.
@@ -34,26 +30,14 @@ public abstract class DockerDatabaseContainer extends DockerITContainer {
     
     private final DatabaseType databaseType;
     
-    private final List<String> sourceDatabaseNames;
-    
-    private final List<String> targetDatabaseNames;
-    
     public DockerDatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
-        sourceDatabaseNames = new LinkedList<>();
-        targetDatabaseNames = new LinkedList<>();
     }
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(String.format("/env/%s", databaseType.getName()), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-    }
-    
-    @Override
-    protected void postStart() {
-        sourceDatabaseNames.addAll(Lists.newArrayList("ds_0", "ds_1"));
-        targetDatabaseNames.addAll(Lists.newArrayList("ds_2", "ds_3", "ds_4"));
+        withClasspathResourceMapping(String.format("/env/%s/initdb.sql", databaseType.getName().toLowerCase()), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     /**

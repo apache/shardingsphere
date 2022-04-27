@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipline.container.proxy.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.integration.data.pipline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
@@ -54,7 +55,10 @@ public final class DockerComposedContainer extends BaseComposedContainer {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
         String jdbcUrl = DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
-        result.setJdbcUrl(StringUtils.appendIfMissing(jdbcUrl, "&rewriteBatchedStatements=true"));
+        if (DatabaseTypeUtil.isMySQL(getDatabaseContainer().getDatabaseType())) {
+            jdbcUrl = StringUtils.appendIfMissing(jdbcUrl, "&rewriteBatchedStatements=true");
+        }
+        result.setJdbcUrl(jdbcUrl);
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipline.env;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,11 +33,11 @@ public final class IntegrationTestEnvironment {
     
     private final Properties props;
     
-    private final String itEnvType;
+    private final ITEnvTypeEnum itEnvType;
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = props.getProperty("it.env.type");
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", "LOCAL").toUpperCase());
     }
     
     private Properties loadProperties() {

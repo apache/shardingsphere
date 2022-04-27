@@ -19,9 +19,12 @@ package org.apache.shardingsphere.integration.data.pipline.container.database;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.integration.data.pipline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipline.env.enums.ITEnvTypeEnum;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
-public class MySQLContainer extends DockerDatabaseContainer {
+public final class MySQLContainer extends DockerDatabaseContainer {
     
     public MySQLContainer(final String dockerImageName) {
         super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dockerImageName);
@@ -29,11 +32,15 @@ public class MySQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
-        super.configure();
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
+        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(3306);
-        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%", "MYSQL_DATABASE=test"));
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci");
+        super.configure();
+        withExposedPorts(getPort());
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ready for connections.*"));
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
+            addFixedExposedPort(3306, 3306);
+        }
     }
     
     @Override

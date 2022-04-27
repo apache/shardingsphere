@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.data.pipline.cases.mysql;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipline.cases.IncrementTaskRunnable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertThat;
  * MySQL manual scaling test case.
  */
 @Slf4j
-public final class MySQLManualScalingCase extends BaseMySQLScalingCase {
+public final class MySQLManualScalingCase extends BaseMySQLScalingIT {
     
     private Thread increaseTaskThread;
     
@@ -56,5 +57,10 @@ public final class MySQLManualScalingCase extends BaseMySQLScalingCase {
         String jobId = showScalingResMap.get("id").toString();
         increaseTaskThread.join(60 * 1000);
         checkMatchConsistency(getJdbcTemplate(), jobId);
+    }
+    
+    @After
+    public void stop() {
+        super.stopContainer();
     }
 }

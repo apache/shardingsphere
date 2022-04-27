@@ -40,5 +40,5 @@ props:
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-hint-enabled: true
-  sql-show: false
+  sql-show: true
   sql-federation-enabled: true

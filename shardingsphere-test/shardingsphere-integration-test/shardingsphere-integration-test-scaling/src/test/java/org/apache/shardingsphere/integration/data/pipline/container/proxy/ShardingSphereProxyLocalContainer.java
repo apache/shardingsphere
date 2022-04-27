@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
@@ -35,18 +36,22 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Getter
-public class ShardingSphereProxyLocalContainer {
-    
-    private final String serverList;
+public final class ShardingSphereProxyLocalContainer {
     
     private final DatabaseType databaseType;
+    
+    private final String defaultDatabaseName;
     
     private volatile boolean started;
     
     @SneakyThrows
-    public ShardingSphereProxyLocalContainer(final String serverList, final DatabaseType databaseType) {
-        this.serverList = serverList;
+    public ShardingSphereProxyLocalContainer(final DatabaseType databaseType) {
         this.databaseType = databaseType;
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            defaultDatabaseName = "postgres";
+        } else {
+            defaultDatabaseName = "";
+        }
     }
     
     /**
@@ -57,7 +62,7 @@ public class ShardingSphereProxyLocalContainer {
     @SneakyThrows
     public void waitProxyStarted(final DatabaseType databaseType) {
         for (int retry = 0; retry < 60; retry++) {
-            try (Connection connection = DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, "localhost", 3307, ""), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, "localhost", 3307, defaultDatabaseName), "root", "root")) {
                 log.info("Container ready");
                 started = true;
                 return;
@@ -73,7 +78,6 @@ public class ShardingSphereProxyLocalContainer {
     /**
      * Start proxy.
      */
-    @SneakyThrows
     public void start() {
         if (started) {
             return;
@@ -84,8 +88,8 @@ public class ShardingSphereProxyLocalContainer {
             }
             new Thread(() -> {
                 try {
-                    YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load("/env/conf");
-                    yamlConfig.getServerConfiguration().getMode().getRepository().getProps().setProperty("server-lists", serverList);
+                    YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(String.format("/env/%s", databaseType.getName().toLowerCase()));
+                    yamlConfig.getServerConfiguration().getMode().getRepository().getProps().setProperty("server-lists", "localhost:2181");
                     new BootstrapInitializer().init(yamlConfig, 3307);
                     new ShardingSphereProxy().start(3307);
                 } catch (final IOException | SQLException ex) {
