@@ -31,7 +31,7 @@ public final class MySQLUnsignedBigintHandler implements MySQLDataTypeHandler {
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (value == null) {
+        if (null == value) {
             return null;
         }
         long longValue = (long) value;

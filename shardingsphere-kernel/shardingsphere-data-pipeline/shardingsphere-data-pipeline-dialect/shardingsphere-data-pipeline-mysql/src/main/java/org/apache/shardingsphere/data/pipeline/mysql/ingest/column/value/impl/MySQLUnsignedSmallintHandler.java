@@ -30,7 +30,7 @@ public final class MySQLUnsignedSmallintHandler implements MySQLDataTypeHandler 
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (value == null) {
+        if (null == value) {
             return null;
         }
         short shortValue = (short) value;

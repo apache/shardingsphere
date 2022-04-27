@@ -30,7 +30,7 @@ public final class MySQLUnsignedIntHandler implements MySQLDataTypeHandler {
     
     @Override
     public Serializable handle(final Serializable value) {
-        if (value == null) {
+        if (null == value) {
             return null;
         }
         int intValue = (int) value;
