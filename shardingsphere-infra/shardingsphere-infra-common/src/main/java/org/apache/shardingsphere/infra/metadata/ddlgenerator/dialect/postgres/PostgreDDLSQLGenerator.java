@@ -32,9 +32,9 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
     // TODO support version, partitions, comments etc.
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final Connection connection) {
-        Map<String, Object> context = new PostgreTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
-        new PostgreColumnPropertiesLoader(connection).loadColumnProperties(context);
-        new PostgreConstraintsLoader(connection).loadConstraints(context);
+        Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
+        new PostgresColumnPropertiesLoader(connection).loadColumnProperties(context);
+        new PostgresConstraintsLoader(connection).loadConstraints(context);
         return doGenerateDDLSQL(context);
     }
     

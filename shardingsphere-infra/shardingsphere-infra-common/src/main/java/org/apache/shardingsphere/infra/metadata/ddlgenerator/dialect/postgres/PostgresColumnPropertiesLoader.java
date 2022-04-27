@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Postgre column properties loader.
+ * Postgres column properties loader.
  */
 @RequiredArgsConstructor
-public final class PostgreColumnPropertiesLoader extends PostgreAbstractLoader {
+public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader {
     
     private final Connection connection;
     

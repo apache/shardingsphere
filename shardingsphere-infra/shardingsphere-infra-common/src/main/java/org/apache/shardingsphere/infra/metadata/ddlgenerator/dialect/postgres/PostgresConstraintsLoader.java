@@ -29,10 +29,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Postgre constraints loader.
+ * Postgres constraints loader.
  */
 @RequiredArgsConstructor
-public final class PostgreConstraintsLoader extends PostgreAbstractLoader {
+public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     
     private final Connection connection;
     

@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Postgre table properties loader.
+ * Postgres table properties loader.
  */
 @RequiredArgsConstructor
-public final class PostgreTablePropertiesLoader extends PostgreAbstractLoader {
+public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader {
     
     private final Connection connection;
     

@@ -30,7 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class PostgreAbstractLoader {
+/**
+ * Postgres abstract loader.
+ */
+public abstract class PostgresAbstractLoader {
     
     @SneakyThrows
     protected List<Map<String, Object>> executeByTemplate(final Connection connection, final Map<String, Object> param, final String path) {
