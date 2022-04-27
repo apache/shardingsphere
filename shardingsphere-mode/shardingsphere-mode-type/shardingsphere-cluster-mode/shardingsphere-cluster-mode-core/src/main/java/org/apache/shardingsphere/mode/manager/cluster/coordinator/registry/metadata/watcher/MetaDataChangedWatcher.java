@@ -35,6 +35,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -69,6 +71,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         if (isLogicDatabaseChanged(event)) {
             return buildLogicDatabaseChangedEvent(event);
+        } else if (isLogicSchemaChanged(event)) {
+            return buildLogicSchemaChangedEvent(event);
         } else if (isTableMetaDataChanged(event)) {
             return buildTableMetaDataChangedEvent(event);
         } else if (DataChangedEvent.Type.UPDATED == event.getType()) {
@@ -79,6 +83,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     private boolean isLogicDatabaseChanged(final DataChangedEvent event) {
         return DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent();
+    }
+    
+    private boolean isLogicSchemaChanged(final DataChangedEvent event) {
+        return DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).isPresent();
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {
@@ -99,6 +107,19 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         return Optional.empty();
     }
+    
+    private Optional<GovernanceEvent> buildLogicSchemaChangedEvent(final DataChangedEvent event) {
+        String databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey()).get();
+        String schemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey()).get();
+        if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
+            return Optional.of(new SchemaAddedEvent(databaseName, schemaName));
+        }
+        if (DataChangedEvent.Type.DELETED == event.getType()) {
+            return Optional.of(new SchemaDeletedEvent(databaseName, schemaName));
+        }
+        return Optional.empty();
+    }
+    
     
     private Optional<GovernanceEvent> buildGovernanceEvent(final DataChangedEvent event) {
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseName(event.getKey());

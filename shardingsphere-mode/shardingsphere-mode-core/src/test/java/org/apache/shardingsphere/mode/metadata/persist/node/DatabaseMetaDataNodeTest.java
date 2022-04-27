@@ -35,14 +35,14 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetDatabaseName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db/logic_schema/rules");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db/schemas/logic_schema/rules");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_db"));
     }
     
     @Test
     public void assertGetDatabaseNameWithLine() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic-db-test/logic-db-schema/rules");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic-db-test/schemas/logic-db-schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic-db-test"));
     }
@@ -73,13 +73,20 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema/tables/t_order");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema/user");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_schema"));
     }
     
     @Test
-    public void assertGetVersionBySchemaPath() {
+    public void assertGetSchemaNameBySchemaPath() {
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath("/metadata/logic_db/schemas/logic_schema");
+        assertTrue(actualSchemaName.isPresent());
+        assertThat(actualSchemaName.get(), is("logic_schema"));
+    }
+    
+    @Test
+    public void assertGetVersionByDatabasePath() {
         Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/dataSources");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));

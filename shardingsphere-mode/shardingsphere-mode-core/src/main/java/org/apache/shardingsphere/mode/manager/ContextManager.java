@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -127,7 +128,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Add schema.
+     * Add database.
      *
      * @param databaseName database name
      * @throws SQLException SQL exception
@@ -143,6 +144,22 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getMetaDataMap().put(databaseName, newMetaDataContexts.getMetaData(databaseName));
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistDatabase(databaseName));
         renewAllTransactionContext();
+    }
+    
+    /**
+     * Add schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    public void addSchema(final String databaseName, final String schemaName) {
+        if (null != metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
+            return;
+        }
+        FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
+        databaseMetaData.put(schemaName, new TableMetaData());
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
+        metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
     
     /**
@@ -210,7 +227,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Delete data base.
+     * Delete database.
      *
      * @param databaseName database name
      */
@@ -224,6 +241,21 @@ public final class ContextManager implements AutoCloseable {
             removeAndCloseTransactionEngine(databaseName);
             metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteDatabase(databaseName));
         }
+    }
+    
+    /**
+     * Drop schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    public void dropSchema(final String databaseName, final String schemaName) {
+        if (null == metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
+            return;
+        }
+        FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
+        databaseMetaData.remove(schemaName);
+        metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().remove(schemaName);
     }
     
     /**
