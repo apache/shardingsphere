@@ -43,7 +43,7 @@ public final class TopPaginationContextEngine {
     
     /**
      * Create pagination context.
-     * 
+     *
      * @param topProjectionSegment top projection segment
      * @param expressions expressions
      * @param parameters SQL parameters
@@ -63,7 +63,6 @@ public final class TopPaginationContextEngine {
                 if (isRowNumberColumn(expression, rowNumberAlias) && isCompareCondition(expression)) {
                     return Optional.of(expression);
                 }
-            
             }
         }
         return Optional.empty();

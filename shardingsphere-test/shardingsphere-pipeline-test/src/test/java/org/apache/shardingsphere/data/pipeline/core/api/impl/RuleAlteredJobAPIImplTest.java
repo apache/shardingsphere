@@ -17,24 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -45,8 +44,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -118,19 +117,6 @@ public final class RuleAlteredJobAPIImplTest {
     }
     
     @Test
-    public void assertListDataConsistencyCheckAlgorithms() {
-        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = ruleAlteredJobAPI.listDataConsistencyCheckAlgorithms();
-        assertTrue(algorithmInfos.size() > 0);
-        Optional<DataConsistencyCheckAlgorithmInfo> algorithmInfoOptional = algorithmInfos.stream().filter(each -> each.getType().equals(FixtureDataConsistencyCheckAlgorithm.TYPE)).findFirst();
-        assertTrue(algorithmInfoOptional.isPresent());
-        DataConsistencyCheckAlgorithmInfo algorithmInfo = algorithmInfoOptional.get();
-        assertThat(algorithmInfo.getType(), is(FixtureDataConsistencyCheckAlgorithm.TYPE));
-        FixtureDataConsistencyCheckAlgorithm fixtureAlgorithm = new FixtureDataConsistencyCheckAlgorithm();
-        assertThat(algorithmInfo.getDescription(), is(fixtureAlgorithm.getDescription()));
-        assertThat(algorithmInfo.getSupportedDatabaseTypes(), is(fixtureAlgorithm.getSupportedDatabaseTypes()));
-    }
-    
-    @Test
     public void assertIsDataConsistencyCheckNeeded() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
@@ -143,10 +129,10 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
+        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
-        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -156,36 +142,51 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
-        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
-        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId.get());
+        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
+        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
-        assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
-        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(2L));
+        assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
+        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
+        assertTrue(checkResultMap.get("t_order").getContentCheckResult().isMatched());
     }
     
     @Test
-    public void assertAggregateDataConsistencyCheckResults() {
-        String jobId = "1";
-        Map<String, DataConsistencyCheckResult> checkResultMap;
-        checkResultMap = Collections.emptyMap();
-        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
-        DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
-        trueResult.setRecordsContentMatched(true);
-        DataConsistencyCheckResult checkResult;
-        checkResult = new DataConsistencyCheckResult(100, 95);
-        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
-        checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setRecordsContentMatched(false);
-        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
-        checkResult = new DataConsistencyCheckResult(100, 100);
-        checkResult.setRecordsContentMatched(true);
-        checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
+    public void assertAggregateEmptyDataConsistencyCheckResults() {
+        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()), is(false));
+    }
+    
+    @Test
+    public void assertAggregateDifferentCountDataConsistencyCheckResults() {
+        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
+        DataConsistencyCountCheckResult notEqualCountCheckResult = new DataConsistencyCountCheckResult(100, 95);
+        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(false);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new DataConsistencyCheckResult(notEqualCountCheckResult, equalContentCheckResult));
+        assertFalse(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
+    }
+    
+    @Test
+    public void assertAggregateDifferentContentDataConsistencyCheckResults() {
+        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
+        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
+        DataConsistencyContentCheckResult notEqualContentCheckResult = new DataConsistencyContentCheckResult(false);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, notEqualContentCheckResult));
+        assertFalse(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
+    }
+    
+    @Test
+    public void assertAggregateSameDataConsistencyCheckResults() {
+        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
+        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        assertTrue(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
     }
     
     @Test(expected = PipelineVerifyFailedException.class)
@@ -230,7 +231,7 @@ public final class RuleAlteredJobAPIImplTest {
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
-        assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
+        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(0L));
     }
     
     @SneakyThrows(SQLException.class)
@@ -242,8 +243,9 @@ public final class RuleAlteredJobAPIImplTest {
     }
     
     private void initTableData(final DataSource pipelineDataSource) throws SQLException {
-        try (Connection connection = pipelineDataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = pipelineDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");

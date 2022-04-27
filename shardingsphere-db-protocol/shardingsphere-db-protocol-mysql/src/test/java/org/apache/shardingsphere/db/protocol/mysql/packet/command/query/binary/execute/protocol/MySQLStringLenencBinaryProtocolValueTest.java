@@ -48,7 +48,7 @@ public final class MySQLStringLenencBinaryProtocolValueTest {
     
     @Test
     public void assertWriteByteArray() {
-        new MySQLStringLenencBinaryProtocolValue().write(payload, new byte[] {});
-        verify(payload).writeBytesLenenc(new byte[] {});
+        new MySQLStringLenencBinaryProtocolValue().write(payload, new byte[]{});
+        verify(payload).writeBytesLenenc(new byte[]{});
     }
 }

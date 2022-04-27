@@ -43,7 +43,7 @@ import java.util.Optional;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String name;
+    private final String databaseName;
     
     private final ShardingSphereResource resource;
     
@@ -62,7 +62,7 @@ public final class ShardingSphereMetaData {
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig, 
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
         ShardingSphereResource resource = createResource(databaseConfig.getDataSources(), defaultDatabaseType);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
@@ -109,7 +109,9 @@ public final class ShardingSphereMetaData {
      * @return ShardingSphereSchema default schema
      */
     public ShardingSphereSchema getDefaultSchema() {
-        return schemas.get(name);
+        // FIXME optimize this logic when mode event contains schemaName
+        ShardingSphereSchema defaultSchema = schemas.values().isEmpty() ? null : schemas.get("public");
+        return schemas.getOrDefault(databaseName, defaultSchema);
     }
     
     /**

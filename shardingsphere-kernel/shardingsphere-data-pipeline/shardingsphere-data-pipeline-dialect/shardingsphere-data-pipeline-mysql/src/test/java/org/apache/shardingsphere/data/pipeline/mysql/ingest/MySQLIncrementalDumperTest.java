@@ -81,8 +81,9 @@ public final class MySQLIncrementalDumperTest {
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
         DataSource dataSource = new PipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
@@ -97,7 +98,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertWriteRowsEvent() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
@@ -112,7 +113,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertUpdateRowsEvent() {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> beforeRows = new ArrayList<>(1);
         beforeRows.add(new String[]{"1", "order_old"});
@@ -130,7 +131,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertDeleteRowsEvent() {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
@@ -153,7 +154,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertRowsEventFiltered() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setSchemaName("unknown_schema");
+        rowsEvent.setDatabaseName("unknown_database");
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));

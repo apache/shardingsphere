@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementCo
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -76,9 +76,9 @@ public final class ShardingDropTableStatementValidatorTest {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SQLStatementContext<DropTableStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingDropTableStatementValidator validator = new ShardingDropTableStatementValidator();
-        validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         RouteMapper dataSourceMapper = new RouteMapper("db", "db1");
         Collection<RouteMapper> tableMapper = new LinkedList<>();
@@ -88,7 +88,7 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(routeUnit);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        validator.postValidate(shardingRule, new DropTableStatementContext(sqlStatement), Collections.emptyList(), schema, mock(ConfigurationProperties.class), routeContext);
+        validator.postValidate(shardingRule, new DropTableStatementContext(sqlStatement), Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     private TableRule generateShardingRule(final String tableName) {
@@ -120,8 +120,8 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), 
-                Collections.emptyList(), mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), routeContext);
+        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
+                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -133,8 +133,8 @@ public final class ShardingDropTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), 
-                Collections.emptyList(), mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), routeContext);
+        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
+                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -147,8 +147,8 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), 
-                Collections.emptyList(), mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), routeContext);
+        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
+                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -160,7 +160,7 @@ public final class ShardingDropTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), 
-                Collections.emptyList(), mock(ShardingSphereSchema.class), mock(ConfigurationProperties.class), routeContext);
+        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
+                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
     }
 }

@@ -25,17 +25,16 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -52,10 +51,6 @@ import java.util.Optional;
  */
 public final class EncryptRule implements SchemaRule, TableContainedRule {
     
-    static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
-    }
-    
     @SuppressWarnings("rawtypes")
     private final Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
     
@@ -66,7 +61,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
+        config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
         Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
@@ -318,13 +313,15 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     /**
      * Set up encryptor schema.
-     * 
-     * @param schema schema
+     *
+     * @param schemas schema map
+     * @param databaseName database name
      */
-    public void setUpEncryptorSchema(final ShardingSphereSchema schema) {
+    public void setUpEncryptorSchema(final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
         for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
             if (each instanceof SchemaMetaDataAware) {
-                ((SchemaMetaDataAware) each).setSchema(schema);
+                ((SchemaMetaDataAware) each).setSchemas(schemas);
+                ((SchemaMetaDataAware) each).setDatabaseName(databaseName);
             }
         }
     }

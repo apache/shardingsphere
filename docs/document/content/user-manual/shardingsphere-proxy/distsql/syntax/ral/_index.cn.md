@@ -13,8 +13,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 |:---------------------------------------------------- |:-------------------------------------------------------------- |:---------------------------------------------- |
 | SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | 针对当前连接，设置读写分离的路由策略（自动路由或强制到写库）              | SET READWRITE_SPLITTING HINT SOURCE = write    |
 | SET SHARDING HINT DATABASE_VALUE = yy                | 针对当前连接，设置 hint 仅对数据库分片有效，并添加分片值，yy：数据库分片值 | SET SHARDING HINT DATABASE_VALUE = 100         |
-| ADD SHARDING HINT DATABASE_VALUE tableName = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
-| ADD SHARDING HINT TABLE_VALUE tableName xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
+| ADD SHARDING HINT DATABASE_VALUE xx = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
+| ADD SHARDING HINT TABLE_VALUE xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
 | CLEAR HINT SETTINGS                                          | 针对当前连接，清除 hint 所有设置                                    | CLEAR HINT                                   |
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置     | CLEAR READWRITE_SPLITTING HINT                |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置     | SHOW READWRITE_SPLITTING HINT STATUS          |
@@ -24,7 +24,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | 语句                                                 | 说明                                                           | 示例                                            |
 |:--------------------------------------------------- |:------------------------------------------------------------- |:----------------------------------------------- |
 | SHOW SCALING LIST                                   | 查询运行列表                                                    | SHOW SCALING LIST                               |
-| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING LIST 1234                        |
+| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING STATUS 1234                        |
 | START SCALING jobId                                    | 开始运行任务，xx：任务 id                                         | START SCALING 1234                              |
 | STOP SCALING jobId                                     | 停止运行任务，xx：任务 id                                         | STOP SCALING 12345                              |
 | DROP SCALING jobId                                     | 移除任务，xx：任务 id                                            | DROP SCALING 1234                               |
@@ -71,7 +71,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | REFRESH TABLE METADATA                                                      | 刷新所有表的元数据                                              | REFRESH TABLE METADATA                          |
 | REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | 刷新指定表的元数据                                              | REFRESH TABLE METADATA t_order FROM resource ds_1 |
 | SHOW TABLE METADATA tableName [, tableName] ...                             | 查询表的元数据                                                 | SHOW TABLE METADATA t_order                       |
-| EXPORT SCHEMA CONFIG [FROM schema_name] [, file="file_path"]                | 查询 / 导出 schema 中的资源和规则配置                            | EXPORT SCHEMA CONFIG FROM readwrite_splitting_db  |
+| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]            | 查询 / 导出 database 中的资源和规则配置                          | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
 | SHOW RULES USED RESOURCE resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | SHOW RULES USED RESOURCE ds_0 FROM schemaName     |
 
 ## 注意事项

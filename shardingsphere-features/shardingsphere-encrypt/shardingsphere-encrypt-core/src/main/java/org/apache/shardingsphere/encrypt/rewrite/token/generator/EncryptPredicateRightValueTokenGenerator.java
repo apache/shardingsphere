@@ -87,8 +87,8 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        return assistedQueryColumn.isPresent() 
-                ? encryptRule.getEncryptAssistedQueryValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
+        return assistedQueryColumn.isPresent()
+                ? encryptRule.getEncryptAssistedQueryValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)
                 : encryptRule.getEncryptValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     

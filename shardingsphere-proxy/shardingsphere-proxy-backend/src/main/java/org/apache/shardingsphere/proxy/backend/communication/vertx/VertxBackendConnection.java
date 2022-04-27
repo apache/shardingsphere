@@ -62,7 +62,8 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     @Override
     public List<Future<? extends SqlClient>> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {
         return connectionSession.getTransactionStatus().isInTransaction()
-                ? getConnectionsWithTransaction(dataSourceName, connectionSize) : getConnectionsWithoutTransaction(dataSourceName);
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize)
+                : getConnectionsWithoutTransaction(dataSourceName);
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {
@@ -91,8 +92,8 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     }
     
     private List<Future<SqlConnection>> createNewConnections(final String dataSourceName, final int connectionSize) {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        List<Future<SqlConnection>> result = ReactiveProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize);
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database is null.");
+        List<Future<SqlConnection>> result = ReactiveProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getDatabaseName(), dataSourceName, connectionSize);
         for (Future<SqlConnection> each : result) {
             replayMethodsInvocation(each);
         }
@@ -106,9 +107,9 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithoutTransaction(final String dataSourceName) {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database is null.");
         // TODO At present, amount of connections without transaction is controlled by Vert.x pool.
-        Future<SqlClient> poolFuture = Future.succeededFuture(ReactiveProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getSchemaName(), dataSourceName));
+        Future<SqlClient> poolFuture = Future.succeededFuture(ReactiveProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getDatabaseName(), dataSourceName));
         return Collections.singletonList(poolFuture);
     }
     

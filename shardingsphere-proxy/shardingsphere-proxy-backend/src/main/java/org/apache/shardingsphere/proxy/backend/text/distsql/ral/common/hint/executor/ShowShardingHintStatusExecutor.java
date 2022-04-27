@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.exe
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -60,11 +62,13 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     @Override
     protected MergedResult createMergedResult() {
         Map<String, ShowShardingHintStatusResult> results = new HashMap<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
-        Collection<String> tableNames = metaData.getDefaultSchema().getAllTableNames();
+        String schemaName = connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType
+                || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType ? "public" : connectionSession.getDatabaseName();
+        Collection<String> tableNames = metaData.getSchemaByName(schemaName).getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());

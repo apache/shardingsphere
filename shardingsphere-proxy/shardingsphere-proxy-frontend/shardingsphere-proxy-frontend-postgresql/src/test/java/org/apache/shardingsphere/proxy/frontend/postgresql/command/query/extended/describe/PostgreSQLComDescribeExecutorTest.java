@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
@@ -78,11 +79,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComDescribeExecutorTest {
     
-    private static final String SCHEMA_NAME = "postgres";
+    private static final String DATABASE_NAME = "postgres";
     
     private static final String TABLE_NAME = "t_order";
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", 
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
             new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
     
     private ContextManager contextManagerBefore;
@@ -107,8 +108,8 @@ public final class PostgreSQLComDescribeExecutorTest {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ProxyContext.getInstance().init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(connectionSession.getSchemaName()).thenReturn(SCHEMA_NAME);
-        when(mockContextManager.getMetaDataContexts().getAllSchemaNames().contains(SCHEMA_NAME)).thenReturn(true);
+        when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
+        when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
         prepareTableMetaData();
     }
     
@@ -119,7 +120,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getMetaData(SCHEMA_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getMetaData(DATABASE_NAME).getDefaultSchema().get(TABLE_NAME)).thenReturn(tableMetaData);
     }
     
     @Test
@@ -190,6 +191,58 @@ public final class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
+    public void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        final String statementId = "S_2";
+        when(packet.getName()).thenReturn(statementId);
+        final int connectionId = 1;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        String sql = "insert into t_order (iD, k, c, PaD) values (1, ?, ?, ?), (?, 2, ?, '')";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+        }
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statementId, sql, sqlStatement, parameterTypes);
+        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(2));
+        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        actualParameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(5);
+        verify(mockPayload, times(2)).writeInt4(23);
+        verify(mockPayload, times(3)).writeInt4(18);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+    }
+    
+    @Test
+    public void assertDescribePreparedStatementInsertWithUndefinedColumns() {
+        when(packet.getType()).thenReturn('S');
+        final String statementId = "S_2";
+        when(packet.getName()).thenReturn(statementId);
+        final int connectionId = 1;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        String sql = "insert into t_order (undefined_column, k, c, pad) values (1, ?, ?, ?), (?, 2, ?, '')";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
+            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+        }
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statementId, sql, sqlStatement, parameterTypes);
+        SQLException actual = null;
+        try {
+            executor.execute();
+        } catch (final SQLException ex) {
+            actual = ex;
+        }
+        assertThat(actual.getSQLState(), is(PostgreSQLErrorCode.UNDEFINED_COLUMN.getErrorCode()));
+        assertThat(actual.getMessage(), is("Column \"undefined_column\" of relation \"t_order\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA."));
+    }
+    
+    @Test
     public void assertDescribeSelectPreparedStatement() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_3";
@@ -216,8 +269,7 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new PostgreSQLColumnDescription("id", 1, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("k", 2, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("c", 3, Types.CHAR, 60, "int4"),
-                new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4")
-        );
+                new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4"));
         for (int i = 0; i < expectedColumnDescriptions.size(); i++) {
             PostgreSQLColumnDescription expectedColumnDescription = expectedColumnDescriptions.get(i);
             PostgreSQLColumnDescription actualColumnDescription = actualColumnDescriptions.get(i);

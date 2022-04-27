@@ -28,6 +28,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleS
 @RequiredArgsConstructor
 @Getter
 public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement implements ShadowSubjectSupplier {
-
+    
     private final String algorithmName;
 }

@@ -48,7 +48,7 @@ public final class WithClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WithSegment actual, final ExpectedWithClause expected) {
         assertNotNull(assertContext.getText("With clause should exist."), expected);
-        assertThat(assertContext.getText("With clause common table expressions size assertion error: "), 
+        assertThat(assertContext.getText("With clause common table expressions size assertion error: "),
                 actual.getCommonTableExpressions().size(), is(expected.getCommonTableExpressions().size()));
         int count = 0;
         for (CommonTableExpressionSegment each : actual.getCommonTableExpressions()) {
@@ -58,7 +58,7 @@ public final class WithClauseAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertCommonTableExpressionSegment(final SQLCaseAssertContext assertContext, final CommonTableExpressionSegment actual, final ExpectedCommonTableExpressionClause expected) { 
+    private static void assertCommonTableExpressionSegment(final SQLCaseAssertContext assertContext, final CommonTableExpressionSegment actual, final ExpectedCommonTableExpressionClause expected) {
         if (null != expected.getCommonTableExpressColumns()) {
             assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getCommonTableExpressColumns().getColumns().size()));
         }

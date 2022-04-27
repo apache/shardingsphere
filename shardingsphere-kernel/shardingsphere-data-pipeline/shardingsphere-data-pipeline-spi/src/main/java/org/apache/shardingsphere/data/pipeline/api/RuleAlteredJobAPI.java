@@ -66,34 +66,34 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     Map<Integer, JobProgress> getProgress(JobConfiguration jobConfig);
     
     /**
-     * Stop cluster write to job source schema's underlying DB.
+     * Stop cluster writing.
      *
      * @param jobId job id
      */
     void stopClusterWriteDB(String jobId);
     
     /**
-     * Stop cluster write to job source schema's underlying DB.
+     * Stop cluster writing.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param jobId job id
      */
-    void stopClusterWriteDB(String schemaName, String jobId);
+    void stopClusterWriteDB(String databaseName, String jobId);
     
     /**
-     * Restore cluster write to job source schema's underlying DB.
+     * Restore cluster writing.
      *
      * @param jobId job id
      */
     void restoreClusterWriteDB(String jobId);
     
     /**
-     * Restore cluster write to job source schema's underlying DB.
+     * Restore cluster writing.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param jobId job id
      */
-    void restoreClusterWriteDB(String schemaName, String jobId);
+    void restoreClusterWriteDB(String databaseName, String jobId);
     
     /**
      * List all data consistency check algorithms from SPI.
@@ -147,20 +147,20 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * Aggregate data consistency check results.
      *
      * @param jobId job id
-     * @param checkResultMap check result map
+     * @param checkResults check results
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
     
     /**
-     * Switch job source schema's configuration to job target configuration.
+     * Switch cluster configuration.
      *
      * @param jobId job id
      */
     void switchClusterConfiguration(String jobId);
     
     /**
-     * Switch job source schema's configuration to job target configuration.
+     * Switch cluster configuration.
      *
      * @param jobConfig job configuration
      */

@@ -45,8 +45,8 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapper implement
     }
     
     private void parseShadowAlgorithms(final AlgorithmProvidedShadowRuleConfiguration dataConfiguration, final YamlShadowRuleConfiguration yamlConfiguration) {
-        dataConfiguration.getShadowAlgorithms().forEach((key, value) ->
-                yamlConfiguration.getShadowAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        dataConfiguration.getShadowAlgorithms()
+                .forEach((key, value) -> yamlConfiguration.getShadowAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
     }
     
     private void parseShadowTables(final AlgorithmProvidedShadowRuleConfiguration dataConfiguration, final YamlShadowRuleConfiguration yamlConfiguration) {

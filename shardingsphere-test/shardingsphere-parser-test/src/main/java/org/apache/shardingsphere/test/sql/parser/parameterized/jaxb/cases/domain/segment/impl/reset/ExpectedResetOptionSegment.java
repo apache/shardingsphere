@@ -30,13 +30,13 @@ public final class ExpectedResetOptionSegment extends AbstractExpectedSQLSegment
     
     @XmlAttribute(name = "master")
     private boolean master;
-
+    
     @XmlAttribute(name = "binary-log-file-index-number")
     private Integer binaryLogFileIndexNumber;
-
+    
     @XmlAttribute(name = "all")
     private boolean all;
-
+    
     @XmlAttribute(name = "channel")
     private String channel;
 }

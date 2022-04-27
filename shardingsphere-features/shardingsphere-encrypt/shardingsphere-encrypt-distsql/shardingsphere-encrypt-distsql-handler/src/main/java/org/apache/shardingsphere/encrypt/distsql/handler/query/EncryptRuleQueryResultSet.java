@@ -51,7 +51,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     private Collection<Collection<Object>> buildData(final EncryptRuleConfiguration configuration, final ShowEncryptRulesStatement sqlStatement) {
         return configuration.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
-                .map(each -> buildColumnData(each, configuration.getEncryptors())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> buildColumnData(each, configuration.getEncryptors())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<Collection<Object>> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfiguration, final Map<String, ShardingSphereAlgorithmConfiguration> algorithmMap) {

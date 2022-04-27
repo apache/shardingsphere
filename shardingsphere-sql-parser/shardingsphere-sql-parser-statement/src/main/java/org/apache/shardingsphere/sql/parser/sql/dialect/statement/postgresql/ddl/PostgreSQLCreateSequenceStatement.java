@@ -27,4 +27,3 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 @ToString
 public final class PostgreSQLCreateSequenceStatement extends CreateSequenceStatement implements PostgreSQLStatement {
 }
-

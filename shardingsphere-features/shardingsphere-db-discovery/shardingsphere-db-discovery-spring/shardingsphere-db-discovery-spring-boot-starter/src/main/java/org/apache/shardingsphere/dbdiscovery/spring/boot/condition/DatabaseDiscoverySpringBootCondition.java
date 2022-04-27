@@ -33,6 +33,7 @@ public final class DatabaseDiscoverySpringBootCondition extends SpringBootCondit
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), PREFIX)
-                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere database-discovery rule configuration in local file.");
+                ? ConditionOutcome.match()
+                : ConditionOutcome.noMatch("Can't find ShardingSphere database-discovery rule configuration in local file.");
     }
 }

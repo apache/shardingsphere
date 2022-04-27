@@ -36,7 +36,7 @@ public final class ShowReadwriteSplittingReadResourcesStatementAssert {
      * @param actual actual show readwrite-splitting read resources statement
      * @param expected expected show readwrite-splitting read resources statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingReadResourcesStatement actual, 
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingReadResourcesStatement actual,
                                 final ShowReadwriteSplittingReadResourcesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);

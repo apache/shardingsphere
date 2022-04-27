@@ -69,7 +69,7 @@ public final class TableAssert {
                     String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
-
+    
     /**
      * Assert actual table segment is correct with expected table.
      *
@@ -88,7 +88,7 @@ public final class TableAssert {
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
-
+    
     /**
      * Assert subquery expression.
      *
@@ -100,7 +100,7 @@ public final class TableAssert {
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
     }
-
+    
     /**
      * Assert join table.
      *
@@ -120,7 +120,7 @@ public final class TableAssert {
             count++;
         }
     }
-
+    
     /**
      * Assert actual table segments is correct with expected tables.
      *
@@ -136,7 +136,7 @@ public final class TableAssert {
             count++;
         }
     }
-
+    
     /**
      * Assert actual simple table segments with expected simple tables.
      *

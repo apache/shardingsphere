@@ -8,9 +8,8 @@ weight = 2
 
 `SHOW RESOURCE` 语法用于查询指定逻辑库已经添加的资源。
 
-
-
 ### 语法
+
 ```SQL
 ShowResource ::=
   'SHOW' 'SCHEMA' 'RESOURCES' ('FROM' schemaName)?
@@ -20,6 +19,7 @@ schemaName ::=
 ```
 
 ### 特别说明
+
 - 未指定 `schemaName` 时，默认是当前使用的 `SCHEMA`； 如未使用 `SCHEMA` 则会提示 `No database selected`。
 
  ### 返回值说明
@@ -34,6 +34,7 @@ schemaName ::=
 | attribute | 数据源参数 |
 
  ### 示例
+
 - 查询指定逻辑库的资源
 ```sql
 SHOW SCHEMA RESOURCES FROM sharding_db;

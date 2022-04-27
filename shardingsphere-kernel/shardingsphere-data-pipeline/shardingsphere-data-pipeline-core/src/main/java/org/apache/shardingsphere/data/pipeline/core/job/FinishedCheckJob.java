@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -68,13 +67,13 @@ public final class FinishedCheckJob implements SimpleJob {
                 }
                 log.info("scaling job {} almost finished.", jobId);
                 RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
-                String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+                String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
                 try {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.lock(databaseName, jobId + "");
                     }
                     if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
-                        log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
+                        log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
                         ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
                         continue;
                     }
@@ -83,10 +82,10 @@ public final class FinishedCheckJob implements SimpleJob {
                         continue;
                     }
                     RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
-                    switchClusterConfiguration(schemaName, jobConfig, checkoutLockAlgorithm);
+                    switchClusterConfiguration(databaseName, jobConfig, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.releaseLock(schemaName, jobId + "");
+                        sourceWritingStopAlgorithm.releaseLock(databaseName, jobId + "");
                     }
                 }
                 log.info("job {} finished", jobId);
@@ -113,20 +112,19 @@ public final class FinishedCheckJob implements SimpleJob {
     private boolean dataConsistencyCheck(final JobConfiguration jobConfig) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         log.info("dataConsistencyCheck for job {}", jobId);
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
-        return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
+        return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, ruleAlteredJobAPI.dataConsistencyCheck(jobConfig));
     }
     
-    private void switchClusterConfiguration(final String schemaName, final JobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String databaseName, final JobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         try {
             if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.lock(schemaName, jobId + "");
+                checkoutLockAlgorithm.lock(databaseName, jobId + "");
             }
             ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
         } finally {
             if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.releaseLock(schemaName, jobId + "");
+                checkoutLockAlgorithm.releaseLock(databaseName, jobId + "");
             }
         }
     }

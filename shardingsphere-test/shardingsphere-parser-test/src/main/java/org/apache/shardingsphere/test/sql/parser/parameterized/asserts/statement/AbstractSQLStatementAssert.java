@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AbstractSQLStatementAssert {
-
+    
     /**
      * Assert abstract sql statement is correct with expected parser result.
      *

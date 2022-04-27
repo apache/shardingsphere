@@ -29,7 +29,7 @@ import lombok.ToString;
 @ToString(exclude = {"sourceDataSource", "sourceRule", "targetDataSource", "targetRule"})
 public final class StartScalingEvent {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String sourceDataSource;
     

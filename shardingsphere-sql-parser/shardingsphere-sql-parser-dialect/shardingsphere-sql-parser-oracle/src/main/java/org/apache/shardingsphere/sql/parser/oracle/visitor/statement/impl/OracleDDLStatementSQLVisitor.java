@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateEditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
@@ -53,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDatabaseLinkContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseDictionaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
@@ -115,12 +118,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTriggerStatement;
@@ -309,7 +315,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         for (ColumnOrVirtualDefinitionContext each : ctx.columnOrVirtualDefinitions().columnOrVirtualDefinition()) {
             if (null != each.columnDefinition()) {
                 AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                        each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(), 
+                        each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(),
                         Collections.singletonList((ColumnDefinitionSegment) visit(each.columnDefinition())));
                 result.getValue().add(addColumnDefinition);
             }
@@ -319,7 +325,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
-        // TODO handle no columnDefinition and multiple columnDefinitions 
+        // TODO handle no columnDefinition and multiple columnDefinitions
         ColumnDefinitionSegment columnDefinition = null;
         for (ModifyColPropertiesContext each : ctx.modifyColProperties()) {
             columnDefinition = (ColumnDefinitionSegment) visit(each);
@@ -383,22 +389,37 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropDatabaseLink(final DropDatabaseLinkContext ctx) {
         return new OracleDropDatabaseLinkStatement();
     }
-
+    
+    @Override
+    public ASTNode visitAlterDatabaseLink(final AlterDatabaseLinkContext ctx) {
+        return new OracleAlterDatabaseLinkStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterDatabaseDictionary(final AlterDatabaseDictionaryContext ctx) {
+        return new OracleAlterDatabaseDictionaryStatement();
+    }
+    
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         return new OracleAlterViewStatement();
     }
-
+    
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         return new OracleDropViewStatement();
     }
-
+    
+    @Override
+    public ASTNode visitCreateEdition(final CreateEditionContext ctx) {
+        return new OracleCreateEditionStatement();
+    }
+    
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
         return new OracleDropTriggerStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
         return new OracleAlterTriggerStatement();
@@ -434,7 +455,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
         return new OracleAlterSynonymStatement();
@@ -454,7 +475,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
         return new OracleAlterSystemStatement();
     }
-
+    
     @Override
     public ASTNode visitAnalyze(final AnalyzeContext ctx) {
         OracleAnalyzeStatement result = new OracleAnalyzeStatement();
@@ -466,38 +487,38 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAssociateStatistics(final AssociateStatisticsContext ctx) {
         OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement();
         if (null != ctx.columnAssociation()) {
-            for (TableNameContext each: ctx.columnAssociation().tableName()) {
+            for (TableNameContext each : ctx.columnAssociation().tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
             }
-            for (ColumnNameContext each: ctx.columnAssociation().columnName()) {
+            for (ColumnNameContext each : ctx.columnAssociation().columnName()) {
                 result.getColumns().add((ColumnSegment) visit(each));
             }
         }
         if (null != ctx.functionAssociation()) {
-            for (IndexNameContext each: ctx.functionAssociation().indexName()) {
+            for (IndexNameContext each : ctx.functionAssociation().indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
             }
-            for (FunctionContext each: ctx.functionAssociation().function()) {
+            for (FunctionContext each : ctx.functionAssociation().function()) {
                 result.getFunctions().add((FunctionSegment) visit(each));
             }
-            for (PackageNameContext each: ctx.functionAssociation().packageName()) {
+            for (PackageNameContext each : ctx.functionAssociation().packageName()) {
                 result.getPackages().add((PackageSegment) visit(each));
             }
-            for (TypeNameContext each: ctx.functionAssociation().typeName()) {
+            for (TypeNameContext each : ctx.functionAssociation().typeName()) {
                 result.getTypes().add((TypeSegment) visit(each));
             }
-            for (IndextypeNameContext each: ctx.functionAssociation().indextypeName()) {
+            for (IndextypeNameContext each : ctx.functionAssociation().indextypeName()) {
                 result.getIndextypes().add((IndextypeSegment) visit(each));
             }
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitDisassociateStatistics(final DisassociateStatisticsContext ctx) {
         OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement();
@@ -505,38 +526,38 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
             for (TableNameContext each : ctx.tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
             }
-            for (ColumnNameContext each: ctx.columnName()) {
+            for (ColumnNameContext each : ctx.columnName()) {
                 result.getColumns().add((ColumnSegment) visit(each));
             }
         }
         if (null != ctx.indexName()) {
-            for (IndexNameContext each: ctx.indexName()) {
+            for (IndexNameContext each : ctx.indexName()) {
                 result.getIndexes().add((IndexSegment) visit(each));
             }
         }
         if (null != ctx.function()) {
-            for (FunctionContext each: ctx.function()) {
+            for (FunctionContext each : ctx.function()) {
                 result.getFunctions().add((FunctionSegment) visit(each));
             }
         }
         if (null != ctx.packageName()) {
-            for (PackageNameContext each: ctx.packageName()) {
+            for (PackageNameContext each : ctx.packageName()) {
                 result.getPackages().add((PackageSegment) visit(each));
             }
         }
         if (null != ctx.typeName()) {
-            for (TypeNameContext each: ctx.typeName()) {
+            for (TypeNameContext each : ctx.typeName()) {
                 result.getTypes().add((TypeSegment) visit(each));
             }
         }
         if (null != ctx.indextypeName()) {
-            for (IndextypeNameContext each: ctx.indextypeName()) {
+            for (IndextypeNameContext each : ctx.indextypeName()) {
                 result.getIndextypes().add((IndextypeSegment) visit(each));
             }
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAudit(final AuditContext ctx) {
         return new OracleAuditStatement();
@@ -546,7 +567,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitNoAudit(final NoAuditContext ctx) {
         return new OracleNoAuditStatement();
     }
-
+    
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
         OracleCommentStatement result = new OracleCommentStatement();
@@ -561,23 +582,23 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
         return new OracleFlashbackDatabaseStatement();
     }
-
+    
     @Override
     public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
         OracleFlashbackTableStatement result = new OracleFlashbackTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-
+        
         if (null != ctx.renameToTable()) {
             result.setRenameTable((SimpleTableSegment) visit(ctx.renameToTable().tableName()));
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitPurge(final PurgeContext ctx) {
         OraclePurgeStatement result = new OraclePurgeStatement();
@@ -589,42 +610,42 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitRename(final RenameContext ctx) {
         return new OracleRenameStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         return new OracleCreateDatabaseStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateDatabaseLink(final CreateDatabaseLinkContext ctx) {
         return new OracleCreateDatabaseLinkStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateDimension(final CreateDimensionContext ctx) {
         return new OracleCreateDimensionStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterDimension(final AlterDimensionContext ctx) {
         return new OracleAlterDimensionStatement();
     }
-
+    
     @Override
     public ASTNode visitDropDimension(final DropDimensionContext ctx) {
         return new OracleDropDimensionStatement();
     }
-
+    
     @Override
     public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
         return new OracleDropDirectoryStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         return new OracleCreateFunctionStatement();

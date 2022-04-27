@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StatusNode;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -61,7 +61,7 @@ public final class StorageStatusNode {
      * @param schema cluster schema
      * @return status path of storage node
      */
-    public static String getStatusPath(final QualifiedSchema schema) {
+    public static String getStatusPath(final QualifiedDatabase schema) {
         return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, ATTRIBUTES_NODE, schema.toString());
     }
     
@@ -71,9 +71,9 @@ public final class StorageStatusNode {
      * @param storageNodePath storage node path
      * @return extracted qualified schema
      */
-    public static Optional<QualifiedSchema> extractQualifiedSchema(final String storageNodePath) {
+    public static Optional<QualifiedDatabase> extractQualifiedSchema(final String storageNodePath) {
         Pattern pattern = Pattern.compile(getRootPath() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(storageNodePath);
-        return matcher.find() ? Optional.of(new QualifiedSchema(matcher.group(1))) : Optional.empty();
+        return matcher.find() ? Optional.of(new QualifiedDatabase(matcher.group(1))) : Optional.empty();
     }
 }

@@ -144,7 +144,7 @@ public final class ExpressionAssert {
             assertSubquery(assertContext, actual.getSubquery(), expected);
         }
     }
-
+    
     /**
      * Assert subquery.
      *
@@ -162,7 +162,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert exists subquery expression.
      *
@@ -182,7 +182,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert binary operation expression.
      * @param assertContext assert context
@@ -202,7 +202,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert in operation expression.
      * @param assertContext assert context
@@ -222,7 +222,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert not operation expression.
      * @param assertContext assert context
@@ -239,7 +239,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert list operation expression.
      * @param assertContext assert context
@@ -262,7 +262,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert between operation expression.
      * @param assertContext assert context
@@ -295,7 +295,8 @@ public final class ExpressionAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Function method name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
-                ? expected.getLiteralText() : expected.getText();
+                ? expected.getLiteralText()
+                : expected.getText();
         assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));
         assertThat(assertContext.getText("Function parameter size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
@@ -323,7 +324,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert expression by actual expression segment class type.
      * @param assertContext assert context

@@ -29,14 +29,15 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessListClusterPersistRepositoryFixture;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,23 +48,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ProcessRegistrySubscriberTestNoMock {
     
     private final ClusterPersistRepository repository = new ProcessListClusterPersistRepositoryFixture();
     
     private final ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository);
     
-    private final ExecuteProcessContext executeProcessContext;
-    
-    private final ExecutionUnit executionUnit;
-    
-    public ProcessRegistrySubscriberTestNoMock() {
-        ExecutionUnit executionUnit = new ExecutionUnit("ds_0", new SQLUnit("sql1_0", Collections.emptyList()));
-        this.executionUnit = executionUnit;
-        executeProcessContext = createExecuteProcessContext(executionUnit);
-    }
-    
-    private ExecuteProcessContext createExecuteProcessContext(final ExecutionUnit executionUnit) {
+    private ExecuteProcessContext createExecuteProcessContext() {
+        ExecutionUnit executionUnit = createExecuteUnit();
         Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new ArrayList<>();
         inputGroups.add(new ExecutionGroup<>(Collections.singletonList(new JDBCExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY, null))));
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(inputGroups);
@@ -72,28 +65,33 @@ public final class ProcessRegistrySubscriberTestNoMock {
         return new ExecuteProcessContext("sql1", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
     }
     
+    private ExecutionUnit createExecuteUnit() {
+        return new ExecutionUnit("ds_0", new SQLUnit("sql1_0", Collections.emptyList()));
+    }
+    
     @Test
     public void assertWholeProcessCompleted() {
-        assertReportExecuteProcessSummary();
+        ExecuteProcessContext executeProcessContext = createExecuteProcessContext();
+        assertReportExecuteProcessSummary(executeProcessContext);
         ExecuteProcessConstants processConstants = ExecuteProcessConstants.EXECUTE_STATUS_DONE;
-        assertReportExecuteProcessUnit(processConstants);
-        assertReportExecuteProcess(processConstants);
+        assertReportExecuteProcessUnit(processConstants, executeProcessContext.getExecutionID());
+        assertReportExecuteProcess(processConstants, executeProcessContext.getExecutionID());
     }
     
     @Test
     public void assertWholeProcessUncompleted() {
-        assertReportExecuteProcessSummary();
+        ExecuteProcessContext executeProcessContext = createExecuteProcessContext();
+        assertReportExecuteProcessSummary(executeProcessContext);
         ExecuteProcessConstants processConstants = ExecuteProcessConstants.EXECUTE_STATUS_START;
-        assertReportExecuteProcessUnit(processConstants);
-        assertReportExecuteProcess(processConstants);
+        assertReportExecuteProcessUnit(processConstants, executeProcessContext.getExecutionID());
+        assertReportExecuteProcess(processConstants, executeProcessContext.getExecutionID());
     }
     
-    private void assertReportExecuteProcessSummary() {
+    private void assertReportExecuteProcessSummary(final ExecuteProcessContext executeProcessContext) {
         subscriber.reportExecuteProcessSummary(new ExecuteProcessSummaryReportEvent(executeProcessContext));
         String executionID = executeProcessContext.getExecutionID();
-        String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
-        assertNotNull(executeProcessText);
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
         assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
@@ -107,28 +105,24 @@ public final class ProcessRegistrySubscriberTestNoMock {
         assertThat(yamlExecuteProcessUnit.getStatus(), is(ExecuteProcessConstants.EXECUTE_STATUS_START));
     }
     
-    private void assertReportExecuteProcessUnit(final ExecuteProcessConstants processConstants) {
-        String executionID = executeProcessContext.getExecutionID();
-        ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(executionUnit, processConstants));
+    private void assertReportExecuteProcessUnit(final ExecuteProcessConstants processConstants, final String executionID) {
+        ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(createExecuteUnit(), processConstants));
         subscriber.reportExecuteProcessUnit(event);
-        String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
-        assertNotNull(executeProcessText);
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
         assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));
     }
     
-    private void assertReportExecuteProcess(final ExecuteProcessConstants processConstants) {
-        String executionID = executeProcessContext.getExecutionID();
+    private void assertReportExecuteProcess(final ExecuteProcessConstants processConstants, final String executionID) {
         ExecuteProcessReportEvent event = new ExecuteProcessReportEvent(executionID);
         subscriber.reportExecuteProcess(event);
-        String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         if (ExecuteProcessConstants.EXECUTE_STATUS_DONE == processConstants) {
-            assertNull(executeProcessText);
+            assertNull(yamlExecuteProcessContext);
         } else {
-            assertNotNull(executeProcessText);
-            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
+            assertNotNull(yamlExecuteProcessContext);
             assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
             YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
             assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));

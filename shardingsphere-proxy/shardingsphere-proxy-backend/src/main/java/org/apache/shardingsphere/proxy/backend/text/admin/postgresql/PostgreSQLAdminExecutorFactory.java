@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,7 +84,8 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                     return Optional.of(new PostgreSQLSetCharsetExecutor(setStatement));
                 case "extra_float_digits":
                 case "application_name":
-                    return Optional.of(connectionSession -> { });
+                    return Optional.of(connectionSession -> {
+                    });
                 default:
             }
         }
@@ -107,7 +107,7 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
         }).flatMap(Collection::stream).collect(Collectors.toList());
         extractor.getTableContext().addAll(subQueryTableSegment);
         return extractor.getTableContext().stream().filter(each -> each instanceof SimpleTableSegment)
-                .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toList());
     }
     
     private String getSetConfigurationParameter(final SetStatement setStatement) {

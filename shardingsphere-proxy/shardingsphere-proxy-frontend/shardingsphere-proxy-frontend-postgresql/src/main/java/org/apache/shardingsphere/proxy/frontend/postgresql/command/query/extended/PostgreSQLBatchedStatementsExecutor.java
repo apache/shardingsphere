@@ -103,7 +103,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getSchemaName());
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
@@ -125,8 +125,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
-                metaDataContexts.getMetaData(connectionSession.getSchemaName()).getRuleMetaData().getRules(), connectionSession.getSchemaName(), metaDataContexts.getMetaDataMap(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData(connectionSession.getSchemaName()), metaDataContexts.getProps());
+                metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules(), connectionSession.getDatabaseName(), metaDataContexts.getMetaDataMap(), null);
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData(connectionSession.getDatabaseName()), metaDataContexts.getProps());
     }
     
     /**
@@ -141,7 +141,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
@@ -171,7 +171,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getResource().getDatabaseType();
         JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
@@ -184,11 +184,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
-    
+        
         BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(databaseType, sqlStatement, isExceptionThrown);
         }
-    
+        
         @Override
         protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
             try {
@@ -197,7 +197,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
                 statement.close();
             }
         }
-    
+        
         @SuppressWarnings("OptionalContainsCollection")
         @Override
         protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {

@@ -42,25 +42,25 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String schemaName = connectionSession.getSchemaName();
-        checkSchema(schemaName);
+        String databaseName = connectionSession.getDatabaseName();
+        checkDatabase(databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
-            contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
+            contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get());
+            contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get());
             return;
         }
-        contextManager.reloadMetaData(schemaName);
+        contextManager.reloadMetaData(databaseName);
     }
     
-    private void checkSchema(final String schemaName) {
-        if (null == schemaName) {
+    private void checkDatabase(final String databaseName) {
+        if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new UnknownDatabaseException(schemaName);
+        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
+            throw new UnknownDatabaseException(databaseName);
         }
     }
 }

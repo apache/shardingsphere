@@ -61,7 +61,7 @@ public final class ProjectionsContextEngine {
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final TableSegment table, final ProjectionsSegment projectionsSegment, 
+    public ProjectionsContext createProjectionsContext(final TableSegment table, final ProjectionsSegment projectionsSegment,
                                                        final GroupByContext groupByContext, final OrderByContext orderByContext) {
         Collection<Projection> projections = getProjections(table, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);

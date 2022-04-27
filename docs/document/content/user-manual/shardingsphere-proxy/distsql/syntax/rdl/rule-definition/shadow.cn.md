@@ -68,7 +68,7 @@ ALTER SHADOW ALGORITHM
 
 DROP SHADOW RULE shadow_rule;
 
-DROP SHADOW ALGORITHM simple_note_algorithm;
+DROP SHADOW ALGORITHM simple_hint_algorithm;
 
 CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
 ```

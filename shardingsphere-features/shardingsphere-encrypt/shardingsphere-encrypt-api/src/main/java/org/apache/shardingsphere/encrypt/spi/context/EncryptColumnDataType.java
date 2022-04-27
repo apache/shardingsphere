@@ -34,7 +34,7 @@ public final class EncryptColumnDataType {
     
     public EncryptColumnDataType(final String typeName, final Map<String, Integer> dataTypes) {
         this.typeName = typeName;
-        this.dataType = getDataTypeByTypeName(typeName, dataTypes); 
+        this.dataType = getDataTypeByTypeName(typeName, dataTypes);
     }
     
     private static Integer getDataTypeByTypeName(final String typeName, final Map<String, Integer> dataTypes) {

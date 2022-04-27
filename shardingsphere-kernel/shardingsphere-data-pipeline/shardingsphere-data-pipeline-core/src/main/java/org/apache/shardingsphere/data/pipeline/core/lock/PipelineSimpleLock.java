@@ -21,7 +21,8 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -46,7 +47,7 @@ public final class PipelineSimpleLock {
         persistServiceOptional.orElseThrow(() -> new RuntimeException("Could not get metadata persist service"));
         // TODO Use PersistRepository later
         ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
-        lockRegistryService = new LockRegistryService(repository);
+        lockRegistryService = new StandardLockRegistryService(repository);
         lockNameLockedMap = Maps.newConcurrentMap();
     }
     

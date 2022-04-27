@@ -33,15 +33,13 @@ import java.util.Map;
 @Getter
 @Setter
 public final class GlobalDataSourceRegistry {
-
+    
     private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
-
-    private volatile Map<Instance, DataSource> cachedDataSources = new LinkedHashMap<>();
-
-    private volatile Map<String, String> dataSourceSchema = new LinkedHashMap<>();
-
-    private volatile boolean dataSourceAggregationEnabled;
-
+    
+    private volatile Map<String, DataSource> cachedDataSourceDataSources = new LinkedHashMap<>();
+    
+    private volatile Map<String, String> cachedDatabaseTables = new LinkedHashMap<>();
+    
     /**
      * Get global data source.
      *

@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public abstract class AbstractExpectedIdentifierSQLSegment extends AbstractExpectedDelimiterSQLSegment implements ExpectedIdentifierSQLSegment {
-
+    
     @XmlAttribute
     private String name;
 }

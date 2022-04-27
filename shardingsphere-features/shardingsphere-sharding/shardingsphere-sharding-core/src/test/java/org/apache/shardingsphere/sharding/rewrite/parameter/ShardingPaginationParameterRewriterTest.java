@@ -38,19 +38,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingPaginationParameterRewriterTest {
-
+    
     private static final int TEST_OFFSET_PARAMETER_INDEX = 3;
-
+    
     private static final int TEST_ROW_COUNT_PARAMETER_INDEX = 5;
-
+    
     private static final long TEST_REVISED_OFFSET = 4;
-
+    
     private static final long TEST_REVISED_ROW_COUNT = 6;
-
+    
     private static boolean addOffsetParametersFlag = Boolean.FALSE;
-
+    
     private static boolean addRowCountParameterFlag = Boolean.FALSE;
-
+    
     @Test
     public void assertIsNeedRewrite() {
         ShardingPaginationParameterRewriter shardingPaginationParameterRewriter = new ShardingPaginationParameterRewriter();
@@ -67,7 +67,7 @@ public final class ShardingPaginationParameterRewriterTest {
         when(routeContext.isSingleRouting()).thenReturn(Boolean.FALSE);
         assertTrue(shardingPaginationParameterRewriter.isNeedRewrite(selectStatementContext));
     }
-
+    
     @Test
     public void assertRewrite() {
         addOffsetParametersFlag = false;

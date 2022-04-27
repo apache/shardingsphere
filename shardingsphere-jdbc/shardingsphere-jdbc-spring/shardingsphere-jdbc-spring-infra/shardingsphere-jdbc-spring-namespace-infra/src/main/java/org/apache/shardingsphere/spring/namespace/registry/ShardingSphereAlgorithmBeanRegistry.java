@@ -39,7 +39,7 @@ public final class ShardingSphereAlgorithmBeanRegistry {
      * @param algorithmFactoryBeanClass ShardingSphere algorithm factory bean class
      * @return ShardingSphere algorithm bean references
      */
-    public static Map<String, RuntimeBeanReference> getAlgorithmBeanReferences(final ParserContext parserContext, 
+    public static Map<String, RuntimeBeanReference> getAlgorithmBeanReferences(final ParserContext parserContext,
                                                                                final Class<? extends ShardingSphereAlgorithmFactoryBean<?>> algorithmFactoryBeanClass) {
         String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
         String algorithmFactoryBeanClassName = algorithmFactoryBeanClass.getName();

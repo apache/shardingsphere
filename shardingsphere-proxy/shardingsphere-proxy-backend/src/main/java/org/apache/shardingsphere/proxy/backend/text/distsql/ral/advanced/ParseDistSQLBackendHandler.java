@@ -77,8 +77,9 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
-        String schemaName = connectionSession.getSchemaName();
-        return Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().schemaExists(schemaName)
-                ? defaultDatabaseType : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        String databaseName = connectionSession.getDatabaseName();
+        return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
+                ? defaultDatabaseType
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -40,6 +41,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,6 +59,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     public void setup() {
         generator = new EncryptProjectionTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
+        generator.setSchemas(mockSchemaMap());
     }
     
     @Test
@@ -124,5 +128,11 @@ public final class EncryptProjectionTokenGeneratorTest {
         EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null);
         when(encryptRule.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return encryptRule;
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
 }

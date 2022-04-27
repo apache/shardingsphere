@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -30,8 +31,9 @@ import java.util.concurrent.Future;
  * Parallel runner executor with case.
  */
 public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor {
-
-    private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
+    
+    // TODO ExecutorEngine.execute and callback
+    private final ExecutorServiceManager executorServiceManager = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     

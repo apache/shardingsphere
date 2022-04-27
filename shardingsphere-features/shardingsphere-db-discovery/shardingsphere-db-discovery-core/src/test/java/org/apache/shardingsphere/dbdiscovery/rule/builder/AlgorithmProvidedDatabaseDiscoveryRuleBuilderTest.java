@@ -20,12 +20,11 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.fixture.TestDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.fixture.CoreFixtureDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -38,19 +37,16 @@ import static org.mockito.Mockito.mock;
 
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
                 Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "discoveryTypeName")),
-                Collections.singletonMap("ha_heartbeat", 
-                        new DatabaseDiscoveryHeartBeatConfiguration(new Properties())), Collections.singletonMap("discoveryTypeName", new TestDatabaseDiscoveryType()));
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())), 
+                Collections.singletonMap("ha_heartbeat",
+                        new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("discoveryTypeName", new CoreFixtureDatabaseDiscoveryProviderAlgorithm()));
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
+        assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 instanceOf(DatabaseDiscoveryRule.class));
     }
 }

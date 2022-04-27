@@ -54,7 +54,7 @@ public final class PaginationContextEngineTest {
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenLimitSegmentIsPresentForPostgreSQL() {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
@@ -65,7 +65,7 @@ public final class PaginationContextEngineTest {
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQL92() {
         SQL92SelectStatement selectStatement = new SQL92SelectStatement();
@@ -76,7 +76,7 @@ public final class PaginationContextEngineTest {
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQLServer() {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
@@ -114,27 +114,27 @@ public final class PaginationContextEngineTest {
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContextForMySQL() {
         assertCreatePaginationContextWhenResultIsPaginationContext(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContextForOracle() {
         assertCreatePaginationContextWhenResultIsPaginationContext(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContextForPostgreSQL() {
         assertCreatePaginationContextWhenResultIsPaginationContext(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContextForSQL92() {
         assertCreatePaginationContextWhenResultIsPaginationContext(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContextForSQLServer() {
         assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerSelectStatement());

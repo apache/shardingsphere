@@ -60,9 +60,10 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     private void checkPrivilege(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 String privilege = resultSet.getString(1).toUpperCase();
                 if (matchPrivileges(privilege)) {

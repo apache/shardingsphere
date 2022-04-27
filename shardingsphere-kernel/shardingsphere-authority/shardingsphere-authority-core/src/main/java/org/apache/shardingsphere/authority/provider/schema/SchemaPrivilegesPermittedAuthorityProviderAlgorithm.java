@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.schema;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
     

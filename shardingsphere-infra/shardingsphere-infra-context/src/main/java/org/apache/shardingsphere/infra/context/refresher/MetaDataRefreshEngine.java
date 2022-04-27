@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.infra.context.refresher;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -47,7 +51,7 @@ public final class MetaDataRefreshEngine {
     
     private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final ShardingSphereMetaData schemaMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final FederationDatabaseMetaData federationMetaData;
     
@@ -58,21 +62,26 @@ public final class MetaDataRefreshEngine {
     /**
      * Refresh.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param logicDataSourceNamesSupplier logic data source names supplier
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void refresh(final SQLStatement sqlStatement, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
-        Class<? extends SQLStatement> sqlStatementClass = sqlStatement.getClass();
+    public void refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
+        Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
-            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), sqlStatement, props);
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(getSchemaName(sqlStatementContext.getDatabaseType(), metaData.getDatabaseName()));
+            schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         }
+    }
+    
+    private String getSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "public" : databaseName;
     }
 }

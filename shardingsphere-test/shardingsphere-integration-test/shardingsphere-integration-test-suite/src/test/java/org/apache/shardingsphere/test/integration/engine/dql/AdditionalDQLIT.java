@@ -65,7 +65,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                        final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 ResultSet actualResultSet = actualStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()));
@@ -76,7 +76,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                                final Connection actualConnection,
+                                                                                                final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
@@ -106,7 +107,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                                               final Connection actualConnection,
+                                                                                                               final Connection expectedConnection) throws SQLException, ParseException {
         String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
@@ -118,7 +120,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                                                       final Connection actualConnection,
+                                                                                                                       final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(
@@ -163,7 +166,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                           final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
@@ -194,7 +197,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                                          final Connection actualConnection,
+                                                                                                          final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
@@ -209,7 +213,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
-            final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+                                                                                                                  final Connection actualConnection,
+                                                                                                                  final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(

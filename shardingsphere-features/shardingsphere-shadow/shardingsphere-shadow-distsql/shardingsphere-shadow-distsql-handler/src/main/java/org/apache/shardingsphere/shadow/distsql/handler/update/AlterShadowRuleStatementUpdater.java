@@ -68,35 +68,35 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
-        checkConfigurationExist(schemaName, currentRuleConfig);
-        checkRuleNames(schemaName, rules, currentRuleConfig);
-        checkResources(schemaName, rules, metaData);
-        checkAlgorithms(schemaName, rules);
+        checkConfigurationExist(databaseName, currentRuleConfig);
+        checkRuleNames(databaseName, rules, currentRuleConfig);
+        checkResources(databaseName, rules, metaData);
+        checkAlgorithms(databaseName, rules);
     }
     
-    private void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
+    private void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
-    private void checkRuleNames(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkRuleNames(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
         Collection<String> requireRuleNames = ShadowRuleStatementSupporter.getRuleNames(rules);
-        ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, duplicate -> new DuplicateRuleException(SHADOW, databaseName, duplicate));
         ShadowRuleStatementChecker.checkRulesExist(requireRuleNames, currentRuleNames, different -> new InvalidAlgorithmConfigurationException("shadow rule name ", different));
     }
     
-    private void checkResources(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
+    private void checkResources(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
-        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, schemaName);
+        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, databaseName);
     }
     
-    private void checkAlgorithms(final String schemaName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
+    private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
         Collection<ShadowAlgorithmSegment> shadowAlgorithmSegment = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(shadowAlgorithmSegment);
         Collection<String> requireAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(rules);
-        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, duplicate -> new AlgorithmInUsedException(schemaName, duplicate));
+        ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithms, duplicate -> new AlgorithmInUsedException(databaseName, duplicate));
     }
     
     @Override

@@ -72,9 +72,4 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
     public boolean isLocked(final String lockName) {
         return locked;
     }
-    
-    @Override
-    public long getDefaultTimeOut() {
-        return DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS;
-    }
 }

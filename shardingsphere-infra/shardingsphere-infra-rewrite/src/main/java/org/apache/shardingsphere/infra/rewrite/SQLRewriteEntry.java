@@ -44,18 +44,18 @@ public final class SQLRewriteEntry {
         ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
     }
     
-    private final String schemaName;
+    private final String databaseName;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final String schemaName, final ShardingSphereSchema schema, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.schemaName = schemaName;
-        this.schema = schema;
+    public SQLRewriteEntry(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+        this.databaseName = databaseName;
+        this.schemas = schemas;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, rules);
     }
@@ -72,11 +72,12 @@ public final class SQLRewriteEntry {
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(schemaName, schema, sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(databaseName, schemas, sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

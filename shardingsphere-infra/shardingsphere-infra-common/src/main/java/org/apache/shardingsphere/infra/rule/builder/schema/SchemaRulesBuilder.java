@@ -20,18 +20,11 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.InvalidDataSourcePropertiesException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,11 +41,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaRulesBuilder {
     
-    static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
-        ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
-    }
-    
     /**
      * Build rules.
      *
@@ -64,12 +52,7 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        boolean isDataSourceAggregation = props.getProps().containsKey("data-source-aggregation-enabled") ? props.getValue(ConfigurationPropertyKey.DATA_SOURCE_AGGREGATION_ENABLED) : false;
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
-            if (isDataSourceAggregation) {
-                DataSourceGeneratedDatabaseConfiguration configuration = (DataSourceGeneratedDatabaseConfiguration) databaseConfig;
-                checkDataSourceAggregations(configuration.getDataSourceProperties());
-            }
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, props));
         }
         return result;
@@ -87,13 +70,13 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
+        return SchemaRuleBuilderFactory.newInstance(distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs);
+        return SchemaRuleBuilderFactory.newInstance(enhancedRuleConfigs);
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -103,8 +86,7 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
+        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders = DefaultSchemaRuleConfigurationBuilderFactory.newInstance(getMissedDefaultRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
@@ -115,28 +97,6 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<SchemaRuleBuilder> getMissedDefaultRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
-    }
-
-    private static void checkDataSourceAggregations(final Map<String, DataSourceProperties> dataSourceProperties) {
-        for (Entry<String, DataSourceProperties> sourcePropertiesEntry : dataSourceProperties.entrySet()) {
-            for (Entry<String, DataSourceProperties> targetPropertiesEntry : dataSourceProperties.entrySet()) {
-                doCheckDataSourceAggregations(sourcePropertiesEntry.getValue(), targetPropertiesEntry.getValue());
-            }
-        }
-    }
-
-    private static void doCheckDataSourceAggregations(final DataSourceProperties sourceProperties, final DataSourceProperties targetProperties) {
-        if (sourceProperties.equals(targetProperties)) {
-            return;
-        }
-        if (!sourceProperties.getInstance().equals(targetProperties.getInstance())) {
-            return;
-        }
-        try {
-            sourceProperties.checkToBeAggregatedDataSources(targetProperties);
-        } catch (final InvalidDataSourcePropertiesException ex) {
-            throw new ShardingSphereConfigurationException(ex);
-        }
+        return SchemaRuleBuilderFactory.newInstance().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }

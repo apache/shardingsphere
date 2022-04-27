@@ -92,7 +92,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
     
     @Before
     public void setUp() {
-        when(backendConnection.getConnectionSession().getSchemaName()).thenReturn("schema");
+        when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
                 mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
@@ -105,7 +105,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("schema", result);
+        return Collections.singletonMap("db", result);
     }
     
     @Test
@@ -147,7 +147,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getName()).thenReturn("sharding_schema");
+        when(result.getDatabaseName()).thenReturn("sharding_schema");
         return result;
     }
     

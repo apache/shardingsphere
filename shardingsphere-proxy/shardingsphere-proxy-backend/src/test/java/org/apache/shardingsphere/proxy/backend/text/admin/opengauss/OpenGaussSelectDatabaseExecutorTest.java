@@ -47,7 +47,7 @@ public final class OpenGaussSelectDatabaseExecutorTest {
     }
     
     private void assertExecute0() throws SQLException {
-        when(ProxyContext.getInstance().getAllSchemaNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
         OpenGaussSelectDatabaseExecutor executor = new OpenGaussSelectDatabaseExecutor(SQL);
         executor.execute(null);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();

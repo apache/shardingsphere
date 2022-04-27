@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,28 +46,60 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
+     * Put schema meta data.
+     *
+     * @param schemaName schema name
+     * @param schemaMetaData schema metadata
+     */
+    public void put(final String schemaName, final FederationSchemaMetaData schemaMetaData) {
+        schemas.put(schemaName, schemaMetaData);
+    }
+    
+    /**
      * Add table meta data.
      *
+     * @param schemaName schema name
      * @param metaData table meta data to be updated
      */
-    public void put(final TableMetaData metaData) {
-        if (schemas.containsKey(name)) {
-            schemas.get(name).put(metaData);
+    public void put(final String schemaName, final TableMetaData metaData) {
+        if (schemas.containsKey(schemaName)) {
+            schemas.get(schemaName).put(metaData);
         } else {
             Map<String, TableMetaData> tableMetaData = new LinkedHashMap<>();
-            tableMetaData.put(name, metaData);
-            schemas.put(name, new FederationSchemaMetaData(name, tableMetaData));
+            tableMetaData.put(schemaName, metaData);
+            schemas.put(schemaName, new FederationSchemaMetaData(schemaName, tableMetaData));
         }
+    }
+    
+    /**
+     * Get table meta data.
+     *
+     * @param schemaName schema name
+     *
+     * @return FederationSchemaMetaData schema meta data
+     */
+    public Optional<FederationSchemaMetaData> getSchemaMetadata(final String schemaName) {
+        return Optional.of(schemas.get(schemaName));
     }
     
     /**
      * Remove table meta data.
      *
+     * @param schemaName schema name
+     */
+    public void remove(final String schemaName) {
+        schemas.remove(schemaName);
+    }
+    
+    /**
+     * Remove table meta data.
+     *
+     * @param schemaName schema name
      * @param tableName table name to be removed
      */
-    public void remove(final String tableName) {
-        if (schemas.containsKey(name)) {
-            schemas.get(name).remove(tableName);
+    public void remove(final String schemaName, final String tableName) {
+        if (schemas.containsKey(schemaName)) {
+            schemas.get(schemaName).remove(tableName);
         }
     }
 }

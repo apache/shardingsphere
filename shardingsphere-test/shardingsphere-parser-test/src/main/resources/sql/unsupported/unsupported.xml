@@ -541,7 +541,6 @@
     <sql-case id="create_by_mysql_source_test_case839" value="CREATE VIEW v(x) AS VALUES ROW(1)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case840" value="CREATE VIEW v(x, y) AS VALUES ROW(1,2), ROW(2,4), ROW(3,6)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case841" value="CREATE VIEW v1 (a) AS SELECT f1 IN (SELECT f1 FROM t1) FROM t1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case842" value="CREATE VIEW v1 AS SELECT * FROM t1 FORCE KEY (PRIMARY,b) ORDER BY a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case843" value="CREATE VIEW v1 AS SELECT 1 FROM t1 GROUP BY SUBSTRING(1 FROM (SELECT 3 FROM t1 WHERE a &gt;= ANY(SELECT 1)))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case844" value="CREATE VIEW v1 AS SELECT 1 IN (1 LIKE 2,0) AS f" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case845" value="CREATE VIEW v1 AS SELECT GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a) FROM t1 AS a2345678901234567890123456789012345678901234 GROUP BY a WITH ROLLUP" db-types="MySQL"/>
@@ -901,16 +900,11 @@
     <sql-case id="select_by_mysql_source_test_case77" value="SELECT * FROM t1 JOIN LATERAL (SELECT a+t1.a from t2 GROUP BY a) AS dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case78" value="SELECT * FROM t1 LEFT JOIN ( t1 AS t2 LEFT JOIN t1 AS t3 ON TRUE ) ON TRUE, LATERAL ( SELECT SUM(t1.a), t2.a FROM t1 ) AS d1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case79" value="SELECT * FROM t1 LEFT JOIN ( t3, LATERAL ( SELECT * FROM t2 WHERE table_id = t3.id ) l1 ) ON TRUE" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case80" value="SELECT * FROM t1 LEFT JOIN t2 IGNORE INDEX(PRIMARY) ON t2.a = &apos;test1&apos; AND t2.b = &apos;20161213&apos; WHERE t1.a = &apos;test1&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case81" value="SELECT * FROM t1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case83" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case84" value="SELECT * FROM t1 WHERE c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case85" value="SELECT * FROM t1, LATERAL ( SELECT MAX(1) FROM t2 GROUP BY t1.f1 ) AS l1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case86" value="SELECT * FROM t1, t2, LATERAL ( SELECT pk, blobfield GROUP BY pk, blobfield WITH ROLLUP ) AS d1 ORDER BY t1.f1, t2.pk" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case87" value="SELECT * FROM t11 LEFT JOIN t12 force index (idx) ON t12.t12b = t11.t11b JOIN LATERAL (SELECT t12a) dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case88" value="SELECT * FROM v1 FORCE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case89" value="SELECT * FROM v1 IGNORE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case90" value="SELECT * FROM v1 USE INDEX (PRIMARY) WHERE c1=2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case91" value="SELECT /*+ JOIN_PREFIX(tbl1, tbl2) */ * FROM t1 AS tbl1 LEFT JOIN t1 AS tbl3 ON FALSE WHERE tbl1.id NOT IN (SELECT id FROM t1 AS tbl2 JOIN LATERAL (SELECT 1 FROM t2 WHERE id = tbl2.id LIMIT 10) AS d1)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case92" value="SELECT /*+ SET_VAR(optimizer_switch = &apos;materialization=off,semijoin=off&apos;) */ * FROM t1 AS ta, lateral (select 1 WHERE ta.a IN (SELECT b FROM t2 AS tb                WHERE tb.b &gt;= SOME(SELECT SUM(tc.a) as sg FROM t1 as tc                                   GROUP BY tc.b                                   HAVING ta.a=tc.b))) dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case93" value="SELECT /*+ SET_VAR(time_zone = &apos;+04:00&apos;) */ TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL"/>
@@ -1237,7 +1231,6 @@
     <sql-case id="select_by_mysql_source_test_case632" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f1)=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case633" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f2)=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case634" value="SELECT a AS f1, &apos;w&apos; AS f2 FROM t GROUP BY f1, f2 WITH ROLLUP HAVING GROUPING(f2)=1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case635" value="SELECT a FROM t1 IGNORE INDEX FOR ORDER BY (PRIMARY,i2) ORDER BY a" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case636" value="SELECT a IN (SELECT a FROM t1) FROM t1 LIMIT 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case637" value="SELECT a IN (SELECT a FROM t2 WHERE a=FLOOR(COUNT(t1.a)/2)) AS s FROM t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case638" value="SELECT a as Department, b as Employees, SUM(c), GROUPING(a) as GP_A, GROUPING(b) as GP_B FROM t1 GROUP BY a,b WITH ROLLUP" db-types="MySQL"/>
@@ -1288,7 +1281,6 @@
     <sql-case id="select_by_mysql_source_test_case684" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case685" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case686" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12+00:00&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case687" value="SELECT col_datetime_3_key , COUNT( col_timestamp_5_key ) FROM t1 FORCE KEY (PRIMARY, col_datetime_5_not_null_key, col_datetime_6_key, col_time_5_key, col_time_2_key) WHERE (col_time_4_not_null_key NOT BETWEEN &apos;2002-01-01 21:50:38.023562&apos; AND &apos;20090504151448.022774&apos; AND col_time_1_not_null_key IN (&apos;2000-07-13 21:35:51.034786&apos;, &apos;2004-10-13 19:51:18.029716&apos;, &apos;2001-11-23 10:22:42.001689&apos;, &apos;2001-12-07 06:56:47.034426&apos;, &apos;20081109153313.042580&apos; ) ) AND (col_timestamp_4_key BETWEEN &apos;0000-00-00 00:00:00&apos; AND &apos;2008-06-16 10:42:11.032174&apos; OR col_time_not_null_key BETWEEN &apos;2007-02-13 14:29:42.008072&apos; AND &apos;2009-05-18 17:06:18.036503&apos; ) AND ( (col_datetime_key &lt;&gt; &apos;2004-09-06 19:57:07.024714&apos;) AND col_datetime_5_not_null_key NOT IN (&apos;20061212182915.005997&apos;, &apos;0000-00-00 00:00:00&apos;, &apos;20000920051358.001283&apos;, &apos;2000-09-03 00:07:36.061713&apos; ) ) AND (col_datetime_4_not_null_key IS NULL OR col_time_5_key BETWEEN &apos;20051201163954.001782&apos; AND &apos;0000-00-00 00:00:00&apos;) GROUP BY col_datetime_6_not_null_key" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case688" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null = MAKETIME(24, 60, 3 ) AND col_time_3 NOT IN ( col_datetime_5, UTC_DATE(), col_timestamp_5_key, ADDDATE(&apos;0000-00-00 00:00:00&apos;, DATEDIFF(&apos;2001-09-21&apos;,FROM_UNIXTIME(1018888192, CONCAT_WS(&apos;-&apos;,&apos;%s&apos;,&apos;%V&apos;,&apos;%u&apos;)))), col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case689" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null=MAKETIME(24,60, 3) AND col_time_3 NOT IN (col_datetime_5, UTC_DATE(), col_timestamp_5_key,  col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case690" value="SELECT col_time_5_key AS c1, col_time_key AS c2, col_timestamp AS c3 FROM t1 WHERE col_time_not_null NOT BETWEEN EXTRACT(YEAR_MONTH FROM &apos;0000-00-00 00:00:00&apos;) AND COALESCE (col_time_6_not_null_key, col_datetime_key) ORDER BY 1, 2" db-types="MySQL"/>
@@ -1431,8 +1423,6 @@
     <sql-case id="select_by_mysql_source_test_case845" value="select (select f from lateral (select max(t1.a) as f) as dt) as g from t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case846" value="select * from information_schema.views where TABLE_SCHEMA != &apos;sys&apos; and TABLE_NAME rlike &quot;v[0-4]{1}$&quot; order by table_name" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case847" value="select * from t1 as t0, lateral (select dt3.* from t1, lateral (select * from (select * from (select t0.a from t2) as dt limit 1) dt2) dt3) dt4" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case848" value="select * from t1 ignore index (primary) where tt like &apos;AA%&apos;" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case849" value="select * from t1 ignore index (primary) where tt like &apos;Aa%&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case850" value="select * from t1 where MATCH(a,b) AGAINST (&quot;indexes&quot; IN BOOLEAN MODE WITH QUERY EXPANSION)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case851" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case852" value="select * from t1, lateral (select * from (select * from (select t1.a from t2) as dt limit 1) dt2) dt3" db-types="MySQL"/>
@@ -1442,7 +1432,6 @@
     <sql-case id="select_by_mysql_source_test_case856" value="select * from t1, lateral (select t3.b from t3 where t3.a=t1.a) dt where dt.b=t1.a+9" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case857" value="select * from t1, lateral (with qn as (select t1.a) select (select max(a) from qn)) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case858" value="select * from t1, t2, lateral (select t1.a) as dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case859" value="select * from t2 left join t1 ignore index(primary) on t1.fooID = t2.fooID and t1.fooID = 30" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case860" value="select * from t2, t1, lateral (select t1.a) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case861" value="select * from t2, t1, lateral (select t1.a) as dt, lateral (select t1.a+1) as dt2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case862" value="select * from t2, t1, lateral (select t1.a) as dt, lateral (select t2.a) as dt2" db-types="MySQL"/>
@@ -1499,7 +1488,6 @@
     <sql-case id="select_by_mysql_source_test_case919" value="select _latin2&apos;B&apos; between _latin1&apos;a&apos; and _latin1&apos;b&apos;" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case920" value="select _latin2&apos;B&apos; in (_latin1&apos;a&apos;,_latin1&apos;b&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case923" value="select a, not(not(a)) from t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case924" value="select a.id, b.category as catid, b.state as stateid, b.county as countyid from t1 a, t2 b ignore index (primary) where (a.token =&apos;a71250b7ed780f6ef3185bfffe027983&apos;) and (a.count = b.id)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case925" value="select abs(3 &quot;three&quot;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case926" value="select abs(3 AS &quot;three&quot;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case927" value="select abs(3 AS three)" db-types="MySQL"/>
@@ -1686,8 +1674,6 @@
     <sql-case id="select_by_mysql_source_test_case1110" value="select row(10,2,3) IN (row(3,NULL,3), row(1,2,3), row(1,3,3))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1111" value="select straight_join * from t1, lateral (select t1.a) as dt, t2" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1112" value="select straight_join * from t1, t2, lateral (select t1.a) as dt" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1113" value="select straight_join * from t1,t2 force index (primary) where t1.a=t2.a" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1114" value="select straight_join * from t1,t2 force index (primary) where t1.a=t2.a" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1115" value="select straight_join * from t2, t1, lateral (select t1.a) as dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1116" value="select strcmp(concat(utc_date(),&apos; &apos;,utc_time()),utc_timestamp())=0" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1117" value="select strcmp(date_format(date_sub(localtimestamp(), interval 3 hour),&quot;%T&quot;), utc_time())=0" db-types="MySQL"/>
@@ -2783,9 +2769,7 @@
     <sql-case id="explain_by_mysql_source_test_case17" value="EXPLAIN SELECT a FROM t1 FORCE INDEX (PRIMARY) IGNORE INDEX FOR GROUP BY (i2) IGNORE INDEX FOR ORDER BY (i2) USE INDEX (i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case18" value="EXPLAIN SELECT a FROM t1 FORCE INDEX FOR JOIN (i2) FORCE INDEX FOR GROUP BY (i2) GROUP BY a" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case19" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (PRIMARY) IGNORE INDEX FOR ORDER BY (i2)" db-types="MySQL"/>
-    <sql-case id="explain_by_mysql_source_test_case20" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (PRIMARY,i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case21" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX (i2) USE INDEX ()" db-types="MySQL"/>
-    <sql-case id="explain_by_mysql_source_test_case22" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX FOR JOIN (PRIMARY,i2)" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case23" value="EXPLAIN SELECT a FROM t1 IGNORE INDEX FOR ORDER BY (PRIMARY) IGNORE INDEX FOR GROUP BY (i2) GROUP BY a" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case24" value="EXPLAIN SELECT a FROM t1 USE INDEX ()" db-types="MySQL"/>
     <sql-case id="explain_by_mysql_source_test_case25" value="EXPLAIN SELECT a FROM t1 USE INDEX () IGNORE INDEX (i2)" db-types="MySQL"/>
@@ -3846,8 +3830,6 @@
     <sql-case id="low_load_by_mysql_source_test_case44" value="load data infile &apos;../../std_data/words.dat&apos; into table t1 (a)" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case45" value="load data infile &apos;../../std_data/words.dat&apos; into table t1 (a) set b:= f1()" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case46" value="load data infile &apos;tmp1.txt&apos; into table t1 character set binary" db-types="MySQL"/>
-    <sql-case id="low_load_by_mysql_source_test_case47" value="load index into cache t1, t2 key (primary,b) ignore leaves" db-types="MySQL"/>
-    <sql-case id="low_load_by_mysql_source_test_case48" value="load index into cache t3, t2 key (primary,b)" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case49" value="load xml infile &apos;../../std_data/loadxml.dat&apos; into table t1 rows identified by &apos;&lt;row&gt;&apos;" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case50" value="load xml infile &apos;../../std_data/loadxml.dat&apos; into table t1 rows identified by &apos;&lt;row&gt;&apos; ignore 4 rows" db-types="MySQL"/>
     <sql-case id="low_load_by_mysql_source_test_case51" value="load xml infile &apos;../../std_data/loadxml2.dat&apos; into table t1" db-types="MySQL"/>
@@ -4053,10 +4035,6 @@
     <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case289" value="ALTER RULE NewInsertRule ON rule_v1 RENAME TO &quot;_RETURN&quot;;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case290" value="ALTER RULE rules_parted_table_insert ON rules_parted_table RENAME TO rules_parted_table_insert_redirect;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case291" value="ALTER SCHEMA pub_test1 RENAME to pub_test1_renamed;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case292" value="ALTER SCHEMA pub_test1_renamed RENAME to pub_test1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case293" value="ALTER SCHEMA tableam_display OWNER TO regress_display_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case294" value="ALTER SCHEMA test_ns_schema_1 RENAME TO test_ns_schema_renamed;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case295" value="ALTER SEQUENCE itest6_a_seq OWNED BY NONE;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case296" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case297" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv3;" db-types="PostgreSQL"/>
@@ -5531,7 +5509,6 @@
     <sql-case id="insert_by_postgresql_source_test_case37" value="INSERT INTO VARBIT_TABLE VALUES (B&apos;010101&apos;);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case38" value="INSERT INTO VARBIT_TABLE VALUES (B&apos;01010101010&apos;);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case39" value="INSERT INTO VARBIT_TABLE VALUES (B&apos;101011111010&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="insert_by_postgresql_source_test_case40" value="INSERT INTO ab1 SELECT     generate_series(1,10),     generate_series(1,10),     generate_series(&apos;2020-10-01&apos;::timestamp, &apos;2020-10-10&apos;::timestamp, interval &apos;1 day&apos;),     generate_series(&apos;2020-10-01&apos;::timestamptz, &apos;2020-10-10&apos;::timestamptz, interval &apos;1 day&apos;);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case44" value="INSERT INTO abbrev_abort_uuids DEFAULT VALUES;" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case45" value="INSERT INTO abbrev_abort_uuids DEFAULT VALUES;" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case49" value="INSERT INTO arrtest (a, b[1:2], c, d[1:2])    VALUES (&apos;{}&apos;, &apos;{3,4}&apos;, &apos;{foo,bar}&apos;, &apos;{bar,foo}&apos;);" db-types="PostgreSQL"/>
@@ -5591,10 +5568,6 @@
     <sql-case id="insert_by_postgresql_source_test_case186" value="INSERT INTO large_tuple_test (select 3, NULL);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case187" value="INSERT INTO large_tuple_test (select 4, repeat(&apos;a&apos;, 8126));" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case188" value="INSERT INTO main_table DEFAULT VALUES;" db-types="PostgreSQL"/>
-    <sql-case id="insert_by_postgresql_source_test_case190" value="INSERT INTO mcv_lists (a, b, c, d)      SELECT                (CASE WHEN mod(i,2) = 0 THEN NULL ELSE &apos;x&apos; END),          (CASE WHEN mod(i,2) = 0 THEN NULL ELSE 0 END),          (CASE WHEN mod(i,2) = 0 THEN NULL ELSE &apos;x&apos; END)      FROM generate_series(1,5000) s(i);" db-types="PostgreSQL"/>
-    <sql-case id="insert_by_postgresql_source_test_case191" value="INSERT INTO mcv_lists (a, b, c, filler1)      SELECT          (CASE WHEN mod(i,100) = 1 THEN NULL ELSE mod(i,100) END),          (CASE WHEN mod(i,50) = 1  THEN NULL ELSE mod(i,50) END),          (CASE WHEN mod(i,25) = 1  THEN NULL ELSE mod(i,25) END),          i      FROM generate_series(1,5000) s(i);" db-types="PostgreSQL"/>
-    <sql-case id="insert_by_postgresql_source_test_case197" value="INSERT INTO mcv_lists_bool (a, b, c)      SELECT          (mod(i,2) = 0), (mod(i,4) = 0), (mod(i,8) = 0)      FROM generate_series(1,10000) s(i);" db-types="PostgreSQL"/>
-    <sql-case id="insert_by_postgresql_source_test_case202" value="INSERT INTO mcv_lists_uuid (a, b, c)      SELECT          md5(mod(i,100)::text)::uuid,          md5(mod(i,50)::text)::uuid,          md5(mod(i,25)::text)::uuid      FROM generate_series(1,5000) s(i);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case205" value="INSERT INTO ndistinct (a, b, c, filler1)      SELECT i/100, i/100, i/100, cash_words((i/100)::money)        FROM generate_series(1,1000) s(i);" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case207" value="INSERT INTO nulltest DEFAULT VALUES;" db-types="PostgreSQL"/>
     <sql-case id="insert_by_postgresql_source_test_case211" value="INSERT INTO num_result SELECT id, 0, LOG(numeric &apos;10&apos;, ABS(val))     FROM num_data     WHERE val != &apos;0.0&apos;;" db-types="PostgreSQL"/>
@@ -5865,10 +5838,6 @@
     <sql-case id="select_by_postgresql_source_test_case3" value="SELECT 	p::text || &apos;,&apos; || i::text || &apos;:&apos; || 		CASE WHEN f THEN COALESCE(v::text, &apos;NULL&apos;) ELSE &apos;-&apos; END as row, 	logging_agg_nonstrict(v) filter(where f) over wnd as nstrict_filt, 	logging_agg_nonstrict_initcond(v) filter(where f) over wnd as nstrict_init_filt, 	logging_agg_strict(v::text) filter(where f) over wnd as strict_filt, 	logging_agg_strict_initcond(v) filter(where f) over wnd as strict_init_filt FROM (VALUES 	(1, 1, true,  NULL), 	(1, 2, false, &apos;a&apos;), 	(1, 3, true,  &apos;b&apos;), 	(1, 4, false, NULL), 	(1, 5, false, NULL), 	(1, 6, false, &apos;c&apos;), 	(2, 1, false, NULL), 	(2, 2, true,  &apos;x&apos;), 	(3, 1, true,  &apos;z&apos;) ) AS t(p, i, f, v) WINDOW wnd AS (PARTITION BY p ORDER BY i ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) ORDER BY p, i;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case4" value="SELECT 	p::text || &apos;,&apos; || i::text || &apos;:&apos; || COALESCE(v::text, &apos;NULL&apos;) AS row, 	logging_agg_nonstrict(v) over wnd as nstrict, 	logging_agg_nonstrict_initcond(v) over wnd as nstrict_init, 	logging_agg_strict(v::text) over wnd as strict, 	logging_agg_strict_initcond(v) over wnd as strict_init FROM (VALUES 	(1, 1, NULL), 	(1, 2, &apos;a&apos;), 	(1, 3, &apos;b&apos;), 	(1, 4, NULL), 	(1, 5, NULL), 	(1, 6, &apos;c&apos;), 	(2, 1, NULL), 	(2, 2, &apos;x&apos;), 	(3, 1, &apos;z&apos;) ) AS t(p, i, v) WINDOW wnd AS (PARTITION BY P ORDER BY i ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) ORDER BY p, i;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case5" value="SELECT   (SELECT n      FROM (VALUES (1)) AS x,           (SELECT n FROM generate_series(1,10) AS n              ORDER BY n LIMIT 1 OFFSET s-1) AS y) AS z   FROM generate_series(1,10) AS s;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case6" value="SELECT   str,   interval,   date_trunc(str, ts) = date_bin(interval::interval, ts, timestamp &apos;0055-06-17 BC&apos;) AS equal FROM (   VALUES   (&apos;week&apos;, &apos;7 d&apos;),   (&apos;day&apos;, &apos;1 d&apos;),   (&apos;hour&apos;, &apos;1 h&apos;),   (&apos;minute&apos;, &apos;1 m&apos;),   (&apos;second&apos;, &apos;1 s&apos;),   (&apos;millisecond&apos;, &apos;1 ms&apos;),   (&apos;microsecond&apos;, &apos;1 us&apos;) ) intervals (str, interval), (VALUES (timestamp &apos;0055-6-10 15:44:17.71393 BC&apos;)) ts (ts);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case7" value="SELECT   str,   interval,   date_trunc(str, ts) = date_bin(interval::interval, ts, timestamp &apos;2000-01-01 BC&apos;) AS equal FROM (   VALUES   (&apos;week&apos;, &apos;7 d&apos;),   (&apos;day&apos;, &apos;1 d&apos;),   (&apos;hour&apos;, &apos;1 h&apos;),   (&apos;minute&apos;, &apos;1 m&apos;),   (&apos;second&apos;, &apos;1 s&apos;),   (&apos;millisecond&apos;, &apos;1 ms&apos;),   (&apos;microsecond&apos;, &apos;1 us&apos;) ) intervals (str, interval), (VALUES (timestamp &apos;0055-6-10 15:44:17.71393 BC&apos;)) ts (ts);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case8" value="SELECT   str,   interval,   date_trunc(str, ts) = date_bin(interval::interval, ts, timestamp &apos;2001-01-01&apos;) AS equal FROM (   VALUES   (&apos;week&apos;, &apos;7 d&apos;),   (&apos;day&apos;, &apos;1 d&apos;),   (&apos;hour&apos;, &apos;1 h&apos;),   (&apos;minute&apos;, &apos;1 m&apos;),   (&apos;second&apos;, &apos;1 s&apos;),   (&apos;millisecond&apos;, &apos;1 ms&apos;),   (&apos;microsecond&apos;, &apos;1 us&apos;) ) intervals (str, interval), (VALUES (timestamp &apos;2020-02-29 15:44:17.71393&apos;)) ts (ts);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case9" value="SELECT   str,   interval,   date_trunc(str, ts) = date_bin(interval::interval, ts, timestamp &apos;2020-03-02&apos;) AS equal FROM (   VALUES   (&apos;week&apos;, &apos;7 d&apos;),   (&apos;day&apos;, &apos;1 d&apos;),   (&apos;hour&apos;, &apos;1 h&apos;),   (&apos;minute&apos;, &apos;1 m&apos;),   (&apos;second&apos;, &apos;1 s&apos;),   (&apos;millisecond&apos;, &apos;1 ms&apos;),   (&apos;microsecond&apos;, &apos;1 us&apos;) ) intervals (str, interval), (VALUES (timestamp &apos;2020-02-29 15:44:17.71393&apos;)) ts (ts);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case10" value="SELECT   str,   interval,   date_trunc(str, ts, &apos;Australia/Sydney&apos;) = date_bin(interval::interval, ts, timestamp with time zone &apos;2001-01-01+11&apos;) AS equal FROM (   VALUES   (&apos;day&apos;, &apos;1 d&apos;),   (&apos;hour&apos;, &apos;1 h&apos;),   (&apos;minute&apos;, &apos;1 m&apos;),   (&apos;second&apos;, &apos;1 s&apos;),   (&apos;millisecond&apos;, &apos;1 ms&apos;),   (&apos;microsecond&apos;, &apos;1 us&apos;) ) intervals (str, interval), (VALUES (timestamptz &apos;2020-02-29 15:44:17.71393+00&apos;)) ts (ts);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case11" value="SELECT  thousand 		FROM onek WHERE thousand &lt; 5 		ORDER BY thousand FETCH FIRST 1 ROW WITH TIES FOR UPDATE SKIP LOCKED;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case12" value="SELECT  thousand 		FROM onek WHERE thousand &lt; 5 		ORDER BY thousand FETCH FIRST 1 ROW WITH TIES;" db-types="PostgreSQL"/>
@@ -6085,12 +6054,6 @@
     <sql-case id="select_by_postgresql_source_test_case224" value="SELECT * FROM (VALUES (1),(2),(3)) v(r), ROWS FROM( rngfunc_sql(10+r,13), rngfunc_mat(10+r,13) );" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case225" value="SELECT * FROM (VALUES (1),(2),(3)) v(r), ROWS FROM( rngfunc_sql(10+r,13), rngfunc_mat(11,11) );" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case226" value="SELECT * FROM (VALUES (1),(2),(3)) v(r), ROWS FROM( rngfunc_sql(11,11), rngfunc_mat(10+r,13) );" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case227" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 &lt; interval &apos;@ 1 day&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case228" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 &lt;= interval &apos;@ 5 hours&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case229" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 &lt;&gt; interval &apos;@ 10 days&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case230" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 = interval &apos;@ 34 years&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case231" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 &gt; interval &apos;@ 3 seconds ago&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case232" value="SELECT * FROM INTERVAL_TBL    WHERE INTERVAL_TBL.f1 &gt;= interval &apos;@ 1 month&apos;;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case233" value="SELECT * FROM ROWS FROM(generate_series(10,11), get_users()) WITH ORDINALITY;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case234" value="SELECT * FROM ROWS FROM(get_users(), generate_series(10,11)) WITH ORDINALITY;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case235" value="SELECT * FROM box_temp WHERE f1 &amp;&lt; &apos;(10,4.333334),(5,100)&apos;;" db-types="PostgreSQL"/>
@@ -6183,12 +6146,10 @@
     <sql-case id="select_by_postgresql_source_test_case322" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;0055-08-10 BC&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case323" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;1970-03-20&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case324" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;2004-08-10&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case325" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, TIMESTAMP &apos;1970-03-20 04:30:00.00000&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case326" value="SELECT DATE_TRUNC(&apos;DECADE&apos;, DATE &apos;0002-12-31 BC&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case327" value="SELECT DATE_TRUNC(&apos;DECADE&apos;, DATE &apos;0004-12-25&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case328" value="SELECT DATE_TRUNC(&apos;DECADE&apos;, DATE &apos;1993-12-25&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case329" value="SELECT DATE_TRUNC(&apos;MILLENNIUM&apos;, DATE &apos;1970-03-20&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case330" value="SELECT DATE_TRUNC(&apos;MILLENNIUM&apos;, TIMESTAMP &apos;1970-03-20 04:30:00.00000&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case331" value="SELECT DISTINCT p1.proargtypes[0]::regtype, p2.proargtypes[0]::regtype FROM pg_proc AS p1, pg_proc AS p2 WHERE p1.oid != p2.oid AND     p1.prosrc = p2.prosrc AND     p1.prolang = 12 AND p2.prolang = 12 AND     p1.prokind != &apos;a&apos; AND p2.prokind != &apos;a&apos; AND     p1.prosrc NOT LIKE E&apos;range\\_constructor_&apos; AND     p2.prosrc NOT LIKE E&apos;range\\_constructor_&apos; AND     p1.prosrc NOT LIKE E&apos;multirange\\_constructor_&apos; AND     p2.prosrc NOT LIKE E&apos;multirange\\_constructor_&apos; AND     (p1.proargtypes[0] &lt; p2.proargtypes[0]) ORDER BY 1, 2;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case332" value="SELECT DISTINCT p1.proargtypes[1]::regtype, p2.proargtypes[1]::regtype FROM pg_proc AS p1, pg_proc AS p2 WHERE p1.oid != p2.oid AND     p1.prosrc = p2.prosrc AND     p1.prolang = 12 AND p2.prolang = 12 AND     p1.prokind != &apos;a&apos; AND p2.prokind != &apos;a&apos; AND     p1.prosrc NOT LIKE E&apos;range\\_constructor_&apos; AND     p2.prosrc NOT LIKE E&apos;range\\_constructor_&apos; AND     p1.prosrc NOT LIKE E&apos;multirange\\_constructor_&apos; AND     p2.prosrc NOT LIKE E&apos;multirange\\_constructor_&apos; AND     (p1.proargtypes[1] &lt; p2.proargtypes[1]) ORDER BY 1, 2;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case333" value="SELECT DISTINCT p1.proargtypes[2]::regtype, p2.proargtypes[2]::regtype FROM pg_proc AS p1, pg_proc AS p2 WHERE p1.oid != p2.oid AND     p1.prosrc = p2.prosrc AND     p1.prolang = 12 AND p2.prolang = 12 AND     p1.prokind != &apos;a&apos; AND p2.prokind != &apos;a&apos; AND     (p1.proargtypes[2] &lt; p2.proargtypes[2]) ORDER BY 1, 2;" db-types="PostgreSQL"/>
@@ -6231,13 +6192,8 @@
     <sql-case id="select_by_postgresql_source_test_case370" value="SELECT EXTRACT(CENTURY FROM DATE &apos;1901-01-01&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case371" value="SELECT EXTRACT(CENTURY FROM DATE &apos;2000-12-31&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case372" value="SELECT EXTRACT(CENTURY FROM DATE &apos;2001-01-01&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case373" value="SELECT EXTRACT(CENTURY FROM INTERVAL &apos;-100 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case374" value="SELECT EXTRACT(CENTURY FROM INTERVAL &apos;-99 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case375" value="SELECT EXTRACT(CENTURY FROM INTERVAL &apos;100 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case376" value="SELECT EXTRACT(CENTURY FROM INTERVAL &apos;99 y&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case377" value="SELECT EXTRACT(DAY           FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case378" value="SELECT EXTRACT(DAY           FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case379" value="SELECT EXTRACT(DAY         FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case380" value="SELECT EXTRACT(DAY         FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case381" value="SELECT EXTRACT(DAY FROM DATE &apos;-infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case382" value="SELECT EXTRACT(DAY FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
@@ -6250,27 +6206,19 @@
     <sql-case id="select_by_postgresql_source_test_case389" value="SELECT EXTRACT(DECADE FROM DATE &apos;0011-01-01 BC&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case390" value="SELECT EXTRACT(DECADE FROM DATE &apos;0012-12-31 BC&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case391" value="SELECT EXTRACT(DECADE FROM DATE &apos;1994-12-25&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case392" value="SELECT EXTRACT(DECADE FROM INTERVAL &apos;-100 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case393" value="SELECT EXTRACT(DECADE FROM INTERVAL &apos;-99 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case394" value="SELECT EXTRACT(DECADE FROM INTERVAL &apos;100 y&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case395" value="SELECT EXTRACT(DECADE FROM INTERVAL &apos;99 y&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case396" value="SELECT EXTRACT(DOW           FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case397" value="SELECT EXTRACT(DOW           FROM DATE &apos;2020-08-16&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case398" value="SELECT EXTRACT(DOW           FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case399" value="SELECT EXTRACT(DOY           FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case400" value="SELECT EXTRACT(DOY           FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case401" value="SELECT EXTRACT(EPOCH         FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case402" value="SELECT EXTRACT(EPOCH       FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case403" value="SELECT EXTRACT(EPOCH       FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case404" value="SELECT EXTRACT(EPOCH      FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case405" value="SELECT EXTRACT(EPOCH FROM DATE        &apos;1970-01-01&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case406" value="SELECT EXTRACT(EPOCH FROM DATE &apos;-infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case407" value="SELECT EXTRACT(EPOCH FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case408" value="SELECT EXTRACT(FORTNIGHT   FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case409" value="SELECT EXTRACT(FORTNIGHT   FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case410" value="SELECT EXTRACT(FORTNIGHT FROM INTERVAL &apos;2 days&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case411" value="SELECT EXTRACT(HOUR          FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case412" value="SELECT EXTRACT(HOUR        FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case413" value="SELECT EXTRACT(HOUR        FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case414" value="SELECT EXTRACT(ISODOW        FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case415" value="SELECT EXTRACT(ISODOW        FROM DATE &apos;2020-08-16&apos;);" db-types="PostgreSQL"/>
@@ -6292,23 +6240,18 @@
     <sql-case id="select_by_postgresql_source_test_case431" value="SELECT EXTRACT(MILLENNIUM FROM DATE &apos;2000-12-31&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case432" value="SELECT EXTRACT(MILLENNIUM FROM DATE &apos;2001-01-01&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case433" value="SELECT EXTRACT(MILLENNIUM FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case434" value="SELECT EXTRACT(MILLISECOND FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case435" value="SELECT EXTRACT(MILLISECOND FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case436" value="SELECT EXTRACT(MILLISECONDS  FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case437" value="SELECT EXTRACT(MINUTE        FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case438" value="SELECT EXTRACT(MINUTE      FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case439" value="SELECT EXTRACT(MINUTE      FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case440" value="SELECT EXTRACT(MONTH         FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case441" value="SELECT EXTRACT(MONTH         FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case442" value="SELECT EXTRACT(QUARTER       FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case443" value="SELECT EXTRACT(QUARTER       FROM DATE &apos;infinity&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case444" value="SELECT EXTRACT(SECOND        FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case445" value="SELECT EXTRACT(SECOND      FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case446" value="SELECT EXTRACT(SECOND      FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case447" value="SELECT EXTRACT(TIMEZONE      FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case448" value="SELECT EXTRACT(TIMEZONE    FROM TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case449" value="SELECT EXTRACT(TIMEZONE    FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04:30&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case450" value="SELECT EXTRACT(TIMEZONE FROM INTERVAL &apos;2 days&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case451" value="SELECT EXTRACT(TIMEZONE_H    FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case452" value="SELECT EXTRACT(TIMEZONE_HOUR   FROM TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04:30&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case453" value="SELECT EXTRACT(TIMEZONE_M    FROM DATE &apos;2020-08-11&apos;);" db-types="PostgreSQL"/>
@@ -6633,24 +6576,14 @@
     <sql-case id="select_by_postgresql_source_test_case778" value="SELECT d1 as &quot;timestamp&quot;,    date_part( &apos;quarter&apos;, d1) AS quarter, date_part( &apos;msec&apos;, d1) AS msec,    date_part( &apos;usec&apos;, d1) AS usec    FROM TIMESTAMP_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case779" value="SELECT d1 as timestamptz,    date_part( &apos;isoyear&apos;, d1) AS isoyear, date_part( &apos;week&apos;, d1) AS week,    date_part( &apos;isodow&apos;, d1) AS isodow, date_part( &apos;dow&apos;, d1) AS dow,    date_part( &apos;doy&apos;, d1) AS doy    FROM TIMESTAMPTZ_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case780" value="SELECT d1 as timestamptz,    date_part( &apos;quarter&apos;, d1) AS quarter, date_part( &apos;msec&apos;, d1) AS msec,    date_part( &apos;usec&apos;, d1) AS usec    FROM TIMESTAMPTZ_TBL;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case781" value="SELECT date_bin(&apos;-2 days&apos;::interval, timestamp &apos;1970-01-01 01:00:00&apos; , timestamp &apos;1970-01-01 00:00:00&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case782" value="SELECT date_bin(&apos;-2 days&apos;::interval, timestamp with time zone &apos;1970-01-01 01:00:00+00&apos; , timestamp with time zone &apos;1970-01-01 00:00:00+00&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case783" value="SELECT date_bin(&apos;0 days&apos;::interval, timestamp &apos;1970-01-01 01:00:00&apos; , timestamp &apos;1970-01-01 00:00:00&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case784" value="SELECT date_bin(&apos;0 days&apos;::interval, timestamp with time zone &apos;1970-01-01 01:00:00+00&apos; , timestamp with time zone &apos;1970-01-01 00:00:00+00&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case785" value="SELECT date_bin(&apos;5 min&apos;::interval, timestamp &apos;2020-02-01 01:01:01&apos;, timestamp &apos;2020-02-01 00:02:30&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case786" value="SELECT date_bin(&apos;5 months&apos;::interval, timestamp &apos;2020-02-01 01:01:01&apos;, timestamp &apos;2001-01-01&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case787" value="SELECT date_bin(&apos;5 months&apos;::interval, timestamp with time zone &apos;2020-02-01 01:01:01+00&apos;, timestamp with time zone &apos;2001-01-01+00&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case788" value="SELECT date_bin(&apos;5 years&apos;::interval,  timestamp &apos;2020-02-01 01:01:01&apos;, timestamp &apos;2001-01-01&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case789" value="SELECT date_bin(&apos;5 years&apos;::interval,  timestamp with time zone &apos;2020-02-01 01:01:01+00&apos;, timestamp with time zone &apos;2001-01-01+00&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case790" value="SELECT date_part(&apos;epoch&apos;,       TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case791" value="SELECT date_part(&apos;epoch&apos;,       TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case792" value="SELECT date_part(&apos;microsecond&apos;, TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case793" value="SELECT date_part(&apos;microsecond&apos;, TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case794" value="SELECT date_part(&apos;millisecond&apos;, TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case795" value="SELECT date_part(&apos;millisecond&apos;, TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case796" value="SELECT date_part(&apos;second&apos;,      TIME &apos;2020-05-26 13:30:25.575401&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case797" value="SELECT date_part(&apos;second&apos;,      TIME WITH TIME ZONE &apos;2020-05-26 13:30:25.575401-04&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case798" value="SELECT date_trunc( &apos;week&apos;, timestamp &apos;2004-02-29 15:44:17.71393&apos; ) AS week_trunc;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case799" value="SELECT date_trunc( &apos;week&apos;, timestamp with time zone &apos;2004-02-29 15:44:17.71393&apos; ) AS week_trunc;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case800" value="SELECT date_trunc(&apos;day&apos;, timestamp with time zone &apos;2001-02-16 20:38:40+00&apos;, &apos;Australia/Sydney&apos;) as sydney_trunc;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case801" value="SELECT date_trunc(&apos;day&apos;, timestamp with time zone &apos;2001-02-16 20:38:40+00&apos;, &apos;GMT&apos;) as gmt_trunc;" db-types="PostgreSQL"/>
@@ -6662,19 +6595,16 @@
     <sql-case id="select_by_postgresql_source_test_case807" value="SELECT encode(overlay(E&apos;Th\\000omas&apos;::bytea placing E&apos;Th\\001omas&apos;::bytea from 2),&apos;escape&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case808" value="SELECT encode(overlay(E&apos;Th\\000omas&apos;::bytea placing E&apos;\\002\\003&apos;::bytea from 5 for 3),&apos;escape&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case809" value="SELECT encode(overlay(E&apos;Th\\000omas&apos;::bytea placing E&apos;\\002\\003&apos;::bytea from 8),&apos;escape&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case810" value="SELECT extract(epoch from interval &apos;1000000000 days&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case811" value="SELECT f.f1, @f.f1 AS abs_f1    FROM FLOAT8_TBL f;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case812" value="SELECT f.f1, @f.f1 AS abs_f1 FROM FLOAT4_TBL f;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case813" value="SELECT f.f1, |/f.f1 AS sqrt_f1    FROM FLOAT8_TBL f    WHERE f.f1 &gt; &apos;0.0&apos;;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case814" value="SELECT f.f1, ||/f.f1 AS cbrt_f1 FROM FLOAT8_TBL f;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case815" value="SELECT f1 + time &apos;00:01&apos; AS &quot;Illegal&quot; FROM TIME_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case816" value="SELECT f1 + time with time zone &apos;00:01&apos; AS &quot;Illegal&quot; FROM TIMETZ_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case817" value="SELECT f1 AS open_path, polygon( pclose(f1)) AS polygon    FROM PATH_TBL    WHERE isopen(f1);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case818" value="SELECT f1 as &quot;date&quot;,     date_part(&apos;year&apos;, f1) AS year,     date_part(&apos;month&apos;, f1) AS month,     date_part(&apos;day&apos;, f1) AS day,     date_part(&apos;quarter&apos;, f1) AS quarter,     date_part(&apos;decade&apos;, f1) AS decade,     date_part(&apos;century&apos;, f1) AS century,     date_part(&apos;millennium&apos;, f1) AS millennium,     date_part(&apos;isoyear&apos;, f1) AS isoyear,     date_part(&apos;week&apos;, f1) AS week,     date_part(&apos;dow&apos;, f1) AS dow,     date_part(&apos;isodow&apos;, f1) AS isodow,     date_part(&apos;doy&apos;, f1) AS doy,     date_part(&apos;julian&apos;, f1) AS julian,     date_part(&apos;epoch&apos;, f1) AS epoch     FROM date_tbl;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case819" value="SELECT f1,     EXTRACT(MICROSECOND FROM f1) AS MICROSECOND,     EXTRACT(MILLISECOND FROM f1) AS MILLISECOND,     EXTRACT(SECOND FROM f1) AS SECOND,     EXTRACT(MINUTE FROM f1) AS MINUTE,     EXTRACT(HOUR FROM f1) AS HOUR,     EXTRACT(DAY FROM f1) AS DAY,     EXTRACT(MONTH FROM f1) AS MONTH,     EXTRACT(QUARTER FROM f1) AS QUARTER,     EXTRACT(YEAR FROM f1) AS YEAR,     EXTRACT(DECADE FROM f1) AS DECADE,     EXTRACT(CENTURY FROM f1) AS CENTURY,     EXTRACT(MILLENNIUM FROM f1) AS MILLENNIUM,     EXTRACT(EPOCH FROM f1) AS EPOCH     FROM INTERVAL_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case820" value="SELECT f1,     date_part(&apos;microsecond&apos;, f1) AS microsecond,     date_part(&apos;millisecond&apos;, f1) AS millisecond,     date_part(&apos;second&apos;, f1) AS second,     date_part(&apos;epoch&apos;, f1) AS epoch     FROM INTERVAL_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case821" value="SELECT f1, @-@ f1 FROM PATH_TBL;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case822" value="SELECT f1, f1::INTERVAL DAY TO MINUTE AS &quot;minutes&quot;,   (f1 + INTERVAL &apos;1 month&apos;)::INTERVAL MONTH::INTERVAL YEAR AS &quot;years&quot;   FROM interval_tbl;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case823" value="SELECT f1, f1::box FROM POLYGON_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case824" value="SELECT f1, f1::path FROM POLYGON_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case825" value="SELECT f1, f1::polygon FROM CIRCLE_TBL WHERE f1 &gt;= &apos;&lt;(0,0),1&gt;&apos;;" db-types="PostgreSQL"/>
@@ -6699,7 +6629,6 @@
     <sql-case id="select_by_postgresql_source_test_case846" value="SELECT i AS inet, host(i), text(i), family(i) FROM INET_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case847" value="SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case848" value="SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case849" value="SELECT i,        to_char(i * interval &apos;1mon&apos;, &apos;rm&apos;),        to_char(i * interval &apos;1mon&apos;, &apos;RM&apos;)     FROM generate_series(-13, 13) i;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case850" value="SELECT i, c,   i &lt; c AS lt, i &lt;= c AS le, i = c AS eq,   i &gt;= c AS ge, i &gt; c AS gt, i &lt;&gt; c AS ne,   i &lt;&lt; c AS sb, i &lt;&lt;= c AS sbe,   i &gt;&gt; c AS sup, i &gt;&gt;= c AS spe,   i &amp;&amp; c AS ovr   FROM INET_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case851" value="SELECT i, ~i AS &quot;~i&quot; FROM inet_tbl;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case852" value="SELECT i,SUM(v::money) OVER (ORDER BY i ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)   FROM (VALUES(1,&apos;1.10&apos;),(2,&apos;2.20&apos;),(3,NULL),(4,NULL)) t(i,v);" db-types="PostgreSQL"/>
@@ -6768,9 +6697,6 @@
     <sql-case id="select_by_postgresql_source_test_case915" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {&quot;a&quot;: 3}, {&quot;a&quot;: 5}]&apos;, &apos;$[*].a ? (@ &gt; $min &amp;&amp; @ &lt; $max)&apos;, vars =&gt; &apos;{&quot;min&quot;: 1, &quot;max&quot;: 4}&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case916" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {&quot;a&quot;: 3}, {&quot;a&quot;: 5}]&apos;, &apos;$[*].a ? (@ &gt; $min &amp;&amp; @ &lt; $max)&apos;, vars =&gt; &apos;{&quot;min&quot;: 3, &quot;max&quot;: 4}&apos;);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case917" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {}]&apos;, &apos;strict $[*].a&apos;, silent =&gt; true);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case918" value="SELECT justify_days(interval &apos;6 months 36 days 5 hours 4 minutes 3 seconds&apos;) as &quot;7 mons 6 days 5 hours 4 mins 3 seconds&quot;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case919" value="SELECT justify_hours(interval &apos;6 months 3 days 52 hours 3 minutes 2 seconds&apos;) as &quot;6 mons 5 days 4 hours 3 mins 2 seconds&quot;;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case920" value="SELECT justify_interval(interval &apos;1 month -1 hour&apos;) as &quot;1 month -1 hour&quot;;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case921" value="SELECT l.s, b.f1 FROM LINE_TBL l, BOX_TBL b WHERE l.s ?# b.f1;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case922" value="SELECT l.s, b.f1 FROM LSEG_TBL l, BOX_TBL b WHERE l.s ?# b.f1;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case923" value="SELECT l.s, b.f1, l.s ## b.f1 FROM LINE_TBL l, BOX_TBL b;" db-types="PostgreSQL"/>
@@ -7013,7 +6939,6 @@
     <sql-case id="select_by_postgresql_source_test_case1160" value="SELECT q1, float8(q1) FROM INT8_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1161" value="SELECT q1, q1 &lt;&lt; 2 AS &quot;shl&quot;, q1 &gt;&gt; 3 AS &quot;shr&quot; FROM INT8_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1162" value="SELECT q1, q2, q1 &amp; q2 AS &quot;and&quot;, q1 | q2 AS &quot;or&quot;, q1 # q2 AS &quot;xor&quot;, ~q1 AS &quot;not&quot; FROM INT8_TBL;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1163" value="SELECT q1, q2, q1 / q2 AS divide, q1 % q2 AS mod FROM INT8_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1164" value="SELECT q2, float8(q2) FROM INT8_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1165" value="SELECT range_merge(nummultirange(numrange(1,2)));" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1166" value="SELECT range_merge(nummultirange(numrange(1,2), numrange(7,8)));" db-types="PostgreSQL"/>
@@ -7194,7 +7119,6 @@
     <sql-case id="with_by_postgresql_source_test_case19" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;9.999EEEE&apos;) as numeric,   to_char(val::float8, &apos;9.999EEEE&apos;) as float8,   to_char(val::float4, &apos;9.999EEEE&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case20" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI99.99&apos;) as numeric,   to_char(val::float8, &apos;MI99.99&apos;) as float8,   to_char(val::float4, &apos;MI99.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case21" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI9999999999.99&apos;) as numeric,   to_char(val::float8, &apos;MI9999999999.99&apos;) as float8,   to_char(val::float4, &apos;MI9999999999.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
-    <sql-case id="with_by_postgresql_source_test_case22" value="WITH v(x) AS   (VALUES(&apos;0&apos;::numeric),(&apos;1&apos;),(&apos;-1&apos;),(&apos;4.2&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT x1, x2,   x1 / x2 AS quot,   x1 % x2 AS mod,   div(x1, x2) AS div FROM v AS v1(x1), v AS v2(x2) WHERE x2 != 0;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case41" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case42" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case43" value="alter event trigger regress_event_trigger enable always;" db-types="PostgreSQL"/>
@@ -7213,7 +7137,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case56" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias1);" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case57" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias2);" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case58" value="alter operator family integer_ops using btree add   operator 3 = (int8alias2, int8alias2);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case59" value="alter schema testpart owner to regress_partitioning_role;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case60" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab alter column atcol1 drop default;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL"/>
@@ -8423,7 +8346,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case258" value="select dfunc(b =&gt; &apos;b&apos;::text, a =&gt; &apos;a&apos;);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case259" value="select dfunc(b =&gt; &apos;b&apos;::text, a =&gt; &apos;a&apos;, flag =&gt; true);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case260" value="select distinct from pg_database;" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case261" value="select div(-9999999999999999999999::numeric,1000000000000000000000)*1000000000000000000000 + mod(-9999999999999999999999::numeric,1000000000000000000000);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case262" value="select f1(2, 4) as int, f1(2, 4.5) as num;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case263" value="select f1(42) as int, f1(4.5) as num;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case264" value="select f1(42) as int, f1(4.5) as num;" db-types="PostgreSQL"/>
@@ -8482,12 +8404,10 @@
     <sql-case id="low_select_by_postgresql_source_test_case322" value="select length(md5((f1[1]).c2)) from dest;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case323" value="select length(md5((f1[1]).c2)) from dest;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case324" value="select md5(&apos;&apos;::bytea) = &apos;d41d8cd98f00b204e9800998ecf8427e&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case325" value="select md5(&apos;12345678901234567890123456789012345678901234567890123456789012345678901234567890&apos;::bytea) = &apos;57edf4a22be3c955ac49da2e2107b67a&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case326" value="select md5(&apos;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&apos;::bytea) = &apos;d174ab98d277d9f5a5611c2c9f419d9f&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case327" value="select md5(&apos;a&apos;::bytea) = &apos;0cc175b9c0f1b6a831c399e269772661&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case328" value="select md5(&apos;abc&apos;::bytea) = &apos;900150983cd24fb0d6963f7d28e17f72&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case329" value="select md5(&apos;abcdefghijklmnopqrstuvwxyz&apos;::bytea) = &apos;c3fcd3d76192e4007dfb496cca67e13b&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case330" value="select md5(&apos;message digest&apos;::bytea) = &apos;f96b697d7cb7938d525a2f31aaf161d0&apos; AS &quot;TRUE&quot;;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case331" value="select min_scale(numeric &apos;NaN&apos;) is NULL;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case332" value="select min_scale(numeric &apos;inf&apos;) is NULL;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case333" value="select mr_polymorphic(int4range(1, 4));" db-types="PostgreSQL"/>

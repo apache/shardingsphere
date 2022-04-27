@@ -42,13 +42,13 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     public void assertConvert() {
         DatabaseDiscoveryRuleConfiguration ruleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
         assertNotNull(ruleConfiguration);
-        assertTrue(ruleConfiguration.getDiscoveryTypes().containsKey("definition_mgr"));
+        assertTrue(ruleConfiguration.getDiscoveryTypes().containsKey("definition_MySQL.MGR"));
         assertTrue(ruleConfiguration.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));
         Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfiguration.getDataSources().iterator();
         DatabaseDiscoveryDataSourceRuleConfiguration configuration = iterator.next();
         assertThat(configuration.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
         assertThat(configuration.getGroupName(), is("definition"));
-        assertThat(configuration.getDiscoveryTypeName(), is("definition_mgr"));
+        assertThat(configuration.getDiscoveryTypeName(), is("definition_MySQL.MGR"));
         assertThat(configuration.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
         configuration = iterator.next();
         assertThat(configuration.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
@@ -60,13 +60,13 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
         Properties properties = new Properties();
         properties.put("key", "value");
-        final Collection<AbstractDatabaseDiscoverySegment> ruleSegments = new LinkedList<>();
-        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment
-                = new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("mgr", properties), properties);
-        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment
-                = new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
-        ruleSegments.add(databaseDiscoveryConstructionSegment);
-        ruleSegments.add(databaseDiscoveryDefinitionSegment);
-        return ruleSegments;
+        final Collection<AbstractDatabaseDiscoverySegment> result = new LinkedList<>();
+        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
+                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", properties), properties);
+        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
+                new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
+        result.add(databaseDiscoveryConstructionSegment);
+        result.add(databaseDiscoveryDefinitionSegment);
+        return result;
     }
 }

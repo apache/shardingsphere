@@ -19,18 +19,20 @@ package org.apache.shardingsphere.infra.metadata.schema.loader;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -42,17 +44,26 @@ public final class SchemaLoader {
     /**
      * Load schema.
      * 
+     * @param defaultSchemaName default schema name
+     * @param databaseType database type
      * @param dataSourceMap data source map
      * @param rules rules
      * @param props properties
      * @return loaded schema
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereSchema load(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-        Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(
-                getAllTableNames(rules), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props)));
-        return new ShardingSphereSchema(tableMetaDataMap);
+    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                         final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
+                new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props), defaultSchemaName));
+        if (schemaMetaDataMap.isEmpty()) {
+            return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
+        }
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables()));
+        }
+        return result;
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {

@@ -86,11 +86,11 @@ public final class AddResourceBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
-        ResponseHeader responseHeader = addResourceBackendHandler.execute("test_schema", createAddResourceStatement());
+        ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
@@ -99,11 +99,11 @@ public final class AddResourceBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
-        addResourceBackendHandler.execute("test_schema", createAlterResourceStatementWithDuplicateResourceNames());
+        addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }
     
     private AddResourceStatement createAddResourceStatement() {

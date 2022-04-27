@@ -35,7 +35,7 @@ public final class ShardingSphereAlgorithmBeanRegistryTest {
     @Test
     public void assertGetAlgorithmBeanReferences() {
         ParserContext parserContext = mock(ParserContext.class, RETURNS_DEEP_STUBS);
-        when(parserContext.getRegistry().getBeanDefinitionNames()).thenReturn(new String[] {"includeBean", "excludeBean"});
+        when(parserContext.getRegistry().getBeanDefinitionNames()).thenReturn(new String[]{"includeBean", "excludeBean"});
         when(parserContext.getRegistry().getBeanDefinition("includeBean").getBeanClassName()).thenReturn(ShardingSphereAlgorithmFixtureFactoryBean.class.getName());
         when(parserContext.getRegistry().getBeanDefinition("excludeBean").getBeanClassName()).thenReturn(Object.class.getName());
         Map<String, RuntimeBeanReference> actual = ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingSphereAlgorithmFixtureFactoryBean.class);

@@ -31,6 +31,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class AlterShadowAlgorithmStatement extends AlterRuleStatement implements ShadowSubjectSupplier {
-
+    
     private final Collection<ShadowAlgorithmSegment> algorithms;
 }

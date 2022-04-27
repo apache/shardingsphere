@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.InvalidDataSourcePropertiesException;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.junit.Test;
 
@@ -30,7 +29,6 @@ import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ShardingSpherePipelineDataSourceConfigurationTest {
     
@@ -59,29 +57,5 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
         yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
         return result;
-    }
-
-    @Test
-    public void assertDataSourceCanBeAggregation() throws InvalidDataSourcePropertiesException {
-        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceAggregationYaml());
-        List<DataSourceProperties> actual = new LinkedList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
-        assertTrue(actual.get(0).isInSameDatabaseInstance(actual.get(0).getAllLocalProperties().get("jdbcUrl").toString(), actual.get(1).getAllLocalProperties().get("jdbcUrl").toString()));
-        actual.get(0).checkToBeAggregatedDataSources(actual.get(1));
-    }
-
-    private String getDataSourceAggregationYaml() {
-        return "dataSources:\n"
-                + "  ds_1:\n"
-                + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n"
-                + "    username: root\n"
-                + "    password:\n"
-                + "    connectionTimeoutMilliseconds: 30000\n"
-                + "  ds_0:\n"
-                + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    url: jdbc:mysql://192.168.0.1:3306/test?serverTimezone=UTC&useSSL=false\n"
-                + "    username: root\n"
-                + "    password: \n"
-                + "    connectionTimeoutMilliseconds: 30000\n";
     }
 }

@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRenameViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
@@ -90,6 +91,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ind
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RenameTableSpecificationContext;
@@ -112,6 +114,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -138,6 +141,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterLanguageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
@@ -153,6 +157,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateLanguageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
@@ -486,7 +491,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     private IndexSegment createIndexSegment(final SimpleTableSegment tableSegment) {
-        IndexSegment result = new IndexSegment(tableSegment.getStartIndex(), tableSegment.getStopIndex(), tableSegment.getTableName().getIdentifier());
+        IndexNameSegment indexName = new IndexNameSegment(tableSegment.getTableName().getStartIndex(), tableSegment.getTableName().getStopIndex(), tableSegment.getTableName().getIdentifier());
+        IndexSegment result = new IndexSegment(tableSegment.getStartIndex(), tableSegment.getStopIndex(), indexName);
         tableSegment.getOwner().ifPresent(result::setOwner);
         return result;
     }
@@ -605,21 +611,21 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
         OpenGaussCreateSequenceStatement result = new OpenGaussCreateSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
         OpenGaussAlterSequenceStatement result = new OpenGaussAlterSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
         OpenGaussDropSequenceStatement result = new OpenGaussDropSequenceStatement();
@@ -631,7 +637,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitPrepare(final PrepareContext ctx) {
         OpenGaussPrepareStatement result = new OpenGaussPrepareStatement();
         if (null != ctx.preparableStmt().select()) {
-            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));    
+            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
         }
         if (null != ctx.preparableStmt().insert()) {
             result.setInsert((InsertStatement) visit(ctx.preparableStmt().insert()));
@@ -649,7 +655,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
         return new OpenGaussDeallocateStatement();
     }
-        
+    
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
         return new OpenGaussCreateTablespaceStatement();
@@ -687,12 +693,46 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        return new OpenGaussCreateLanguageStatement();
+        OpenGaussCreateSchemaStatement result = new OpenGaussCreateSchemaStatement();
+        if (null != ctx.createSchemaClauses().colId()) {
+            result.setSchemaName(ctx.createSchemaClauses().colId().getText());
+        }
+        if (null != ctx.createSchemaClauses().roleSpec() && null != ctx.createSchemaClauses().roleSpec().identifier()) {
+            IdentifierValue username = (IdentifierValue) visit(ctx.createSchemaClauses().roleSpec().identifier());
+            result.setUsername(username.getValue());
+        }
+        return result;
     }
     
     @Override
+    public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
+        OpenGaussAlterSchemaStatement result = new OpenGaussAlterSchemaStatement();
+        result.setSchemaName(((IdentifierValue) visit(ctx.name().get(0))).getValue());
+        if (ctx.name().size() > 1) {
+            result.setRenameSchema(((IdentifierValue) visit(ctx.name().get(1))).getValue());
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
-        return new OpenGaussDropSchemaStatement();
+        OpenGaussDropSchemaStatement result = new OpenGaussDropSchemaStatement();
+        result.getSchemaNames().addAll(((CollectionValue<String>) visit(ctx.nameList())).getValue());
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitNameList(final NameListContext ctx) {
+        CollectionValue<String> result = new CollectionValue<>();
+        if (null != ctx.nameList()) {
+            result.combine((CollectionValue<String>) visit(ctx.nameList()));
+        }
+        if (null != ctx.name()) {
+            result.getValue().add(((IdentifierValue) visit(ctx.name())).getValue());
+        }
+        return result;
     }
     
     @Override

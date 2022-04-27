@@ -84,8 +84,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(),
-                parameter.getDataSourceManager()).getConnection()) {
+        try (
+                Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(),
+                        parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);
@@ -122,8 +123,8 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     
     private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
         Collection<ActualTableDefinition> result = new LinkedList<>();
-        ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration)
-                PipelineDataSourceConfigurationFactory.newInstance(parameter.getPipelineConfiguration().getSource().getType(),
+        ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig =
+                (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(parameter.getPipelineConfiguration().getSource().getType(),
                         parameter.getPipelineConfiguration().getSource().getParameter());
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
@@ -152,8 +153,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     private Pair<String, List<String>> queryTablePrimaryKey(final Connection sourceConnection, final String actualTableName) throws SQLException {
         String primaryKeyName = null;
         List<String> primaryKeyColumns = new LinkedList<>();
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet resultSet = statement.executeQuery(String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName))) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName))) {
             while (resultSet.next()) {
                 primaryKeyName = primaryKeyName == null ? resultSet.getString(1) : primaryKeyName;
                 primaryKeyColumns.add(resultSet.getString(2));
@@ -177,8 +179,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     
     private List<String> queryCreateIndexes(final Connection sourceConnection, final String actualTableName, final String pkName) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
             while (resultSet.next()) {
                 // TODO add drop index first, make sure the index is not exist
                 result.add(String.format(DROP_INDEX_TEMPLATE, resultSet.getString(1), resultSet.getString(2)));
@@ -192,8 +195,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         final String fetchCommentSql = String.format(FETCH_COMMENT_TEMPLATE, actualTableName);
         List<String> result = new LinkedList<>();
         Map<Integer, String> commentMap = Maps.newHashMap();
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet commentResult = statement.executeQuery(fetchCommentSql)) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet commentResult = statement.executeQuery(fetchCommentSql)) {
             while (commentResult.next()) {
                 commentMap.put(commentResult.getInt(1), commentResult.getString(2));
             }
@@ -203,8 +207,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
             }
         }
         final String fetchColumnSql = String.format(FETCH_TABLE_COLUMN_TEMPLATE, actualTableName);
-        try (Statement statement = sourceConnection.createStatement();
-             ResultSet columnsResult = statement.executeQuery(fetchColumnSql)) {
+        try (
+                Statement statement = sourceConnection.createStatement();
+                ResultSet columnsResult = statement.executeQuery(fetchColumnSql)) {
             while (columnsResult.next()) {
                 String columnComment = commentMap.get(columnsResult.getInt(1));
                 if (columnComment != null) {

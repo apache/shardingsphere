@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSQLRewriteContextDecoratorTest {
-
+    
     @Test
     public void assertDecorateForRouteContextWhenIsFederated() {
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
@@ -45,13 +45,13 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isFederated()).thenReturn(true);
         shardingSQLRewriteContextDecorator.decorate(shardingRule, configurationProperties, sqlRewriteContext, routeContext);
-        assertTrue(Objects.isNull(sqlRewriteContext.getSchema()));
+        assertTrue(sqlRewriteContext.getSchemas().isEmpty());
         assertTrue(Objects.isNull(sqlRewriteContext.getSqlStatementContext()));
         assertThat(sqlRewriteContext.getParameters().size(), is(0));
         assertTrue(Objects.isNull(sqlRewriteContext.getParameterBuilder()));
         assertThat(sqlRewriteContext.getSqlTokens().size(), is(0));
     }
-
+    
     @Test
     public void assertDecorateForRouteContextWhenNotFederated() {
         List<Object> dummy = new ArrayList<>();
@@ -66,14 +66,14 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         shardingSQLRewriteContextDecorator.decorate(shardingRule, configurationProperties, sqlRewriteContext, routeContext);
         assertTrue(Objects.nonNull(sqlRewriteContext.getSqlTokens()));
     }
-
+    
     @Test
     public void assertGetOrder() {
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
         int actual = shardingSQLRewriteContextDecorator.getOrder();
         assertThat(actual, is(ShardingOrder.ORDER));
     }
-
+    
     @Test
     public void assertGetTypeClass() {
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();

@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class UpdateResponseHeaderTest {
-
+    
     @Test
     public void assertPropertiesWhenExecuteResultOfEmptyList() {
         UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(mock(SQLStatement.class));
@@ -38,7 +38,7 @@ public final class UpdateResponseHeaderTest {
         updateResponseHeader.mergeUpdateCount();
         assertThat(updateResponseHeader.getUpdateCount(), is(0L));
     }
-
+    
     @Test
     public void assertPropertiesWhenExecuteResultOfNotEmptyList() {
         UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(mock(SQLStatement.class), getExecuteUpdateResults());
@@ -47,7 +47,7 @@ public final class UpdateResponseHeaderTest {
         updateResponseHeader.mergeUpdateCount();
         assertThat(updateResponseHeader.getUpdateCount(), is(4L));
     }
-
+    
     private Collection<UpdateResult> getExecuteUpdateResults() {
         UpdateResult updateResult1 = new UpdateResult(1, 2L);
         UpdateResult updateResult2 = new UpdateResult(3, 4L);

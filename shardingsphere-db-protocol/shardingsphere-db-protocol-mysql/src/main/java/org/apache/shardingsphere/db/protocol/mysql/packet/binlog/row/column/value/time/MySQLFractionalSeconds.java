@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
 public final class MySQLFractionalSeconds {
-
+    
     private final int fraction;
     
     private final int fractionalSecondsPrecision;

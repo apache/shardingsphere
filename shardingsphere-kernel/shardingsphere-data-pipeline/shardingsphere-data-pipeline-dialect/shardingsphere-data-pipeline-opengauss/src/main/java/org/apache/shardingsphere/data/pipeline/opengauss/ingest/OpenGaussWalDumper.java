@@ -114,4 +114,3 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     protected void doStop() {
     }
 }
-

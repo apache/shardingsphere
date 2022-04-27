@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowIndexStatementContextTest {
-
+    
     @Test
     public void assertNewInstance() {
         MySQLShowIndexStatement mySQLShowIndexStatement = mock(MySQLShowIndexStatement.class);

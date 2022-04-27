@@ -42,7 +42,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
-                Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
+                Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }

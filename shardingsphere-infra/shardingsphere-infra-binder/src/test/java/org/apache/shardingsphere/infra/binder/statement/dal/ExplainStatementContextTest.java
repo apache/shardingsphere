@@ -34,17 +34,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ExplainStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLExplainStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLExplainStatement.class));
     }
-
+    
     private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = () -> 0;
         when(explainStatement.getStatement()).thenReturn(Optional.of(statement));

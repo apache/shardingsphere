@@ -40,14 +40,15 @@ public final class ITWatcher extends TestWatcher {
         if (null == cause) {
             return "";
         }
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             PrintStream printStream = new PrintStream(out)) {
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                PrintStream printStream = new PrintStream(out)) {
             cause.printStackTrace(printStream);
             printStream.flush();
             return out.toString();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ignored) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             return "";
         }
     }
