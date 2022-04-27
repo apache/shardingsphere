@@ -64,7 +64,7 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
             return false;
         }
         try {
-            return innerDistributeGlobalLock.tryLock(lockName, timeoutMillis);
+            return innerDistributeGlobalLock.tryLock(lockNodeService.generateGlobalLocksName(lockName), timeoutMillis);
         } finally {
             sequencedSemaphoreLock.releaseLock(lockName);
         }
