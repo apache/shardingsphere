@@ -39,4 +39,12 @@ public final class PropertiesUtilTest {
         Properties properties = new Properties();
         PropertiesUtil.getRequiredValue(properties, "sql-show");
     }
+    
+    @Test
+    public void assertGetRequiredValueWhenValueIsInt() {
+        Properties properties = new Properties();
+        properties.put("key", 1);
+        String actual = PropertiesUtil.getRequiredValue(properties, "key");
+        assertThat(actual, is("1"));
+    }
 }
