@@ -65,10 +65,10 @@ CACHE ${c.seqcache} </#if>
 </#if>
 <#if primary_key?size gt 0 ><#if columns?size gt 0 >,</#if>
 <@CONSTRAINTS.PRIMARY_KEY data=primary_key[0] /></#if><#if unique_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 >,</#if>
-<@CONSTRAINTS.UNIQUE /></#if><#if foreign_key?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 >,</#if>
-<@CONSTRAINTS.FOREIGN_KEY /></#if><#if check_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 >,</#if>
-<@CONSTRAINTS.CHECK/></#if><#if exclude_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 >,</#if>
-<@CONSTRAINTS.EXCLUDE/></#if>
+<@CONSTRAINTS.UNIQUE unique_data=unique_constraint /></#if><#if foreign_key?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 >,</#if>
+<@CONSTRAINTS.FOREIGN_KEY foreign_key_data=foreign_key /></#if><#if check_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 >,</#if>
+<@CONSTRAINTS.CHECK check_data=check_constraint/></#if><#if exclude_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 >,</#if>
+<@CONSTRAINTS.EXCLUDE exclude_data=exclude_constraint/></#if>
 <#if like_relation?? || coll_inherits?size gt 0 || columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 || exclude_constraint?size gt 0 >
 
 )</#if><#if relkind?? && relkind == 'p' > PARTITION BY ${ partition_scheme }</#if>
@@ -112,3 +112,24 @@ toast.${opt.name} = ${opt.value}<#assign add_comma=true></#if>
 <#if spcname?? >
 TABLESPACE ${spcname };
 </#if>
+
+<#if description?? >
+COMMENT ON TABLE ${schema}.${name}
+IS ${description};
+</#if>
+
+<#if columns?? && columns?size gt 0 >
+<#list columns as c >
+<#if c.description?? >
+
+COMMENT ON COLUMN ${schema}.${name}.${c.name}
+IS ${c.description};
+</#if>
+</#list>
+</#if>
+<@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=primary_key/>
+<@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=unique_constraint/>
+<@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=foreign_key/>
+<@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=check_constraint/>
+<@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=exclude_constraint/>
+
