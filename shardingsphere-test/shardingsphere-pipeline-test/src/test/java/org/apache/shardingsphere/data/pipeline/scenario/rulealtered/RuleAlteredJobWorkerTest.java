@@ -89,8 +89,8 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test
     public void assertHasUncompletedJob() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
-        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         repositoryAPI.persistJobProgress(jobContext);
@@ -98,7 +98,7 @@ public final class RuleAlteredJobWorkerTest {
         assertNotNull(jobConfigUrl);
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "hasUncompletedJobOfSameDatabaseName", new Class[]{String.class},
-                new String[]{jobConfiguration.getWorkflowConfig().getDatabaseName()});
+                new String[]{jobConfig.getWorkflowConfig().getDatabaseName()});
         assertFalse((Boolean) result);
     }
 }

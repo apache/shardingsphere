@@ -191,11 +191,11 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test(expected = PipelineVerifyFailedException.class)
     public void assertSwitchClusterConfigurationAlreadyFinished() {
-        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
@@ -205,12 +205,12 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
-        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        jobConfiguration.getHandleConfig().setJobShardingItem(0);
-        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        jobConfig.getHandleConfig().setJobShardingItem(0);
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);

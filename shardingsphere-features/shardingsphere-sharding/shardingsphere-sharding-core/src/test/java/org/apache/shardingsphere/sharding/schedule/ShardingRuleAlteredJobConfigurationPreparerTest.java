@@ -67,10 +67,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparerTest {
         assertNotNull(targetUrl);
         YamlPipelineDataSourceConfiguration target = YamlEngine.unmarshal(new File(targetUrl.getFile()), YamlPipelineDataSourceConfiguration.class);
         pipelineConfiguration.setTarget(target);
-        RuleAlteredJobConfiguration jobConfiguration = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
-        jobConfiguration.buildHandleConfig();
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
+        jobConfig.buildHandleConfig();
         ShardingRuleAlteredJobConfigurationPreparer preparer = new ShardingRuleAlteredJobConfigurationPreparer();
-        TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfiguration.getHandleConfig(), mockOnRuleAlteredActionConfiguration);
+        TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfig.getHandleConfig(), mockOnRuleAlteredActionConfiguration);
         assertEquals(taskConfiguration.getHandleConfig().getLogicTables(), "t_order");
     }
     
@@ -82,10 +82,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparerTest {
         assertNotNull(targetUrl);
         YamlPipelineDataSourceConfiguration target = YamlEngine.unmarshal(new File(targetUrl.getFile()), YamlPipelineDataSourceConfiguration.class);
         pipelineConfiguration.setTarget(target);
-        RuleAlteredJobConfiguration jobConfiguration = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
-        jobConfiguration.buildHandleConfig();
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
+        jobConfig.buildHandleConfig();
         ShardingRuleAlteredJobConfigurationPreparer preparer = new ShardingRuleAlteredJobConfigurationPreparer();
-        TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfiguration.getHandleConfig(), mockOnRuleAlteredActionConfiguration);
+        TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfig.getHandleConfig(), mockOnRuleAlteredActionConfiguration);
         assertThat(taskConfiguration.getHandleConfig().getLogicTables(), is("t_order"));
     }
     
