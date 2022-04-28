@@ -26,10 +26,8 @@ import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataS
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,15 +54,13 @@ public final class DynamicReadwriteSplittingDataSourceProcessor implements Readw
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper(final String name) {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
+    public Collection<String> getAllDataSources() {
+        Collection<String> result = new LinkedList<>();
         Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         if (dataSourceNameAware.isPresent()) {
-            actualDataSourceNames.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            actualDataSourceNames.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
+            result.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
+            result.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
         }
-        result.put(name, actualDataSourceNames);
         return result;
     }
 }

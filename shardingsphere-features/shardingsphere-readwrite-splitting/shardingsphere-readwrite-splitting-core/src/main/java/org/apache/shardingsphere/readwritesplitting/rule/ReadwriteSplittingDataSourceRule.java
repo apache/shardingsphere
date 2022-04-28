@@ -90,15 +90,6 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
-     * Get data source mapper.
-     *
-     * @return data source mapper
-     */
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return dataSourceProcessor.getDataSourceMapper(name);
-    }
-    
-    /**
      * Get data sources.
      *
      * @param removeDisabled whether to remove the disabled resource
