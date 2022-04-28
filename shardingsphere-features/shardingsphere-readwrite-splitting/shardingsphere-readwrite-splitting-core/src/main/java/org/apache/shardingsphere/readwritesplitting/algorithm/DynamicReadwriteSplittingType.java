@@ -20,18 +20,17 @@ package org.apache.shardingsphere.readwritesplitting.algorithm;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,17 +38,12 @@ import java.util.Properties;
 /**
  * Dynamic readwrite splitting type.
  */
-public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
+@Getter
+public final class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private final String autoAwareDataSourceName;
     
-    @Getter
-    private String autoAwareDataSourceName;
-    
-    @Override
-    public void init() {
+    public DynamicReadwriteSplittingType(final Properties props) {
         autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "auto aware data source name is required.");
     }
@@ -92,10 +86,5 @@ public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
         }
         result.put(name, actualDataSourceNames);
         return result;
-    }
-    
-    @Override
-    public String getType() {
-        return "DYNAMIC";
     }
 }

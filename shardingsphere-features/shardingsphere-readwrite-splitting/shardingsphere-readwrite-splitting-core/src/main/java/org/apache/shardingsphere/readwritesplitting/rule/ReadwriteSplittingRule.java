@@ -27,13 +27,13 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,10 +49,6 @@ import java.util.function.Supplier;
  * Readwrite-splitting rule.
  */
 public final class ReadwriteSplittingRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
-    
-    static {
-        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
-    }
     
     private static final String DYNAMIC = "DYNAMIC";
     
@@ -139,7 +135,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     private Map<String, Map<String, String>> exportDataSource(final boolean removeDisabled, final String... readwriteSplittingTypes) {
         Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         dataSourceRules.forEach((name, dataSourceRule) -> {
-            if (Arrays.asList(readwriteSplittingTypes).contains(dataSourceRule.getReadwriteSplittingType().getType())) {
+            if (Arrays.asList(readwriteSplittingTypes).contains(getReadwriteSplittingType(dataSourceRule.getReadwriteSplittingType()))) {
                 Map<String, String> dataSources = dataSourceRule.getDataSources(removeDisabled);
                 if (!dataSources.isEmpty()) {
                     result.put(dataSourceRule.getName(), dataSources);
@@ -147,6 +143,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
             }
         });
         return result;
+    }
+    
+    private String getReadwriteSplittingType(final ReadwriteSplittingType readwriteSplittingType) {
+        return readwriteSplittingType instanceof StaticReadwriteSplittingType ? STATIC : DYNAMIC;
     }
     
     private Collection<String> exportAutoAwareDataSourceNames() {

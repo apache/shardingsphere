@@ -22,12 +22,11 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingTypeFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,9 +44,9 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
-    private final ReadwriteSplittingType readwriteSplittingType;
-    
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
+    
+    private final ReadwriteSplittingType readwriteSplittingType;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
@@ -55,8 +54,8 @@ public final class ReadwriteSplittingDataSourceRule {
     public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
-        readwriteSplittingType = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(config.getType(), config.getProps()), ReadwriteSplittingType.class);
         this.loadBalancer = loadBalancer;
+        readwriteSplittingType = ReadwriteSplittingTypeFactory.newInstance(config.getType(), config.getProps());
     }
     
     /**

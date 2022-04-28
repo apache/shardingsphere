@@ -161,7 +161,8 @@ public final class ShardingRouteEngineFactory {
         if (isDCLForSingleTable(sqlStatementContext)) {
             Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
             return !shardingRuleTableNames.isEmpty()
-                    ? new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames) : new ShardingIgnoreRoutingEngine();
+                    ? new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames)
+                    : new ShardingIgnoreRoutingEngine();
         } else {
             return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
         }

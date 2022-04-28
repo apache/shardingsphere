@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.spi;
-
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+package org.apache.shardingsphere.readwritesplitting.type;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Readwrite splitting type.
+ * Readwrite splitting method.
  */
-public interface ReadwriteSplittingType extends ShardingSphereAlgorithm, RequiredSPI, ShardingSphereAlgorithmPostProcessor {
+public interface ReadwriteSplittingType {
     
     /**
      * Get write data source.
