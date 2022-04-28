@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -56,7 +56,7 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test(expected = PipelineJobCreationException.class)
     public void assertCreateRuleAlteredContextNoAlteredRule() {
-        JobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         jobConfig.setWorkflowConfig(new WorkflowConfiguration("logic_db", ImmutableMap.of(), 0, 1));
         RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
     }
@@ -89,7 +89,7 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test
     public void assertHasUncompletedJob() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
-        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
         jobContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();

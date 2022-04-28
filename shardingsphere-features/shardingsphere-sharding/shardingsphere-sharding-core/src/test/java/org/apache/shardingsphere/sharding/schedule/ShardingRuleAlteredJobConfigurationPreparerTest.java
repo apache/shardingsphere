@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.schedule;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
@@ -67,7 +67,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparerTest {
         assertNotNull(targetUrl);
         YamlPipelineDataSourceConfiguration target = YamlEngine.unmarshal(new File(targetUrl.getFile()), YamlPipelineDataSourceConfiguration.class);
         pipelineConfiguration.setTarget(target);
-        JobConfiguration jobConfiguration = new JobConfiguration(workflowConfiguration, pipelineConfiguration);
+        RuleAlteredJobConfiguration jobConfiguration = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
         jobConfiguration.buildHandleConfig();
         ShardingRuleAlteredJobConfigurationPreparer preparer = new ShardingRuleAlteredJobConfigurationPreparer();
         TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfiguration.getHandleConfig(), mockOnRuleAlteredActionConfiguration);
@@ -82,7 +82,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparerTest {
         assertNotNull(targetUrl);
         YamlPipelineDataSourceConfiguration target = YamlEngine.unmarshal(new File(targetUrl.getFile()), YamlPipelineDataSourceConfiguration.class);
         pipelineConfiguration.setTarget(target);
-        JobConfiguration jobConfiguration = new JobConfiguration(workflowConfiguration, pipelineConfiguration);
+        RuleAlteredJobConfiguration jobConfiguration = new RuleAlteredJobConfiguration(workflowConfiguration, pipelineConfiguration);
         jobConfiguration.buildHandleConfig();
         ShardingRuleAlteredJobConfigurationPreparer preparer = new ShardingRuleAlteredJobConfigurationPreparer();
         TaskConfiguration taskConfiguration = preparer.createTaskConfiguration(pipelineConfiguration, jobConfiguration.getHandleConfig(), mockOnRuleAlteredActionConfiguration);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class PipelineDataSourceManagerTest {
     
-    private JobConfiguration jobConfig;
+    private RuleAlteredJobConfiguration jobConfig;
     
     @Before
     public void setUp() {

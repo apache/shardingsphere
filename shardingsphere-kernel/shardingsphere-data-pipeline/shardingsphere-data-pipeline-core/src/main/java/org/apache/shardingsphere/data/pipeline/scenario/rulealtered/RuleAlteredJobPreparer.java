@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -94,7 +94,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
-        JobConfiguration jobConfig = jobContext.getJobConfig();
+        RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getHandleConfig().getJobId();
         ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getOrCreateGlobalLock(lockName);
@@ -128,7 +128,7 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareTarget(final JobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
+    private void prepareTarget(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         Optional<DataSourcePreparer> dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
@@ -189,7 +189,7 @@ public final class RuleAlteredJobPreparer {
      *
      * @param jobConfig job configuration
      */
-    public void cleanup(final JobConfiguration jobConfig) {
+    public void cleanup(final RuleAlteredJobConfiguration jobConfig) {
         try {
             cleanup0(jobConfig);
         } catch (final SQLException ex) {
@@ -197,7 +197,7 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void cleanup0(final JobConfiguration jobConfig) throws SQLException {
+    private void cleanup0(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(jobConfig.getHandleConfig().getSourceDatabaseType());
         PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(databaseType.getName());
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory

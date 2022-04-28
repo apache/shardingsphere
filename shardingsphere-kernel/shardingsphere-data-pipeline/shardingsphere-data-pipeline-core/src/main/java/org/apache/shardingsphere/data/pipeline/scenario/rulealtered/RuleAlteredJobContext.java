@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -59,7 +59,7 @@ public final class RuleAlteredJobContext {
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private final JobConfiguration jobConfig;
+    private final RuleAlteredJobConfiguration jobConfig;
     
     private final RuleAlteredContext ruleAlteredContext;
     
@@ -81,7 +81,7 @@ public final class RuleAlteredJobContext {
     
     private RuleAlteredJobPreparer jobPreparer;
     
-    public RuleAlteredJobContext(final JobConfiguration jobConfig) {
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobConfig.buildHandleConfig();

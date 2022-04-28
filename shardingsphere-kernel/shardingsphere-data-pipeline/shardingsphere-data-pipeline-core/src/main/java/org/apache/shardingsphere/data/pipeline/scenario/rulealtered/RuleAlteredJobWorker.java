@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
@@ -122,7 +122,7 @@ public final class RuleAlteredJobWorker {
      * @param jobConfig job configuration
      * @return rule altered context
      */
-    public static RuleAlteredContext createRuleAlteredContext(final JobConfiguration jobConfig) {
+    public static RuleAlteredContext createRuleAlteredContext(final RuleAlteredJobConfiguration jobConfig) {
         YamlRootConfiguration targetRootConfig = getYamlRootConfig(jobConfig);
         YamlRuleConfiguration yamlRuleConfig = null;
         for (YamlRuleConfiguration each : targetRootConfig.getRules()) {
@@ -151,7 +151,7 @@ public final class RuleAlteredJobWorker {
      * @param jobConfig job configuration
      * @return YAML root configuration
      */
-    private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
+    private static YamlRootConfiguration getYamlRootConfig(final RuleAlteredJobConfiguration jobConfig) {
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
@@ -174,7 +174,7 @@ public final class RuleAlteredJobWorker {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
-        Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
+        Optional<RuleAlteredJobConfiguration> jobConfigOptional = createJobConfig(event);
         if (jobConfigOptional.isPresent()) {
             PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
         } else {
@@ -185,7 +185,7 @@ public final class RuleAlteredJobWorker {
         }
     }
     
-    private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
+    private Optional<RuleAlteredJobConfiguration> createJobConfig(final StartScalingEvent event) {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getTargetDataSource(), event.getTargetRule());
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
@@ -211,7 +211,7 @@ public final class RuleAlteredJobWorker {
         }
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getDatabaseName(), alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
         PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
-        return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
+        return Optional.of(new RuleAlteredJobConfiguration(workflowConfig, pipelineConfig));
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
@@ -297,7 +297,7 @@ public final class RuleAlteredJobWorker {
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
-            JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
+            RuleAlteredJobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), RuleAlteredJobConfiguration.class, true);
             if (hasUncompletedJobOfSameDatabaseName(jobConfiguration, each.getJobId(), databaseName)) {
                 result = true;
                 break;
@@ -306,7 +306,7 @@ public final class RuleAlteredJobWorker {
         return !result;
     }
     
-    private boolean hasUncompletedJobOfSameDatabaseName(final JobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
+    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
         HandleConfiguration handleConfig = jobConfig.getHandleConfig();
         WorkflowConfiguration workflowConfig;
         if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipline.env;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
@@ -85,7 +85,7 @@ public final class ITEnvironmentContext {
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
         pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
         pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
-        JobConfiguration jobConfig = new JobConfiguration();
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
         jobConfig.setPipelineConfig(pipelineConfig);
         return new Gson().toJson(jobConfig);
     }

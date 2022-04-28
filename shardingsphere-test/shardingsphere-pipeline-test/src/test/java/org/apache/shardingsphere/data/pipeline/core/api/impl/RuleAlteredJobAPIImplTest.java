@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -127,7 +127,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheck() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
         String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
@@ -140,7 +140,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheckWithAlgorithm() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
         String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
@@ -191,7 +191,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test(expected = PipelineVerifyFailedException.class)
     public void assertSwitchClusterConfigurationAlreadyFinished() {
-        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
@@ -205,7 +205,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
-        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        final RuleAlteredJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
         jobConfiguration.getHandleConfig().setJobShardingItem(0);
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
@@ -226,7 +226,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertResetTargetTable() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());

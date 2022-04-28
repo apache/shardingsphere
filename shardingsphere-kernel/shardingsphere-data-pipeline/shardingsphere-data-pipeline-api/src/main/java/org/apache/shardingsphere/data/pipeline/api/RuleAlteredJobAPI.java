@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -47,7 +47,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job config
      * @return job id
      */
-    Optional<String> start(JobConfiguration jobConfig);
+    Optional<String> start(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Get job progress.
@@ -63,7 +63,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return each sharding item progress
      */
-    Map<Integer, JobProgress> getProgress(JobConfiguration jobConfig);
+    Map<Integer, JobProgress> getProgress(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Stop cluster writing.
@@ -116,7 +116,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return data consistency check needed or not
      */
-    boolean isDataConsistencyCheckNeeded(JobConfiguration jobConfig);
+    boolean isDataConsistencyCheckNeeded(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Do data consistency check.
@@ -132,7 +132,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(JobConfiguration jobConfig);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Do data consistency check.
@@ -164,7 +164,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      *
      * @param jobConfig job configuration
      */
-    void switchClusterConfiguration(JobConfiguration jobConfig);
+    void switchClusterConfiguration(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Reset scaling job.
@@ -179,5 +179,5 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobId job id
      * @return job configuration
      */
-    JobConfiguration getJobConfig(String jobId);
+    RuleAlteredJobConfiguration getJobConfig(String jobId);
 }

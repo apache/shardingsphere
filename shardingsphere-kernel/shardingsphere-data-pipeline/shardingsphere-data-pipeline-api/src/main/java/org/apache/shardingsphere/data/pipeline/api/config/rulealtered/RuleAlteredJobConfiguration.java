@@ -41,7 +41,7 @@ import java.util.Collections;
 @Setter
 @Slf4j
 // TODO share for totally new scenario
-public final class JobConfiguration {
+public final class RuleAlteredJobConfiguration {
     
     private WorkflowConfiguration workflowConfig;
     
@@ -49,7 +49,7 @@ public final class JobConfiguration {
     
     private HandleConfiguration handleConfig;
     
-    public JobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
+    public RuleAlteredJobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
         this.workflowConfig = workflowConfig;
         this.pipelineConfig = pipelineConfig;
     }
