@@ -433,7 +433,7 @@ public final class ContextManager implements AutoCloseable {
         if (schemaMetaData.getTables().containsKey(tableName)) {
             metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
             metaDataContexts.getMetaDataPersistService()
-                    .ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, databaseName, metaDataContexts.getMetaData(databaseName).getDefaultSchema()));
+                    .ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, databaseName, metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)));
         }
     }
     
