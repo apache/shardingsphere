@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -107,24 +105,20 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return data sources
      */
     public Map<String, String> getDataSources(final boolean removeDisabled) {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (Entry<String, String> entry : dataSourceProcessor.getDataSources().entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(key) && removeDisabled) {
-                value = removeDisabledDataSources(value);
-            }
-            result.put(key, value);
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        String writeDataSourceName = dataSourceProcessor.getWriteDataSource();
+        if (null != writeDataSourceName) {
+            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
         }
+        List<String> readDataSourceNames = dataSourceProcessor.getReadDataSources();
+        if (readDataSourceNames.isEmpty()) {
+            return result;
+        }
+        if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
+            readDataSourceNames = new LinkedList<>(readDataSourceNames);
+            readDataSourceNames.removeIf(disabledDataSourceNames::contains);
+        }
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
         return result;
-    }
-    
-    private String removeDisabledDataSources(final String readDataSources) {
-        if (disabledDataSourceNames.isEmpty()) {
-            return readDataSources;
-        }
-        Collection<String> dataSources = new LinkedList<>(Splitter.on(",").trimResults().splitToList(readDataSources));
-        dataSources.removeIf(disabledDataSourceNames::contains);
-        return String.join(",", dataSources);
     }
 }
