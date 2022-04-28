@@ -116,7 +116,7 @@ public final class ReadwriteSplittingDataSourceRule {
                 readDataSourceNames = new LinkedList<>(readDataSourceNames);
                 readDataSourceNames.removeIf(disabledDataSourceNames::contains);
             }
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, writeDataSourceName);
+            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
         }
         return result;
     }
