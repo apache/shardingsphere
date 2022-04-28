@@ -16,7 +16,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
@@ -69,10 +70,10 @@
                         <executions>
                             <execution>
                                 <id>shardingsphere-proxy-bin</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
+                                <phase>package</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -94,6 +95,13 @@
                     <plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
+                        <configuration>
+                            <repository>${proxy.image.repository}</repository>
+                            <tag>${proxy.image.tag}</tag>
+                            <buildArgs>
+                                <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
+                            </buildArgs>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>shardingsphere-proxy-bin</id>
@@ -102,13 +110,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <repository>${proxy.image.repository}</repository>
-                            <tag>${proxy.image.tag}</tag>
-                            <buildArgs>
-                                <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
-                            </buildArgs>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -129,10 +130,10 @@
                         <executions>
                             <execution>
                                 <id>create builder</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <phase>package</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
@@ -150,10 +151,10 @@
                             </execution>
                             <execution>
                                 <id>build</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <phase>package</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
@@ -170,10 +171,10 @@
                             </execution>
                             <execution>
                                 <id>push</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <phase>package</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
@@ -194,10 +195,10 @@
                             </execution>
                             <execution>
                                 <id>cleanup builder</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <phase>package</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
