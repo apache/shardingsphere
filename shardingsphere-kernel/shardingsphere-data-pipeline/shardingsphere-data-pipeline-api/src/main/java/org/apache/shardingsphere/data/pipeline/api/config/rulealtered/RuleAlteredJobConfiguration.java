@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
@@ -41,13 +42,15 @@ import java.util.Collections;
 @Setter
 @Slf4j
 // TODO share for totally new scenario
-public final class RuleAlteredJobConfiguration {
+public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
     
     private WorkflowConfiguration workflowConfig;
     
     private PipelineConfiguration pipelineConfig;
     
     private HandleConfiguration handleConfig;
+    
+    private String databaseName;
     
     public RuleAlteredJobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
         this.workflowConfig = workflowConfig;
@@ -91,7 +94,7 @@ public final class RuleAlteredJobConfiguration {
         WorkflowConfiguration workflowConfig = getWorkflowConfig();
         jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
         jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
-        jobId.setDatabaseName(workflowConfig.getDatabaseName());
+        jobId.setDatabaseName(databaseName);
         return jobId.marshal();
     }
 }

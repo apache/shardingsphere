@@ -54,7 +54,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparerTest {
     
     @Before
     public void setUp() {
-        workflowConfiguration = new WorkflowConfiguration("logic_db", ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(),
+        workflowConfiguration = new WorkflowConfiguration(ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(),
                 Collections.singletonList("t_order")), 0, 1);
         when(mockOnRuleAlteredActionConfiguration.getOutput()).thenReturn(new OutputConfiguration(5, 1000, null));
     }

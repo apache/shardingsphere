@@ -57,7 +57,7 @@ public final class RuleAlteredJobWorkerTest {
     @Test(expected = PipelineJobCreationException.class)
     public void assertCreateRuleAlteredContextNoAlteredRule() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobConfig.setWorkflowConfig(new WorkflowConfiguration("logic_db", ImmutableMap.of(), 0, 1));
+        jobConfig.setWorkflowConfig(new WorkflowConfiguration(ImmutableMap.of(), 0, 1));
         RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
     }
     
@@ -98,7 +98,7 @@ public final class RuleAlteredJobWorkerTest {
         assertNotNull(jobConfigUrl);
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile())));
         Object result = ReflectionUtil.invokeMethod(new RuleAlteredJobWorker(), "hasUncompletedJobOfSameDatabaseName", new Class[]{String.class},
-                new String[]{jobConfig.getWorkflowConfig().getDatabaseName()});
+                new String[]{jobConfig.getDatabaseName()});
         assertFalse((Boolean) result);
     }
 }

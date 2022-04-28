@@ -67,7 +67,7 @@ public final class FinishedCheckJob implements SimpleJob {
                 }
                 log.info("scaling job {} almost finished.", jobId);
                 RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
-                String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+                String databaseName = jobConfig.getDatabaseName();
                 try {
                     if (null != sourceWritingStopAlgorithm) {
                         sourceWritingStopAlgorithm.lock(databaseName, jobId + "");

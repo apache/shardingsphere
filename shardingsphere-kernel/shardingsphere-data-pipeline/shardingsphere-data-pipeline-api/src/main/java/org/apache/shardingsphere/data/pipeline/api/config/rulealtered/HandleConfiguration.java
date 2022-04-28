@@ -59,6 +59,7 @@ public final class HandleConfiguration {
      */
     private Integer jobShardingItem;
     
+    // TODO shardingSize should be configurable
     private int shardingSize = 1000 * 10000;
     
     private String sourceDatabaseType;

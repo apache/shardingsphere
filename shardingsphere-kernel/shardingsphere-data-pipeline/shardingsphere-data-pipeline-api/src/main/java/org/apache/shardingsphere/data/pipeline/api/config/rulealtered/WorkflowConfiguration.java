@@ -31,10 +31,6 @@ import java.util.Map;
 @ToString
 public final class WorkflowConfiguration {
     
-    private long allowDelayMilliseconds = 60 * 1000L;
-    
-    private String databaseName;
-    
     /**
      * Map{altered rule yaml class name, re-shard needed table names}.
      */
@@ -44,8 +40,7 @@ public final class WorkflowConfiguration {
     
     private Integer newVersion;
     
-    public WorkflowConfiguration(final String databaseName, final Map<String, List<String>> alteredRuleYamlClassNameTablesMap, final int activeVersion, final int newVersion) {
-        this.databaseName = databaseName;
+    public WorkflowConfiguration(final Map<String, List<String>> alteredRuleYamlClassNameTablesMap, final int activeVersion, final int newVersion) {
         this.alteredRuleYamlClassNameTablesMap = alteredRuleYamlClassNameTablesMap;
         this.activeVersion = activeVersion;
         this.newVersion = newVersion;

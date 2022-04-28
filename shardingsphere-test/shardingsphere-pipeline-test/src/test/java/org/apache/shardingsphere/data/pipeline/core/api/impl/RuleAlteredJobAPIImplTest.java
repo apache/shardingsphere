@@ -129,7 +129,7 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
         ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
@@ -142,7 +142,7 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
         ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());

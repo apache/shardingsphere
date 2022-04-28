@@ -65,6 +65,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             if (deleted || disabled) {
                 log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), deleted, disabled);
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
+                // TODO refactor: dispatch to different job types
                 RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
                 if (deleted) {
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
@@ -72,7 +73,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                     log.info("isJobSuccessful=true");
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
                 }
-                ScalingReleaseDatabaseLevelLockEvent releaseLockEvent = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getWorkflowConfig().getDatabaseName());
+                ScalingReleaseDatabaseLevelLockEvent releaseLockEvent = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getDatabaseName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
@@ -80,7 +81,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
-                    String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+                    String databaseName = jobConfig.getDatabaseName();
                     if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
                         execute(jobConfigPOJO);
                     } else {

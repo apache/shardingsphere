@@ -209,9 +209,11 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getDatabaseName(), alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
         PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
-        return Optional.of(new RuleAlteredJobConfiguration(workflowConfig, pipelineConfig));
+        RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration(workflowConfig, pipelineConfig);
+        result.setDatabaseName(event.getDatabaseName());
+        return Optional.of(result);
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
@@ -308,12 +310,11 @@ public final class RuleAlteredJobWorker {
     
     private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
         HandleConfiguration handleConfig = jobConfig.getHandleConfig();
-        WorkflowConfiguration workflowConfig;
-        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
+        if (null == handleConfig || null == jobConfig.getWorkflowConfig()) {
             log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
             return false;
         }
-        return currentDatabaseName.equals(workflowConfig.getDatabaseName());
+        return currentDatabaseName.equals(jobConfig.getDatabaseName());
     }
     
     /**

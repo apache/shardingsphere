@@ -44,7 +44,8 @@ public final class JobConfigurationBuilder {
      */
     public static RuleAlteredJobConfiguration createJobConfiguration() {
         RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration();
-        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")), 0, 1));
+        result.setDatabaseName("logic_db");
+        result.setWorkflowConfig(new WorkflowConfiguration(ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")), 0, 1));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
         pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(
                 new ShardingSpherePipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"))));
