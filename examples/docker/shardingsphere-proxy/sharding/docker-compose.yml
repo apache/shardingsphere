@@ -18,7 +18,7 @@
 version: '3'
 services:
   postgres:
-    ## for different MySQL version, you could get more at here : https://hub.docker.com/_/mysql?tab=tags
+    ## for different postgres version, you could get more at here : https://hub.docker.com/_/postgres?tab=tags
     image: "postgres:latest"
     ## port binding to 5432, you could change to 15432:5432 or any other available port you want
     ports:
