@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.ArrayList;
@@ -54,18 +53,6 @@ public final class DynamicReadwriteSplittingDataSourceProcessor implements Readw
             return new ArrayList<>(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
         }
         return Collections.emptyList();
-    }
-    
-    @Override
-    public Map<String, String> getDataSources() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
-        if (dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
-            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
-            return result;
-        }
-        return result;
     }
     
     @Override

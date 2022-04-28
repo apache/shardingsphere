@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.type.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.Collection;
@@ -45,14 +44,6 @@ public final class StaticReadwriteSplittingDataSourceProcessor implements Readwr
     @Override
     public List<String> getReadDataSources() {
         return readDataSourceNames;
-    }
-    
-    @Override
-    public Map<String, String> getDataSources() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
-        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
-        return result;
     }
     
     @Override

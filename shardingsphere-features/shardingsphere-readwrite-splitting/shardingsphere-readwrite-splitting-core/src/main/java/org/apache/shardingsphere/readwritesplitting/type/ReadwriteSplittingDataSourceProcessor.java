@@ -40,13 +40,6 @@ public interface ReadwriteSplittingDataSourceProcessor {
     List<String> getReadDataSources();
     
     /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    Map<String, String> getDataSources();
-    
-    /**
      * Get data source mapper.
      *
      * @param name name
