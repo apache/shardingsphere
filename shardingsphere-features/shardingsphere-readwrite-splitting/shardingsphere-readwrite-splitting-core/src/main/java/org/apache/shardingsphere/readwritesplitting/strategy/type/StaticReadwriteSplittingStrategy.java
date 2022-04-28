@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.type.impl;
+package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Static readwrite splitting data source processor.
+ * Static readwrite splitting strategy.
  */
 @RequiredArgsConstructor
-public final class StaticReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
+public final class StaticReadwriteSplittingStrategy implements ReadwriteSplittingStrategy {
     
     private final String writeDataSourceName;
     
