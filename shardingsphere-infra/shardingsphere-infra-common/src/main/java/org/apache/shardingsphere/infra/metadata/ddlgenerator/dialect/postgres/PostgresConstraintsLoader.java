@@ -22,11 +22,13 @@ import lombok.RequiredArgsConstructor;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Postgres constraints loader.
@@ -72,7 +74,7 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
         List<Map<String, Object>> constraintsProperties = fetchConstraintsProperties(context, type);
         fetchConstraintsColumns(constraintsProperties);
-        context.put(name, constraintsProperties);
+        context.put(name, constraintsProperties.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
     }
     
     private void fetchConstraintsColumns(final List<Map<String, Object>> constraintsProperties) {
@@ -80,12 +82,29 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
             List<Map<String, Object>> columns = new LinkedList<>();
             for (Map<String, Object> col : fetchConstraintsCols(each)) {
                 Map<String, Object> column = new HashMap<>();
-                column.put("column", col.get("column"));
+                column.put("column", stripQuote((String) col.get("column")));
                 columns.add(column);
             }
             each.put("columns", columns);
-            each.put("include", new LinkedList<>());
+            Map<String, Object> param = new LinkedHashMap<>();
+            param.put("cid", each.get("oid"));
+            List<Object> includes = new LinkedList<>();
+            for (Map<String, Object> include : executeByTemplate(connection, param, "index_constraint/11_plus/get_constraint_include.ftl")) {
+                includes.add(include.get("colname"));
+            }
+            each.put("include", includes);
         }
+    }
+    
+    private String stripQuote(final String column) {
+        String result = column;
+        if (column.startsWith("\"")) {
+            result = result.substring(1);
+        }
+        if (column.endsWith("\"")) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result;
     }
     
     private List<Map<String, Object>> fetchConstraintsCols(final Map<String, Object> constraintColProperties) {

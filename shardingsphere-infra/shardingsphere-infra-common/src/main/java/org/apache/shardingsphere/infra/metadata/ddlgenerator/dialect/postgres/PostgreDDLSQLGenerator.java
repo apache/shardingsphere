@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
     
-    // TODO support version, partitions, comments etc.
+    // TODO support version, partitions, index etc.
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final Connection connection) {
         Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
@@ -40,13 +40,7 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
     
     private String doGenerateDDLSQL(final Map<String, Object> context) {
         formatColumnList(context);
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("-- Table: %s.%s\n\n-- ", context.get("schema"), context.get("name")));
-        result.append(FreemarkerManager.getSqlFromTemplate(context, "table/default/delete.ftl"));
-        result.append("\n");
-        String tableSQL = FreemarkerManager.getSqlFromTemplate(context, "table/12_plus/create.ftl");
-        result.append(tableSQL);
-        return result.toString();
+        return FreemarkerManager.getSqlFromTemplate(context, "table/12_plus/create.ftl");
     }
     
     @SuppressWarnings("unchecked")

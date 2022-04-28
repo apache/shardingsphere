@@ -15,11 +15,15 @@
   ~ limitations under the License.
   -->
 <#import "../../macro/constraints.ftl" as CONSTRAINTS>
+-- Table: ${schema}.${name}
+
+-- DROP TABLE IF EXISTS ${schema}.${name};
+
 <#assign with_clause = false>
 <#if fillfactor!false || parallel_workers!false || toast_tuple_target!false || (autovacuum_custom!false && add_vacuum_settings_in_sql!false) || autovacuum_enabled == 't' || autovacuum_enabled == 'f' || (toast_autovacuum!false && add_vacuum_settings_in_sql!false) || toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f' >
     <#assign with_clause = true>
 </#if>
-CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}. ${name}
+CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}.${name}
 <#if typname?? >
 OF ${typname }
 </#if>
@@ -28,18 +32,12 @@ OF ${typname }
 </#if>
 <#if like_relation?? >
 LIKE ${like_relation }<#if like_default_value!false >
-
         INCLUDING DEFAULTS</#if><#if like_constraints!false >
-
         INCLUDING CONSTRAINTS</#if><#if like_indexes!false >
-
         INCLUDING INDEXES</#if><#if like_storage!false >
-
         INCLUDING STORAGE</#if><#if  like_comments!false >
-
         INCLUDING COMMENTS</#if><#if  columns?size gt 0 >,
 </#if>
-
 </#if>
 <#if columns?? && columns?size gt 0 >
 <#list columns as c >
@@ -70,14 +68,11 @@ CACHE ${c.seqcache} </#if>
 <@CONSTRAINTS.CHECK check_data=check_constraint/></#if><#if exclude_constraint?size gt 0 ><#if columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 >,</#if>
 <@CONSTRAINTS.EXCLUDE exclude_data=exclude_constraint/></#if>
 <#if like_relation?? || coll_inherits?size gt 0 || columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 || exclude_constraint?size gt 0 >
-
 )</#if><#if relkind?? && relkind == 'p' > PARTITION BY ${ partition_scheme }</#if>
 <#if !(coll_inherits??) && !(spcname??) && !with_clause >;</#if>
-
 <#if coll_inherits?? && coll_inherits?size gt 0>
 INHERITS (<#list coll_inherits as val ><#if val?counter != 1 >, </#if>${val}</#list>)<#if !(spcname??) && !with_clause >;</#if>
 </#if>
-
 <#if with_clause >
 <#assign add_comma=false>
 WITH (
@@ -105,25 +100,20 @@ ${opt.name} = ${opt.value}<#assign add_comma=true></#if>
 </#if>
 toast.${opt.name} = ${opt.value}<#assign add_comma=true></#if>
 </#list></#if>
-
 <#if spcname?? >)<#else>);</#if>
-
 </#if>
 <#if spcname?? >
 TABLESPACE ${spcname };
 </#if>
-
 <#if description?? >
 COMMENT ON TABLE ${schema}.${name}
-IS ${description};
+IS '${description}';
 </#if>
-
 <#if columns?? && columns?size gt 0 >
 <#list columns as c >
 <#if c.description?? >
-
 COMMENT ON COLUMN ${schema}.${name}.${c.name}
-IS ${c.description};
+IS '${c.description}';
 </#if>
 </#list>
 </#if>

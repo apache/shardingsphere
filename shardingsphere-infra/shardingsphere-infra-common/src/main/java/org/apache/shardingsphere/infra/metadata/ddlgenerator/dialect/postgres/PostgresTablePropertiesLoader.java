@@ -20,16 +20,12 @@ package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Postgres table properties loader.
@@ -45,7 +41,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     
     /**
      * Load table properties.
-     * 
+     *
      * @return table properties
      */
     @SneakyThrows
@@ -79,16 +75,8 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     
     private void fetchTableProperties(final Map<String, Object> context) {
         appendFirstRow(executeByTemplate(connection, context, "table/12_plus/properties.ftl"), context);
-        context.put("coll_inherits", convertPgArrayToList(context.get("coll_inherits")));
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
-        setRowsCount(context);
-        fetchPrivileges(context);
-    }
-    
-    @SneakyThrows
-    private Collection<String> convertPgArrayToList(final Object array) {
-        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     
     private void updateAutovacuumProperties(final Map<String, Object> context) {
@@ -139,14 +127,6 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         }
     }
     
-    private void setRowsCount(final Map<String, Object> context) {
-        context.put("rows_cnt", "0");
-    }
-    
-    private void fetchPrivileges(final Map<String, Object> context) {
-        context.put("acl", new LinkedList<>());
-    }
-    
     private boolean anyIsTrue(final List<Object> collection) {
         for (Object each : collection) {
             if (each instanceof Boolean && (Boolean) each) {
@@ -155,7 +135,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         }
         return false;
     }
-
+    
     private void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
         for (Map<String, Object> each : rows) {
             context.putAll(each);

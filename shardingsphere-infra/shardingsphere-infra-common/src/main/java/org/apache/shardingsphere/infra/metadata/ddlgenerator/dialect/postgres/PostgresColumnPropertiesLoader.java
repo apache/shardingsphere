@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,15 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
      */
     @SneakyThrows
     public void loadColumnProperties(final Map<String, Object> context) {
+        List<Map<String, Object>> otherColumns = getOtherColumns(context);
         List<Map<String, Object>> allColumns = executeByTemplate(connection, context, "columns/12_plus/properties.ftl");
+        for (Map<String, Object> each : allColumns) {
+            for (Map<String, Object> otherCol : otherColumns) {
+                if (each.get("name").equals(otherCol.get("name"))) {
+                    each.put(getInheritedFromTableOrType(context), otherCol.get("inheritedfrom"));
+                }
+            }
+        }
         if (!allColumns.isEmpty()) {
             Map<String, Collection<String>> editTypes = getEditTypes(allColumns);
             for (Map<String, Object> each : allColumns) {
@@ -56,6 +65,54 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
             }
         }
         context.put("columns", allColumns);
+    }
+    
+    private List<Map<String, Object>> getOtherColumns(final Map<String, Object> context) {
+        if (null != context.get("typoid")) {
+            return getOtherColumnFromType(context);
+        }  
+        if (null != context.get("coll_inherits")) {
+            Collection<String> collInherits = convertPgArrayToList(context.get("coll_inherits"));
+            context.put("coll_inherits", collInherits);
+            if (!collInherits.isEmpty()) {
+                return getOtherColumnFromInherits(collInherits);
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private List<Map<String, Object>> getOtherColumnFromInherits(final Collection<String> collInherits) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : executeByTemplate(connection, new LinkedHashMap<>(), "table/10_plus/get_inherits.ftl")) {
+            if (collInherits.contains((String) each.get("inherits"))) {
+                Map<String, Object> param = new LinkedHashMap<>();
+                param.put("tid", each.get("oid"));
+                result.addAll(executeByTemplate(connection, param, "table/10_plus/get_columns_for_table.ftl"));
+            }
+        }
+        return result;
+    }
+    
+    private List<Map<String, Object>> getOtherColumnFromType(final Map<String, Object> context) {
+        Map<String, Object> param = new LinkedHashMap<>();
+        param.put("tid", context.get("typoid"));
+        return executeByTemplate(connection, param, "table/10_plus/get_columns_for_table.ftl");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private String getInheritedFromTableOrType(final Map<String, Object> context) {
+        String result = "inheritedfrom";
+        if (null != context.get("typoid")) {
+            result += "type";
+        } else if (null != context.get("coll_inherits") && !((Collection<String>) context.get("coll_inherits")).isEmpty()) {
+            result += "table";
+        }
+        return result;
+    }
+    
+    @SneakyThrows
+    private Collection<String> convertPgArrayToList(final Object array) {
+        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     
     private Map<String, Collection<String>> getEditTypes(final List<Map<String, Object>> allColumns) throws SQLException {
@@ -146,10 +203,9 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         String typname = (String) column.get("typname");
         Integer numdims = (Integer) column.get("attndims");
         String schema = null != nsp ? nsp : "";
-        String name = "";
         String array = "";
         String length = "";
-        name = checkSchemaInName(typname, schema);
+        String name = checkSchemaInName(typname, schema);
         if (name.startsWith("_")) {
             if (null == numdims || 0 == numdims) {
                 numdims = 1;
@@ -211,18 +267,15 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         } else if ("time".equals(name) || "timetz".equals(name) || "time without time zone".equals(name) || "time with time zone".equals(name)
                 || "timestamp".equals(name) || "timestamptz".equals(name) || "timestamp without time zone".equals(name) || "timestamp with time zone".equals(name)
                 || "bit".equals(name) || "bit varying".equals(name) || "varbit".equals(name)) {
-            int prec = 0;
             int len = typmod;
             length += String.valueOf(len);
         } else if ("interval".equals(name)) {
-            int prec = 0;
             int len = typmod & 0xffff;
             length += len > 6 ? "" : String.valueOf(len);
         } else if ("date".equals(name)) {
             length = "";
         } else {
             int len = typmod - 4;
-            int prec = 0;
             length += String.valueOf(len);
         }
         if (!length.isEmpty()) {
