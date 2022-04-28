@@ -109,7 +109,7 @@ public final class ShardingSphereMetaData {
      * @return ShardingSphereSchema default schema
      */
     public ShardingSphereSchema getDefaultSchema() {
-        // FIXME optimize this logic when mode event contains schemaName
+        // TODO remove this method when no features call
         ShardingSphereSchema defaultSchema = schemas.values().isEmpty() ? null : schemas.get("public");
         return schemas.getOrDefault(databaseName, defaultSchema);
     }

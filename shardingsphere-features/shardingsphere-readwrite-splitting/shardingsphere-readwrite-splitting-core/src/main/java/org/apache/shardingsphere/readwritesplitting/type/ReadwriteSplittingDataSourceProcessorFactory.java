@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.readwritesplitting.type;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingDataSourceProcessor;
 
 import java.util.Properties;
 
 /**
- * Properties tool class.
+ * Readwrite splitting data source processor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertiesUtil {
+public final class ReadwriteSplittingDataSourceProcessorFactory {
     
     /**
-     * Get the value according to the key and verify whether the value exists. If it does not exist, an {@link IllegalArgumentException} will be thrown.
-     *
-     * @param properties The Properties
-     * @param key key of properties
-     * @return value of key
-     * @throws IllegalArgumentException throw an exception when the key does not exist
+     * Create new instance of readwrite splitting data source processor.
+     * 
+     * @param type type of readwrite splitting method
+     * @param props properties of readwrite splitting data source processor
+     * @return readwrite splitting data source processor
      */
-    public static String getRequiredValue(final Properties properties, final String key) {
-        Preconditions.checkArgument(properties.containsKey(key), "%s can not be null.", key);
-        return properties.get(key).toString();
+    public static ReadwriteSplittingDataSourceProcessor newInstance(final String type, final Properties props) {
+        return "STATIC".equalsIgnoreCase(type) ? new StaticReadwriteSplittingDataSourceProcessor(props) : new DynamicReadwriteSplittingDataSourceProcessor(props);
     }
 }

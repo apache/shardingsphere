@@ -20,8 +20,6 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
@@ -51,7 +49,7 @@ public final class DriverExecutor implements AutoCloseable {
         regularExecutor = new DriverJDBCExecutor(connection.getSchema(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
         DatabaseType databaseType = metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType();
-        String schemaName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "public" : connection.getSchema();
+        String schemaName = databaseType.getDefaultSchema(connection.getSchema());
         federationExecutor = FederationExecutorFactory.newInstance(connection.getSchema(), schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
         trafficExecutor = new TrafficExecutor();
     }

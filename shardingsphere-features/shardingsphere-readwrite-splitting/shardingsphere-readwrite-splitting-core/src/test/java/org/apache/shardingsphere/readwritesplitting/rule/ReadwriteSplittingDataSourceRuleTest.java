@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,10 +37,6 @@ import static org.junit.Assert.assertThat;
 public final class ReadwriteSplittingDataSourceRuleTest {
     
     private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
-    
-    static {
-        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
-    }
     
     @Before
     public void setUp() {

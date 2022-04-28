@@ -31,7 +31,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptContext {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final String tableName;
     

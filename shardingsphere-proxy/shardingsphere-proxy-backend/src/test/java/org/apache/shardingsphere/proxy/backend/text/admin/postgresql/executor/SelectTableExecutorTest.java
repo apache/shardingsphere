@@ -92,7 +92,7 @@ public final class SelectTableExecutorTest {
     private ShardingSphereMetaData getMetaData() throws SQLException {
         return new ShardingSphereMetaData("sharding_db",
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("sharding_db", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
