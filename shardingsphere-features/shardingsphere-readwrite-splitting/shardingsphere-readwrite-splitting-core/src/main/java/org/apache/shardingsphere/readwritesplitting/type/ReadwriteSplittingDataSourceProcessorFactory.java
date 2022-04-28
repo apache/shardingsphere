@@ -19,25 +19,25 @@ package org.apache.shardingsphere.readwritesplitting.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingType;
-import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingDataSourceProcessor;
 
 import java.util.Properties;
 
 /**
- * Readwrite splitting type factory.
+ * Readwrite splitting data source processor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingTypeFactory {
+public final class ReadwriteSplittingDataSourceProcessorFactory {
     
     /**
-     * Create new instance of readwrite splitting type.
+     * Create new instance of readwrite splitting data source processor.
      * 
      * @param type type of readwrite splitting method
-     * @param props properties of readwrite splitting method
-     * @return readwrite splitting method
+     * @param props properties of readwrite splitting data source processor
+     * @return readwrite splitting data source processor
      */
-    public static ReadwriteSplittingType newInstance(final String type, final Properties props) {
-        return "STATIC".equalsIgnoreCase(type) ? new StaticReadwriteSplittingType(props) : new DynamicReadwriteSplittingType(props);
+    public static ReadwriteSplittingDataSourceProcessor newInstance(final String type, final Properties props) {
+        return "STATIC".equalsIgnoreCase(type) ? new StaticReadwriteSplittingDataSourceProcessor(props) : new DynamicReadwriteSplittingDataSourceProcessor(props);
     }
 }

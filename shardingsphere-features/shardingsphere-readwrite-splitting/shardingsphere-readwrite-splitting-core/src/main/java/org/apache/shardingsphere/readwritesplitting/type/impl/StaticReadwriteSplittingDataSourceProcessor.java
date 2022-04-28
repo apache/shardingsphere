@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,15 +32,15 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Static readwrite splitting algorithm.
+ * Static readwrite splitting data source processor.
  */
-public final class StaticReadwriteSplittingType implements ReadwriteSplittingType {
+public final class StaticReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
     
     private final String writeDataSourceName;
     
     private final List<String> readDataSourceNames;
     
-    public StaticReadwriteSplittingType(final Properties props) {
+    public StaticReadwriteSplittingDataSourceProcessor(final Properties props) {
         writeDataSourceName = props.getProperty("write-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");

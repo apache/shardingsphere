@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Readwrite splitting method.
+ * Readwrite splitting data source processor.
  */
-public interface ReadwriteSplittingType {
+public interface ReadwriteSplittingDataSourceProcessor {
     
     /**
      * Get write data source.

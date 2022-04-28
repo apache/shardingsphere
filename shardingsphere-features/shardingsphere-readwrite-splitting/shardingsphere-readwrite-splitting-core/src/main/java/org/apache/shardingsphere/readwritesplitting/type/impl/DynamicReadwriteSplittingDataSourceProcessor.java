@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,14 +36,14 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Dynamic readwrite splitting type.
+ * Dynamic readwrite splitting data source processor.
  */
 @Getter
-public final class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
+public final class DynamicReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
     
     private final String autoAwareDataSourceName;
     
-    public DynamicReadwriteSplittingType(final Properties props) {
+    public DynamicReadwriteSplittingDataSourceProcessor(final Properties props) {
         autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "auto aware data source name is required.");
     }
