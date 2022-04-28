@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.verify;
 
@@ -44,18 +43,6 @@ public final class StandardLockRegistryServiceTest {
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(lockRegistryService, clusterPersistRepository);
-    }
-    
-    @Test
-    public void assertTryLock() {
-        lockRegistryService.tryLock("test", 50L);
-        verify(clusterPersistRepository).tryLock("/lock/standard/locks/test", 50L, TimeUnit.MILLISECONDS);
-    }
-    
-    @Test
-    public void assertReleaseLock() {
-        lockRegistryService.releaseLock("test");
-        verify(clusterPersistRepository).releaseLock("/lock/standard/locks/test");
     }
     
     @Test(expected = UnsupportedOperationException.class)

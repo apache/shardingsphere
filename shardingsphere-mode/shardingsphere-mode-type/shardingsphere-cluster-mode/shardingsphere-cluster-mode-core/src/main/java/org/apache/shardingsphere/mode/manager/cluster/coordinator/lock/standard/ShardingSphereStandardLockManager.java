@@ -15,40 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * General lock manager of ShardingSphere.
- */
-public final class ShardingSphereGeneralLockManager implements ShardingSphereLockManager {
+public final class ShardingSphereStandardLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereGeneralLock> locks;
+    private final Map<String, ShardingSphereStandardLock> locks;
     
     private final LockNodeService lockNodeService;
     
     private ClusterPersistRepository clusterRepository;
     
-    private ComputeNodeInstance currentInstance;
-    
-    private Collection<ComputeNodeInstance> computeNodeInstances;
-    
-    public ShardingSphereGeneralLockManager() {
+    public ShardingSphereStandardLockManager() {
         locks = new ConcurrentHashMap<>();
         lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
     }
@@ -56,32 +47,15 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {
         clusterRepository = (ClusterPersistRepository) repository;
-        currentInstance = instance;
-        this.computeNodeInstances = computeNodeInstances;
-        ShardingSphereEventBus.getInstance().register(this);
-        synchronizeGlobalLock();
     }
     
-    private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getLocksNodePath());
-        if (allGlobalLock.isEmpty()) {
-            clusterRepository.persist(lockNodeService.getLocksNodePath(), "");
-            clusterRepository.persist(lockNodeService.getLockedAckNodePath(), "");
-            return;
-        }
-        for (String each : allGlobalLock) {
-            Optional<String> generalLock = lockNodeService.parseLocksNodePath(each);
-            generalLock.ifPresent(lockName -> locks.put(lockName, createGeneralLock()));
-        }
-    }
-    
-    private ShardingSphereGeneralLock createGeneralLock() {
-        return new ShardingSphereGeneralLock(clusterRepository, lockNodeService, currentInstance, computeNodeInstances);
+    private ShardingSphereStandardLock createGeneralLock() {
+        return new ShardingSphereStandardLock(new StandardLockRegistryService(clusterRepository), lockNodeService);
     }
     
     @Override
     public ShardingSphereLock getOrCreateLock(final String lockName) {
-        ShardingSphereGeneralLock result = locks.get(lockName);
+        ShardingSphereStandardLock result = locks.get(lockName);
         if (null != result) {
             return result;
         }
@@ -100,7 +74,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         if (locks.isEmpty()) {
             return false;
         }
-        ShardingSphereGlobalLock lock = locks.get(lockName);
+        ShardingSphereLock lock = locks.get(lockName);
         if (null != lock) {
             return lock.isLocked();
         }
@@ -109,6 +83,6 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
     
     @Override
     public LockType getLockType() {
-        return LockType.GENERAL;
+        return LockType.STANDARD;
     }
 }

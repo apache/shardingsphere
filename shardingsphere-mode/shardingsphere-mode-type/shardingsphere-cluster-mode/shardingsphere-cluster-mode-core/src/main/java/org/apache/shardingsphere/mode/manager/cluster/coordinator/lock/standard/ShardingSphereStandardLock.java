@@ -15,61 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
- * Non reentrant lock implemented ShardingSphereLock.
+ * Standard distribute lock of ShardingSphere.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereNonReentrantLock implements ShardingSphereLock {
+public final class ShardingSphereStandardLock implements ShardingSphereLock {
     
-    private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
+    private final LockRegistryService lockRegistryService;
     
-    private final Lock innerLock;
-    
-    private volatile boolean locked;
+    private final LockNodeService lockNodeService;
     
     @Override
     public boolean tryLock(final String lockName) {
-        return innerTryLock(DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS);
+        return tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public boolean tryLock(final String lockName, final long timeout) {
-        return innerTryLock(timeout);
-    }
-    
-    private synchronized boolean innerTryLock(final long timeout) {
-        if (locked) {
-            return false;
-        }
-        try {
-            if (innerLock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
-                locked = true;
-                return true;
-            }
-            return false;
-        } catch (final InterruptedException ignored) {
-            return false;
-        }
+    public boolean tryLock(final String lockName, final long timeoutMillis) {
+        return lockRegistryService.tryLock(lockNodeService.generateLocksName(lockName), TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        if (locked) {
-            innerLock.unlock();
-            locked = false;
-        }
+        lockRegistryService.releaseLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override
     public boolean isLocked() {
-        return locked;
+        throw new UnsupportedOperationException();
     }
 }

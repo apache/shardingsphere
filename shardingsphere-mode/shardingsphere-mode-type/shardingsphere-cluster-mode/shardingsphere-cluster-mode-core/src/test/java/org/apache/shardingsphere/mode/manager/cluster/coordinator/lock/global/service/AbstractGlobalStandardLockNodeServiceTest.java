@@ -25,38 +25,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AbstractGlobalLockNodeServiceTest {
+public final class AbstractGlobalStandardLockNodeServiceTest {
     
     private static final AbstractGlobalLockNodeService SERVICE = new DatabaseLockNodeService();
     
     @Test
     public void assertGetGlobalLocksNodePath() {
-        String globalLocksNodePath = SERVICE.getGlobalLocksNodePath();
+        String globalLocksNodePath = SERVICE.getLocksNodePath();
         assertThat(globalLocksNodePath, is("/lock/global/database/locks"));
     }
     
     @Test
     public void assertGetGlobalLockedAckNodePath() {
-        String globalLockedAckNodePath = SERVICE.getGlobalLockedAckNodePath();
+        String globalLockedAckNodePath = SERVICE.getLockedAckNodePath();
         assertThat(globalLockedAckNodePath, is("/lock/global/database/ack"));
     }
     
     @Test
     public void assertGenerateGlobalLocksName() {
-        String locksName = SERVICE.generateGlobalLocksName("sharding_db");
+        String locksName = SERVICE.generateLocksName("sharding_db");
         assertThat(locksName, is("/lock/global/database/locks/sharding_db"));
     }
     
     @Test
     public void assertGenerateGlobalAckLockName() {
-        String globalLockedAckNodePath = SERVICE.generateGlobalAckLockName("locksName", "127.0.0.1@3307");
+        String globalLockedAckNodePath = SERVICE.generateAckLockName("locksName", "127.0.0.1@3307");
         assertThat(globalLockedAckNodePath, is("/lock/global/database/ack/locksName#@#127.0.0.1@3307"));
     }
     
     @Test
     public void assertParseGlobalLocksNodePath() {
         String nodePath = "/lock/global/database/locks/sharding_db/leases/c_l_00000000";
-        Optional<String> globalLocksNodePath = SERVICE.parseGlobalLocksNodePath(nodePath);
+        Optional<String> globalLocksNodePath = SERVICE.parseLocksNodePath(nodePath);
         assertTrue(globalLocksNodePath.isPresent());
         assertThat(globalLocksNodePath.get(), is("sharding_db"));
     }
@@ -64,7 +64,7 @@ public final class AbstractGlobalLockNodeServiceTest {
     @Test
     public void assertParseGlobalLockedAckNodePath() {
         String nodePath = "/lock/global/database/ack/sharding_db#@#127.0.0.1@3307";
-        Optional<String> globalLockedAckNodePath = SERVICE.parseGlobalLockedAckNodePath(nodePath);
+        Optional<String> globalLockedAckNodePath = SERVICE.parseLockedAckNodePath(nodePath);
         assertTrue(globalLockedAckNodePath.isPresent());
         assertThat(globalLockedAckNodePath.get(), is("sharding_db#@#127.0.0.1@3307"));
     }
