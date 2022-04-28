@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.type.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
@@ -29,23 +27,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Static readwrite splitting data source processor.
  */
+@RequiredArgsConstructor
 public final class StaticReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
     
     private final String writeDataSourceName;
     
     private final List<String> readDataSourceNames;
-    
-    public StaticReadwriteSplittingDataSourceProcessor(final Properties props) {
-        writeDataSourceName = props.getProperty("write-data-source-name");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
-        readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
-    }
     
     @Override
     public String getWriteDataSource() {
