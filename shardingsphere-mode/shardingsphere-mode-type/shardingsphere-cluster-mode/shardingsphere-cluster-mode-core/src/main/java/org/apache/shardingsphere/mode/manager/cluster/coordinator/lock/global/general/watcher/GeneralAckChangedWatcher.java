@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.watcher;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GeneralLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -36,7 +37,7 @@ import java.util.Optional;
  */
 public final class GeneralAckChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
-    private final LockNodeService lockNode = new GeneralLockNodeService();
+    private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockType.GENERAL);
     
     @Override
     public Collection<String> getWatchingKeys() {
