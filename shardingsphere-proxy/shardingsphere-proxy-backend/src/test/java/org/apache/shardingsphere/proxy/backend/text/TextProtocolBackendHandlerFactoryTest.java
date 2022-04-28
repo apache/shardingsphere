@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -98,7 +99,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private ShardingSphereMetaData mockShardingSphereMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getDefaultSchema().getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
+        when(result.getSchemaByName(DefaultSchema.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     
