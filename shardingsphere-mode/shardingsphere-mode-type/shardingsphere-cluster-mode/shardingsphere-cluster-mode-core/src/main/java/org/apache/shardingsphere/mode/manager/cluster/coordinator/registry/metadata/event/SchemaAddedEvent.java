@@ -19,10 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-
-import java.util.Collections;
 
 /**
  * Schema added event.

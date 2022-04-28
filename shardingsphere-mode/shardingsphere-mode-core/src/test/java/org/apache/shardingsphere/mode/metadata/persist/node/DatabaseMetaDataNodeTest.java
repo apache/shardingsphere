@@ -35,14 +35,14 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetDatabaseName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db/schemas/logic_schema/rules");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_db"));
     }
     
     @Test
     public void assertGetDatabaseNameWithLine() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic-db-test/schemas/logic-db-schema");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic-db-test/schemas/logic-db-schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic-db-test"));
     }
@@ -59,7 +59,7 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetDatabaseNameByDatabasePath() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_db"));
     }
@@ -73,7 +73,7 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema/user");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_schema"));
     }
