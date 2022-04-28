@@ -20,10 +20,13 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 import com.google.common.base.Preconditions;
 
 import java.util.Properties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Properties tool class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtil {
     
     /**
