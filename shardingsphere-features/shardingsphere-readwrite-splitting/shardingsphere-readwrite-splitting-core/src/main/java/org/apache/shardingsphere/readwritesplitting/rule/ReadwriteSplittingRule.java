@@ -31,8 +31,8 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingDataSourceProcessor;
-import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,7 +101,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getDataSourceProcessor().getAllDataSources());
+            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
         }
         return result;
     }
@@ -129,7 +129,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     private Map<String, Map<String, String>> exportDynamicDataSources() {
         Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            if (each.getDataSourceProcessor() instanceof DynamicReadwriteSplittingDataSourceProcessor) {
+            if (each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
                 Map<String, String> dataSources = each.getDataSources(false);
                 if (!dataSources.isEmpty()) {
                     result.put(each.getName(), dataSources);
@@ -142,8 +142,8 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     private Collection<String> exportAutoAwareDataSourceNames() {
         Collection<String> result = new ArrayList<>();
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            if (each.getDataSourceProcessor() instanceof DynamicReadwriteSplittingDataSourceProcessor) {
-                result.add(((DynamicReadwriteSplittingDataSourceProcessor) each.getDataSourceProcessor()).getAutoAwareDataSourceName());
+            if (each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
+                result.add(((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName());
             }
         }
         return result;
@@ -152,7 +152,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     private Map<String, Map<String, String>> exportStaticDataSources() {
         Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            if (each.getDataSourceProcessor() instanceof StaticReadwriteSplittingDataSourceProcessor) {
+            if (each.getReadwriteSplittingStrategy() instanceof StaticReadwriteSplittingStrategy) {
                 Map<String, String> dataSources = each.getDataSources(true);
                 if (!dataSources.isEmpty()) {
                     result.put(each.getName(), dataSources);

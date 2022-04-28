@@ -15,47 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.type;
+package org.apache.shardingsphere.readwritesplitting.strategy;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingDataSourceProcessor;
-import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
 import java.util.List;
 import java.util.Properties;
 
 /**
- * Readwrite splitting data source processor factory.
+ * Readwrite splitting strategy factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingDataSourceProcessorFactory {
+public final class ReadwriteSplittingStrategyFactory {
     
     /**
-     * Create new instance of readwrite splitting data source processor.
+     * Create new instance of readwrite splitting strategy.
      * 
      * @param type type of readwrite splitting method
-     * @param props properties of readwrite splitting data source processor
-     * @return readwrite splitting data source processor
+     * @param props properties of readwrite splitting strategy
+     * @return readwrite splitting strategy
      */
-    public static ReadwriteSplittingDataSourceProcessor newInstance(final String type, final Properties props) {
+    public static ReadwriteSplittingStrategy newInstance(final String type, final Properties props) {
         return "STATIC".equalsIgnoreCase(type) ? createStaticDataSourceProcessor(props) : createDynamicDataSourceProcessor(props);
     }
     
-    private static StaticReadwriteSplittingDataSourceProcessor createStaticDataSourceProcessor(final Properties props) {
+    private static StaticReadwriteSplittingStrategy createStaticDataSourceProcessor(final Properties props) {
         String writeDataSourceName = props.getProperty("write-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
         List<String> readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
-        return new StaticReadwriteSplittingDataSourceProcessor(writeDataSourceName, readDataSourceNames);
+        return new StaticReadwriteSplittingStrategy(writeDataSourceName, readDataSourceNames);
     }
     
-    private static DynamicReadwriteSplittingDataSourceProcessor createDynamicDataSourceProcessor(final Properties props) {
+    private static DynamicReadwriteSplittingStrategy createDynamicDataSourceProcessor(final Properties props) {
         String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
-        return new DynamicReadwriteSplittingDataSourceProcessor(autoAwareDataSourceName);
+        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName);
     }
 }

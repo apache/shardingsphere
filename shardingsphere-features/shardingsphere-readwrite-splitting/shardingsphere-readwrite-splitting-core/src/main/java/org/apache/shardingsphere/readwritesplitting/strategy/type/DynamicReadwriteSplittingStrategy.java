@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.type.impl;
+package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,11 +31,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Dynamic readwrite splitting data source processor.
+ * Dynamic readwrite splitting strategy.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DynamicReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
+public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplittingStrategy {
     
     private final String autoAwareDataSourceName;
     
