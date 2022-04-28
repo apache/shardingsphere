@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
  */
 @RequiredArgsConstructor
 @Getter
-public class SchemaAddedEvent implements GovernanceEvent {
+public final class SchemaAddedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
