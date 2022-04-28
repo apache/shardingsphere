@@ -506,7 +506,7 @@ public final class ShardingDQLResultMergerTest {
         ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, false, false, false);
         TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
-        return new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class), 
+        return new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema));
     }
     

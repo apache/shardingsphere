@@ -51,7 +51,8 @@ public final class LimitDecoratorMergedResultTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
                 Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
+        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         assertFalse(actual.next());
     }
     
@@ -64,7 +65,8 @@ public final class LimitDecoratorMergedResultTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
                 selectStatement, DefaultSchema.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
+        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         for (int i = 0; i < 6; i++) {
             assertTrue(actual.next());
         }
@@ -80,7 +82,8 @@ public final class LimitDecoratorMergedResultTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
                 Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
+        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
