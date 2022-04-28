@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -189,6 +188,9 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterDatabase(final String databaseName, final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
         Optional.ofNullable(changedTableMetaData).ifPresent(optional -> alterTableSchema(databaseName, schemaName, optional));
+        if (null == metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
+            return;
+        }
         Optional.ofNullable(deletedTable).ifPresent(optional -> deleteTable(databaseName, schemaName, optional));
     }
     
