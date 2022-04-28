@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.readwritesplitting.type;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingDataSourceProcessor;
 import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingDataSourceProcessor;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -38,6 +42,20 @@ public final class ReadwriteSplittingDataSourceProcessorFactory {
      * @return readwrite splitting data source processor
      */
     public static ReadwriteSplittingDataSourceProcessor newInstance(final String type, final Properties props) {
-        return "STATIC".equalsIgnoreCase(type) ? new StaticReadwriteSplittingDataSourceProcessor(props) : new DynamicReadwriteSplittingDataSourceProcessor(props);
+        return "STATIC".equalsIgnoreCase(type) ? createStaticDataSourceProcessor(props) : createDynamicDataSourceProcessor(props);
+    }
+    
+    private static StaticReadwriteSplittingDataSourceProcessor createStaticDataSourceProcessor(final Properties props) {
+        String writeDataSourceName = props.getProperty("write-data-source-name");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
+        List<String> readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
+        return new StaticReadwriteSplittingDataSourceProcessor(writeDataSourceName, readDataSourceNames);
+    }
+    
+    private static DynamicReadwriteSplittingDataSourceProcessor createDynamicDataSourceProcessor(final Properties props) {
+        String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
+        return new DynamicReadwriteSplittingDataSourceProcessor(autoAwareDataSourceName);
     }
 }
