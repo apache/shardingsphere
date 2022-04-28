@@ -112,7 +112,7 @@ public final class ReadwriteSplittingDataSourceRule {
         }
         List<String> readDataSourceNames = dataSourceProcessor.getReadDataSources();
         if (readDataSourceNames.isEmpty()) {
-            return result;   
+            return result;
         }
         if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
             readDataSourceNames = new LinkedList<>(readDataSourceNames);
