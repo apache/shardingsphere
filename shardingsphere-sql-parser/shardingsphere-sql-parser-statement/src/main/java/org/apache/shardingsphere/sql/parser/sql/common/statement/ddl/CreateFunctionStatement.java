@@ -17,10 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
  * Create function statement.
  */
+@Getter
+@Setter
 public abstract class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private FunctionNameSegment functionName;
+    
+    /**
+     * Get function name segment.
+     *
+     * @return function name segment
+     */
+    public Optional<FunctionNameSegment> getFunctionName() {
+        return Optional.ofNullable(functionName);
+    }
 }

@@ -119,7 +119,7 @@ public final class ShardingRouteEngineFactory {
         if (!tableNames.isEmpty() && shardingRuleTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
         }
-        return new ShardingTableBroadcastRoutingEngine(metaData.getDefaultSchema(), sqlStatementContext, shardingRuleTableNames);
+        return new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames);
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
@@ -140,11 +140,11 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (sqlStatement instanceof MySQLOptimizeTableStatement) {
-            return new ShardingTableBroadcastRoutingEngine(metaData.getDefaultSchema(), sqlStatementContext, shardingRuleTableNames);
+            return new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return shardingRuleTableNames.isEmpty() ? new ShardingDatabaseBroadcastRoutingEngine()
-                    : new ShardingTableBroadcastRoutingEngine(metaData.getDefaultSchema(), sqlStatementContext, shardingRuleTableNames);
+                    : new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames);
         }
         if (!shardingRuleTableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(shardingRuleTableNames);
@@ -161,8 +161,7 @@ public final class ShardingRouteEngineFactory {
         if (isDCLForSingleTable(sqlStatementContext)) {
             Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
             return !shardingRuleTableNames.isEmpty()
-                    ? new ShardingTableBroadcastRoutingEngine(metaData.getDefaultSchema(), sqlStatementContext, shardingRuleTableNames)
-                    : new ShardingIgnoreRoutingEngine();
+                    ? new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, shardingRuleTableNames) : new ShardingIgnoreRoutingEngine();
         } else {
             return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
         }

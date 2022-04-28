@@ -17,12 +17,27 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
+import org.apache.shardingsphere.infra.lock.LockType;
+
 import java.util.Optional;
 
 /**
  * Lock node service.
  */
 public interface LockNodeService {
+    
+    String PATH_DELIMITER = "/";
+    
+    String LOCK_ROOT = "lock";
+    
+    String LOCKS_NODE = "locks";
+    
+    /**
+     * Get sequence node path.
+     *
+     * @return sequence node path
+     */
+    String getSequenceNodePath();
     
     /**
      * Get global locks node path.
@@ -41,19 +56,19 @@ public interface LockNodeService {
     /**
      * Generate global locks name.
      *
-     * @param locks locks
+     * @param locksName locks name
      * @return global locks name
      */
-    String generateGlobalLocksName(String locks);
+    String generateGlobalLocksName(String locksName);
     
     /**
-     * Generate global ack lock name.
+     * Generate ack lock name.
      *
-     * @param lock lock
+     * @param ackLockName ack lock name
      * @param lockedInstanceId locked instance id
      * @return global ack lock name
      */
-    String generateGlobalAckLockName(String lock, String lockedInstanceId);
+    String generateGlobalAckLockName(String ackLockName, String lockedInstanceId);
     
     /**
      * Parse global Locks node path.
@@ -70,4 +85,11 @@ public interface LockNodeService {
      * @return global locked ack node path
      */
     Optional<String> parseGlobalLockedAckNodePath(String nodePath);
+    
+    /**
+     * Get lock type.
+     *
+     * @return lock type
+     */
+    LockType getLockType();
 }
