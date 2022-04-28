@@ -62,6 +62,6 @@ public final class ClassBasedDatasourceStandardShardingAlgorithmFixture implemen
     
     @Override
     public String getType() {
-        return "DATASOURCE_CLASS_BASED";
+        return null;
     }
 }
