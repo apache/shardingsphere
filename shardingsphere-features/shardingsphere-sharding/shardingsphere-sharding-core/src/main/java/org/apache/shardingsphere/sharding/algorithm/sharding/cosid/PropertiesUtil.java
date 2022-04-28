@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.base.Preconditions;
-
-import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.Properties;
 
 /**
  * Properties tool class.
