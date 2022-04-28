@@ -139,7 +139,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         String defaultSchemaName = getDatabaseType().getDefaultSchema(databaseName);
-        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchemaName));
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchemaName));
     }
     
     /**
