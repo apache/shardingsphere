@@ -145,8 +145,8 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         return result;
     }
     
-    private String getDataSourceProcessor(final ReadwriteSplittingDataSourceProcessor readwriteSplittingDataSourceProcessor) {
-        return readwriteSplittingDataSourceProcessor instanceof StaticReadwriteSplittingDataSourceProcessor ? STATIC : DYNAMIC;
+    private String getDataSourceProcessor(final ReadwriteSplittingDataSourceProcessor dataSourceProcessor) {
+        return dataSourceProcessor instanceof StaticReadwriteSplittingDataSourceProcessor ? STATIC : DYNAMIC;
     }
     
     private Collection<String> exportAutoAwareDataSourceNames() {
