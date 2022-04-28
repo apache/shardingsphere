@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.type.impl;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
@@ -45,8 +44,7 @@ public final class DynamicReadwriteSplittingDataSourceProcessor implements Readw
     
     @Override
     public String getWriteDataSource() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
-        return dataSourceNameAware.map(optional -> optional.getPrimaryDataSourceName(autoAwareDataSourceName)).orElse(null);
+        return DataSourceNameAwareFactory.newInstance().map(optional -> optional.getPrimaryDataSourceName(autoAwareDataSourceName)).orElse(null);
     }
     
     @Override
@@ -60,9 +58,9 @@ public final class DynamicReadwriteSplittingDataSourceProcessor implements Readw
     
     @Override
     public Map<String, String> getDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         Map<String, String> result = new HashMap<>(2, 1);
-        if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
+        if (dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
             result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
             result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
             return result;
