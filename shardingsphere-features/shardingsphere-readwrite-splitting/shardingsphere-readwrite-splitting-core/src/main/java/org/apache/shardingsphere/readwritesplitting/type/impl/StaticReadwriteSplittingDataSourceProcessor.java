@@ -21,10 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Static readwrite splitting data source processor.
@@ -47,12 +45,10 @@ public final class StaticReadwriteSplittingDataSourceProcessor implements Readwr
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper(final String name) {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(writeDataSourceName);
-        actualDataSourceNames.addAll(readDataSourceNames);
-        result.put(name, actualDataSourceNames);
+    public Collection<String> getAllDataSources() {
+        Collection<String> result = new LinkedList<>();
+        result.add(writeDataSourceName);
+        result.addAll(readDataSourceNames);
         return result;
     }
 }

@@ -127,7 +127,6 @@ public class SpringBootStarterTest {
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
         assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
-        assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
     }
     
     private void assertEncryptRule(final EncryptRule actual) {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.type;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Readwrite splitting data source processor.
@@ -40,10 +39,9 @@ public interface ReadwriteSplittingDataSourceProcessor {
     List<String> getReadDataSources();
     
     /**
-     * Get data source mapper.
+     * Get all data sources.
      *
-     * @param name name
-     * @return data source mapper
+     * @return all data sources
      */
-    Map<String, Collection<String>> getDataSourceMapper(String name);
+    Collection<String> getAllDataSources();
 }

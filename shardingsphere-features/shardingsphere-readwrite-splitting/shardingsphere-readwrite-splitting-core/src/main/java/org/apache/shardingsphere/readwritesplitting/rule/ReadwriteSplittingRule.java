@@ -101,7 +101,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.putAll(entry.getValue().getDataSourceMapper());
+            result.put(entry.getValue().getName(), entry.getValue().getDataSourceProcessor().getAllDataSources());
         }
         return result;
     }
