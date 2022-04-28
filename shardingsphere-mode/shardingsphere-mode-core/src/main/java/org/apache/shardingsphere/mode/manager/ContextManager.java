@@ -253,7 +253,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void dropSchema(final String databaseName, final String schemaName) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
-        if (null == metaData ||  null == metaData.getSchemaByName(schemaName)) {
+        if (null == metaData || null == metaData.getSchemaByName(schemaName)) {
             return;
         }
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
