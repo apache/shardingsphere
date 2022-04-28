@@ -48,7 +48,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -133,7 +132,7 @@ public final class ShardingDALResultMergerTest {
     
     @SuppressWarnings("unchecked")
     private SQLStatementContext<DALStatement> mockSQLStatementContext(final DALStatement dalStatement) {
-        SQLStatementContext<DALStatement> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext<DALStatement> result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(dalStatement);
         TablesContext tablesContext = mock(TablesContext.class);
         when(result.getTablesContext()).thenReturn(tablesContext);
