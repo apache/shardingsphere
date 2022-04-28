@@ -41,6 +41,16 @@ public abstract class DockerDatabaseContainer extends DockerITContainer {
     }
     
     /**
+     * Get jdbc url.
+     *
+     * @param host host
+     * @param port port
+     * @param databaseName database name
+     * @return jdbc url
+     */
+    public abstract String getJdbcUrl(String host, int port, String databaseName);
+    
+    /**
      * Get database port.
      *
      * @return database port

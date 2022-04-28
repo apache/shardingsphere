@@ -19,10 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.container.compose;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.container.proxy.ShardingSphereProxyLocalContainer;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 
 import javax.sql.DataSource;
@@ -31,7 +29,6 @@ import javax.sql.DataSource;
  * Local composed container.
  */
 public final class LocalComposedContainer extends BaseComposedContainer {
-    
     private ShardingSphereProxyLocalContainer shardingSphereProxyContainer;
     
     public LocalComposedContainer(final DatabaseType databaseType) {
@@ -50,11 +47,7 @@ public final class LocalComposedContainer extends BaseComposedContainer {
     public DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
-        String jdbcUrl = DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), "localhost", 3307, databaseName);
-        if (DatabaseTypeUtil.isMySQL(getDatabaseContainer().getDatabaseType())) {
-            jdbcUrl = StringUtils.appendIfMissing(jdbcUrl, "&rewriteBatchedStatements=true");
-        }
-        result.setJdbcUrl(jdbcUrl);
+        result.setJdbcUrl(getDatabaseContainer().getJdbcUrl("localhost", 3307, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);

@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.container.database;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 public final class PostgreSQLContainer extends DockerDatabaseContainer {
     
+    private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
+    
     public PostgreSQLContainer(final String dockerImageName) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dockerImageName);
+        super(DATABASE_TYPE, dockerImageName);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
@@ -42,6 +46,11 @@ public final class PostgreSQLContainer extends DockerDatabaseContainer {
         if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
             addFixedExposedPort(5432, 5432);
         }
+    }
+    
+    @Override
+    public String getJdbcUrl(final String host, final int port, final String databaseName) {
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
     }
     
     @Override

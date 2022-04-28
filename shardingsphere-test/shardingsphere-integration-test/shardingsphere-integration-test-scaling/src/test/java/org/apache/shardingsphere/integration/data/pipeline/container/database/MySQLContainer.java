@@ -18,16 +18,23 @@
 package org.apache.shardingsphere.integration.data.pipeline.container.database;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
+import java.util.Properties;
+
 public final class MySQLContainer extends DockerDatabaseContainer {
     
+    private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
+    
     public MySQLContainer(final String dockerImageName) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dockerImageName);
+        super(DATABASE_TYPE, dockerImageName);
     }
     
     @Override
@@ -41,6 +48,19 @@ public final class MySQLContainer extends DockerDatabaseContainer {
         if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
             addFixedExposedPort(3306, 3306);
         }
+    }
+    
+    @Override
+    public String getJdbcUrl(final String host, final int port, final String databaseName) {
+        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
+        return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, createQueryProperties());
+    }
+    
+    private Properties createQueryProperties() {
+        Properties result = new Properties();
+        result.put("useSSL", Boolean.FALSE.toString());
+        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
+        return result;
     }
     
     @Override

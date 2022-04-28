@@ -35,6 +35,8 @@ import java.util.List;
 
 public class BasePostgreSQLScalingIT extends BaseScalingIT {
     
+    private static final String ADD_RESOURCE = "ADD RESOURCE %s (URL='jdbc:postgresql://%s/%s?serverTimezone=UTC&amp;useSSL=false',USER=root,PASSWORD=root)";
+    
     @Getter
     private final ExtraSQLCommand extraSQLCommand;
     
@@ -53,9 +55,9 @@ public class BasePostgreSQLScalingIT extends BaseScalingIT {
         DataSource dataSource = getProxyDataSource("sharding_db");
         jdbcTemplate = new JdbcTemplate(dataSource);
         try (Connection connection = dataSource.getConnection()) {
-            for (String value : getTargetDataSourceNames()) {
-                connection.createStatement().execute(String.format(extraSQLCommand.getAddResource(), value, getDatabaseUrl(), value));
-            }
+            connection.createStatement().execute(String.format(ADD_RESOURCE, "ds_2", getDatabaseIpAndPort(), "ds_2"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE, "ds_3", getDatabaseIpAndPort(), "ds_3"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE, "ds_4", getDatabaseIpAndPort(), "ds_4"));
         }
     }
     

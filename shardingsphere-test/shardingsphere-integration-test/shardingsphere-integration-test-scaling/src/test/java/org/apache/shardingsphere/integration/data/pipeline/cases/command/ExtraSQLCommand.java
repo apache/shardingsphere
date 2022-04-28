@@ -38,9 +38,6 @@ public final class ExtraSQLCommand {
     @XmlElement(name = "use-database")
     private String useDatabase;
     
-    @XmlElement(name = "add-resource")
-    private String addResource;
-    
     @XmlElement(name = "insert-order")
     private String insertOrder;
 }

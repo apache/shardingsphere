@@ -30,9 +30,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class CommonSQLCommand {
     
-    @XmlElement(name = "create-database")
-    private String createDatabase;
-    
     @XmlElement(name = "create-sharding-algorithm")
     private List<String> createShardingAlgorithm;
     

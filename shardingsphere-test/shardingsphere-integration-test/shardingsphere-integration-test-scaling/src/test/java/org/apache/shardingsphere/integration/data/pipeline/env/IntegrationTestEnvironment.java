@@ -37,7 +37,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", "LOCAL").toUpperCase());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
     }
     
     private Properties loadProperties() {

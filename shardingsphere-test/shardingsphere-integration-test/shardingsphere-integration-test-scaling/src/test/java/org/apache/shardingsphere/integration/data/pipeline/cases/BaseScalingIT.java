@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,10 +54,6 @@ public abstract class BaseScalingIT {
     @Getter(AccessLevel.NONE)
     private final BaseComposedContainer composedContainer;
     
-    private final List<String> sourceDataSourceNames = Lists.newArrayList("ds_0", "ds_1");
-    
-    private final List<String> targetDataSourceNames = Lists.newArrayList("ds_2", "ds_3", "ds_4");
-    
     private final CommonSQLCommand commonSQLCommand;
     
     private final ExtraSQLCommand extraSQLCommand;
@@ -89,7 +84,7 @@ public abstract class BaseScalingIT {
      *
      * @return database url
      */
-    public String getDatabaseUrl() {
+    public String getDatabaseIpAndPort() {
         if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.DOCKER) {
             return Joiner.on(":").join("db.host", composedContainer.getDatabaseContainer().getPort());
         } else {

@@ -35,6 +35,8 @@ public abstract class BaseMySQLScalingIT extends BaseScalingIT {
     
     private static final DatabaseType MYSQL_DATABASE = new MySQLDatabaseType();
     
+    private static final String ADD_RESOURCE_SQL = "ADD RESOURCE %s (URL='jdbc:mysql://%s/%s?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true',USER=root,PASSWORD=root)";
+    
     @Getter(AccessLevel.PROTECTED)
     private JdbcTemplate jdbcTemplate;
     
@@ -46,15 +48,13 @@ public abstract class BaseMySQLScalingIT extends BaseScalingIT {
     @SneakyThrows
     protected void initScalingEnvironment() {
         try (Connection connection = getProxyDataSource("").getConnection()) {
-            connection.createStatement().execute(getCommonSQLCommand().getCreateDatabase());
-            connection.createStatement().execute(getExtraSQLCommand().getUseDatabase());
-            String addResource = getExtraSQLCommand().getAddResource();
-            for (String source : getSourceDataSourceNames()) {
-                connection.createStatement().execute(String.format(addResource, source, getDatabaseUrl(), source));
-            }
-            for (String target : getTargetDataSourceNames()) {
-                connection.createStatement().execute(String.format(addResource, target, getDatabaseUrl(), target));
-            }
+            connection.createStatement().execute("CREATE DATABASE sharding_db");
+            connection.createStatement().execute("USE sharding_db");
+            connection.createStatement().execute(String.format(ADD_RESOURCE_SQL, "ds_0", getDatabaseIpAndPort(), "ds_0"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE_SQL, "ds_1", getDatabaseIpAndPort(), "ds_1"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE_SQL, "ds_2", getDatabaseIpAndPort(), "ds_2"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE_SQL, "ds_3", getDatabaseIpAndPort(), "ds_3"));
+            connection.createStatement().execute(String.format(ADD_RESOURCE_SQL, "ds_4", getDatabaseIpAndPort(), "ds_4"));
             for (String sql : getCommonSQLCommand().getCreateShardingAlgorithm()) {
                 connection.createStatement().execute(sql);
                 // TODO sleep to wait for sharding algorithm table created，otherwise, the next sql will fail.

@@ -16,10 +16,6 @@
   -->
 
 <command>
-    <create-database>
-        CREATE DATABASE sharding_db
-    </create-database>
-
     <create-sharding-algorithm>
         CREATE SHARDING ALGORITHM database_inline (
         TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))

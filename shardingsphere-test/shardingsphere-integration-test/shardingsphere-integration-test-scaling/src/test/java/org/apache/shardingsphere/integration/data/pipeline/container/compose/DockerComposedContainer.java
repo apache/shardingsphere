@@ -19,10 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.container.compose;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
@@ -54,11 +52,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
-        String jdbcUrl = DataSourceEnvironment.getURL(getDatabaseContainer().getDatabaseType(), getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
-        if (DatabaseTypeUtil.isMySQL(getDatabaseContainer().getDatabaseType())) {
-            jdbcUrl = StringUtils.appendIfMissing(jdbcUrl, "&rewriteBatchedStatements=true");
-        }
-        result.setJdbcUrl(jdbcUrl);
+        result.setJdbcUrl(getDatabaseContainer().getJdbcUrl(getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);

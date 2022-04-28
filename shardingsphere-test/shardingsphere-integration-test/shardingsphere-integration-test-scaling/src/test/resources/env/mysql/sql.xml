@@ -50,7 +50,7 @@
     </use-database>
     
     <add-resource>
-        ADD RESOURCE %s (URL="jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false&amp;rewriteBatchedStatements=true",USER=root,PASSWORD=root)
+        ADD RESOURCE %s (URL='jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false&amp;rewriteBatchedStatements=true',USER=root,PASSWORD=root)
     </add-resource>
     
     <insert-order>
