@@ -134,14 +134,14 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     private Map<String, Map<String, String>> exportDataSource(final boolean removeDisabled, final String... readwriteSplittingTypes) {
         Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
-        dataSourceRules.forEach((name, dataSourceRule) -> {
-            if (Arrays.asList(readwriteSplittingTypes).contains(getDataSourceProcessor(dataSourceRule.getDataSourceProcessor()))) {
-                Map<String, String> dataSources = dataSourceRule.getDataSources(removeDisabled);
+        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
+            if (Arrays.asList(readwriteSplittingTypes).contains(getDataSourceProcessor(each.getDataSourceProcessor()))) {
+                Map<String, String> dataSources = each.getDataSources(removeDisabled);
                 if (!dataSources.isEmpty()) {
-                    result.put(dataSourceRule.getName(), dataSources);
+                    result.put(each.getName(), dataSources);
                 }
             }
-        });
+        }
         return result;
     }
     
