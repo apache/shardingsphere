@@ -65,7 +65,6 @@ public final class FederationDatabaseMetaData {
         if (schemas.containsKey(schemaName)) {
             schemas.get(schemaName).put(metaData);
         } else {
-            // ????????????
             Map<String, TableMetaData> tableMetaData = new LinkedHashMap<>();
             tableMetaData.put(schemaName, metaData);
             schemas.put(schemaName, new FederationSchemaMetaData(schemaName, tableMetaData));
