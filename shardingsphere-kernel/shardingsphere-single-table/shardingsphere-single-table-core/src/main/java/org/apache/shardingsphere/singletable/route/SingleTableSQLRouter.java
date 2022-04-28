@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -51,14 +50,14 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
             String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
         } else {
-            route(logicSQL.getSqlStatementContext(), metaData.getDefaultSchema(), rule, props, result);
+            route(logicSQL.getSqlStatementContext(), metaData, rule, props, result);
         }
         return result;
     }
     
-    private void route(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final SingleTableRule rule,
+    private void route(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData, final SingleTableRule rule,
                        final ConfigurationProperties props, final RouteContext routeContext) {
-        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, schema, rule, routeContext);
+        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, routeContext);
         if (singleTableNames.isEmpty()) {
             return;
         }
@@ -66,11 +65,11 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(routeContext, rule);
     }
     
-    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema,
+    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
                                                    final SingleTableRule rule, final RouteContext routeContext) {
         Collection<String> result = sqlStatementContext.getTablesContext().getTableNames();
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
-            result = IndexMetaDataUtil.getTableNamesFromMetaData(schema, ((IndexAvailable) sqlStatementContext).getIndexes());
+            result = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, ((IndexAvailable) sqlStatementContext).getIndexes(), sqlStatementContext.getDatabaseType());
         }
         return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result);
     }
@@ -87,7 +86,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
-        route(logicSQL.getSqlStatementContext(), metaData.getDefaultSchema(), rule, props, routeContext);
+        route(logicSQL.getSqlStatementContext(), metaData, rule, props, routeContext);
     }
     
     @Override

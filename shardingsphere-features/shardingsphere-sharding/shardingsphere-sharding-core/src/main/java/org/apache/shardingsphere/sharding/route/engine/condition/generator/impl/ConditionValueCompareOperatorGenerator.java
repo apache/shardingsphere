@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.Condi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -66,7 +65,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return generate(conditionValue.get(), column, operator);
         }
         if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
-            return generate(RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime(), column, operator);
+            return generate(DatetimeServiceFactory.newInstance().getDatetime(), column, operator);
         }
         return Optional.empty();
     }

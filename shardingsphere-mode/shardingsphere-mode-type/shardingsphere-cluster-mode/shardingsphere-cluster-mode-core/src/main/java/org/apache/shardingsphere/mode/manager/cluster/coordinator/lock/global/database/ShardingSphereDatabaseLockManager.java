@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -43,15 +43,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereDatabaseLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereDatabaseLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereDatabaseLock> locks;
     
-    private final LockNodeService lockNodeService = new DatabaseLockNodeService();
+    private final LockNodeService lockNodeService;
     
     private ClusterPersistRepository clusterRepository;
     
     private ComputeNodeInstance currentInstance;
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
+    
+    public ShardingSphereDatabaseLockManager() {
+        locks = new ConcurrentHashMap<>();
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance currentInstance, final Collection<ComputeNodeInstance> computeNodeInstances) {
