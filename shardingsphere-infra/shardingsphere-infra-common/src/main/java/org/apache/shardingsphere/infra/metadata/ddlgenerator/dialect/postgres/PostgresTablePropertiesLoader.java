@@ -22,9 +22,7 @@ import lombok.SneakyThrows;
 
 import java.sql.Array;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -61,28 +59,22 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     }
     
     private void getDataBaseId(final Map<String, Object> context) throws SQLException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format("select oid as did, datlastsysoid from pg_catalog.pg_database where datname = '%s';", connection.getCatalog()))) {
-            appendToMap(resultSet, context);
-        }
+        Map<String, Object> param = new LinkedHashMap<>();
+        param.put("databaseName", connection.getCatalog());
+        appendFirstRow(executeByTemplate(connection, param, "table/default/get_database_id.ftl"), context);
     }
     
-    private void getTableId(final Map<String, Object> context) throws SQLException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement
-                        .executeQuery(String.format("SELECT tablename::REGCLASS::OID AS tid FROM pg_catalog.pg_tables WHERE schemaname = '%s' and tablename = '%s';", schemaName, tableName))) {
-            appendToMap(resultSet, context);
-        }
+    private void getTableId(final Map<String, Object> context) {
+        Map<String, Object> param = new LinkedHashMap<>();
+        param.put("schemaName", schemaName);
+        param.put("tableName", tableName);
+        appendFirstRow(executeByTemplate(connection, param, "table/default/get_table_id.ftl"), context);
     }
     
-    private void getSchemaId(final Map<String, Object> context) throws SQLException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format("select oid as scid from pg_catalog.pg_namespace where nspname = '%s';", schemaName))) {
-            appendToMap(resultSet, context);
-        }
+    private void getSchemaId(final Map<String, Object> context) {
+        Map<String, Object> param = new LinkedHashMap<>();
+        param.put("schemaName", schemaName);
+        appendFirstRow(executeByTemplate(connection, param, "table/default/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) {
@@ -163,12 +155,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         }
         return false;
     }
-    
-    private void appendToMap(final ResultSet resultSet, final Map<String, Object> map) throws SQLException {
-        List<Map<String, Object>> rows = getRows(resultSet);
-        appendFirstRow(rows, map);
-    }
-    
+
     private void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
         for (Map<String, Object> each : rows) {
             context.putAll(each);
