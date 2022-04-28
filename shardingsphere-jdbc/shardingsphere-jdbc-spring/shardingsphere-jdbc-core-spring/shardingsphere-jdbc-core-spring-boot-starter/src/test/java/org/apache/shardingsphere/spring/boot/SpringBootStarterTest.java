@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;

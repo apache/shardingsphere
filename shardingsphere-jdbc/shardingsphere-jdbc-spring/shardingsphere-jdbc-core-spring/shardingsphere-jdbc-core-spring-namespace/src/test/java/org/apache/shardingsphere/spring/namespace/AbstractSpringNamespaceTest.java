@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;

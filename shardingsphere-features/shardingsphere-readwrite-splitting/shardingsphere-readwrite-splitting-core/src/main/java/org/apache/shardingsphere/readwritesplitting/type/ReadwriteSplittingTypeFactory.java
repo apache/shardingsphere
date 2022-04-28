@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType;
-import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.impl.DynamicReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.impl.StaticReadwriteSplittingType;
 
 import java.util.Properties;
 

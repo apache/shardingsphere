@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm;
+package org.apache.shardingsphere.readwritesplitting.type.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
