@@ -26,5 +26,3 @@ ON n.oid=c.relnamespace
 WHERE relkind='r' AND NOT relispartition
 <@CATALOG.VALID_CATALOGS server_type />
 ORDER BY relnamespace, c.relname
-
-
