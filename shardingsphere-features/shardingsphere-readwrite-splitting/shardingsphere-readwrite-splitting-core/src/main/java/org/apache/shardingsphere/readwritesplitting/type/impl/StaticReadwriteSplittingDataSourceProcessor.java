@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm;
+package org.apache.shardingsphere.readwritesplitting.type.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
+import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Static readwrite splitting algorithm.
+ * Static readwrite splitting data source processor.
  */
-public class StaticReadwriteSplittingType implements ReadwriteSplittingType {
+public final class StaticReadwriteSplittingDataSourceProcessor implements ReadwriteSplittingDataSourceProcessor {
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private final String writeDataSourceName;
     
-    private String writeDataSourceName;
+    private final List<String> readDataSourceNames;
     
-    private List<String> readDataSourceNames;
-    
-    @Override
-    public void init() {
+    public StaticReadwriteSplittingDataSourceProcessor(final Properties props) {
         writeDataSourceName = props.getProperty("write-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
@@ -80,10 +73,5 @@ public class StaticReadwriteSplittingType implements ReadwriteSplittingType {
         actualDataSourceNames.addAll(readDataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
-    }
-    
-    @Override
-    public String getType() {
-        return "STATIC";
     }
 }
