@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal;
 
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -134,7 +135,9 @@ public final class ShardingDALResultMergerTest {
     private SQLStatementContext<DALStatement> mockSQLStatementContext(final DALStatement dalStatement) {
         SQLStatementContext<DALStatement> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(dalStatement);
-        when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(result.getTablesContext()).thenReturn(tablesContext);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
         when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
