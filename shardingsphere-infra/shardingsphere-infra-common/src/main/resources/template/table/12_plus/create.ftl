@@ -132,4 +132,3 @@ IS ${c.description};
 <@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=foreign_key/>
 <@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=check_constraint/>
 <@CONSTRAINTS.CONSTRAINT_COMMENTS schema=schema table=name data=exclude_constraint/>
-
