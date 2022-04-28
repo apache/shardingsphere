@@ -37,7 +37,7 @@ public final class ReadwriteSplittingStrategyFactory {
     /**
      * Create new instance of readwrite splitting strategy.
      * 
-     * @param type type of readwrite splitting method
+     * @param type type of readwrite splitting strategy
      * @param props properties of readwrite splitting strategy
      * @return readwrite splitting strategy
      */
