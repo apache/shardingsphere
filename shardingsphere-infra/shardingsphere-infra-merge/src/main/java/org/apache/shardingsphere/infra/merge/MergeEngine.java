@@ -55,7 +55,7 @@ public final class MergeEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final String databaseName, final DatabaseType databaseType, final ShardingSphereMetaData metaData, 
+    public MergeEngine(final String databaseName, final DatabaseType databaseType, final ShardingSphereMetaData metaData,
                        final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.databaseName = databaseName;
         this.databaseType = databaseType;
