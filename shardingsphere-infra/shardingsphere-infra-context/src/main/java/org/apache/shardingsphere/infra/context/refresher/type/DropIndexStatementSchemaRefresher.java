@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.infra.context.refresher.type;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
@@ -37,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexSta
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,42 +47,30 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Multimap<String, IndexSegment> schemaIndexSegmentMap = getSchemaIndexSegmentMap(sqlStatement, schemaName);
-        for (String each : schemaIndexSegmentMap.keySet()) {
-            ShardingSphereSchema schema = metaData.getSchemaByName(each);
-            Collection<TableMetaData> alteredTables = new LinkedList<>();
-            for (String tableName : getLogicTableNames(schema, sqlStatement)) {
-                if (!schema.containsTable(tableName)) {
-                    continue;
-                }
-                TableMetaData tableMetaData = schema.get(tableName);
-                schemaIndexSegmentMap.get(each).forEach(indexSegment -> tableMetaData.getIndexes().remove(indexSegment.getIndexName().getIdentifier().getValue()));
-                alteredTables.add(tableMetaData);
+        for (IndexSegment each : sqlStatement.getIndexes()) {
+            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+            Optional<String> logicTableName = findLogicTableName(metaData, sqlStatement, Collections.singletonList(each));
+            if (!logicTableName.isPresent()) {
+                continue;
             }
-            post(metaData.getDatabaseName(), each, alteredTables);
+            TableMetaData tableMetaData = metaData.getSchemaByName(actualSchemaName).get(logicTableName.get());
+            tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
+            post(metaData.getDatabaseName(), actualSchemaName, tableMetaData);
         }
     }
     
-    private Collection<String> getLogicTableNames(final ShardingSphereSchema schema, final DropIndexStatement sqlStatement) {
+    private Optional<String> findLogicTableName(final ShardingSphereMetaData metaData, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         if (simpleTableSegment.isPresent()) {
-            return Collections.singletonList(simpleTableSegment.get().getTableName().getIdentifier().getValue());
+            return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        return IndexMetaDataUtil.getTableNamesFromMetaData(schema, sqlStatement.getIndexes());
+        Collection<String> tableNames = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexSegments, metaData.getResource().getDatabaseType());
+        return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next());
     }
     
-    private Multimap<String, IndexSegment> getSchemaIndexSegmentMap(final DropIndexStatement dropIndexStatement, final String defaultSchemaName) {
-        Multimap<String, IndexSegment> result = LinkedHashMultimap.create();
-        for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            String schemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElseGet(() -> defaultSchemaName);
-            result.put(schemaName, each);
-        }
-        return result;
-    }
-    
-    private void post(final String databaseName, final String schemaName, final Collection<TableMetaData> alteredTables) {
+    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
         SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
-        event.getAlteredTables().addAll(alteredTables);
+        event.getAlteredTables().add(tableMetaData);
         ShardingSphereEventBus.getInstance().post(event);
     }
     
