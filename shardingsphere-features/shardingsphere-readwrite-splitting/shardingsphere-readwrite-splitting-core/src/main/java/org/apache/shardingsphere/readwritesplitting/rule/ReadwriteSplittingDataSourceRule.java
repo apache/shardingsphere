@@ -105,19 +105,20 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return data sources
      */
     public Map<String, String> getDataSources(final boolean removeDisabled) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
         String writeDataSourceName = dataSourceProcessor.getWriteDataSource();
         if (null != writeDataSourceName) {
             result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
         }
         List<String> readDataSourceNames = dataSourceProcessor.getReadDataSources();
-        if (!readDataSourceNames.isEmpty()) {
-            if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
-                readDataSourceNames = new LinkedList<>(readDataSourceNames);
-                readDataSourceNames.removeIf(disabledDataSourceNames::contains);
-            }
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
+        if (readDataSourceNames.isEmpty()) {
+            return result;   
         }
+        if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
+            readDataSourceNames = new LinkedList<>(readDataSourceNames);
+            readDataSourceNames.removeIf(disabledDataSourceNames::contains);
+        }
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
         return result;
     }
 }
