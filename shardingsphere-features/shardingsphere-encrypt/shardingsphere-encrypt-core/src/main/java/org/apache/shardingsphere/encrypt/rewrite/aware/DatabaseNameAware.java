@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.rewrite.aware;
 
 /**
- * Schema name aware.
+ * Database name aware.
  */
-public interface SchemaNameAware {
+public interface DatabaseNameAware {
     
     /**
-     * Set schema name.
+     * Set database name.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      */
-    void setSchemaName(String schemaName);
+    void setDatabaseName(String databaseName);
 }

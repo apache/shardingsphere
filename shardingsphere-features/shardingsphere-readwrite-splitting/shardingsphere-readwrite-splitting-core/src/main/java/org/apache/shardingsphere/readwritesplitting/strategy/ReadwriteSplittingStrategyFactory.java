@@ -22,10 +22,13 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -56,6 +59,8 @@ public final class ReadwriteSplittingStrategyFactory {
     private static DynamicReadwriteSplittingStrategy createDynamicDataSourceProcessor(final Properties props) {
         String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
-        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName);
+        Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.newInstance();
+        Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
+        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, dynamicDataSourceStrategy.get());
     }
 }

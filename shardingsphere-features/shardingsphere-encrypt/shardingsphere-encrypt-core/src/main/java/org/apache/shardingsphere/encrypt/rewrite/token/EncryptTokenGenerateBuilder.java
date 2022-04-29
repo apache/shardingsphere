@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
@@ -54,7 +54,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final String schemaName;
+    private final String databaseName;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -88,8 +88,8 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
         }
-        if (toBeAddedSQLTokenGenerator instanceof SchemaNameAware) {
-            ((SchemaNameAware) toBeAddedSQLTokenGenerator).setSchemaName(schemaName);
+        if (toBeAddedSQLTokenGenerator instanceof DatabaseNameAware) {
+            ((DatabaseNameAware) toBeAddedSQLTokenGenerator).setDatabaseName(databaseName);
         }
     }
 }

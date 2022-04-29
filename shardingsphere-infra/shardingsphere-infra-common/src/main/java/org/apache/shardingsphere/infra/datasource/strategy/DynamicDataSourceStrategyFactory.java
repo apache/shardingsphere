@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.aware;
+package org.apache.shardingsphere.infra.datasource.strategy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,21 +25,21 @@ import org.apache.shardingsphere.spi.type.optional.OptionalSPIRegistry;
 import java.util.Optional;
 
 /**
- * Data source name aware factory.
+ * Dynamic data source strategy factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceNameAwareFactory {
+public final class DynamicDataSourceStrategyFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourceNameAware.class);
+        ShardingSphereServiceLoader.register(DynamicDataSourceStrategy.class);
     }
     
     /**
-     * Create new instance of data source name aware.
+     * Create new instance of dynamic data source strategy.
      * 
-     * @return new instance of data source name aware
+     * @return new instance of dynamic data source strategy
      */
-    public static Optional<DataSourceNameAware> newInstance() {
-        return OptionalSPIRegistry.findRegisteredService(DataSourceNameAware.class);
+    public static Optional<DynamicDataSourceStrategy> newInstance() {
+        return OptionalSPIRegistry.findRegisteredService(DynamicDataSourceStrategy.class);
     }
 }

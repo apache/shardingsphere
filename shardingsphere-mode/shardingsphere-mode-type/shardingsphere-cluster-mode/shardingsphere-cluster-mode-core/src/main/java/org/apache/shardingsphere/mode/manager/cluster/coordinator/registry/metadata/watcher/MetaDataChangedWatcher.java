@@ -87,7 +87,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isLogicSchemaChanged(final DataChangedEvent event) {
-        return DatabaseMetaDataNode.getSchemaName(event.getKey()).isPresent();
+        return DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent() && DatabaseMetaDataNode.getSchemaName(event.getKey()).isPresent();
     }
     
     private boolean isTableMetaDataChanged(final DataChangedEvent event) {

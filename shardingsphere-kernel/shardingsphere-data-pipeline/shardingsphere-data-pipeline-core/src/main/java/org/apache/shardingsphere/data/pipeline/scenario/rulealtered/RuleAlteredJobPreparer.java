@@ -112,7 +112,7 @@ public final class RuleAlteredJobPreparer {
     private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lock.isLocked(lockName)) {
+            if (!lock.isLocked()) {
                 log.info("unlocked, lockName={}", lockName);
                 return;
             }

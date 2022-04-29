@@ -34,12 +34,16 @@ public final class GlobalLockRegistryService implements LockRegistryService {
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return repository.tryLock(lockName, timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        try {
+            return repository.getGlobalLock(lockName).tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        } catch (final InterruptedException ignore) {
+            return false;
+        }
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        repository.releaseLock(lockName);
+        repository.getGlobalLock(lockName).unlock();
     }
     
     @Override

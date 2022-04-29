@@ -30,16 +30,6 @@ public final class ProcessNode {
     private static final String EXECUTION_NODES = "execution_nodes";
     
     /**
-     * Get execution path.
-     *
-     * @param executionId execution id
-     * @return execution path
-     */
-    public static String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODES, executionId);
-    }
-    
-    /**
      * Get show process list id path.
      *
      * @param showProcessListId show process list id
