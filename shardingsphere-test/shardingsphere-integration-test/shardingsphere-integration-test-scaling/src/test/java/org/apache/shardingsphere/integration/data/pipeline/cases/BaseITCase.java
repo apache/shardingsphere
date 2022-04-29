@@ -82,11 +82,11 @@ public abstract class BaseITCase {
         }
         composedContainer.start();
         commonSQLCommand = JAXB.unmarshal(BaseITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
-        initScalingEnvironment(parameterized.getDatabaseType());
+        createProxyDatabase(parameterized.getDatabaseType());
     }
     
     @SneakyThrows
-    protected void initScalingEnvironment(final DatabaseType databaseType) {
+    protected void createProxyDatabase(final DatabaseType databaseType) {
         JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
         Properties queryProperties = createQueryProperties();
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
