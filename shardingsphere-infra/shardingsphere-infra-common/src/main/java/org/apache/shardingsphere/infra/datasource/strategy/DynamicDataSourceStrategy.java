@@ -22,7 +22,6 @@ import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.optional.OptionalSPI;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Dynamic data source strategy.
@@ -31,18 +30,11 @@ import java.util.Optional;
 public interface DynamicDataSourceStrategy extends OptionalSPI {
     
     /**
-     * Get rule.
+     * Initialize.
      * 
-     * @return ShardingSphere rule
-     */
-    Optional<ShardingSphereRule> getRule();
-    
-    /**
-     * Set rule.
-     *
      * @param rule rule
      */
-    void setRule(ShardingSphereRule rule);
+    void init(ShardingSphereRule rule);
     
     /**
      * Get primary data source name.
