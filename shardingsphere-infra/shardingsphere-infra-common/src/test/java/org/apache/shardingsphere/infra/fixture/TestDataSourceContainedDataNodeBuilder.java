@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeBuilder<TestShardingSphereRule> {
+public final class TestDataSourceContainedDataNodeBuilder implements DataNodeBuilder<TestShardingSphereRule> {
     
     @Override
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final TestShardingSphereRule rule) {
