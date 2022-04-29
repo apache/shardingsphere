@@ -15,10 +15,6 @@
   ~ limitations under the License.
   -->
 <#import "../../macro/constraints.ftl" as CONSTRAINTS>
--- Table: ${schema}.${name}
-
--- DROP TABLE IF EXISTS ${schema}.${name};
-
 <#assign with_clause = false>
 <#if fillfactor!false || parallel_workers!false || toast_tuple_target!false || (autovacuum_custom!false && add_vacuum_settings_in_sql!false) || autovacuum_enabled == 't' || autovacuum_enabled == 'f' || (toast_autovacuum!false && add_vacuum_settings_in_sql!false) || toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f' >
     <#assign with_clause = true>
