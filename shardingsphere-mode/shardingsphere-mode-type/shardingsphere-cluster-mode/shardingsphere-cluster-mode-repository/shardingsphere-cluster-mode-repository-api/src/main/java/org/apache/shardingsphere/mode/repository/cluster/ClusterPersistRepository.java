@@ -89,12 +89,12 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key lock key
      * @param time time to wait
-     * @param unit time unit
+     * @param timeUnit time unit
      * @return true if get the lock, false if not
      * @deprecated TODO remove after refactoring lock is complete
      */
     @Deprecated
-    boolean tryLock(String key, long time, TimeUnit unit);
+    boolean tryLock(String key, long time, TimeUnit timeUnit);
     
     /**
      * Release lock.
