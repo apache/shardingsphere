@@ -22,8 +22,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -151,13 +149,11 @@ public final class RuleAlteredJobWorker {
      * @return YAML root configuration
      */
     private static YamlRootConfiguration getYamlRootConfig(final RuleAlteredJobConfiguration jobConfig) {
-        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
         if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             return ((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         return ((ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
@@ -208,12 +204,13 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
-        RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration(pipelineConfig);
+        RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration();
         result.setDatabaseName(event.getDatabaseName());
         result.setAlteredRuleYamlClassNameTablesMap(alteredRuleYamlClassNameTablesMap);
         result.setActiveVersion(event.getActiveVersion());
         result.setNewVersion(event.getNewVersion());
+        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         return Optional.of(result);
     }
     
@@ -231,13 +228,6 @@ public final class RuleAlteredJobWorker {
                 result.add(Pair.of(null, entry.getValue()));
             }
         }
-        return result;
-    }
-    
-    private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
-        PipelineConfiguration result = new PipelineConfiguration();
-        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
-        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         return result;
     }
     
@@ -308,9 +298,8 @@ public final class RuleAlteredJobWorker {
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
-        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
-        if (null == handleConfig || null == jobConfig.getWorkflowConfig()) {
-            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
+        if (null == jobConfig || null == jobConfig.getHandleConfig()) {
+            log.warn("jobConfig null, jobId={}", jobId);
             return false;
         }
         return currentDatabaseName.equals(jobConfig.getDatabaseName());

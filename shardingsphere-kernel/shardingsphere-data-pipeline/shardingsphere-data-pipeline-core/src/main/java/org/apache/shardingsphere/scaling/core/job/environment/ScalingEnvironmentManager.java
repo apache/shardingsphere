@@ -46,7 +46,7 @@ public final class ScalingEnvironmentManager {
     public void cleanupTargetTables(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
         Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
         log.info("cleanupTargetTables, tables={}", tables);
-        YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
+        YamlPipelineDataSourceConfiguration target = jobConfig.getTarget();
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
                 Connection connection = dataSource.getConnection()) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
@@ -47,8 +49,6 @@ import java.util.Map;
 // TODO rename to Yaml, add config class
 public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
     
-    private PipelineConfiguration pipelineConfig;
-    
     private HandleConfiguration handleConfig;
     
     private String jobId;
@@ -67,15 +67,40 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private Integer newVersion;
     
-    public RuleAlteredJobConfiguration(final PipelineConfiguration pipelineConfig) {
-        this.pipelineConfig = pipelineConfig;
+    private YamlPipelineDataSourceConfiguration source;
+    
+    private YamlPipelineDataSourceConfiguration target;
+    
+    /**
+     * Set source.
+     *
+     * @param source source configuration
+     */
+    public void setSource(final YamlPipelineDataSourceConfiguration source) {
+        checkParameters(source);
+        this.source = source;
+    }
+    
+    /**
+     * Set target.
+     *
+     * @param target target configuration
+     */
+    public void setTarget(final YamlPipelineDataSourceConfiguration target) {
+        checkParameters(target);
+        this.target = target;
+    }
+    
+    private void checkParameters(final YamlPipelineDataSourceConfiguration yamlConfig) {
+        Preconditions.checkNotNull(yamlConfig);
+        Preconditions.checkNotNull(yamlConfig.getType());
+        Preconditions.checkNotNull(yamlConfig.getParameter());
     }
     
     /**
      * Build handle configuration.
      */
     public void buildHandleConfig() {
-        PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(this);
@@ -85,13 +110,11 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
             jobId = generateJobId();
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
-            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
-            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == jobShardingItem) {

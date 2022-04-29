@@ -61,7 +61,7 @@ public final class RuleAlteredJobTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final RuleAlteredJobConfiguration jobConfig) {
-        YamlPipelineDataSourceConfiguration source = jobConfig.getPipelineConfig().getSource();
+        YamlPipelineDataSourceConfiguration source = jobConfig.getSource();
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
                 Connection connection = dataSource.getConnection();

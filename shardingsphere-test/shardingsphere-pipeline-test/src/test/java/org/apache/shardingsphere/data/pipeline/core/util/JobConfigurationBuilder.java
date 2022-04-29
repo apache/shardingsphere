@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -51,12 +50,10 @@ public final class JobConfigurationBuilder {
         result.setAlteredRuleYamlClassNameTablesMap(ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")));
         result.setActiveVersion(0);
         result.setNewVersion(1);
-        PipelineConfiguration pipelineConfig = new PipelineConfiguration();
         // TODO add autoTables in config file
-        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(
+        result.setSource(createYamlPipelineDataSourceConfiguration(
                 new ShardingSpherePipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_standard_jdbc_target.yaml"))));
-        result.setPipelineConfig(pipelineConfig);
+        result.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_standard_jdbc_target.yaml"))));
         result.buildHandleConfig();
         int activeVersion = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE - 10) + 1;
         result.setJobId(generateJobId(activeVersion, "logic_db"));
