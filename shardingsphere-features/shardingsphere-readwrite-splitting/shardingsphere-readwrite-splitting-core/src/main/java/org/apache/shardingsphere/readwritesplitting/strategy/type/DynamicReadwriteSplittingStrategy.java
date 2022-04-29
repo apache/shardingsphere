@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.strategy.type;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Dynamic readwrite splitting strategy.
@@ -39,28 +37,23 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     
     private final String autoAwareDataSourceName;
     
+    private final DataSourceNameAware dataSourceNameAware;
+    
     @Override
     public String getWriteDataSource() {
-        return DataSourceNameAwareFactory.newInstance().map(optional -> optional.getPrimaryDataSourceName(autoAwareDataSourceName)).orElse(null);
+        return dataSourceNameAware.getPrimaryDataSourceName(autoAwareDataSourceName);
     }
     
     @Override
     public List<String> getReadDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
-        if (dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
-            return new ArrayList<>(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
-        }
-        return Collections.emptyList();
+        return dataSourceNameAware.getRule().isPresent() ? new ArrayList<>(dataSourceNameAware.getReplicaDataSourceNames(autoAwareDataSourceName)) : Collections.emptyList();
     }
     
     @Override
     public Collection<String> getAllDataSources() {
         Collection<String> result = new LinkedList<>();
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
-        if (dataSourceNameAware.isPresent()) {
-            result.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
-        }
+        result.add(dataSourceNameAware.getPrimaryDataSourceName(autoAwareDataSourceName));
+        result.addAll(dataSourceNameAware.getReplicaDataSourceNames(autoAwareDataSourceName));
         return result;
     }
 }
