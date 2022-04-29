@@ -51,23 +51,23 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private Collection<Map<String, Object>> fetchCheckConstraints(final Map<String, Object> context) {
-        Collection<Map<String, Object>> checkConstraints = new LinkedList<>();
+        Collection<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : getCheckConstraints((Long) context.get("tid"))) {
             if (!isPartitionAndConstraintInherited(each, context)) {
-                checkConstraints.add(each);
+                result.add(each);
             }
         }
-        return checkConstraints;
+        return result;
     }
     
     private Collection<Map<String, Object>> fetchForeignKeys(final Map<String, Object> context) {
-        Collection<Map<String, Object>> foreignKeys = new LinkedList<>();
+        Collection<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : getForeignKeys((Long) context.get("tid"))) {
             if (!isPartitionAndConstraintInherited(each, context)) {
-                foreignKeys.add(each);
+                result.add(each);
             }
         }
-        return foreignKeys;
+        return result;
     }
     
     private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
