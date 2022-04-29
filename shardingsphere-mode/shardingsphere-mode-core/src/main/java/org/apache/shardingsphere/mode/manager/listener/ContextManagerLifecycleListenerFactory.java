@@ -39,6 +39,6 @@ public final class ContextManagerLifecycleListenerFactory {
      * @return new instances of context manager lifecycle listener
      */
     public static Collection<ContextManagerLifecycleListener> newInstances() {
-       return ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class); 
+        return ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class);
     } 
 }
