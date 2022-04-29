@@ -20,12 +20,12 @@ package org.apache.shardingsphere.authority.rule;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,16 +36,12 @@ import java.util.Optional;
  */
 public final class AuthorityRule implements GlobalRule {
     
-    static {
-        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
-    }
-    
     private final AuthorityProviderAlgorithm provider;
     
     private final Collection<ShardingSphereUser> users;
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> metaDataMap) {
-        provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProviderAlgorithm.class);
+        provider = AuthorityProviderAlgorithmFactory.newInstance(config.getProvider());
         provider.init(metaDataMap, config.getUsers());
         users = config.getUsers();
     }
