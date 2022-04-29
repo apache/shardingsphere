@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -29,12 +28,11 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     
     /**
-     * Create handle configuration, used to build job configuration.
+     * Extend job configuration.
      *
      * @param jobConfig job configuration
-     * @return handle configuration
      */
-    HandleConfiguration createHandleConfiguration(RuleAlteredJobConfiguration jobConfig);
+    void extendJobConfiguration(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Create task configuration, used by underlying scheduler.

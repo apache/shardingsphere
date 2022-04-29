@@ -178,7 +178,7 @@ public final class InventoryTaskSplitter {
     private Collection<IngestPosition<?>> getPositionByPrimaryKeyRange(final RuleAlteredJobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new ArrayList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getHandleConfig().getSourceDatabaseType())
+        String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
         try (
                 Connection connection = dataSource.getConnection();
@@ -186,7 +186,7 @@ public final class InventoryTaskSplitter {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
-                ps.setLong(2, jobConfig.getHandleConfig().getShardingSize());
+                ps.setLong(2, jobConfig.getShardingSize());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         log.info("getPositionByPrimaryKeyRange, rs.next false, break");

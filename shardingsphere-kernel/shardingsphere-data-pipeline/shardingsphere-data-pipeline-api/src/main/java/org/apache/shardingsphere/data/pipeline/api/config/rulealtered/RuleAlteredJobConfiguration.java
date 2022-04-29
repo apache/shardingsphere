@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,8 +50,6 @@ import java.util.Map;
 // TODO rename to Yaml, add config class
 public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
     
-    private HandleConfiguration handleConfig;
-    
     private String jobId;
     
     private String databaseName;
@@ -70,6 +69,30 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     private YamlPipelineDataSourceConfiguration source;
     
     private YamlPipelineDataSourceConfiguration target;
+    
+    private int concurrency = 3;
+    
+    private int retryTimes = 3;
+    
+    /**
+     * Collection of each logic table's first data node.
+     * <p>
+     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
+     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
+     * </p>
+     */
+    private String tablesFirstDataNodes;
+    
+    private List<String> jobShardingDataNodes;
+    
+    private String logicTables;
+    
+    // TODO shardingSize should be configurable
+    private int shardingSize = 1000 * 10000;
+    
+    private String sourceDatabaseType;
+    
+    private String targetDatabaseType;
     
     /**
      * Set source.
@@ -98,24 +121,40 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     }
     
     /**
+     * Get job sharding count.
+     *
+     * @return job sharding count
+     */
+    public int getJobShardingCount() {
+        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
+    }
+    
+    /**
+     * Split {@linkplain #logicTables} to logic table names.
+     *
+     * @return logic table names
+     */
+    public List<String> splitLogicTableNames() {
+        return Splitter.on(',').splitToList(logicTables);
+    }
+    
+    /**
      * Build handle configuration.
      */
     public void buildHandleConfig() {
-        HandleConfiguration handleConfig = getHandleConfig();
-        if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
-            handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(this);
-            this.handleConfig = handleConfig;
+        if (null == getJobShardingDataNodes()) {
+            RuleAlteredJobConfigurationPreparerFactory.newInstance().extendJobConfiguration(this);
         }
         if (null == jobId) {
             jobId = generateJobId();
         }
-        if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
+        if (Strings.isNullOrEmpty(getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
-            handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
+            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
-        if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
+        if (Strings.isNullOrEmpty(getTargetDatabaseType())) {
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
-            handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
+            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == jobShardingItem) {
             jobShardingItem = 0;
@@ -132,5 +171,14 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
         jobId.setNewMetadataVersion(newVersion);
         jobId.setDatabaseName(databaseName);
         return jobId.marshal();
+    }
+    
+    @Override
+    public String toString() {
+        return "RuleAlteredJobConfiguration{"
+                + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
+                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion + ", shardingSize=" + shardingSize
+                + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
+                + '}';
     }
 }

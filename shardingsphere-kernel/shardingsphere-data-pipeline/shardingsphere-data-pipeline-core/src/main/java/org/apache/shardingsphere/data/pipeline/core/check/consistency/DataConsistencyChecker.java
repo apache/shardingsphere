@@ -75,7 +75,7 @@ public final class DataConsistencyChecker {
     
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
-        logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
+        logicTableNames = jobConfig.splitLogicTableNames();
     }
     
     /**

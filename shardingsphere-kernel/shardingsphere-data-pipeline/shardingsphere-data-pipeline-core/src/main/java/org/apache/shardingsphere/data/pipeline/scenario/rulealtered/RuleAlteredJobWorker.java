@@ -298,10 +298,6 @@ public final class RuleAlteredJobWorker {
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
-        if (null == jobConfig || null == jobConfig.getHandleConfig()) {
-            log.warn("jobConfig null, jobId={}", jobId);
-            return false;
-        }
         return currentDatabaseName.equals(jobConfig.getDatabaseName());
     }
     

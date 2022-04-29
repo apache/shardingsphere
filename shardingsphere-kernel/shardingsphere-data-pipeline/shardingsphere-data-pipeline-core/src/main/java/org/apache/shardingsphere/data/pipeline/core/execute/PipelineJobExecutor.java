@@ -69,7 +69,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
                 if (deleted) {
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
-                } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getHandleConfig().getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
+                } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
                     log.info("isJobSuccessful=true");
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
                 }
