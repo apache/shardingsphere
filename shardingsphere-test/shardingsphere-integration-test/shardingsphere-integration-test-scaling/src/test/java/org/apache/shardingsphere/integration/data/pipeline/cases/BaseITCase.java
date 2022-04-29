@@ -98,12 +98,6 @@ public abstract class BaseITCase {
     
     protected abstract Properties createQueryProperties();
     
-    /**
-     * Get proxy database data source.
-     *
-     * @param databaseName database name
-     * @return proxy database connection
-     */
     private DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(composedContainer.getDatabaseContainer().getDatabaseType()));
@@ -115,15 +109,6 @@ public abstract class BaseITCase {
         return result;
     }
     
-    protected String getActualJdbcUrlTemplate(final String databaseName) {
-        final DockerDatabaseContainer databaseContainer = composedContainer.getDatabaseContainer();
-        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
-        } else {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
-        }
-    }
-    
     protected void addResource(final Connection connection) throws SQLException {
         Properties queryProperties = createQueryProperties();
         connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProperties)));
@@ -131,6 +116,15 @@ public abstract class BaseITCase {
         connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProperties)));
         connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProperties)));
         connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProperties)));
+    }
+    
+    private String getActualJdbcUrlTemplate(final String databaseName) {
+        final DockerDatabaseContainer databaseContainer = composedContainer.getDatabaseContainer();
+        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
+        } else {
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
+        }
     }
     
     protected void initShardingRule() throws InterruptedException {
