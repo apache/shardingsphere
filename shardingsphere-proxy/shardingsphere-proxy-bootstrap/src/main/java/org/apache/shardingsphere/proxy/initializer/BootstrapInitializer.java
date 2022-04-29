@@ -27,15 +27,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Bootstrap initializer.
@@ -43,10 +42,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Slf4j
 public final class BootstrapInitializer {
-    
-    static {
-        ShardingSphereServiceLoader.register(ContextManagerLifecycleListener.class);
-    }
     
     /**
      * Initialize.
@@ -76,8 +71,7 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Collection<ContextManagerLifecycleListener> listeners = ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class);
-        for (ContextManagerLifecycleListener each : listeners) {
+        for (ContextManagerLifecycleListener each : ContextManagerLifecycleListenerFactory.newInstances()) {
             try {
                 each.onInitialized(modeConfig, contextManager);
                 // CHECKSTYLE:OFF

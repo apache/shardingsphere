@@ -15,35 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine;
+package org.apache.shardingsphere.authority.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * Result process engine factory.
- */
+ * Authority provide algorithm factory.
+*/
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResultProcessEngineFactory {
+public final class AuthorityProviderAlgorithmFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
+        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
     }
     
     /**
-     * Create new instance of result process engine.
+     * Create new instance of authority provide algorithm.
      * 
-     * @param rules rules
-     * @return new instance of result process engine
+     * @param authorityProviderConfig authority provider configuration
+     * @return new instance of authority provide algorithm
      */
-    @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, ResultProcessEngine> newInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, rules);
+    public static AuthorityProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration authorityProviderConfig) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(authorityProviderConfig, AuthorityProviderAlgorithm.class);
     }
 }

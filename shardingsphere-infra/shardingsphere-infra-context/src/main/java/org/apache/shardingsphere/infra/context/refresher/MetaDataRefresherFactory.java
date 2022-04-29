@@ -15,33 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.context.refresher;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * Rule based schema meta data builder factory.
+ * Meta data refresher factory.
  */
-public final class RuleBasedSchemaMetaDataBuilderFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MetaDataRefresherFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(MetaDataRefresher.class);
     }
     
     /**
-     * Create new instance of rule based schema meta data builder.
+     * Create new instance of meta data refresher.
      * 
-     * @param rules rules
-     * @return new instance of rule based schema meta data builder
+     * @param sqlStatementClass SQL statement class
+     * @return new instance of meta data refresher
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> newInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules);
+    public static Optional<MetaDataRefresher> newInstance(final Class<? extends SQLStatement> sqlStatementClass) {
+        return TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
     }
 }

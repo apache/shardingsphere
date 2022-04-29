@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Rule based schema meta data builder factory.
+ * ShardingSphere YAML tuple processor factory.
  */
-public final class RuleBasedSchemaMetaDataBuilderFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereYamlTupleProcessorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
     }
     
     /**
-     * Create new instance of rule based schema meta data builder.
-     * 
-     * @param rules rules
-     * @return new instance of rule based schema meta data builder
+     * Create new instances of ShardingSphere YAML tuple processor.
+     *
+     * @return new instances of ShardingSphere YAML tuple processor
      */
-    @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> newInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules);
+    public static Collection<ShardingSphereYamlTupleProcessor> newInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class);
     }
 }

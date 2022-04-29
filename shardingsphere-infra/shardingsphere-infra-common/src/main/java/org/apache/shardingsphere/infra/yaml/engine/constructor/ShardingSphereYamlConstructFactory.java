@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Rule based schema meta data builder factory.
+ * ShardingSphere YAML construct factory.
  */
-public final class RuleBasedSchemaMetaDataBuilderFactory {
+public final class ShardingSphereYamlConstructFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
     }
     
     /**
-     * Create new instance of rule based schema meta data builder.
+     * Create new instances of ShardingSphere YAML construct.
      * 
-     * @param rules rules
-     * @return new instance of rule based schema meta data builder
+     * @return new instances of ShardingSphere YAML construct
      */
-    @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> newInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules);
+    public static Collection<ShardingSphereYamlConstruct> newInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class);
     }
 }
