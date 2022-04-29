@@ -35,9 +35,9 @@ public final class DynamicDataSourceStrategyFactory {
     }
     
     /**
-     * Create new instance of data source name aware.
+     * Create new instance of dynamic data source strategy.
      * 
-     * @return new instance of data source name aware
+     * @return new instance of dynamic data source strategy
      */
     public static Optional<DynamicDataSourceStrategy> newInstance() {
         return OptionalSPIRegistry.findRegisteredService(DynamicDataSourceStrategy.class);
