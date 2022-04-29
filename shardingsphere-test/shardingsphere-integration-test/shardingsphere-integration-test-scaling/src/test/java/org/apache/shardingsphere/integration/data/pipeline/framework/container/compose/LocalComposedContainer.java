@@ -27,8 +27,8 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.p
 public final class LocalComposedContainer extends BaseComposedContainer {
     private ShardingSphereProxyLocalContainer shardingSphereProxyContainer;
     
-    public LocalComposedContainer(final DatabaseType databaseType, final String databaseName) {
-        super(databaseType, databaseName);
+    public LocalComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+        super(databaseType, dockerImageName);
     }
     
     @SneakyThrows

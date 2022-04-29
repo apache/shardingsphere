@@ -30,8 +30,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
-    public DockerComposedContainer(final DatabaseType databaseType, final String databaseVersion) {
-        super(databaseType, databaseVersion);
+    public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+        super(databaseType, dockerImageName);
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
         proxyContainer.addExposedPort(3307);
         proxyContainer.dependsOn(getGovernanceContainer(), getDatabaseContainer());

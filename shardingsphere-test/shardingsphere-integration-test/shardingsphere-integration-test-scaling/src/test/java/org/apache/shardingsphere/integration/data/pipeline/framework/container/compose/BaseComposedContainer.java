@@ -36,10 +36,10 @@ public abstract class BaseComposedContainer implements Startable {
     
     private final DockerDatabaseContainer databaseContainer;
     
-    public BaseComposedContainer(final DatabaseType databaseType, final String databaseVersion) {
+    public BaseComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.containers = new ITContainers("");
         this.governanceContainer = containers.registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
-        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType, databaseVersion), NetworkAliasUtil.getNetworkAlias("db"));
+        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
     }
     
     /**
