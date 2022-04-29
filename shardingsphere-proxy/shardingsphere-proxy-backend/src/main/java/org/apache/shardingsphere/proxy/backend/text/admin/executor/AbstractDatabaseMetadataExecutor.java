@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.FunctionWithException;
 
@@ -198,7 +198,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
             String database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
-                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
+                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(ResourceNotExistedException::new);
             return Collections.singletonList(database);
         }
         
@@ -212,7 +212,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
             ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
-            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
+            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
             try (
                     Connection conn = dataSourceEntry.get().getValue().getConnection();
                     PreparedStatement ps = conn.prepareStatement(sql);

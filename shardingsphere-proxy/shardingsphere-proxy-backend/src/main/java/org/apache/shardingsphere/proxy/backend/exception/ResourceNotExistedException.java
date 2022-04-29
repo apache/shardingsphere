@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 /**
- * Database does not exist exception.
+ * Resource does not exist exception.
  */
-public final class DatabaseNotExistedException extends BackendException {
+public final class ResourceNotExistedException extends BackendException {
     
     private static final long serialVersionUID = 4146100333670404924L;
 }

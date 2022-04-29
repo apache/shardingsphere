@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
@@ -109,7 +109,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
+        if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
         if (cause instanceof DatabaseLockedException) {
