@@ -22,8 +22,8 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.aware.DynamicDataSourceStrategy;
-import org.apache.shardingsphere.infra.aware.DynamicDataSourceStrategyFactory;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 

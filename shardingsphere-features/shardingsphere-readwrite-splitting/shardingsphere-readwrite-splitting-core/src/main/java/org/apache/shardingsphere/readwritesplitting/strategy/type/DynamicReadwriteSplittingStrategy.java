@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.aware.DynamicDataSourceStrategy;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;

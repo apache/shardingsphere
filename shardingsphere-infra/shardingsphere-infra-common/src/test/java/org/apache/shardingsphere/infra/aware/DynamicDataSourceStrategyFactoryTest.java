@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.aware;
 
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
