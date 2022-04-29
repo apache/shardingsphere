@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-spi</artifactId>
+            <artifactId>shardingsphere-data-pipeline-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

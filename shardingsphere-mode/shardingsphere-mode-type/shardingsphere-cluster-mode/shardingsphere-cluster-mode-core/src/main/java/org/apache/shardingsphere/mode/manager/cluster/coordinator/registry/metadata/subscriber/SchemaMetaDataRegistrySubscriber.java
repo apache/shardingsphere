@@ -66,8 +66,8 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
-        persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
         persistService.persistTables(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
+        persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**

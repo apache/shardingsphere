@@ -49,7 +49,7 @@ public final class CosIdModShardingAlgorithmTest {
     static CosIdModShardingAlgorithm<Long> createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        properties.setProperty(CosIdModShardingAlgorithm.MODULO_KEY, String.valueOf(DIVISOR));
+        properties.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
         CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
         result.setProps(properties);
         result.init();

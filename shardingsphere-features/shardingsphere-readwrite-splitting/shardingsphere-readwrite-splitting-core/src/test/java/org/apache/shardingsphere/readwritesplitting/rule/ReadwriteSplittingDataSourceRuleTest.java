@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -39,10 +35,6 @@ import static org.junit.Assert.assertThat;
 public final class ReadwriteSplittingDataSourceRuleTest {
     
     private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
-    
-    static {
-        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
-    }
     
     @Before
     public void setUp() {
@@ -88,13 +80,6 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", false);
         assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-    
-    @Test
-    public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = readwriteSplittingDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
-        assertThat(actual, is(expected));
     }
     
     @Test

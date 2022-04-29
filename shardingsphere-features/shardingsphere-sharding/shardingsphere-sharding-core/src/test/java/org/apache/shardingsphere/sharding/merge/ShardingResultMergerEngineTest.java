@@ -84,7 +84,7 @@ public final class ShardingResultMergerEngineTest {
     private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDefaultSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
                 Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);

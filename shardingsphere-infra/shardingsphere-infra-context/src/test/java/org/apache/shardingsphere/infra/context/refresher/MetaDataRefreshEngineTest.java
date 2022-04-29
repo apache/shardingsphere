@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -52,6 +53,7 @@ public final class MetaDataRefreshEngineTest {
         SQLStatementContext<DropDatabaseStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropDatabaseStatement.class));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
+        when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getDatabaseName()).thenReturn("database");
         Field field = metaDataRefreshEngine.getClass().getDeclaredField("metaData");
