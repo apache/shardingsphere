@@ -70,7 +70,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     private List<Map<String, Object>> getOtherColumns(final Map<String, Object> context) {
         if (null != context.get("typoid")) {
             return getOtherColumnFromType(context);
-        }  
+        }
         if (null != context.get("coll_inherits")) {
             Collection<String> collInherits = convertPgArrayToList(context.get("coll_inherits"));
             context.put("coll_inherits", collInherits);
