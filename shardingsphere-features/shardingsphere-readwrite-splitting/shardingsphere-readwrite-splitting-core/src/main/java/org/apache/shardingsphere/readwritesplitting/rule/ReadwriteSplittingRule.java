@@ -141,7 +141,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     private Collection<String> exportAutoAwareDataSourceNames() {
         return dataSourceRules.values().stream().filter(each -> each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy)
-            .map(each -> ((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName()).collect(Collectors.toList());
+                .map(each -> ((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName()).collect(Collectors.toList());
     }
     
     private Map<String, Map<String, String>> exportStaticDataSources() {
