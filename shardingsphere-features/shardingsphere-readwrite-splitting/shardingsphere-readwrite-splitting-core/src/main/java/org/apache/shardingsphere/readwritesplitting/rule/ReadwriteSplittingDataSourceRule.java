@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessor;
-import org.apache.shardingsphere.readwritesplitting.type.ReadwriteSplittingDataSourceProcessorFactory;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +45,7 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
-    private final ReadwriteSplittingDataSourceProcessor dataSourceProcessor;
+    private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
@@ -55,7 +54,7 @@ public final class ReadwriteSplittingDataSourceRule {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
         this.loadBalancer = loadBalancer;
-        dataSourceProcessor = ReadwriteSplittingDataSourceProcessorFactory.newInstance(config.getType(), config.getProps());
+        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
     }
     
     /**
@@ -64,7 +63,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return write data source name
      */
     public String getWriteDataSource() {
-        return dataSourceProcessor.getWriteDataSource();
+        return readwriteSplittingStrategy.getWriteDataSource();
     }
     
     /**
@@ -73,7 +72,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return available read data source names
      */
     public List<String> getReadDataSourceNames() {
-        return dataSourceProcessor.getReadDataSources().stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+        return readwriteSplittingStrategy.getReadDataSources().stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -91,37 +90,26 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
-     * Get data source mapper.
-     *
-     * @return data source mapper
-     */
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return dataSourceProcessor.getDataSourceMapper(name);
-    }
-    
-    /**
      * Get data sources.
      *
-     * @param removeDisabled Whether to remove the disabled resource
+     * @param removeDisabled whether to remove the disabled resource
      * @return data sources
      */
     public Map<String, String> getDataSources(final boolean removeDisabled) {
-        Map<String, String> result = new LinkedHashMap<>();
-        dataSourceProcessor.getDataSources().forEach((key, value) -> {
-            if (ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(key) && removeDisabled) {
-                value = removeDisabledDataSources(value);
-            }
-            result.put(key, value);
-        });
-        return result;
-    }
-    
-    private String removeDisabledDataSources(final String readDataSources) {
-        if (disabledDataSourceNames.isEmpty()) {
-            return readDataSources;
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        String writeDataSourceName = readwriteSplittingStrategy.getWriteDataSource();
+        if (null != writeDataSourceName) {
+            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
         }
-        Collection<String> dataSources = new LinkedList<>(Splitter.on(",").trimResults().splitToList(readDataSources));
-        dataSources.removeIf(disabledDataSourceNames::contains);
-        return String.join(",", dataSources);
+        List<String> readDataSourceNames = readwriteSplittingStrategy.getReadDataSources();
+        if (readDataSourceNames.isEmpty()) {
+            return result;
+        }
+        if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
+            readDataSourceNames = new LinkedList<>(readDataSourceNames);
+            readDataSourceNames.removeIf(disabledDataSourceNames::contains);
+        }
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
+        return result;
     }
 }

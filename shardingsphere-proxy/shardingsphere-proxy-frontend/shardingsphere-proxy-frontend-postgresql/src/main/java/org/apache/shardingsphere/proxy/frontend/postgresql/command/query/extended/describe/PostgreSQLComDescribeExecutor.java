@@ -128,7 +128,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         String databaseName = connectionSession.getDatabaseName();
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(databaseName).getDefaultSchema().get(logicTableName);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(databaseName);
+        String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
+                .getValue()).orElseGet(() -> metaData.getResource().getDatabaseType().getDefaultSchema(databaseName));
+        TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         Map<String, ColumnMetaData> caseInsensitiveColumnMetaData = null;
         List<String> columnNames;

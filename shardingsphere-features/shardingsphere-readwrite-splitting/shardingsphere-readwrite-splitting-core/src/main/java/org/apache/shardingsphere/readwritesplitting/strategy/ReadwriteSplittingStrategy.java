@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.type;
+package org.apache.shardingsphere.readwritesplitting.strategy;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Readwrite splitting data source processor.
+ * Readwrite splitting strategy.
  */
-public interface ReadwriteSplittingDataSourceProcessor {
+public interface ReadwriteSplittingStrategy {
     
     /**
      * Get write data source.
@@ -40,17 +39,9 @@ public interface ReadwriteSplittingDataSourceProcessor {
     List<String> getReadDataSources();
     
     /**
-     * Get data sources.
+     * Get all data sources.
      *
-     * @return data sources
+     * @return all data sources
      */
-    Map<String, String> getDataSources();
-    
-    /**
-     * Get data source mapper.
-     *
-     * @param name name
-     * @return data source mapper
-     */
-    Map<String, Collection<String>> getDataSourceMapper(String name);
+    Collection<String> getAllDataSources();
 }

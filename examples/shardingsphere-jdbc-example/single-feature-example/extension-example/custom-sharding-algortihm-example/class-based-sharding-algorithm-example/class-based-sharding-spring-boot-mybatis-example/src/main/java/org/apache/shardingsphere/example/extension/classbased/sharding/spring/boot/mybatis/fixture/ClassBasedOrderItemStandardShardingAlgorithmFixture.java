@@ -62,6 +62,6 @@ public final class ClassBasedOrderItemStandardShardingAlgorithmFixture implement
     
     @Override
     public String getType() {
-        return "T_ORDER_ITEM_CLASS_BASED";
+        return null;
     }
 }

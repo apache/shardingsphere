@@ -27,9 +27,13 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Job configuration builder.
@@ -51,6 +55,8 @@ public final class JobConfigurationBuilder {
         pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_standard_jdbc_target.yaml"))));
         result.setPipelineConfig(pipelineConfig);
         result.buildHandleConfig();
+        int activeVersion = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE - 10) + 1;
+        result.getHandleConfig().setJobId(generateJobId(activeVersion, "logic_db"));
         return result;
     }
     
@@ -59,5 +65,16 @@ public final class JobConfigurationBuilder {
         result.setType(config.getType());
         result.setParameter(config.getParameter());
         return result;
+    }
+    
+    private static String generateJobId(final int activeVersion, final String databaseName) {
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
+        jobId.setCurrentMetadataVersion(activeVersion);
+        jobId.setNewMetadataVersion(activeVersion + 1);
+        jobId.setDatabaseName(databaseName);
+        return jobId.marshal();
     }
 }
