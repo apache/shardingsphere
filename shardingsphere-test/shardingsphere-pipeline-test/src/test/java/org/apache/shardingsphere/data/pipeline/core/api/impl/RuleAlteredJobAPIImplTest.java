@@ -24,8 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -130,12 +129,12 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheck() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
-        if (null == jobConfig.getPipelineConfig()) {
-            log.error("pipelineConfig is null, jobConfig={}", YamlEngine.marshal(jobConfig));
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        if (null == jobConfig.getSource()) {
+            log.error("source is null, jobConfig={}", YamlEngine.marshal(jobConfig));
         }
-        initTableData(jobConfig.getPipelineConfig());
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        initTableData(jobConfig);
+        String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
         ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
@@ -146,9 +145,9 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheckWithAlgorithm() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getPipelineConfig());
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig);
+        String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
         ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
@@ -197,11 +196,11 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test(expected = PipelineVerifyFailedException.class)
     public void assertSwitchClusterConfigurationAlreadyFinished() {
-        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
@@ -211,12 +210,12 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
-        final JobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        jobConfiguration.getHandleConfig().setJobShardingItem(0);
-        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfiguration);
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        jobConfig.setJobShardingItem(0);
+        Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfiguration);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
@@ -232,8 +231,8 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertResetTargetTable() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
-        initTableData(jobConfig.getPipelineConfig());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig);
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
@@ -241,10 +240,10 @@ public final class RuleAlteredJobAPIImplTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final PipelineConfiguration pipelineConfig) {
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
+    private void initTableData(final RuleAlteredJobConfiguration jobConfig) {
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         initTableData(PipelineDataSourceCreatorFactory.getInstance(sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
-        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
         initTableData(PipelineDataSourceCreatorFactory.getInstance(targetDataSourceConfig.getType()).createPipelineDataSource(targetDataSourceConfig.getDataSourceConfiguration()));
     }
     

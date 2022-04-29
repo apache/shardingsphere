@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
@@ -65,22 +65,23 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             if (deleted || disabled) {
                 log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), deleted, disabled);
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
-                JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                // TODO refactor: dispatch to different job types
+                RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
                 if (deleted) {
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
-                } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getHandleConfig().getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
+                } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
                     log.info("isJobSuccessful=true");
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
                 }
-                ScalingReleaseDatabaseLevelLockEvent releaseLockEvent = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getWorkflowConfig().getDatabaseName());
+                ScalingReleaseDatabaseLevelLockEvent releaseLockEvent = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getDatabaseName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+                    RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
+                    String databaseName = jobConfig.getDatabaseName();
                     if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
                         execute(jobConfigPOJO);
                     } else {

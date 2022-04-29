@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
 /**
- * Prepare target tables parameter.
+ * Pipeline job configuration.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrepareTargetTablesParameter {
+public interface PipelineJobConfiguration {
     
-    @NonNull
-    private final JobDataNodeLine tablesFirstDataNodes;
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
     
-    @NonNull
-    private final RuleAlteredJobConfiguration jobConfig;
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
     
-    @NonNull
-    private final PipelineDataSourceManager dataSourceManager;
+    /**
+     * Get job sharding item.
+     *
+     * @return job sharding item
+     */
+    Integer getJobShardingItem();
 }

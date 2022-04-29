@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -42,8 +42,8 @@ public final class RuleAlteredJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("Execute job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        JobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), JobConfiguration.class, true);
-        jobConfig.getHandleConfig().setJobShardingItem(shardingContext.getShardingItem());
+        RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), RuleAlteredJobConfiguration.class, true);
+        jobConfig.setJobShardingItem(shardingContext.getShardingItem());
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         jobContext.setInitProgress(governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
         jobContext.setJobPreparer(jobPreparer);
@@ -56,7 +56,7 @@ public final class RuleAlteredJob implements SimpleJob {
             RuleAlteredJobSchedulerCenter.stop(shardingContext.getJobName());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
-            ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getWorkflowConfig().getDatabaseName());
+            ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getDatabaseName());
             ShardingSphereEventBus.getInstance().post(event);
             throw ex;
         }
