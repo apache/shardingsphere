@@ -40,6 +40,13 @@
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
+    <#if transaction?contains("xa")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
     <#if framework?contains("jpa")>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
