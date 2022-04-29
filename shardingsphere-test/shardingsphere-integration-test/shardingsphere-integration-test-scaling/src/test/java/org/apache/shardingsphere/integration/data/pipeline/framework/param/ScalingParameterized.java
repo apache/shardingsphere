@@ -29,7 +29,7 @@ public final class ScalingParameterized {
     
     private DatabaseType databaseType;
     
-    private String databaseVersion;
+    private String dockerImageName;
     
     private String parentPath;
 }

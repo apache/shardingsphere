@@ -76,9 +76,9 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ScalingParameterized parameterized) {
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDatabaseVersion());
+            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
-            composedContainer = new LocalComposedContainer(parameterized.getDatabaseType(), parameterized.getDatabaseVersion());
+            composedContainer = new LocalComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         }
         composedContainer.start();
         commonSQLCommand = JAXB.unmarshal(BaseITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
