@@ -33,6 +33,8 @@ public final class EncryptContext {
     
     private final String databaseName;
     
+    private final String schemaName;
+    
     private final String tableName;
     
     private final String columnName;
