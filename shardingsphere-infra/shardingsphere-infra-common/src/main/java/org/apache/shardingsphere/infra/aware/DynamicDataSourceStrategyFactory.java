@@ -17,14 +17,29 @@
 
 package org.apache.shardingsphere.infra.aware;
 
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.optional.OptionalSPIRegistry;
 
-import static org.junit.Assert.assertFalse;
+import java.util.Optional;
 
-public final class DataSourceNameAwareFactoryTest {
+/**
+ * Dynamic data source strategy factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DynamicDataSourceStrategyFactory {
     
-    @Test
-    public void assertGetInstance() {
-        assertFalse(DataSourceNameAwareFactory.newInstance().isPresent());
+    static {
+        ShardingSphereServiceLoader.register(DynamicDataSourceStrategy.class);
+    }
+    
+    /**
+     * Create new instance of data source name aware.
+     * 
+     * @return new instance of data source name aware
+     */
+    public static Optional<DynamicDataSourceStrategy> newInstance() {
+        return OptionalSPIRegistry.findRegisteredService(DynamicDataSourceStrategy.class);
     }
 }

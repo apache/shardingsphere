@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
+import org.apache.shardingsphere.infra.aware.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
@@ -37,23 +37,23 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     
     private final String autoAwareDataSourceName;
     
-    private final DataSourceNameAware dataSourceNameAware;
+    private final DynamicDataSourceStrategy dynamicDataSourceStrategy;
     
     @Override
     public String getWriteDataSource() {
-        return dataSourceNameAware.getPrimaryDataSourceName(autoAwareDataSourceName);
+        return dynamicDataSourceStrategy.getPrimaryDataSourceName(autoAwareDataSourceName);
     }
     
     @Override
     public List<String> getReadDataSources() {
-        return dataSourceNameAware.getRule().isPresent() ? new ArrayList<>(dataSourceNameAware.getReplicaDataSourceNames(autoAwareDataSourceName)) : Collections.emptyList();
+        return dynamicDataSourceStrategy.getRule().isPresent() ? new ArrayList<>(dynamicDataSourceStrategy.getReplicaDataSourceNames(autoAwareDataSourceName)) : Collections.emptyList();
     }
     
     @Override
     public Collection<String> getAllDataSources() {
         Collection<String> result = new LinkedList<>();
-        result.add(dataSourceNameAware.getPrimaryDataSourceName(autoAwareDataSourceName));
-        result.addAll(dataSourceNameAware.getReplicaDataSourceNames(autoAwareDataSourceName));
+        result.add(dynamicDataSourceStrategy.getPrimaryDataSourceName(autoAwareDataSourceName));
+        result.addAll(dynamicDataSourceStrategy.getReplicaDataSourceNames(autoAwareDataSourceName));
         return result;
     }
 }
