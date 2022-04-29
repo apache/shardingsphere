@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.compose;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
-
-import javax.sql.DataSource;
 
 /**
  * Composed container, include governance container and database container.
@@ -34,8 +30,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
-    public DockerComposedContainer(final DatabaseType databaseType) {
-        super(databaseType);
+    public DockerComposedContainer(final DatabaseType databaseType, final String databaseVersion) {
+        super(databaseType, databaseVersion);
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
         proxyContainer.addExposedPort(3307);
         proxyContainer.dependsOn(getGovernanceContainer(), getDatabaseContainer());
@@ -49,14 +45,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public DataSource getProxyDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
-        result.setJdbcUrl(getDatabaseContainer().getJdbcUrl(getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+    public String getProxyJdbcUrl(final String databaseName) {
+        return getDatabaseContainer().getJdbcUrl(getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
+        
     }
 }

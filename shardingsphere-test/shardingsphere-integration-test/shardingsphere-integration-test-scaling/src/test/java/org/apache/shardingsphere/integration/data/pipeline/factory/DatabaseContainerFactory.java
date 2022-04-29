@@ -20,9 +20,9 @@ package org.apache.shardingsphere.integration.data.pipeline.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.container.database.DockerDatabaseContainer;
-import org.apache.shardingsphere.integration.data.pipeline.container.database.MySQLContainer;
-import org.apache.shardingsphere.integration.data.pipeline.container.database.PostgreSQLContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.MySQLContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.PostgreSQLContainer;
 
 /**
  * Storage container factory.
@@ -34,14 +34,15 @@ public final class DatabaseContainerFactory {
      * Create new instance of storage container.
      *
      * @param databaseType database type
+     * @param databaseVersion database ver
      * @return new instance of storage container
      */
-    public static DockerDatabaseContainer newInstance(final DatabaseType databaseType) {
+    public static DockerDatabaseContainer newInstance(final DatabaseType databaseType, final String databaseVersion) {
         switch (databaseType.getName()) {
             case "MySQL":
-                return new MySQLContainer("mysql:5.7");
+                return new MySQLContainer(String.format("mysql:%s", databaseVersion));
             case "PostgreSQL":
-                return new PostgreSQLContainer("postgres:12.6");
+                return new PostgreSQLContainer(String.format("postgres:%s", databaseVersion));
             default:
                 throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getName()));
         }

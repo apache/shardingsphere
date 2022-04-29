@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.database;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;

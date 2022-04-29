@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.compose;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.container.cluster.ZookeeperContainer;
-import org.apache.shardingsphere.integration.data.pipeline.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
-
-import javax.sql.DataSource;
 
 @Getter
 public abstract class BaseComposedContainer implements Startable {
@@ -38,19 +36,19 @@ public abstract class BaseComposedContainer implements Startable {
     
     private final DockerDatabaseContainer databaseContainer;
     
-    public BaseComposedContainer(final DatabaseType databaseType) {
+    public BaseComposedContainer(final DatabaseType databaseType, final String databaseVersion) {
         this.containers = new ITContainers("");
         this.governanceContainer = containers.registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
-        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType), NetworkAliasUtil.getNetworkAlias("db"));
+        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType, databaseVersion), NetworkAliasUtil.getNetworkAlias("db"));
     }
     
     /**
-     * Get proxy data source.
+     * Get proxy jdbc url.
      *
      * @param databaseName database name
-     * @return proxy data source
+     * @return proxy jdbc url
      */
-    public abstract DataSource getProxyDataSource(String databaseName);
+    public abstract String getProxyJdbcUrl(String databaseName);
     
     @Override
     public void start() {

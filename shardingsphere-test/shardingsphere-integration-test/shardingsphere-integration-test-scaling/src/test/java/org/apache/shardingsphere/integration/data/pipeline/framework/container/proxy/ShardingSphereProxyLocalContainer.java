@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.proxy;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy;
 
 import lombok.Getter;
 import lombok.SneakyThrows;

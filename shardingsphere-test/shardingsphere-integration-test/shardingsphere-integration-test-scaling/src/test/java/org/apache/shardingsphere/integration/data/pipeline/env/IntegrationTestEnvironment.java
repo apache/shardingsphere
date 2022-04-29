@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 @Getter
@@ -35,9 +37,15 @@ public final class IntegrationTestEnvironment {
     
     private final ITEnvTypeEnum itEnvType;
     
+    private final List<String> mysqlVersionList;
+    
+    private final List<String> postgresVersionList;
+    
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.LOCAL.name()).toUpperCase());
+        mysqlVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
+        postgresVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
     }
     
     private Properties loadProperties() {
