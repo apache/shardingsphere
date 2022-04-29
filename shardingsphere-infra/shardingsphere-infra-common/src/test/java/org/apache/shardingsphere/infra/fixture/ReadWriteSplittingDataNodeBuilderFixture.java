@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeBuilder<ReadWriteSplittingRuleFixture> {
+public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeBuilder<TestShardingSphereRule> {
     
     @Override
-    public Collection<DataNode> build(final Collection<DataNode> dataNodes, final ReadWriteSplittingRuleFixture rule) {
+    public Collection<DataNode> build(final Collection<DataNode> dataNodes, final TestShardingSphereRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
             result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
@@ -41,7 +41,7 @@ public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeB
     }
     
     @Override
-    public Class<ReadWriteSplittingRuleFixture> getTypeClass() {
-        return ReadWriteSplittingRuleFixture.class;
+    public Class<TestShardingSphereRule> getTypeClass() {
+        return TestShardingSphereRule.class;
     }
 }
