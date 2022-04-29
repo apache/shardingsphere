@@ -23,6 +23,13 @@ package org.apache.shardingsphere.data.pipeline.api.config.job;
 public interface PipelineJobConfiguration {
     
     /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
+    
+    /**
      * Get database name.
      *
      * @return database name

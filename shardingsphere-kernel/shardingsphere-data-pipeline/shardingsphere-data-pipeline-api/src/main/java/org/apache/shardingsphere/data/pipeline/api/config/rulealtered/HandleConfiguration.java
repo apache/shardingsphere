@@ -35,8 +35,6 @@ import java.util.List;
 // TODO rename
 public final class HandleConfiguration {
     
-    private String jobId;
-    
     private int concurrency = 3;
     
     private int retryTimes = 3;
@@ -82,14 +80,5 @@ public final class HandleConfiguration {
      */
     public List<String> splitLogicTableNames() {
         return Splitter.on(',').splitToList(logicTables);
-    }
-    
-    /**
-     * Get job ID digest.
-     * 
-     * @return job ID digest
-     */
-    public String getJobIdDigest() {
-        return jobId.length() <= 6 ? jobId : jobId.substring(0, 6);
     }
 }

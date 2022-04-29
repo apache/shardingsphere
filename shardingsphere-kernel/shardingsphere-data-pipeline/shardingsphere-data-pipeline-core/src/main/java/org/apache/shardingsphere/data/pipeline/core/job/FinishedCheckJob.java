@@ -110,13 +110,13 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         log.info("dataConsistencyCheck for job {}", jobId);
         return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, ruleAlteredJobAPI.dataConsistencyCheck(jobConfig));
     }
     
     private void switchClusterConfiguration(final String databaseName, final RuleAlteredJobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         try {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.lock(databaseName, jobId + "");

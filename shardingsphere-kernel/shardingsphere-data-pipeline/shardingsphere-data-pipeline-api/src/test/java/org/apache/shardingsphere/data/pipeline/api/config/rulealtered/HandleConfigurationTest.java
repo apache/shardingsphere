@@ -45,18 +45,4 @@ public final class HandleConfigurationTest {
         handleConfig.setLogicTables("foo_tbl,bar_tbl");
         assertThat(handleConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
     }
-    
-    @Test
-    public void assertGetJobIdDigestByLongName() {
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        handleConfig.setJobId("abcdefg");
-        assertThat(handleConfig.getJobIdDigest(), is("abcdef"));
-    }
-    
-    @Test
-    public void assertGetJobIdDigestByShortName() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setJobId("abcdef");
-        assertThat(handleConfiguration.getJobIdDigest(), is("abcdef"));
-    }
 }

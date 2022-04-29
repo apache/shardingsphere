@@ -110,7 +110,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         String jobConfigKey = String.format("%s/%s/config", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
         if (repositoryAPI.isExisted(jobConfigKey)) {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
@@ -123,7 +123,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private String createJobConfig(final RuleAlteredJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
-        jobConfigPOJO.setJobName(jobConfig.getHandleConfig().getJobId());
+        jobConfigPOJO.setJobName(jobConfig.getJobId());
         jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
@@ -138,7 +138,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public Map<Integer, JobProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         return IntStream.range(0, jobConfig.getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
@@ -285,7 +285,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig).check(calculator);
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
@@ -328,7 +328,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public void switchClusterConfiguration(final RuleAlteredJobConfiguration jobConfig) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {

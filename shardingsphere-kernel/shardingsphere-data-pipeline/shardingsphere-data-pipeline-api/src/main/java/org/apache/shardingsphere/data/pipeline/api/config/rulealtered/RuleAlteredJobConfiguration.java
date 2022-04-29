@@ -50,6 +50,8 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private HandleConfiguration handleConfig;
     
+    private String jobId;
+    
     private String databaseName;
     
     public RuleAlteredJobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
@@ -67,8 +69,8 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
             handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(pipelineConfig, getWorkflowConfig());
             this.handleConfig = handleConfig;
         }
-        if (null == handleConfig.getJobId()) {
-            handleConfig.setJobId(generateJobId());
+        if (null == jobId) {
+            jobId = generateJobId();
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(

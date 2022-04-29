@@ -96,7 +96,7 @@ public final class RuleAlteredJobPreparer {
     private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
-        String lockName = "prepare-" + jobConfig.getHandleConfig().getJobId();
+        String lockName = "prepare-" + jobConfig.getJobId();
         ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getOrCreateGlobalLock(lockName);
         if (lock.tryLock(lockName, 1)) {
             try {

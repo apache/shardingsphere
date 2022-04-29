@@ -97,7 +97,7 @@ public final class DataConsistencyChecker {
     }
     
     private Map<String, DataConsistencyCountCheckResult> checkCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + jobConfig.getHandleConfig().getJobIdDigest() + "-count-check-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-count-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
@@ -132,6 +132,11 @@ public final class DataConsistencyChecker {
         }
     }
     
+    // TODO use digest (crc32, murmurhash)
+    private String getJobIdDigest(final String jobId) {
+        return jobId.length() <= 6 ? jobId : jobId.substring(0, 6);
+    }
+    
     private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
         try (
                 Connection connection = dataSource.getConnection();
@@ -147,7 +152,7 @@ public final class DataConsistencyChecker {
     private Map<String, DataConsistencyContentCheckResult> checkData(final DataConsistencyCalculateAlgorithm calculator) {
         PipelineDataSourceConfiguration sourceDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getPipelineConfig().getSource());
         PipelineDataSourceConfiguration targetDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getPipelineConfig().getTarget());
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + jobConfig.getHandleConfig().getJobIdDigest() + "-data-check-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(logicTableNames.size(), 1);

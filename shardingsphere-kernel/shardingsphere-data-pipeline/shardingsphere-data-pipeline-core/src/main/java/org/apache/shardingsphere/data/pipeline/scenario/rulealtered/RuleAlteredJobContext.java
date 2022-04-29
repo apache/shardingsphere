@@ -85,7 +85,7 @@ public final class RuleAlteredJobContext {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobConfig.buildHandleConfig();
-        jobId = jobConfig.getHandleConfig().getJobId();
+        jobId = jobConfig.getJobId();
         shardingItem = jobConfig.getHandleConfig().getJobShardingItem();
         taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig.getPipelineConfig(), jobConfig.getHandleConfig(), ruleAlteredContext.getOnRuleAlteredActionConfig());
     }

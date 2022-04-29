@@ -57,7 +57,7 @@ public final class JobConfigurationBuilder {
         result.setPipelineConfig(pipelineConfig);
         result.buildHandleConfig();
         int activeVersion = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE - 10) + 1;
-        result.getHandleConfig().setJobId(generateJobId(activeVersion, "logic_db"));
+        result.setJobId(generateJobId(activeVersion, "logic_db"));
         return result;
     }
     
