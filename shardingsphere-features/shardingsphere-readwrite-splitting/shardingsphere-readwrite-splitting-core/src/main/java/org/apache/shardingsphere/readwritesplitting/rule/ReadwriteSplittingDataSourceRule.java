@@ -106,4 +106,18 @@ public final class ReadwriteSplittingDataSourceRule {
         result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
         return result;
     }
+    
+    /**
+     * Get enabled replica data sources.
+     *
+     * @return enabled replica data sources
+     */
+    public Collection<String> getEnabledReplicaDataSources() {
+        Collection<String> result = readwriteSplittingStrategy.getReadDataSources();
+        if (!disabledDataSourceNames.isEmpty()) {
+            result = new LinkedList<>(result);
+            result.removeIf(disabledDataSourceNames::contains);
+        }
+        return result;
+    }
 }
