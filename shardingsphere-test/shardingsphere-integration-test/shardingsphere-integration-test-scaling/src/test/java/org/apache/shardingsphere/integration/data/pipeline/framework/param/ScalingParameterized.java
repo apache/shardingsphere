@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScalingParameterized {
+public final class ScalingParameterized {
     
     private DatabaseType databaseType;
     
