@@ -31,24 +31,6 @@
     <name>${project.artifactId}</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     
-    <url>http://shardingsphere.apache.org</url>
-    <licenses>
-        <license>
-            <name>Apache License 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    
-    <mailingLists>
-        <mailingList>
-            <name>ShardingSphere Developer List</name>
-            <subscribe>dev-subscribe@shardingsphere.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@shardingsphere.apache.org</unsubscribe>
-            <post>dev@shardingsphere.apache.org</post>
-        </mailingList>
-    </mailingLists>
-    
     <modules>
         <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
@@ -68,13 +50,6 @@
         
         <module>shardingsphere-distribution</module>
     </modules>
-    
-    <scm>
-        <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
-        <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://github.com/apache/shardingsphere.git</url>
-    </scm>
     
     <properties>
         <java.version>1.8</java.version>
@@ -1091,6 +1066,7 @@
                             <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
                             <sortModules>false</sortModules>
                             <sortExecutions>false</sortExecutions>
+                            <predefinedSortOrder>custom_1</predefinedSortOrder>
                             <expandEmptyElements>false</expandEmptyElements>
                             <sortProperties>false</sortProperties>
                         </sortPom>
@@ -1333,6 +1309,31 @@
             </plugin>
         </plugins>
     </reporting>
+    
+    <url>http://shardingsphere.apache.org</url>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <mailingLists>
+        <mailingList>
+            <name>ShardingSphere Developer List</name>
+            <subscribe>dev-subscribe@shardingsphere.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@shardingsphere.apache.org</unsubscribe>
+            <post>dev@shardingsphere.apache.org</post>
+        </mailingList>
+    </mailingLists>
+    
+    <scm>
+        <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
+        <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
+        <url>https://github.com/apache/shardingsphere.git</url>
+        <tag>HEAD</tag>
+    </scm>
     
     <profiles>
         <profile>
