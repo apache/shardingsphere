@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.metadata.ddlgenerator.spi;
 
 import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
-import java.sql.Connection;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Dialect DDL SQL generator.
@@ -31,8 +32,9 @@ public interface DialectDDLSQLGenerator extends StatelessTypedSPI {
     * 
     * @param tableName table name
     * @param schemaName schema name
-    * @param connection connection
+    * @param dataSource dataSource
     * @return sql
+    * @throws SQLException sql exception
     */
-    String generateDDLSQL(String tableName, String schemaName, Connection connection);
+    String generateDDLSQL(String tableName, String schemaName, DataSource dataSource) throws SQLException;
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
 
@@ -25,18 +26,25 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Postgres abstract loader.
  */
+@Getter
 public abstract class PostgresAbstractLoader {
     
+    private final Connection connection;
+    
+    protected PostgresAbstractLoader(final Connection connection) {
+        this.connection = connection;
+    }
+    
     @SneakyThrows
-    protected List<Map<String, Object>> executeByTemplate(final Connection connection, final Map<String, Object> param, final String path) {
+    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> param, final String path) {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlFromTemplate(param, path))) {
@@ -44,9 +52,9 @@ public abstract class PostgresAbstractLoader {
         }
     }
     
-    protected List<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
+    protected Collection<Map<String, Object>> getRows(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
-        List<Map<String, Object>> result = new LinkedList<>();
+        Collection<Map<String, Object>> result = new LinkedList<>();
         while (resultSet.next()) {
             Map<String, Object> row = new LinkedHashMap<>();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {

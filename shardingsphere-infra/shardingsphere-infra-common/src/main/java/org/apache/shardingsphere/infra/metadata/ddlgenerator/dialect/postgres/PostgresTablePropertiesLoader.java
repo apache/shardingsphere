@@ -17,27 +17,29 @@
 
 package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Postgres table properties loader.
  */
-@RequiredArgsConstructor
 public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader {
-    
-    private final Connection connection;
     
     private final String tableName;
     
     private final String schemaName;
+    
+    public PostgresTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName) {
+        super(connection);
+        this.tableName = tableName;
+        this.schemaName = schemaName;
+    }
     
     /**
      * Load table properties.
@@ -47,34 +49,34 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     @SneakyThrows
     public Map<String, Object> loadTableProperties() {
         Map<String, Object> result = new LinkedHashMap<>();
-        getDataBaseId(result);
-        getSchemaId(result);
-        getTableId(result);
+        fetchDataBaseId(result);
+        fetchSchemaId(result);
+        fetchTableId(result);
         fetchTableProperties(result);
         return result;
     }
     
-    private void getDataBaseId(final Map<String, Object> context) throws SQLException {
+    private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
         Map<String, Object> param = new LinkedHashMap<>();
-        param.put("databaseName", connection.getCatalog());
-        appendFirstRow(executeByTemplate(connection, param, "table/default/get_database_id.ftl"), context);
+        param.put("databaseName", getConnection().getCatalog());
+        appendFirstRow(executeByTemplate(param, "table/default/get_database_id.ftl"), context);
     }
     
-    private void getTableId(final Map<String, Object> context) {
+    private void fetchTableId(final Map<String, Object> context) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("schemaName", schemaName);
         param.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(connection, param, "table/default/get_table_id.ftl"), context);
+        appendFirstRow(executeByTemplate(param, "table/default/get_table_id.ftl"), context);
     }
     
-    private void getSchemaId(final Map<String, Object> context) {
+    private void fetchSchemaId(final Map<String, Object> context) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(connection, param, "table/default/get_schema_id.ftl"), context);
+        appendFirstRow(executeByTemplate(param, "table/default/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) {
-        appendFirstRow(executeByTemplate(connection, context, "table/12_plus/properties.ftl"), context);
+        appendFirstRow(executeByTemplate(context, "table/12_plus/properties.ftl"), context);
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
     }
@@ -127,7 +129,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         }
     }
     
-    private boolean anyIsTrue(final List<Object> collection) {
+    private boolean anyIsTrue(final Collection<Object> collection) {
         for (Object each : collection) {
             if (each instanceof Boolean && (Boolean) each) {
                 return true;
@@ -136,7 +138,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         return false;
     }
     
-    private void appendFirstRow(final List<Map<String, Object>> rows, final Map<String, Object> context) {
+    private void appendFirstRow(final Collection<Map<String, Object>> rows, final Map<String, Object> context) {
         for (Map<String, Object> each : rows) {
             context.putAll(each);
             break;

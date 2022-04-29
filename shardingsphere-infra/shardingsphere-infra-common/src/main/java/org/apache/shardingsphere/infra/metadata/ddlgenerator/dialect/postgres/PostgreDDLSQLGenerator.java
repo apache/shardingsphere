@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 import org.apache.shardingsphere.infra.metadata.ddlgenerator.spi.DialectDDLSQLGenerator;
 import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -31,11 +33,13 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
     
     // TODO support version, partitions, index etc.
     @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final Connection connection) {
-        Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
-        new PostgresColumnPropertiesLoader(connection).loadColumnProperties(context);
-        new PostgresConstraintsLoader(connection).loadConstraints(context);
-        return doGenerateDDLSQL(context);
+    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
+            new PostgresColumnPropertiesLoader(connection).loadColumnProperties(context);
+            new PostgresConstraintsLoader(connection).loadConstraints(context);
+            return doGenerateDDLSQL(context);
+        }
     }
     
     private String doGenerateDDLSQL(final Map<String, Object> context) {
@@ -53,12 +57,12 @@ public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
         }
     }
     
-    private void typeFormatter(final Map<String, Object> c, final String cltype) {
-        if (cltype.contains("[]")) {
-            c.put("cltype", cltype.substring(0, cltype.length() - 2));
-            c.put("hasSqrBracket", true);
+    private void typeFormatter(final Map<String, Object> column, final String columnType) {
+        if (columnType.contains("[]")) {
+            column.put("cltype", columnType.substring(0, columnType.length() - 2));
+            column.put("hasSqrBracket", true);
         } else {
-            c.put("hasSqrBracket", false);
+            column.put("hasSqrBracket", false);
         }
     }
     

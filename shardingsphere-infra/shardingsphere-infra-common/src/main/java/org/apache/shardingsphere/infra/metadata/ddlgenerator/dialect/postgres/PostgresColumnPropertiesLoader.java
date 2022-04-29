@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.Array;
@@ -28,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,10 +35,17 @@ import java.util.stream.Collectors;
 /**
  * Postgres column properties loader.
  */
-@RequiredArgsConstructor
 public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader {
     
-    private final Connection connection;
+    private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
+    
+    private static final Pattern LENGTH_PATTERN = Pattern.compile("(\\d+)");
+    
+    private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
+    
+    public PostgresColumnPropertiesLoader(final Connection connection) {
+        super(connection);
+    }
     
     /**
      * Load column properties.
@@ -49,12 +54,12 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
      */
     @SneakyThrows
     public void loadColumnProperties(final Map<String, Object> context) {
-        List<Map<String, Object>> otherColumns = getOtherColumns(context);
-        List<Map<String, Object>> allColumns = executeByTemplate(connection, context, "columns/12_plus/properties.ftl");
+        Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
+        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "columns/12_plus/properties.ftl");
         for (Map<String, Object> each : allColumns) {
-            for (Map<String, Object> otherCol : otherColumns) {
-                if (each.get("name").equals(otherCol.get("name"))) {
-                    each.put(getInheritedFromTableOrType(context), otherCol.get("inheritedfrom"));
+            for (Map<String, Object> column : typeAndInheritedColumns) {
+                if (each.get("name").equals(column.get("name"))) {
+                    each.put(getInheritedFromTableOrType(context), column.get("inheritedfrom"));
                 }
             }
         }
@@ -67,36 +72,36 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         context.put("columns", allColumns);
     }
     
-    private List<Map<String, Object>> getOtherColumns(final Map<String, Object> context) {
+    private Collection<Map<String, Object>> getTypeAndInheritedColumns(final Map<String, Object> context) {
         if (null != context.get("typoid")) {
-            return getOtherColumnFromType(context);
+            return getColumnFromType(context);
         }
         if (null != context.get("coll_inherits")) {
             Collection<String> collInherits = convertPgArrayToList(context.get("coll_inherits"));
             context.put("coll_inherits", collInherits);
             if (!collInherits.isEmpty()) {
-                return getOtherColumnFromInherits(collInherits);
+                return getColumnFromInherits(collInherits);
             }
         }
         return Collections.emptyList();
     }
     
-    private List<Map<String, Object>> getOtherColumnFromInherits(final Collection<String> collInherits) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(connection, new LinkedHashMap<>(), "table/10_plus/get_inherits.ftl")) {
+    private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
+        Collection<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "table/10_plus/get_inherits.ftl")) {
             if (collInherits.contains((String) each.get("inherits"))) {
                 Map<String, Object> param = new LinkedHashMap<>();
                 param.put("tid", each.get("oid"));
-                result.addAll(executeByTemplate(connection, param, "table/10_plus/get_columns_for_table.ftl"));
+                result.addAll(executeByTemplate(param, "table/10_plus/get_columns_for_table.ftl"));
             }
         }
         return result;
     }
     
-    private List<Map<String, Object>> getOtherColumnFromType(final Map<String, Object> context) {
+    private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("tid", context.get("typoid"));
-        return executeByTemplate(connection, param, "table/10_plus/get_columns_for_table.ftl");
+        return executeByTemplate(param, "table/10_plus/get_columns_for_table.ftl");
     }
     
     @SuppressWarnings("unchecked")
@@ -115,11 +120,11 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     
-    private Map<String, Collection<String>> getEditTypes(final List<Map<String, Object>> allColumns) throws SQLException {
+    private Map<String, Collection<String>> getEditTypes(final Collection<Map<String, Object>> allColumns) throws SQLException {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
-        for (Map<String, Object> each : executeByTemplate(connection, param, "columns/default/edit_mode_types_multi.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(param, "columns/default/edit_mode_types_multi.ftl")) {
             result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
         }
         return result;
@@ -160,15 +165,15 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         boolean precision = false;
         boolean length = false;
         String typeval = "";
-        Long[] l = {1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L};
-        Long[] d = {1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L};
-        Long[] p = {1231L, 1700L};
+        Long[] lTypes = {1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L};
+        Long[] dTypes = {1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L};
+        Long[] pTypes = {1231L, 1700L};
         if (0 != elemoid) {
-            if (Arrays.asList(l).contains(elemoid)) {
+            if (Arrays.asList(lTypes).contains(elemoid)) {
                 typeval = "L";
-            } else if (Arrays.asList(d).contains(elemoid)) {
+            } else if (Arrays.asList(dTypes).contains(elemoid)) {
                 typeval = "D";
-            } else if (Arrays.asList(p).contains(elemoid)) {
+            } else if (Arrays.asList(pTypes).contains(elemoid)) {
                 typeval = "P";
             } else {
                 typeval = " ";
@@ -182,15 +187,13 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         }
         
         if (length && precision) {
-            Pattern pattern = Pattern.compile("(\\d+),(\\d+)");
-            Matcher matcher = pattern.matcher(fullType);
+            Matcher matcher = LENGTH_PRECISION_PATTERN.matcher(fullType);
             if (matcher.find()) {
                 column.put("attlen", matcher.group(1));
                 column.put("attprecision", matcher.group(2));
             }
         } else if (length) {
-            Pattern pattern = Pattern.compile("(\\d+)");
-            Matcher matcher = pattern.matcher(fullType);
+            Matcher matcher = LENGTH_PATTERN.matcher(fullType);
             if (matcher.find()) {
                 column.put("attlen", matcher.group(1));
                 column.put("attprecision", null);
@@ -199,13 +202,13 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     }
     
     private String getFullDataType(final Map<String, Object> column) {
-        String nsp = (String) column.get("typnspname");
-        String typname = (String) column.get("typname");
+        String namespace = (String) column.get("typnspname");
+        String typeName = (String) column.get("typname");
         Integer numdims = (Integer) column.get("attndims");
-        String schema = null != nsp ? nsp : "";
+        String schema = null != namespace ? namespace : "";
         String array = "";
         String length = "";
-        String name = checkSchemaInName(typname, schema);
+        String name = checkSchemaInName(typeName, schema);
         if (name.startsWith("_")) {
             if (null == numdims || 0 == numdims) {
                 numdims = 1;
@@ -258,30 +261,30 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     }
     
     private String checkTypmod(final Integer typmod, final String name) {
-        String length = "(";
+        String result = "(";
         if ("numeric".equals(name)) {
             int len = (typmod - 4) >> 16;
             int prec = (typmod - 4) & 0xffff;
-            length += String.valueOf(len);
-            length += "," + prec;
+            result += String.valueOf(len);
+            result += "," + prec;
         } else if ("time".equals(name) || "timetz".equals(name) || "time without time zone".equals(name) || "time with time zone".equals(name)
                 || "timestamp".equals(name) || "timestamptz".equals(name) || "timestamp without time zone".equals(name) || "timestamp with time zone".equals(name)
                 || "bit".equals(name) || "bit varying".equals(name) || "varbit".equals(name)) {
             int len = typmod;
-            length += String.valueOf(len);
+            result += String.valueOf(len);
         } else if ("interval".equals(name)) {
             int len = typmod & 0xffff;
-            length += len > 6 ? "" : String.valueOf(len);
+            result += len > 6 ? "" : String.valueOf(len);
         } else if ("date".equals(name)) {
-            length = "";
+            result = "";
         } else {
             int len = typmod - 4;
-            length += String.valueOf(len);
+            result += String.valueOf(len);
         }
-        if (!length.isEmpty()) {
-            length += ")";
+        if (!result.isEmpty()) {
+            result += ")";
         }
-        return length;
+        return result;
     }
     
     private String parseTypeName(final String name) {
@@ -297,8 +300,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         } else if (idx > 0 && result.startsWith("time")) {
             int endIdx = result.indexOf(")");
             if (1 != endIdx) {
-                Pattern pattern = Pattern.compile("(\\(\\d+\\))");
-                Matcher matcher = pattern.matcher(result);
+                Matcher matcher = BRACKETS_PATTERN.matcher(result);
                 StringBuffer buffer = new StringBuffer();
                 while (matcher.find()) {
                     matcher.appendReplacement(buffer, "");
