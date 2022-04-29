@@ -54,6 +54,9 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private String databaseName;
     
+    // TODO it should not put in jobConfig since it's mutable
+    private Integer jobShardingItem;
+    
     public RuleAlteredJobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
         this.workflowConfig = workflowConfig;
         this.pipelineConfig = pipelineConfig;
@@ -82,8 +85,8 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
                     pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
-        if (null == handleConfig.getJobShardingItem()) {
-            handleConfig.setJobShardingItem(0);
+        if (null == jobShardingItem) {
+            jobShardingItem = 0;
         }
     }
     

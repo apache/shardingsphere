@@ -129,6 +129,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return new JobDataNodeLine(dataNodeEntries).marshal();
     }
     
+    // TODO use jobConfig as parameter, jobShardingItem
     @Override
     public TaskConfiguration createTaskConfiguration(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
                                                      final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {

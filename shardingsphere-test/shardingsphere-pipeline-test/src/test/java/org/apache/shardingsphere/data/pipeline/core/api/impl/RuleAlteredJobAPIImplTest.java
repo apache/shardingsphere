@@ -212,7 +212,7 @@ public final class RuleAlteredJobAPIImplTest {
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobConfig.getHandleConfig().setJobShardingItem(0);
+        jobConfig.setJobShardingItem(0);
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();

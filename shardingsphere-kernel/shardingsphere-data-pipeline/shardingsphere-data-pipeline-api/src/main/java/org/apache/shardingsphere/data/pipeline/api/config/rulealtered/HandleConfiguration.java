@@ -52,11 +52,6 @@ public final class HandleConfiguration {
     
     private String logicTables;
     
-    /**
-     * Job sharding item.
-     */
-    private Integer jobShardingItem;
-    
     // TODO shardingSize should be configurable
     private int shardingSize = 1000 * 10000;
     
