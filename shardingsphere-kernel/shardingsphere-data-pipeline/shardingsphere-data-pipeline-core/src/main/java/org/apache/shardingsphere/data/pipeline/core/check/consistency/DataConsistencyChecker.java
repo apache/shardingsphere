@@ -224,7 +224,8 @@ public final class DataConsistencyChecker {
         if (null == metaData) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
-        return metaData.getDefaultSchema().getTables();
+        String schema = metaData.getResource().getDatabaseType().getDefaultSchema(databaseName);
+        return metaData.getSchemaByName(schema).getTables();
     }
     
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames,

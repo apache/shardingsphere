@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.Memory
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -111,7 +112,7 @@ public final class PipelineContextUtil {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getMetaDataMap().get("logic_db").getDefaultSchema().putAll(tableMetaDataMap);
+        old.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getSchemaByName(DefaultSchema.LOGIC_NAME).putAll(tableMetaDataMap);
         return new MetaDataContexts(metaDataPersistService, old.getMetaDataMap(), old.getGlobalRuleMetaData(), old.getExecutorEngine(), old.getOptimizerContext(), old.getProps());
     }
     

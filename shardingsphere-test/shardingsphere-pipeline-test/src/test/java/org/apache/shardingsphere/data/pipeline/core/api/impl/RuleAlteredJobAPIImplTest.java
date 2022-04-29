@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFail
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -57,6 +59,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public final class RuleAlteredJobAPIImplTest {
     
     private static RuleAlteredJobAPI ruleAlteredJobAPI;
@@ -128,6 +131,9 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        if (null == jobConfig.getPipelineConfig()) {
+            log.error("pipelineConfig is null, jobConfig={}", YamlEngine.marshal(jobConfig));
+        }
         initTableData(jobConfig.getPipelineConfig());
         String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
