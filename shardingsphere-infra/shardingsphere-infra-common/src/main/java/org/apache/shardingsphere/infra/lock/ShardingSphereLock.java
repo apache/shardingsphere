@@ -48,9 +48,8 @@ public interface ShardingSphereLock {
     
     /**
      * Check whether resource is locked in current instance.
-     * 
-     * @param lockName lock name
+     *
      * @return true if locked, false if not
      */
-    boolean isLocked(String lockName);
+    boolean isLocked();
 }

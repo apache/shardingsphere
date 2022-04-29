@@ -41,7 +41,7 @@ public final class GeneralAckChangedWatcher implements GovernanceWatcher<Governa
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(lockNode.getGlobalLockedAckNodePath());
+        return Collections.singleton(lockNode.getLockedAckNodePath());
     }
     
     @Override
@@ -51,7 +51,7 @@ public final class GeneralAckChangedWatcher implements GovernanceWatcher<Governa
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> ackLockedName = lockNode.parseGlobalLockedAckNodePath(event.getKey());
+        Optional<String> ackLockedName = lockNode.parseLockedAckNodePath(event.getKey());
         if (ackLockedName.isPresent()) {
             return handleGlobalAckEvent(event.getType(), ackLockedName.get());
         }

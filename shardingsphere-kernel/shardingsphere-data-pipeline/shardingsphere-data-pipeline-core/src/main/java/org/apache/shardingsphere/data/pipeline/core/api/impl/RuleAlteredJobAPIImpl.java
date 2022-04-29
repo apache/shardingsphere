@@ -164,9 +164,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        String schemaName = jobConfig.getWorkflowConfig().getDatabaseName();
-        ShardingSphereLock lock = lockContext.getGlobalLock(schemaName);
-        if (null == lock || !lock.isLocked(schemaName)) {
+        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
+        if (null == lock || !lock.isLocked()) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
@@ -188,7 +188,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getOrCreateGlobalLock(databaseName);
-        if (lock.isLocked(databaseName)) {
+        if (lock.isLocked()) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
@@ -218,7 +218,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             log.info("restoreClusterWriteDB, lock is null");
             return;
         }
-        boolean isLocked = lock.isLocked(databaseName);
+        boolean isLocked = lock.isLocked();
         if (!isLocked) {
             log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
             return;

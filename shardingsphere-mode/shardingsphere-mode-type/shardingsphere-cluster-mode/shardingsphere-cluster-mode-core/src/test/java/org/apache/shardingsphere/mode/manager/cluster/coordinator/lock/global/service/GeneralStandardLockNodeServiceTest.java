@@ -22,17 +22,17 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DatabaseLockNodeServiceTest {
+public final class GeneralStandardLockNodeServiceTest {
     
-    private static final AbstractGlobalLockNodeService SERVICE = new DatabaseLockNodeService();
+    private static final AbstractGlobalLockNodeService SERVICE = new GeneralLockNodeService();
     
     @Test
     public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/general/sequence"));
     }
     
     @Test
     public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("database"));
+        assertThat(SERVICE.getLockLevel(), is("general"));
     }
 }
