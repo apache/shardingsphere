@@ -62,6 +62,6 @@ public final class ClassBasedOrderStandardShardingAlgorithmFixture implements St
     
     @Override
     public String getType() {
-        return "T_ORDER_CLASS_BASED";
+        return null;
     }
 }
