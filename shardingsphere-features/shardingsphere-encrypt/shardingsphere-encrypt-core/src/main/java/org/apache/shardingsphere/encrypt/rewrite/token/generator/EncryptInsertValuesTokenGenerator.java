@@ -124,7 +124,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void encryptToken(final InsertValue insertValueToken, final String schemaName, final String tableName, 
+    private void encryptToken(final InsertValue insertValueToken, final String schemaName, final String tableName,
                               final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();

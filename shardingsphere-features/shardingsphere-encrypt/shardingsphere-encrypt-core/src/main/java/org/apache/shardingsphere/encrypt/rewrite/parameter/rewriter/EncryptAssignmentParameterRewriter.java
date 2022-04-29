@@ -88,7 +88,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String schemaName, 
+    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String schemaName,
                                    final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
