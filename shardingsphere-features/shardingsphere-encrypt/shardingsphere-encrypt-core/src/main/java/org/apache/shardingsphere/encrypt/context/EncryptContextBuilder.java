@@ -32,14 +32,15 @@ public final class EncryptContextBuilder {
     /**
      * Build encrypt context.
      * 
-     * @param databaseName schema name
+     * @param databaseName database name
+     * @param schemaName schema name
      * @param tableName table name
      * @param columnName column name
      * @param encryptRule encrypt rule
      * @return encrypt context
      */
-    public static EncryptContext build(final String databaseName, final String tableName, final String columnName, final EncryptRule encryptRule) {
-        EncryptContext result = new EncryptContext(databaseName, tableName, columnName);
+    public static EncryptContext build(final String databaseName, final String schemaName, final String tableName, final String columnName, final EncryptRule encryptRule) {
+        EncryptContext result = new EncryptContext(databaseName, schemaName, tableName, columnName);
         encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName)).ifPresent(optional -> setEncryptDataType(result, optional));
         return result;
     }

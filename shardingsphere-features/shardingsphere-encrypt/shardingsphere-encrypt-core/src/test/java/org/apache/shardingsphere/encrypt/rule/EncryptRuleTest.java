@@ -93,8 +93,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getEncryptValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd",
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -122,8 +122,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd",
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }

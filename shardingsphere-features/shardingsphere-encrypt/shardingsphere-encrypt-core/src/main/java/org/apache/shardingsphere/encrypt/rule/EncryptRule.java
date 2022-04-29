@@ -177,6 +177,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * get encrypt values.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
@@ -184,9 +185,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt values
      */
     @SuppressWarnings("rawtypes")
-    public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
     }
@@ -246,6 +247,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     /**
      * Get encrypt assisted query values.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
@@ -253,9 +255,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query values
      */
     @SuppressWarnings("rawtypes")
-    public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return getEncryptAssistedQueryValues((QueryAssistedEncryptAlgorithm) encryptor.get(), originalValues, encryptContext);
