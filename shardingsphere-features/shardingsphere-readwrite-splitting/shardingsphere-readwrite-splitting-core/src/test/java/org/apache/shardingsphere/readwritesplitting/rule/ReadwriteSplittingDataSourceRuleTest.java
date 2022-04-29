@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -26,7 +25,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -89,14 +87,9 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     }
     
     @Test
-    public void assertGetDataSources() {
-        Map<String, String> dataSources = readwriteSplittingDataSourceRule.getDataSources(false);
-        assertThat(dataSources.get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME), is("write_ds"));
-        assertThat(dataSources.get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES), is("read_ds_0,read_ds_1"));
+    public void assertGetEnabledReplicaDataSources() {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        Map<String, String> dataSourcesByRemoveDisabled = readwriteSplittingDataSourceRule.getDataSources(true);
-        assertThat(dataSourcesByRemoveDisabled.get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME), is("write_ds"));
-        assertThat(dataSourcesByRemoveDisabled.get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES), is("read_ds_1"));
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
     
     private Properties getProperties(final String writeDataSource, final String readDataSources) {

@@ -45,10 +45,10 @@ public final class ReadwriteSplittingStrategyFactory {
      * @return readwrite splitting strategy
      */
     public static ReadwriteSplittingStrategy newInstance(final String type, final Properties props) {
-        return "STATIC".equalsIgnoreCase(type) ? createStaticDataSourceProcessor(props) : createDynamicDataSourceProcessor(props);
+        return "STATIC".equalsIgnoreCase(type) ? createStaticReadwriteSplittingStrategy(props) : createDynamicReadwriteSplittingStrategy(props);
     }
     
-    private static StaticReadwriteSplittingStrategy createStaticDataSourceProcessor(final Properties props) {
+    private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final Properties props) {
         String writeDataSourceName = props.getProperty("write-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
@@ -56,7 +56,7 @@ public final class ReadwriteSplittingStrategyFactory {
         return new StaticReadwriteSplittingStrategy(writeDataSourceName, readDataSourceNames);
     }
     
-    private static DynamicReadwriteSplittingStrategy createDynamicDataSourceProcessor(final Properties props) {
+    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final Properties props) {
         String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
         Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.newInstance();
