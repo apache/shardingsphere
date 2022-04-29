@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.aware;
 
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.aware.DynamicDataSourceStrategy;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
