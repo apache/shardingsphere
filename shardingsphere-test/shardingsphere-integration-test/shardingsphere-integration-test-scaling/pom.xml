@@ -120,7 +120,7 @@
     
     <profiles>
         <profile>
-            <id>run-it-test</id>
+            <id>scaling-it</id>
             <build>
                 <plugins>
                     <plugin>
