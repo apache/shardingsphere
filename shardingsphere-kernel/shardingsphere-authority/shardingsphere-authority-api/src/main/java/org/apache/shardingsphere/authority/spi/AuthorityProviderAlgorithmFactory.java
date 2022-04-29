@@ -39,7 +39,7 @@ public final class AuthorityProviderAlgorithmFactory {
      * @param authorityProviderConfig authority provider configuration
      * @return new instance of authority provide algorithm
      */
-    public static AuthorityProviderAlgorithm newInstance(ShardingSphereAlgorithmConfiguration authorityProviderConfig) {
+    public static AuthorityProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration authorityProviderConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(authorityProviderConfig, AuthorityProviderAlgorithm.class);
     }
 }
