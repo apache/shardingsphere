@@ -24,9 +24,6 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- * Database discovery data node builder.
- */
 public final class ReadWriteSplittingDataNodeBuilderFixture implements DataNodeBuilder<ReadWriteSplittingRuleFixture> {
     
     @Override
