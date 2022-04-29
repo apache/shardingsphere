@@ -25,10 +25,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Data source name aware.
+ * Dynamic data source strategy.
  */
 @SingletonSPI
-public interface DataSourceNameAware extends OptionalSPI {
+public interface DynamicDataSourceStrategy extends OptionalSPI {
     
     /**
      * Get rule.
