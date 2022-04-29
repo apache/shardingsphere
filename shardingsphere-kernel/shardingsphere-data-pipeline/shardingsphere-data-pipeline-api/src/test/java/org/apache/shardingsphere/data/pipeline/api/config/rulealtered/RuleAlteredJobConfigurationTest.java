@@ -25,38 +25,24 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class HandleConfigurationTest {
+public final class RuleAlteredJobConfigurationTest {
     
     @Test
     public void assertGetJobShardingCountByNull() {
-        assertThat(new HandleConfiguration().getJobShardingCount(), is(0));
+        assertThat(new RuleAlteredJobConfiguration().getJobShardingCount(), is(0));
     }
     
     @Test
     public void assertGetJobShardingCount() {
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        handleConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
-        assertThat(handleConfig.getJobShardingCount(), is(2));
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
+        jobConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
+        assertThat(jobConfig.getJobShardingCount(), is(2));
     }
     
     @Test
     public void assertSplitLogicTableNames() {
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        handleConfig.setLogicTables("foo_tbl,bar_tbl");
-        assertThat(handleConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
-    }
-    
-    @Test
-    public void assertGetJobIdDigestByLongName() {
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        handleConfig.setJobId("abcdefg");
-        assertThat(handleConfig.getJobIdDigest(), is("abcdef"));
-    }
-    
-    @Test
-    public void assertGetJobIdDigestByShortName() {
-        HandleConfiguration handleConfiguration = new HandleConfiguration();
-        handleConfiguration.setJobId("abcdef");
-        assertThat(handleConfiguration.getJobIdDigest(), is("abcdef"));
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
+        jobConfig.setLogicTables("foo_tbl,bar_tbl");
+        assertThat(jobConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
     }
 }

@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.aware;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.optional.OptionalSPIRegistry;
-
-import java.util.Optional;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
 /**
- * Data source name aware factory.
+ * Pipeline job configuration.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceNameAwareFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataSourceNameAware.class);
-    }
+public interface PipelineJobConfiguration {
     
     /**
-     * Create new instance of data source name aware.
-     * 
-     * @return new instance of data source name aware
+     * Get job id.
+     *
+     * @return job id
      */
-    public static Optional<DataSourceNameAware> newInstance() {
-        return OptionalSPIRegistry.findRegisteredService(DataSourceNameAware.class);
-    }
+    String getJobId();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
+    
+    /**
+     * Get job sharding item.
+     *
+     * @return job sharding item
+     */
+    Integer getJobShardingItem();
 }

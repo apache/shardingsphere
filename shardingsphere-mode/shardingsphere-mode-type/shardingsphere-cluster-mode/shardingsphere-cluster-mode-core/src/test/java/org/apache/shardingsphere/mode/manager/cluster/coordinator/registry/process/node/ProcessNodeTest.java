@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DatabaseLockNodeServiceTest {
-    
-    private static final AbstractGlobalLockNodeService SERVICE = new DatabaseLockNodeService();
+public final class ProcessNodeTest {
     
     @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
+    public void assertGetShowProcessListIdPath() {
+        assertThat(ProcessNode.getShowProcessListIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
     }
     
     @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("database"));
+    public void assertGetShowProcessListInstancePath() {
+        assertThat(ProcessNode.getShowProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
+                is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
     }
 }

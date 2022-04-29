@@ -34,35 +34,35 @@ public abstract class AbstractGlobalLockNodeService implements LockNodeService {
     protected static final String LOCKED_ACK_NODE = "ack";
     
     @Override
-    public String getGlobalLocksNodePath() {
+    public String getLocksNodePath() {
         return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKS_NODE;
     }
     
     @Override
-    public String getGlobalLockedAckNodePath() {
+    public String getLockedAckNodePath() {
         return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKED_ACK_NODE;
     }
     
     @Override
-    public String generateGlobalLocksName(final String locksName) {
-        return getGlobalLocksNodePath() + "/" + locksName;
+    public String generateLocksName(final String locksName) {
+        return getLocksNodePath() + "/" + locksName;
     }
     
     @Override
-    public String generateGlobalAckLockName(final String ackLockName, final String lockedInstanceId) {
-        return getGlobalLockedAckNodePath() + "/" + LockNodeUtil.generateAckLockedName(ackLockName, lockedInstanceId);
+    public String generateAckLockName(final String ackLockName, final String lockedInstanceId) {
+        return getLockedAckNodePath() + "/" + LockNodeUtil.generateAckLockedName(ackLockName, lockedInstanceId);
     }
     
     @Override
-    public Optional<String> parseGlobalLocksNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getGlobalLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
+    public Optional<String> parseLocksNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     @Override
-    public Optional<String> parseGlobalLockedAckNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getGlobalLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+    public Optional<String> parseLockedAckNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GeneralLockNodeService
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockNodeService

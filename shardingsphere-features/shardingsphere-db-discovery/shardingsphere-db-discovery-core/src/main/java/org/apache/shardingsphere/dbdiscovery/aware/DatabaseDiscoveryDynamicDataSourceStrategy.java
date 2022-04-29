@@ -18,26 +18,20 @@
 package org.apache.shardingsphere.dbdiscovery.aware;
 
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Database discovery data source name aware.
+ * Database discovery dynamic data source strategy.
  */
-public final class DatabaseDiscoveryDataSourceNameAware implements DataSourceNameAware {
+public final class DatabaseDiscoveryDynamicDataSourceStrategy implements DynamicDataSourceStrategy {
     
     private DatabaseDiscoveryRule rule;
     
     @Override
-    public Optional<ShardingSphereRule> getRule() {
-        return Optional.ofNullable(rule);
-    }
-    
-    @Override
-    public void setRule(final ShardingSphereRule rule) {
+    public void init(final ShardingSphereRule rule) {
         this.rule = (DatabaseDiscoveryRule) rule;
     }
     
