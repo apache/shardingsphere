@@ -88,13 +88,13 @@ jobs:
         with:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
-          
+  
   scaling-it-test:
     name: scaling-it-test
     runs-on: ubuntu-latest
     env:
-      mysql.version: 5.7,8.0
-      postgresql.version: 9,10,11,12
+      mysql_version: mysql:5.7,mysql:8.0
+      postgresql_version: debezium/postgres:9.6-alpine,postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
     timeout-minutes: 30
     needs: build-it-image
     steps:
@@ -117,6 +117,4 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql.version }} -Dit.env.postgresql.version=${{ env.postgresql.version }}
-
-        
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=${{ env.postgresql_version }}
