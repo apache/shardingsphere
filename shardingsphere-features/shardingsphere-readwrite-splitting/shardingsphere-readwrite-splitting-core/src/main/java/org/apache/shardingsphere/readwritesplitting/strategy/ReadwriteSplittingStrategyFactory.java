@@ -59,7 +59,7 @@ public final class ReadwriteSplittingStrategyFactory {
     private static DynamicReadwriteSplittingStrategy createDynamicDataSourceProcessor(final Properties props) {
         String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
-        Optional<DataSourceNameAware> dataSourceNameAware =  DataSourceNameAwareFactory.newInstance();
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.newInstance();
         Preconditions.checkArgument(dataSourceNameAware.isPresent(), "Data source name aware is required.");
         return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, dataSourceNameAware.get());
     }
