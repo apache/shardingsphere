@@ -32,6 +32,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Scaling job configuration.
@@ -42,9 +44,8 @@ import java.util.Collections;
 @Setter
 @Slf4j
 // TODO share for totally new scenario
+// TODO rename to Yaml, add config class
 public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
-    
-    private WorkflowConfiguration workflowConfig;
     
     private PipelineConfiguration pipelineConfig;
     
@@ -57,8 +58,16 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     // TODO it should not put in jobConfig since it's mutable
     private Integer jobShardingItem;
     
-    public RuleAlteredJobConfiguration(final WorkflowConfiguration workflowConfig, final PipelineConfiguration pipelineConfig) {
-        this.workflowConfig = workflowConfig;
+    /**
+     * Map{altered rule yaml class name, re-shard needed table names}.
+     */
+    private Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
+    
+    private Integer activeVersion;
+    
+    private Integer newVersion;
+    
+    public RuleAlteredJobConfiguration(final PipelineConfiguration pipelineConfig) {
         this.pipelineConfig = pipelineConfig;
     }
     
@@ -69,7 +78,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
         PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
-            handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(pipelineConfig, getWorkflowConfig());
+            handleConfig = RuleAlteredJobConfigurationPreparerFactory.newInstance().createHandleConfiguration(this);
             this.handleConfig = handleConfig;
         }
         if (null == jobId) {
@@ -96,9 +105,8 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
         jobId.setType(JobType.RULE_ALTERED.getValue());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
         jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
-        WorkflowConfiguration workflowConfig = getWorkflowConfig();
-        jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
-        jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
+        jobId.setCurrentMetadataVersion(activeVersion);
+        jobId.setNewMetadataVersion(newVersion);
         jobId.setDatabaseName(databaseName);
         return jobId.marshal();
     }
