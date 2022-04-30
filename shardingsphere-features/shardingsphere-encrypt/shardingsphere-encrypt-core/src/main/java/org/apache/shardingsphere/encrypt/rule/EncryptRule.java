@@ -40,11 +40,11 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Encrypt rule.
@@ -52,9 +52,9 @@ import java.util.Optional;
 public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     @SuppressWarnings("rawtypes")
-    private final Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+    private final Map<String, EncryptAlgorithm> encryptors = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
-    private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
+    private final Map<String, EncryptTable> tables = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     @Getter
     private final boolean queryWithCipherColumn;

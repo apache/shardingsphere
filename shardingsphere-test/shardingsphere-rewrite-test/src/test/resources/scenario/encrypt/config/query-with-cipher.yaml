@@ -22,7 +22,7 @@ dataSources:
 rules:
 - !ENCRYPT
   tables:
-    t_account:
+    T_account:
       columns:
         certificate_number:
           cipherColumn: cipher_certificate_number
