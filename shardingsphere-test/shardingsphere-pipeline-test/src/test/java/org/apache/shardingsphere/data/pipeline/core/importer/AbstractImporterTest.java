@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
@@ -25,10 +27,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,11 +89,6 @@ public final class AbstractImporterTest {
     @Before
     public void setUp() throws SQLException {
         jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager, channel) {
-            
-            @Override
-            protected PipelineSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-                return pipelineSqlBuilder;
-            }
         };
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
@@ -102,7 +97,7 @@ public final class AbstractImporterTest {
     @Test
     public void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
-        when(pipelineSqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
+        when(pipelineSqlBuilder.buildInsertSQL(insertRecord, any())).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
@@ -127,7 +122,7 @@ public final class AbstractImporterTest {
     @Test
     public void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
-        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
+        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord), any())).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         when(pipelineSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));
@@ -142,7 +137,7 @@ public final class AbstractImporterTest {
     @Test
     public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
-        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
+        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord), any())).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         when(pipelineSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));

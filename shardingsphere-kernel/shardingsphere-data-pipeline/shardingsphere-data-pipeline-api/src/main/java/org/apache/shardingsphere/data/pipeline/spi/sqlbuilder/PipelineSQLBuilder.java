@@ -23,42 +23,42 @@ import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Pipeline SQL builder.
- * It's singleton when it's used as SPI, else not.
  */
-// TODO refactor to stateless for SPI usage, it's confusing now
 public interface PipelineSQLBuilder extends StatelessTypedSPI {
     
     /**
      * Build insert SQL.
-     * Used in {@linkplain org.apache.shardingsphere.data.pipeline.spi.importer.Importer}.
      *
      * @param dataRecord data record
+     * @param shardingColumnsMap sharding columns map
      * @return insert SQL
      */
-    String buildInsertSQL(DataRecord dataRecord);
+    String buildInsertSQL(DataRecord dataRecord, Map<String, Set<String>> shardingColumnsMap);
     
     /**
      * Build update SQL.
      *
      * @param dataRecord data record
      * @param conditionColumns condition columns
+     * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
+    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<String, Set<String>> shardingColumnsMap);
     
     /**
      * Extract updated columns.
-     * Used in {@linkplain org.apache.shardingsphere.data.pipeline.spi.importer.Importer}.
      *
-     * @param columns columns
      * @param record data record
+     * @param shardingColumnsMap sharding columns map
      * @return filtered columns
      */
-    List<Column> extractUpdatedColumns(Collection<Column> columns, DataRecord record);
+    List<Column> extractUpdatedColumns(DataRecord record, Map<String, Set<String>> shardingColumnsMap);
     
     /**
      * Build delete SQL.

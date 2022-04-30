@@ -24,22 +24,24 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord) {
+    public String buildInsertSQL(final DataRecord dataRecord, final Map<String, Set<String>> shardingColumnsMap) {
         return "";
     }
     
     @Override
-    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<String, Set<String>> shardingColumnsMap) {
         return "";
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
+    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<String, Set<String>> shardingColumnsMap) {
         return Collections.emptyList();
     }
     

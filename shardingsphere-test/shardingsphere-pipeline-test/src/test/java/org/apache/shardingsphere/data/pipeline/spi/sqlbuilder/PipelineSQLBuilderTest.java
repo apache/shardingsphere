@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 public final class PipelineSQLBuilderTest {
     
@@ -36,20 +37,20 @@ public final class PipelineSQLBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = pipelineSQLBuilder.buildInsertSQL(mockDataRecord("t1"));
+        String actual = pipelineSQLBuilder.buildInsertSQL(mockDataRecord("t1"), any());
         assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildUpdateSQL(mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")));
+        String actual = pipelineSQLBuilder.buildUpdateSQL(mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")), any());
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = pipelineSQLBuilder.buildUpdateSQL(dataRecord, mockConditionColumns(dataRecord));
+        String actual = pipelineSQLBuilder.buildUpdateSQL(dataRecord, mockConditionColumns(dataRecord), any());
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
     }
     

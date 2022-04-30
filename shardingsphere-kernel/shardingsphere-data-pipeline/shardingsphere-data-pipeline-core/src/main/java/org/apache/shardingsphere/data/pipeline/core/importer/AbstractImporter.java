@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -39,7 +40,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,16 +63,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
-        pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
+        pipelineSqlBuilder = PipelineSQLBuilderFactory.newInstance(importerConfig.getDataSourceConfig().getDatabaseType().getName());
     }
-    
-    /**
-     * Create SQL builder.
-     *
-     * @param shardingColumnsMap sharding columns map
-     * @return SQL builder
-     */
-    protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     protected void doStart() {
@@ -158,7 +150,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        String insertSql = pipelineSqlBuilder.buildInsertSQL(dataRecords.get(0));
+        String insertSql = pipelineSqlBuilder.buildInsertSQL(dataRecords.get(0), importerConfig.getShardingColumnsMap());
         try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
             ps.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
@@ -183,8 +175,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             log.error("executeUpdate, could not get shardingColumns, tableName={}, shardingColumnsMap.keySet={}", record.getTableName(), importerConfig.getShardingColumnsMap().keySet());
         }
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
-        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record.getColumns(), record);
-        String updateSql = pipelineSqlBuilder.buildUpdateSQL(record, conditionColumns);
+        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record, importerConfig.getShardingColumnsMap());
+        String updateSql = pipelineSqlBuilder.buildUpdateSQL(record, conditionColumns, importerConfig.getShardingColumnsMap());
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < updatedColumns.size(); i++) {
                 ps.setObject(i + 1, updatedColumns.get(i).getValue());
