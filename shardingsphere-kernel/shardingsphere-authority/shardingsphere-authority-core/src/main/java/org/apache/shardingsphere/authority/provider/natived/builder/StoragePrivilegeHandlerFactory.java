@@ -15,35 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare;
+package org.apache.shardingsphere.authority.provider.natived.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * Execution prepare decorator factory.
+ * Storage privilege handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutionPrepareDecoratorFactory {
+public final class StoragePrivilegeHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ExecutionPrepareDecorator.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
     }
     
     /**
-     * Create new instance of execution prepare decorator.
+     * Create new instance of storage privilege handler.
      * 
-     * @param rules rules
-     * @return new instance of execution prepare decorator.
+     * @param type type of storage privilege handler
+     * @return new instance of storage privilege handler
      */
-    @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, ExecutionPrepareDecorator> newInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(ExecutionPrepareDecorator.class, rules);
+    public static Optional<StoragePrivilegeHandler> newInstance(final String type) {
+        return TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, type);
     }
 }
