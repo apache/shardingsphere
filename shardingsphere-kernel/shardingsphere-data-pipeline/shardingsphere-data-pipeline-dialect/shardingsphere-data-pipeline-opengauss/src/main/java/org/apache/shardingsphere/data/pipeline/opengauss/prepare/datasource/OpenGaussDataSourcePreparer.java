@@ -86,6 +86,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                     String actualTableName = dataNode.getTableName();
                     int oid = queryTableOid(sourceConnection, actualTableName);
                     String tableDefinition = queryTableDefinition(sourceConnection, oid);
+                    log.info("getActualTableDefinitions, dataNode={}, tableDefinition={}", dataNode, tableDefinition);
                     String logicTableName = each.getLogicTableName();
                     result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
                 }
