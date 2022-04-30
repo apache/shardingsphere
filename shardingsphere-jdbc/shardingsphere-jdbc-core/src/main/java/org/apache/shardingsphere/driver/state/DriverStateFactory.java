@@ -19,24 +19,27 @@ package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.Connection;
+import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Driver state context.
+ * Driver state factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DriverStateContext {
+public final class DriverStateFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DriverState.class);
+    }
     
     /**
-     * Get connection.
-     *
-     * @param schemaName schema name
-     * @param contextManager context manager
-     * @return connection
+     * Create new instance of driver state.
+     * 
+     * @param type state type 
+     * @return new instance of driver state
      */
-    public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return DriverStateFactory.newInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(schemaName, contextManager);
+    public static DriverState newInstance(final StateType type) {
+        return TypedSPIRegistry.getRegisteredService(DriverState.class, type.name());
     }
 }
