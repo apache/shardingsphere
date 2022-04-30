@@ -31,31 +31,33 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SM4EncryptAlgorithmTest {
+public final class SM4EncryptAlgorithmCBCTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
         Properties props = new Properties();
-        props.setProperty("sm4-key", "4D744E003D713D054E7E407C350E447E");
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
+        props.setProperty("sm4-key", "f201326119911788cFd30575b81059ac");
+        props.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
+        props.setProperty("sm4-mode", "CBC");
+        props.setProperty("sm4-padding", "PKCS7Padding");
         encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", props));
     }
     
     @Test
-    public void assertEncryptWithECBAndPKCS5Padding() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
+    public void assertEncrypt() {
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("dca2127b57ba8cac36a0914e0208dc11"));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertEncryptWithoutKey() {
         Properties props = new Properties();
+        props.setProperty("sm4-mode", "CBC");
+        props.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
+        props.setProperty("sm4-padding", "PKCS7Padding");
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
@@ -66,16 +68,17 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test
     public void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("dca2127b57ba8cac36a0914e0208dc11", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertDecryptWithoutKey() {
         Properties props = new Properties();
+        props.setProperty("sm4-mode", "CBC");
+        props.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
+        props.setProperty("sm4-padding", "PKCS7Padding");
         encryptAlgorithm.setProps(props);
         encryptAlgorithm.init();
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
         assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     
