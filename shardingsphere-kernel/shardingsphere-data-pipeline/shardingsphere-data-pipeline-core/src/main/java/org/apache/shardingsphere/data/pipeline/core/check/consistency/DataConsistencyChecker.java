@@ -161,7 +161,7 @@ public final class DataConsistencyChecker {
             logicTableNames.forEach(each -> {
                 // TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s'", each));
+                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s', tableMetaDataMap.keySet=%s", each, tableMetaDataMap.keySet()));
                 }
             });
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
