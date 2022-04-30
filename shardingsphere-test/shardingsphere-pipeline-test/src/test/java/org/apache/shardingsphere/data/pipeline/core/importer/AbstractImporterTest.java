@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.importer;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,20 +57,11 @@ public final class AbstractImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
-    private static final String INSERT_SQL = "INSERT INTO test_table (id,user,status) VALUES(?,?,?)";
-    
-    private static final String DELETE_SQL = "DELETE FROM test_table WHERE id = ? and user = ?";
-    
-    private static final String UPDATE_SQL = "UPDATE test_table SET user = ?,status = ? WHERE id = ? and user = ?";
-    
     @Mock
     private PipelineDataSourceManager dataSourceManager;
     
-    @Mock
-    private PipelineSQLBuilder pipelineSqlBuilder;
-    
-    @Mock
-    private PipelineDataSourceConfiguration dataSourceConfig;
+    private final PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(
+            "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", "root", "root");
     
     @Mock
     private PipelineChannel channel;
@@ -97,8 +88,7 @@ public final class AbstractImporterTest {
     @Test
     public void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
-        when(pipelineSqlBuilder.buildInsertSQL(insertRecord, any())).thenReturn(INSERT_SQL);
-        when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
@@ -110,8 +100,7 @@ public final class AbstractImporterTest {
     @Test
     public void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
-        when(pipelineSqlBuilder.buildDeleteSQL(deleteRecord, mockConditionColumns(deleteRecord))).thenReturn(DELETE_SQL);
-        when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
@@ -122,10 +111,8 @@ public final class AbstractImporterTest {
     @Test
     public void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
-        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord), any())).thenReturn(UPDATE_SQL);
-        when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
-        when(pipelineSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
@@ -137,10 +124,8 @@ public final class AbstractImporterTest {
     @Test
     public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
-        when(pipelineSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord), any())).thenReturn(UPDATE_SQL);
-        when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
+        when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
-        when(pipelineSqlBuilder.extractUpdatedColumns(any(), any())).thenReturn(RecordUtil.extractUpdatedColumns(updateRecord));
         jdbcImporter.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
