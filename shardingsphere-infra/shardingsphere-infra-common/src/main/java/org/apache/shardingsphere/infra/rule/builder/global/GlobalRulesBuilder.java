@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 public final class GlobalRulesBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
         ShardingSphereServiceLoader.register(DefaultGlobalRuleConfigurationBuilder.class);
     }
     
@@ -62,7 +61,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getRuleBuilderMap(final Collection<RuleConfiguration> globalRuleConfigs) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class, globalRuleConfigs));
+        result.putAll(GlobalRuleBuilderFactory.newInstanceMap(globalRuleConfigs));
         result.putAll(getMissedDefaultRuleBuilderMap(result));
         return result;
     }
@@ -81,6 +80,6 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<GlobalRuleBuilder> getMissedDefaultRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return GlobalRuleBuilderFactory.newInstances(configuredBuilderClasses);
     }
 }
