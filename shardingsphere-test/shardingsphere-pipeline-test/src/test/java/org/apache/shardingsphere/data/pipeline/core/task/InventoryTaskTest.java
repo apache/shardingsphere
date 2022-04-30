@@ -60,7 +60,7 @@ public final class InventoryTaskTest {
     @Test(expected = IngestException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_non_exist");
+        inventoryDumperConfig.setActualTableName("t_non_exist");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new PrimaryKeyPosition(0, 1000);
@@ -80,7 +80,7 @@ public final class InventoryTaskTest {
     public void assertGetProgress() throws SQLException {
         initTableData(taskConfig.getDumperConfig());
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_order");
+        inventoryDumperConfig.setActualTableName("t_order");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new PrimaryKeyPosition(0, 1000);

@@ -77,7 +77,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
-        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getTableName());
+        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getActualTableName());
         return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
     

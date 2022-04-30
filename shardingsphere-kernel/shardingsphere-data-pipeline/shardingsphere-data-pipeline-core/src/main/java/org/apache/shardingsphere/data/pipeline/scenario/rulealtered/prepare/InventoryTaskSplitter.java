@@ -94,7 +94,7 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            inventoryDumperConfig.setTableName(key);
+            inventoryDumperConfig.setActualTableName(key);
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
             result.add(inventoryDumperConfig);
         });
@@ -117,7 +117,7 @@ public final class InventoryTaskSplitter {
             InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfig);
             splitDumperConfig.setPosition(inventoryPosition);
             splitDumperConfig.setShardingItem(i++);
-            splitDumperConfig.setTableName(dumperConfig.getTableName());
+            splitDumperConfig.setActualTableName(dumperConfig.getActualTableName());
             splitDumperConfig.setPrimaryKey(dumperConfig.getPrimaryKey());
             splitDumperConfig.setBatchSize(batchSize);
             splitDumperConfig.setRateLimitAlgorithm(rateLimitAlgorithm);
@@ -130,10 +130,10 @@ public final class InventoryTaskSplitter {
                                                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         JobProgress initProgress = jobContext.getInitProgress();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
-            Collection<IngestPosition<?>> result = initProgress.getInventoryPosition(dumperConfig.getTableName()).values();
+            Collection<IngestPosition<?>> result = initProgress.getInventoryPosition(dumperConfig.getActualTableName()).values();
             for (IngestPosition<?> each : result) {
                 if (each instanceof PrimaryKeyPosition) {
-                    String primaryKey = metaDataLoader.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
+                    String primaryKey = metaDataLoader.getTableMetaData(dumperConfig.getActualTableName()).getPrimaryKeyColumns().get(0);
                     dumperConfig.setPrimaryKey(primaryKey);
                     break;
                 }
@@ -141,13 +141,13 @@ public final class InventoryTaskSplitter {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
             return result;
         }
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getTableName());
-        if (isSpiltByPrimaryKeyRange(tableMetaData, dumperConfig.getTableName())) {
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getActualTableName());
+        if (isSpiltByPrimaryKeyRange(tableMetaData, dumperConfig.getActualTableName())) {
             String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
             dumperConfig.setPrimaryKey(primaryKey);
             return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
         }
-        throw new PipelineJobCreationException("Can not split by primary key range for table " + dumperConfig.getTableName());
+        throw new PipelineJobCreationException("Can not split by primary key range for table " + dumperConfig.getActualTableName());
     }
     
     private boolean isSpiltByPrimaryKeyRange(final PipelineTableMetaData tableMetaData, final String tableName) {
@@ -179,7 +179,7 @@ public final class InventoryTaskSplitter {
         Collection<IngestPosition<?>> result = new ArrayList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
-                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
+                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -194,7 +194,7 @@ public final class InventoryTaskSplitter {
                     }
                     long endId = rs.getLong(1);
                     if (endId == 0) {
-                        log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getTableName(), dumperConfig.getPrimaryKey(), beginId);
+                        log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), beginId);
                         break;
                     }
                     result.add(new PrimaryKeyPosition(beginId, endId));
@@ -206,7 +206,7 @@ public final class InventoryTaskSplitter {
                 result.add(new PrimaryKeyPosition(0, 0));
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getTableName(), dumperConfig.getPrimaryKey()), ex);
+            throw new PipelineJobPrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey()), ex);
         }
         return result;
     }

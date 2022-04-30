@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 @ToString(callSuper = true)
 public final class InventoryDumperConfiguration extends DumperConfiguration {
     
-    private String tableName;
+    private String actualTableName;
     
     private String primaryKey;
     

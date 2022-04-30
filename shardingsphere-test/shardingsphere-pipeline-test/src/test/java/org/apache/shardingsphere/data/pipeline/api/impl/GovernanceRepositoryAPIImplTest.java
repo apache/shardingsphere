@@ -149,7 +149,7 @@ public final class GovernanceRepositoryAPIImplTest {
     private InventoryTask mockInventoryTask(final TaskConfiguration taskConfig) {
         InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         dumperConfig.setPosition(new PlaceholderPosition());
-        dumperConfig.setTableName("t_order");
+        dumperConfig.setActualTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
