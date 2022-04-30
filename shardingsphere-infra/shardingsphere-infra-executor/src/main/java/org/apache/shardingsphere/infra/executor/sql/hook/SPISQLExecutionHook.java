@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.hook;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,11 +28,7 @@ import java.util.Map;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
-    
-    static {
-        ShardingSphereServiceLoader.register(SQLExecutionHook.class);
-    }
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = SQLExecutionHookFactory.newInstances();
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters,
