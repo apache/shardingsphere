@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
+package org.apache.shardingsphere.infra.distsql.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- *  Updatable scaling RAL backend handler factory.
+ * RAL updater factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdatableScalingRALBackendHandlerFactory {
+public final class RALUpdaterFactory {
     
     static {
         ShardingSphereServiceLoader.register(RALUpdater.class);
     }
     
     /**
-     * Create new instance of queryable RAL backend handler.
+     * Create new instance of RAL updater.
      * 
-     * @param sqlStatement queryable RAL statement
-     * @return queryable RAL backend handler
+     * @param sqlStatementClass SQL statement class 
+     * @return new instance of RAL updater
      */
-    public static TextProtocolBackendHandler newInstance(final UpdatableScalingRALStatement sqlStatement) {
-        UpdatableScalingRALBackendHandler result = new UpdatableScalingRALBackendHandler();
-        result.setSqlStatement(sqlStatement);
-        return result;
+    @SuppressWarnings("rawtypes")
+    public static RALUpdater newInstance(final Class<?> sqlStatementClass) {
+        return TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatementClass.getCanonicalName());
     }
 }
