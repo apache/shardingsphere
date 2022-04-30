@@ -46,7 +46,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && null != dataNodeContainedRule.get()) {
             tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = metaData.getDefaultSchema().get(tableName);
+            TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(tableName);
             primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ColumnMetaData::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;

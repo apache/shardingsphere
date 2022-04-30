@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Properties;
 
 /**
  * Properties tool class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtil {
     
     /**
@@ -36,6 +39,6 @@ public final class PropertiesUtil {
      */
     public static String getRequiredValue(final Properties properties, final String key) {
         Preconditions.checkArgument(properties.containsKey(key), "%s can not be null.", key);
-        return properties.getProperty(key);
+        return properties.get(key).toString();
     }
 }

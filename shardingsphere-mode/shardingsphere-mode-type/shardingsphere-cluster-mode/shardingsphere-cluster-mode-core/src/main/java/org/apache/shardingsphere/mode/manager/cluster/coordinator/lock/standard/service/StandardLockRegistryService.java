@@ -29,28 +29,20 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class StandardLockRegistryService implements LockRegistryService {
     
-    private static final String PATH_DELIMITER = "/";
-    
-    private static final String LOCK_ROOT = "lock";
-    
-    private static final String LOCKS_NODE = "locks";
-    
-    private static final String LOCK_SCOPE_STANDARD = "standard";
-    
     private final ClusterPersistRepository repository;
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return repository.tryLock(generateStandardLockName(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        try {
+            return repository.getStandardLock(lockName).tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        } catch (final InterruptedException ignore) {
+            return false;
+        }
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        repository.releaseLock(generateStandardLockName(lockName));
-    }
-    
-    private String generateStandardLockName(final String lockName) {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_STANDARD + PATH_DELIMITER + LOCKS_NODE + PATH_DELIMITER + lockName;
+        repository.getStandardLock(lockName).unlock();
     }
     
     @Override

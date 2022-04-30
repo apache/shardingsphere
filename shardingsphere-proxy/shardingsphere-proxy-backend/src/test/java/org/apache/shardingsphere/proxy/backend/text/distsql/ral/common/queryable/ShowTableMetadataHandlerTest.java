@@ -51,10 +51,13 @@ public final class ShowTableMetadataHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("db_name"));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(shardingSphereMetaData.getSchemaByName("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(contextManager.getMetaDataContexts().getMetaData("db_name")).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
-        ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(connectionSession.getDatabaseName()).thenReturn("db_name");
+        when(connectionSession.getDatabaseType().getDefaultSchema("db_name")).thenReturn("db_name");
+        ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), connectionSession));
         handler.execute();
         handler.next();
         ArrayList<Object> data = new ArrayList<>(handler.getRowData());
@@ -82,10 +85,6 @@ public final class ShowTableMetadataHandlerTest {
     
     private ShowTableMetadataStatement createSqlStatement() {
         return new ShowTableMetadataStatement(Collections.singleton("t_order"), new SchemaSegment(0, 0, new IdentifierValue("db_name")));
-    }
-    
-    private ConnectionSession mockConnectionSession() {
-        return mock(ConnectionSession.class);
     }
     
     private HandlerParameter<ShowTableMetadataStatement> getParameter(final ShowTableMetadataStatement statement, final ConnectionSession connectionSession) {

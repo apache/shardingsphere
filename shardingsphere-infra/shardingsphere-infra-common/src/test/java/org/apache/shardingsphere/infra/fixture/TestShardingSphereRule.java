@@ -18,11 +18,21 @@
 package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
-public final class TestShardingSphereRule implements SchemaRule {
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+public final class TestShardingSphereRule implements SchemaRule, DataSourceContainedRule {
     
     @Override
     public String getType() {
         return TestShardingSphereRule.class.getSimpleName();
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getDataSourceMapper() {
+        return Collections.emptyMap();
     }
 }

@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * CosId algorithm constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CosIdAlgorithmConstants {
     
     public static final String TYPE_PREFIX = "COSID_";
