@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.compose;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.container.proxy.ShardingSphereProxyLocalContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyLocalContainer;
 
 /**
  * Local composed container.
@@ -31,8 +27,8 @@ import javax.sql.DataSource;
 public final class LocalComposedContainer extends BaseComposedContainer {
     private ShardingSphereProxyLocalContainer shardingSphereProxyContainer;
     
-    public LocalComposedContainer(final DatabaseType databaseType) {
-        super(databaseType);
+    public LocalComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+        super(databaseType, dockerImageName);
     }
     
     @SneakyThrows
@@ -44,14 +40,7 @@ public final class LocalComposedContainer extends BaseComposedContainer {
     }
     
     @Override
-    public DataSource getProxyDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseContainer().getDatabaseType()));
-        result.setJdbcUrl(getDatabaseContainer().getJdbcUrl("localhost", 3307, databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+    public String getProxyJdbcUrl(final String databaseName) {
+        return getDatabaseContainer().getJdbcUrl("localhost", 3307, databaseName);
     }
 }

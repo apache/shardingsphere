@@ -15,56 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.database;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
-import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
-import java.util.Properties;
+import java.sql.DriverManager;
 
-public final class MySQLContainer extends DockerDatabaseContainer {
+public final class PostgreSQLContainer extends DockerDatabaseContainer {
     
-    private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
+    private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
     
-    public MySQLContainer(final String dockerImageName) {
+    public PostgreSQLContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
     }
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
-        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        withCommand("--max_connections=600");
+        withCommand("--wal_level=logical");
+        addEnv("POSTGRES_USER", "root");
+        addEnv("POSTGRES_PASSWORD", "root");
         super.configure();
-        withExposedPorts(getPort());
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ready for connections.*"));
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        withExposedPorts(5432);
         if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
-            addFixedExposedPort(3306, 3306);
+            addFixedExposedPort(5432, 5432);
         }
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
+                "root", "root")));
     }
     
     @Override
     public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
-        return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, createQueryProperties());
-    }
-    
-    private Properties createQueryProperties() {
-        Properties result = new Properties();
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        return result;
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
     }
     
     @Override
     public int getPort() {
-        return 3306;
+        return 5432;
     }
 }

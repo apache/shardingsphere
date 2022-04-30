@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.container.proxy;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -52,10 +52,6 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     }
     
     private void mapConfigurationFiles() {
-        // TODO PostgreSQL JDBC create databases not success, use config file instead. need to fix it.
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
-            withClasspathResourceMapping("/env/postgresql/config-sharding.yaml", "/opt/shardingsphere-proxy/conf/config-sharding.yaml", BindMode.READ_ONLY);
-        }
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getName().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
             addFixedExposedPort(3307, 3307);
