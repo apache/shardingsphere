@@ -26,15 +26,15 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class XATransactionManagerProviderLoaderTest {
+public final class XATransactionManagerProviderFactoryTest {
     
     @Test
-    public void assertGetDefaultTransactionManagerProvider() {
-        assertThat(XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider(null), instanceOf(AtomikosTransactionManagerProvider.class));
+    public void assertNewDefaultInstance() {
+        assertThat(XATransactionManagerProviderFactory.newInstance(null), instanceOf(AtomikosTransactionManagerProvider.class));
     }
     
     @Test
-    public void assertGetTransactionManagerProvider() {
-        assertThat(XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
+    public void assertNewInstance() {
+        assertThat(XATransactionManagerProviderFactory.newInstance("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
     }
 }
