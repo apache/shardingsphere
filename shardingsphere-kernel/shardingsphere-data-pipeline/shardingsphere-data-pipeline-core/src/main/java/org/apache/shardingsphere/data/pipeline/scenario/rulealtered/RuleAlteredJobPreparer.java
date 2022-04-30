@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -49,8 +50,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -65,10 +64,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public final class RuleAlteredJobPreparer {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataSourceChecker.class);
-    }
     
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
@@ -140,7 +135,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
-        DataSourceChecker dataSourceChecker = TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, jobContext.getJobConfig().getSourceDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
@@ -148,7 +143,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
-        DataSourceChecker dataSourceChecker = TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, jobContext.getJobConfig().getTargetDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getShardingColumnsMap().keySet());
