@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
@@ -29,12 +28,7 @@ import java.util.Set;
 /**
  * PostgreSQL pipeline SQL builder.
  */
-@NoArgsConstructor
 public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    public PostgreSQLPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        super(shardingColumnsMap);
-    }
     
     @Override
     public String getLeftIdentifierQuoteString() {
@@ -47,12 +41,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord) {
-        return super.buildInsertSQL(dataRecord) + buildConflictSQL(dataRecord);
+    public String buildInsertSQL(final DataRecord dataRecord, final Map<String, Set<String>> shardingColumnsMap) {
+        return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
-    private String buildConflictSQL(final DataRecord dataRecord) {
+    private String buildConflictSQL(final DataRecord dataRecord, final Map<String, Set<String>> shardingColumnsMap) {
         StringBuilder result = new StringBuilder(" ON CONFLICT (");
         for (Column each : RecordUtil.extractPrimaryColumns(dataRecord)) {
             result.append(each.getName()).append(",");
@@ -61,7 +55,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
         result.append(") DO UPDATE SET ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isPrimaryKey() || isShardingColumn(getShardingColumnsMap(), dataRecord.getTableName(), column.getName())) {
+            if (column.isPrimaryKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
                 continue;
             }
             result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");
