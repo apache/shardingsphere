@@ -27,33 +27,22 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider
 import java.util.Properties;
 
 /**
- * XA transaction manager provider loader.
+ * XA transaction manager provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class XATransactionManagerProviderLoader {
-    
-    private static final XATransactionManagerProviderLoader INSTANCE = new XATransactionManagerProviderLoader();
+public final class XATransactionManagerProviderFactory {
     
     static {
         ShardingSphereServiceLoader.register(XATransactionManagerProvider.class);
     }
     
     /**
-     * Get instance of XA transaction manager provider SPI loader.
-     *
-     * @return instance of XA transaction manager provider SPI loader
-     */
-    public static XATransactionManagerProviderLoader getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Get XA transaction manager provider.
+     * Create new instance of XA transaction manager provider.
      *
      * @param type XA transaction manager provider type
-     * @return XA transaction manager provider
+     * @return new instance of XA transaction manager provider
      */
-    public XATransactionManagerProvider getXATransactionManagerProvider(final String type) {
+    public static XATransactionManagerProvider newInstance(final String type) {
         return null == type
                 ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
                 : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, type, new Properties());
