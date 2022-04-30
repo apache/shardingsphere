@@ -20,12 +20,14 @@ package org.apache.shardingsphere.mode.manager;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -633,7 +635,8 @@ public final class ContextManager implements AutoCloseable {
     private MetaDataContexts buildNewMetaDataContext(final String databaseName) throws SQLException {
         ConfigurationProperties configurationProps = metaDataContexts.getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), configurationProps.getProps());
-        metaDataContextsBuilder.addDatabase(databaseName,  DatabaseTypeRegistry.getTrunkDatabaseType(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)),
+        metaDataContextsBuilder.addDatabase(databaseName, StringUtils.isEmpty(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)) ?
+                        DatabaseTypeRegistry.getDefaultDatabaseType() : DatabaseTypeRegistry.getTrunkDatabaseType(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)),
                 new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>()), configurationProps.getProps());
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
