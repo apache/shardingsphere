@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 /**
  * Updatable scaling RAL backend handler factory.
  */
+@RequiredArgsConstructor
 @Setter
 public final class UpdatableScalingRALBackendHandler implements TextProtocolBackendHandler {
     
@@ -36,7 +38,7 @@ public final class UpdatableScalingRALBackendHandler implements TextProtocolBack
         ShardingSphereServiceLoader.register(RALUpdater.class);
     }
     
-    private UpdatableScalingRALStatement sqlStatement;
+    private final UpdatableScalingRALStatement sqlStatement;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
