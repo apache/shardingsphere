@@ -178,7 +178,11 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
+        Set<String> shardingColumns = importerConfig.getShardingColumnsMap().get(record.getTableName());
+        if (null == shardingColumns) {
+            log.error("executeUpdate, could not get shardingColumns, tableName={}, shardingColumnsMap.keySet={}", record.getTableName(), importerConfig.getShardingColumnsMap().keySet());
+        }
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record.getColumns(), record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(record, conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
