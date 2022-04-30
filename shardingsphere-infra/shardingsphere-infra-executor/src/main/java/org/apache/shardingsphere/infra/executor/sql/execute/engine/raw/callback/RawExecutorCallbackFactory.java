@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
@@ -24,6 +26,7 @@ import java.util.Collection;
 /**
  * Raw executor callback factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RawExecutorCallbackFactory {
     
     static {
