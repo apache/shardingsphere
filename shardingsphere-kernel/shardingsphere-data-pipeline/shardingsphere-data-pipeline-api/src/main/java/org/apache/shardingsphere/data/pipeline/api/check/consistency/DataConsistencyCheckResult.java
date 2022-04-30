@@ -26,7 +26,7 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
+@ToString
 public final class DataConsistencyCheckResult {
     
     private final DataConsistencyCountCheckResult countCheckResult;
