@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -37,10 +35,6 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalRulesBuilder {
-    
-    static {
-        ShardingSphereServiceLoader.register(DefaultGlobalRuleConfigurationBuilder.class);
-    }
     
     /**
      * Build rules.
@@ -69,8 +63,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getMissedDefaultRuleBuilderMap(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(DefaultGlobalRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(builders.values()));
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = DefaultGlobalRuleConfigurationBuilderFactory.newInstance(getMissedDefaultRuleBuilders(builders.values()));
         for (Entry<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
         }
