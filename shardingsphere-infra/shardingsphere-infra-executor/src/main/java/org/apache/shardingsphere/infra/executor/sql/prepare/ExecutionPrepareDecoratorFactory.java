@@ -36,6 +36,12 @@ public final class ExecutionPrepareDecoratorFactory {
         ShardingSphereServiceLoader.register(ExecutionPrepareDecorator.class);
     }
     
+    /**
+     * Create new instance of execution prepare decorator.
+     * 
+     * @param rules rules
+     * @return new instance of execution prepare decorator.
+     */
     @SuppressWarnings("rawtypes")
     public static Map<ShardingSphereRule, ExecutionPrepareDecorator> newInstance(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(ExecutionPrepareDecorator.class, rules);
