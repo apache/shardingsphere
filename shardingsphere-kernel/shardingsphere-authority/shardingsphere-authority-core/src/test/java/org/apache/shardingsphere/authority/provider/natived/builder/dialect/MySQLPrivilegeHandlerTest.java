@@ -19,11 +19,9 @@ package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandlerFactory;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -35,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -48,24 +47,23 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLPrivilegeHandlerTest {
     
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
-    
     @Test
     public void assertDiff() throws SQLException {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("root", "", "127.0.0.2"));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL").diff(newUsers, dataSource));
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        assertDiffUsers(storagePrivilegeHandler.get().diff(newUsers, dataSource));
     }
     
     @Test
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL").create(users, dataSource);
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        storagePrivilegeHandler.get().create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
     }
     
@@ -73,7 +71,9 @@ public final class MySQLPrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL").grantAll(users, dataSource);
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        storagePrivilegeHandler.get().grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
@@ -81,7 +81,9 @@ public final class MySQLPrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForPrivileges(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL").load(users, dataSource));
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        assertPrivileges(storagePrivilegeHandler.get().load(users, dataSource));
     }
     
     private Collection<ShardingSphereUser> createUsers() {
