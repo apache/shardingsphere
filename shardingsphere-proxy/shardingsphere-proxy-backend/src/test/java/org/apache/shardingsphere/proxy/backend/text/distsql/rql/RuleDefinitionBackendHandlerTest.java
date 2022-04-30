@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.fixture.CreateFixtureRuleStatement;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +45,6 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Before
     public void setUp() {
-        ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
         ProxyContext.getInstance().init(mockContextManager());
     }
     
