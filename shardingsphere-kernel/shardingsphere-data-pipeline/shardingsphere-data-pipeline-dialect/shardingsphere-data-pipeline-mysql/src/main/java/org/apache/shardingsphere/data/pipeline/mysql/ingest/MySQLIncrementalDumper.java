@@ -120,7 +120,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private boolean filter(final String database, final AbstractRowsEvent event) {
-        return !event.getDatabaseName().equals(database) || !dumperConfig.getTableNameMap().containsKey(event.getTableName());
+        return !event.getDatabaseName().equals(database) || !dumperConfig.containsTable(event.getTableName());
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {
@@ -176,7 +176,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setTableName(dumperConfig.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }

@@ -31,6 +31,8 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString(exclude = "dataSourceConfig")
+// TODO it should be final and not extends by sub-class
+// TODO fields final
 public class DumperConfiguration {
     
     private String dataSourceName;
@@ -43,4 +45,24 @@ public class DumperConfiguration {
      * Table name map. Key is actual table name, value is logic table name.
      */
     private Map<String, String> tableNameMap;
+    
+    /**
+     * Get logic table name.
+     *
+     * @param actualTableName actual table name
+     * @return logic table name
+     */
+    public String getLogicTableName(final String actualTableName) {
+        return tableNameMap.get(actualTableName);
+    }
+    
+    /**
+     * Whether contains table.
+     *
+     * @param actualTableName actual table name
+     * @return contains or not
+     */
+    public boolean containsTable(final String actualTableName) {
+        return tableNameMap.containsKey(actualTableName);
+    }
 }

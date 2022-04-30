@@ -95,6 +95,7 @@ public final class InventoryTaskSplitter {
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
             inventoryDumperConfig.setActualTableName(key);
+            inventoryDumperConfig.setLogicTableName(value);
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
             result.add(inventoryDumperConfig);
         });
@@ -118,6 +119,7 @@ public final class InventoryTaskSplitter {
             splitDumperConfig.setPosition(inventoryPosition);
             splitDumperConfig.setShardingItem(i++);
             splitDumperConfig.setActualTableName(dumperConfig.getActualTableName());
+            splitDumperConfig.setLogicTableName(dumperConfig.getLogicTableName());
             splitDumperConfig.setPrimaryKey(dumperConfig.getPrimaryKey());
             splitDumperConfig.setBatchSize(batchSize);
             splitDumperConfig.setRateLimitAlgorithm(rateLimitAlgorithm);

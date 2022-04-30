@@ -28,9 +28,12 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 @Getter
 @Setter
 @ToString(callSuper = true)
+// TODO fields final
 public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String actualTableName;
+    
+    private String logicTableName;
     
     private String primaryKey;
     

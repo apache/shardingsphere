@@ -143,10 +143,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Number maxUniqueKeyValue = null;
+                String logicTableName = inventoryDumperConfig.getLogicTableName();
                 while (resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
-                    record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getActualTableName()));
+                    record.setTableName(logicTableName);
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
                         Object value = readValue(resultSet, i);
