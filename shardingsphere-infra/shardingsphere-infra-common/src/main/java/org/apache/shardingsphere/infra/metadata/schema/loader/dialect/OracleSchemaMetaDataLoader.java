@@ -31,6 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
-        Collection[] splitTables = splitTables((List<String>) tables, BATCH_SIZE);
+        Collection[] splitTables = splitTables(new ArrayList(tables), BATCH_SIZE);
         for (Collection<String> subTables : splitTables) {
             columnMetaDataMap.putAll(loadColumnMetaDataMap(dataSource, subTables));
         }
