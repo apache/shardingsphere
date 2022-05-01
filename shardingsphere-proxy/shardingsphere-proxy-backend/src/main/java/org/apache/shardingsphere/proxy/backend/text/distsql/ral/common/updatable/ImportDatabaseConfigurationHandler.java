@@ -140,7 +140,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         shardingSphereMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> op.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
+        metaDataPersistService.ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
     
     private void checkDatabaseName(final String databaseName) {

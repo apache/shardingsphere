@@ -51,10 +51,10 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         }
     }
     
-    private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> configuration) throws DistSQLException {
+    private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> config) throws DistSQLException {
         if (!sqlStatement.isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(configuration.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-            Set<String> currentTrafficStrategyNames = configuration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+            DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
+            Set<String> currentTrafficStrategyNames = config.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
             Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
             DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
         }
@@ -74,6 +74,6 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         getUnusedLoadBalancer(currentConfiguration).forEach(each -> currentConfiguration.getLoadBalancers().remove(each));
-        metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }
 }

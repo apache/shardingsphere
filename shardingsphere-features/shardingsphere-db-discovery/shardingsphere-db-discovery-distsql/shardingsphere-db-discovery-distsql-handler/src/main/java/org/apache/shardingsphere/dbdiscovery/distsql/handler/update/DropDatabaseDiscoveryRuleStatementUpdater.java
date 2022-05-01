@@ -84,7 +84,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig =
                 currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getGroupName().equals(ruleName)).findAny();
-        dataSourceRuleConfig.ifPresent(op -> {
+        dataSourceRuleConfig.ifPresent(optional -> {
             currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
         });
     }

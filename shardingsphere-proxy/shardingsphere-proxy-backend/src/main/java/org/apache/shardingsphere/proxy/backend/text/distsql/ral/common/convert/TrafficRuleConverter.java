@@ -51,14 +51,11 @@ public final class TrafficRuleConverter {
         TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(segment, trafficAlgorithmName, loadBalancerName);
         result.getTrafficStrategies().add(trafficStrategy);
         result.getTrafficAlgorithms().put(trafficAlgorithmName, trafficAlgorithm);
-        Optional.ofNullable(loadBalancerName).ifPresent(op -> result.getLoadBalancers().put(loadBalancerName, loadBalancer));
+        Optional.ofNullable(loadBalancerName).ifPresent(optional -> result.getLoadBalancers().put(loadBalancerName, loadBalancer));
     }
     
     private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
-        if (null == segment) {
-            return null;
-        }
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+        return null == segment ? null : new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
     private static TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
@@ -66,9 +63,6 @@ public final class TrafficRuleConverter {
     }
     
     private static String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
-        if (null == algorithm) {
-            return null;
-        }
-        return String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
+        return null == algorithm ? null : String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
     }
 }
