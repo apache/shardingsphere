@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -41,7 +40,7 @@ public final class ComposeConstructorAdviceTest {
     
     @Before
     public void setUp() {
-        actual = new ComposeConstructorAdvice(new ArrayList<>(Collections.singletonList(constructorAdvice)));
+        actual = new ComposeConstructorAdvice(Collections.singleton(constructorAdvice));
     }
     
     @Test

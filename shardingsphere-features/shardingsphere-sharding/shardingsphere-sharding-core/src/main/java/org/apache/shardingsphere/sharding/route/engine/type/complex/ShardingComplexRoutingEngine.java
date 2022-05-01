@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -48,7 +48,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        Collection<RouteContext> routeContexts = new ArrayList<>(logicTables.size());
+        Collection<RouteContext> routeContexts = new LinkedList<>();
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {

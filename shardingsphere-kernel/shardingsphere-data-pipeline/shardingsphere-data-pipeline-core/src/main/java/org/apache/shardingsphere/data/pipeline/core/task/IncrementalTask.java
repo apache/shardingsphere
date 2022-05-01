@@ -39,8 +39,8 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -87,7 +87,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
-        Collection<Importer> result = new ArrayList<>(concurrency);
+        Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
             result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel));
         }

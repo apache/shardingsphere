@@ -35,10 +35,10 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.Readw
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement,
                                          final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
-        Collection<String> currentRuleNames = new ArrayList<>();
+        Collection<String> currentRuleNames = new LinkedList<>();
         if (null != resource && null != resource.getDataSources()) {
             currentRuleNames.addAll(resource.getDataSources().keySet());
         }

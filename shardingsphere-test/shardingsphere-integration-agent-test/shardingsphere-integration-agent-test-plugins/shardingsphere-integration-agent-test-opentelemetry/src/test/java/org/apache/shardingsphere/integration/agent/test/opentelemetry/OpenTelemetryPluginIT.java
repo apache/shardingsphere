@@ -28,8 +28,8 @@ import org.apache.shardingsphere.integration.agent.test.opentelemetry.result.Tra
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -65,7 +65,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         assertNotNull(response);
         JsonArray array = new JsonParser().parse(response).getAsJsonArray().get(0).getAsJsonArray();
         Gson gson = new Gson();
-        Collection<TracingResult> traces = new ArrayList<>();
+        Collection<TracingResult> traces = new LinkedList<>();
         array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
         assertTraces(traces);
     }

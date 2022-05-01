@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +55,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     
     @Override
     public Optional<SqlNodeList> convertToSQLNode(final ProjectionsSegment segment) {
-        Collection<SqlNode> projectionSQLNodes = new ArrayList<>(segment.getProjections().size());
+        Collection<SqlNode> projectionSQLNodes = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             getProjectionSQLNode(each).ifPresent(projectionSQLNodes::add);
         }
