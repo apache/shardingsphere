@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -52,7 +52,7 @@ public final class PipelineContextUtil {
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
     
-    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelFactory();
+    private static final PipelineChannelCreator PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelCreator();
     
     private static final ClusterPersistRepositoryConfiguration PERSIST_REPOSITORY_CONFIG;
     
@@ -130,7 +130,7 @@ public final class PipelineContextUtil {
      *
      * @return channel factory
      */
-    public static PipelineChannelFactory getPipelineChannelFactory() {
+    public static PipelineChannelCreator getPipelineChannelFactory() {
         return PIPELINE_CHANNEL_FACTORY;
     }
 }

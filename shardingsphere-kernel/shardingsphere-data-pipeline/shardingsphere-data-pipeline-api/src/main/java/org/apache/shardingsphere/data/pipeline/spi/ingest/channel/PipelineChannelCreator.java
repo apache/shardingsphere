@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Pipeline channel factory, SPI.
+ * Pipeline channel creator.
  */
-public interface PipelineChannelFactory extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface PipelineChannelCreator extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Create pipeline channel.

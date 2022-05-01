@@ -22,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -57,7 +57,7 @@ public final class RuleAlteredContext {
     private static final OnRuleAlteredActionConfigurationYamlSwapper ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     static {
-        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
+        ShardingSphereServiceLoader.register(PipelineChannelCreator.class);
         ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
@@ -68,7 +68,7 @@ public final class RuleAlteredContext {
     
     private final JobRateLimitAlgorithm outputRateLimitAlgorithm;
     
-    private final PipelineChannelFactory pipelineChannelFactory;
+    private final PipelineChannelCreator pipelineChannelCreator;
     
     private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
@@ -95,7 +95,7 @@ public final class RuleAlteredContext {
         ShardingSphereAlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
         outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
         ShardingSphereAlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
-        pipelineChannelFactory = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelFactory.class);
+        pipelineChannelCreator = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelCreator.class);
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
         sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLockAlgorithm.class);
@@ -118,7 +118,7 @@ public final class RuleAlteredContext {
             yamlActionConfig.setOutput(YamlOutputConfiguration.buildWithDefaultValue());
         }
         if (null == yamlActionConfig.getStreamChannel()) {
-            yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelFactory.TYPE, new Properties()));
+            yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
         }
         return ACTION_CONFIG_YAML_SWAPPER.swapToObject(yamlActionConfig);
     }
