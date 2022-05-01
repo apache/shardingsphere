@@ -105,8 +105,8 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         addDefaultData(dataMap, SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW);
     }
     
-    private void addConfigurationData(final Map<String, List<Object>> dataMap, final Collection<RuleConfiguration> configurations) {
-        configurations.forEach(each -> {
+    private void addConfigurationData(final Map<String, List<Object>> dataMap, final Collection<RuleConfiguration> ruleConfigs) {
+        ruleConfigs.forEach(each -> {
             addShardingData(dataMap, each);
             addReadwriteSplittingData(dataMap, each);
             addDBDiscoveryData(dataMap, each);
@@ -115,42 +115,42 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         });
     }
     
-    private void addShardingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        if (!(ruleConfiguration instanceof ShardingRuleConfiguration)) {
+    private void addShardingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof ShardingRuleConfiguration)) {
             return;
         }
-        addData(dataMap, SHARDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getTables().size() + ((ShardingRuleConfiguration) ruleConfiguration).getAutoTables().size());
-        addData(dataMap, SHARDING_BINDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBindingTableGroups().size());
-        addData(dataMap, SHARDING_BROADCAST_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBroadcastTables().size());
-        addData(dataMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) ruleConfiguration).getScaling().size());
+        addData(dataMap, SHARDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfig).getTables().size() + ((ShardingRuleConfiguration) ruleConfig).getAutoTables().size());
+        addData(dataMap, SHARDING_BINDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfig).getBindingTableGroups().size());
+        addData(dataMap, SHARDING_BROADCAST_TABLE, () -> ((ShardingRuleConfiguration) ruleConfig).getBroadcastTables().size());
+        addData(dataMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) ruleConfig).getScaling().size());
     }
     
-    private void addReadwriteSplittingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        if (!(ruleConfiguration instanceof ReadwriteSplittingRuleConfiguration)) {
+    private void addReadwriteSplittingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof ReadwriteSplittingRuleConfiguration)) {
             return;
         }
-        addData(dataMap, READWRITE_SPLITTING, () -> ((ReadwriteSplittingRuleConfiguration) ruleConfiguration).getDataSources().size());
+        addData(dataMap, READWRITE_SPLITTING, () -> ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().size());
     }
     
-    private void addDBDiscoveryData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        if (!(ruleConfiguration instanceof DatabaseDiscoveryRuleConfiguration)) {
+    private void addDBDiscoveryData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof DatabaseDiscoveryRuleConfiguration)) {
             return;
         }
-        addData(dataMap, DB_DISCOVERY, () -> ((DatabaseDiscoveryRuleConfiguration) ruleConfiguration).getDataSources().size());
+        addData(dataMap, DB_DISCOVERY, () -> ((DatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().size());
     }
     
-    private void addEncryptData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        if (!(ruleConfiguration instanceof EncryptRuleConfiguration)) {
+    private void addEncryptData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof EncryptRuleConfiguration)) {
             return;
         }
-        addData(dataMap, ENCRYPT, () -> ((EncryptRuleConfiguration) ruleConfiguration).getTables().size());
+        addData(dataMap, ENCRYPT, () -> ((EncryptRuleConfiguration) ruleConfig).getTables().size());
     }
     
-    private void addShadowData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        if (!(ruleConfiguration instanceof ShadowRuleConfiguration)) {
+    private void addShadowData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof ShadowRuleConfiguration)) {
             return;
         }
-        addData(dataMap, SHADOW, () -> ((ShadowRuleConfiguration) ruleConfiguration).getDataSources().size());
+        addData(dataMap, SHADOW, () -> ((ShadowRuleConfiguration) ruleConfig).getDataSources().size());
     }
     
     private void addData(final Map<String, List<Object>> dataMap, final String dataKey, final Supplier<Integer> apply) {

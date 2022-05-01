@@ -77,16 +77,16 @@ public final class AlterDefaultSingleTableRuleUpdaterTest {
     @Test
     public void assertBuild() {
         AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
-        assertThat(configuration.getDefaultDataSource().get(), is("ds_0"));
+        SingleTableRuleConfiguration config = updater.buildToBeAlteredRuleConfiguration(statement);
+        assertThat(config.getDefaultDataSource().get(), is("ds_0"));
     }
     
     @Test
     public void assertUpdate() {
         AlterDefaultSingleTableRuleStatement statement = new AlterDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeAlteredRuleConfiguration(statement);
-        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(currentConfiguration, configuration);
-        assertThat(currentConfiguration.getDefaultDataSource().get(), is("ds_0"));
+        SingleTableRuleConfiguration config = updater.buildToBeAlteredRuleConfiguration(statement);
+        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(currentConfig, config);
+        assertThat(currentConfig.getDefaultDataSource().get(), is("ds_0"));
     }
 }

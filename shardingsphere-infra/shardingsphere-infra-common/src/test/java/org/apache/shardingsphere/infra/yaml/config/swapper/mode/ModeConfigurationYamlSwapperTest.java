@@ -34,8 +34,7 @@ public final class ModeConfigurationYamlSwapperTest {
     
     @Test
     public void swapToYamlConfiguration() {
-        ModeConfiguration modeConfiguration = new ModeConfiguration("TEST_TYPE", null, true);
-        YamlModeConfiguration actual = swapper.swapToYamlConfiguration(modeConfiguration);
+        YamlModeConfiguration actual = swapper.swapToYamlConfiguration(new ModeConfiguration("TEST_TYPE", null, true));
         assertThat(actual.getType(), is(TEST_TYPE));
         assertTrue(actual.isOverwrite());
     }

@@ -66,27 +66,27 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration);
-        assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().isEmpty());
-        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(1));
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig);
+        assertTrue(databaseDiscoveryRuleConfig.getDataSources().isEmpty());
+        assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(1));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryRuleStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
-        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration);
-        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration));
-        assertThat(databaseDiscoveryRuleConfiguration.getDataSources().size(), is(1));
-        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(1));
+        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfig);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfig));
+        assertThat(databaseDiscoveryRuleConfig.getDataSources().size(), is(1));
+        assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(1));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithInUsedDiscoveryType() {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createMultipleCurrentRuleConfigurations();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration));
-        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(1));
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createMultipleCurrentRuleConfigurations();
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig));
+        assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(1));
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatement() {

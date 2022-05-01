@@ -36,8 +36,7 @@ public final class OpenTracingPluginBootServiceTest {
     public void assertStart() {
         Properties props = new Properties();
         props.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
-        PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);
-        openTracingPluginBootService.start(configuration);
+        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", props));
         assertTrue(GlobalTracer.isRegistered());
     }
     

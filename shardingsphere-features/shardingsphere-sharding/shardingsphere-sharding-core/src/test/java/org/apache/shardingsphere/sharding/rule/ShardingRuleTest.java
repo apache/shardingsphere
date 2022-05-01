@@ -650,12 +650,11 @@ public final class ShardingRuleTest {
     public void assertIsAllTablesInSameDataSource() {
         Collection<String> logicTableNames = new LinkedHashSet<>();
         logicTableNames.add("logic_Table");
-        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         Collection<String> dataSourceNames = new LinkedHashSet<>();
         dataSourceNames.add("resource0");
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}");
-        config.getTables().add(shardingTableRuleConfiguration);
-        ShardingRule shardingRule = new ShardingRule(config, dataSourceNames);
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}"));
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceNames);
         assertTrue(shardingRule.isAllTablesInSameDataSource(logicTableNames));
     }
     
