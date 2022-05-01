@@ -88,7 +88,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         Collection[] result = new Collection[(tables.size() / size) + 1];
         for (int index = 0; index < result.length; index++) {
             int count = index + 1;
-            result[index] = tables.subList(Math.max(((count - 1) * size), 0), Math.min((count * size), tables.size()));
+            result[index] = tables.subList(Math.max((count - 1) * size, 0), Math.min(count * size, tables.size()));
         }
         return result;
     }
