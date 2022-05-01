@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public final class DriverJDBCExecutor {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final MetaDataContexts metaDataContexts;
     
@@ -53,12 +53,12 @@ public final class DriverJDBCExecutor {
     
     private final MetaDataRefreshEngine metadataRefreshEngine;
     
-    public DriverJDBCExecutor(final String schemaName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
-        this.schemaName = schemaName;
+    public DriverJDBCExecutor(final String databaseName, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+        this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(schemaName),
-                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(schemaName),
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData(databaseName),
+                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getProps());
     }
     
@@ -99,7 +99,7 @@ public final class DriverJDBCExecutor {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            int result = isNeedAccumulate(metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
         } finally {

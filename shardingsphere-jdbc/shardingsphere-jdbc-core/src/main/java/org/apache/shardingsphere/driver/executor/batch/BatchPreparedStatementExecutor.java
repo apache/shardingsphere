@@ -59,10 +59,10 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    private final String schemaName;
+    private final String databaseName;
     
-    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String schemaName) {
-        this.schemaName = schemaName;
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String databaseName) {
+        this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
@@ -134,7 +134,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
-                metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
+                metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -155,7 +155,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
