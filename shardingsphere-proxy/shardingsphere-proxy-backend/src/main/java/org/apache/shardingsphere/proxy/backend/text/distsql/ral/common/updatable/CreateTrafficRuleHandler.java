@@ -29,16 +29,14 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.convert.TrafficRuleConverter;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,7 +68,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 invalidAlgorithmNames.add(each.getAlgorithm().getName());
             }
-            if (null != each.getLoadBalancer() && !TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), new Properties()).isPresent()) {
+            if (null != each.getLoadBalancer() && !TrafficLoadBalanceAlgorithmFactory.contains(each.getLoadBalancer().getName())) {
                 invalidAlgorithmNames.add(each.getLoadBalancer().getName());
             }
         }

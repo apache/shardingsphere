@@ -26,10 +26,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -45,10 +43,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CreateTrafficRuleHandlerTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
-    }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithEmptyRuleAndInvalidAlgorithmType() throws SQLException {

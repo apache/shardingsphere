@@ -22,10 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -37,6 +35,7 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
+import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -55,10 +54,6 @@ import java.util.Properties;
  * Traffic rule.
  */
 public final class TrafficRule implements GlobalRule {
-    
-    static {
-        ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
-    }
     
     @Getter
     private final Collection<TrafficStrategyRule> strategyRules;
@@ -80,7 +75,7 @@ public final class TrafficRule implements GlobalRule {
     private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
         Map<String, TrafficLoadBalanceAlgorithm> result = new LinkedHashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : loadBalancers.entrySet()) {
-            result.put(entry.getKey(), ShardingSphereAlgorithmFactory.createAlgorithm(entry.getValue(), TrafficLoadBalanceAlgorithm.class));
+            result.put(entry.getKey(), TrafficLoadBalanceAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;
     }
