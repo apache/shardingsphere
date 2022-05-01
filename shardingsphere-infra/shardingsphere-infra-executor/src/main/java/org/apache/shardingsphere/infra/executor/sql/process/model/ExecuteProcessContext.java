@@ -49,7 +49,7 @@ public final class ExecuteProcessContext {
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         this.executionID = executionGroupContext.getExecutionID();
         this.sql = sql;
-        this.schemaName = executionGroupContext.getSchemaName();
+        this.schemaName = executionGroupContext.getDatabaseName();
         Grantee grantee = executionGroupContext.getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
