@@ -74,7 +74,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
         Collection[] splitTables = splitTabls((List<String>) tables, BATCH_SIZE);
-        for(Collection<String> subTables : splitTables) {
+        for (Collection<String> subTables : splitTables) {
             columnMetaDataMap.putAll(loadColumnMetaDataMap(dataSource, subTables));
         }
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
@@ -87,11 +87,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Collection[] splitTabls(final List<String> tables, final int size) {
         int counts = (tables.size() / size) + 1;
         Collection[] batches = new Collection[counts];
-        for(int index = 0; index < counts; index++) {
+        for (int index = 0; index < counts; index++) {
             int count = index + 1;
-            int fromIndex = Math.max(((count - 1) * size), 0);
-            int toIndex = Math.min((count * size), tables.size());
-            batches[index] = tables.subList(fromIndex, toIndex);
+            batches[index] = tables.subList(Math.max(((count - 1) * size), 0), Math.min((count * size), tables.size()));
         }
         return batches;
     }
