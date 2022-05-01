@@ -84,7 +84,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         getUnusedLoadBalancer(currentConfig).forEach(each -> currentConfig.getLoadBalancers().remove(each));
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }
     
     private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration config) {

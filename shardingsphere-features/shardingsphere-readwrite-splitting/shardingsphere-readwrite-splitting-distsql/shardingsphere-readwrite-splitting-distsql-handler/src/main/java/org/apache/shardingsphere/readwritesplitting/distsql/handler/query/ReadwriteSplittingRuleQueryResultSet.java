@@ -53,12 +53,12 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         buildExportableMap(metaData);
-        ruleConfig.ifPresent(op -> data = buildData(op).iterator());
+        ruleConfig.ifPresent(optional -> data = buildData(optional).iterator());
     }
     
     private void buildExportableMap(final ShardingSphereMetaData metaData) {
         Optional<ExportableRule> exportableRule = getExportableRule(metaData);
-        exportableRule.ifPresent(op -> {
+        exportableRule.ifPresent(optional -> {
             Map<String, Object> exportable = exportableRule.get()
                     .export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE));
             exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap());

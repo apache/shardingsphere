@@ -57,7 +57,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseDictionaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParserQL.CreateSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTriggerContext;
