@@ -39,9 +39,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -57,7 +57,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
     
     private ExecuteProcessContext createExecuteProcessContext() {
         ExecutionUnit executionUnit = createExecuteUnit();
-        Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new ArrayList<>();
+        Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new LinkedList<>();
         inputGroups.add(new ExecutionGroup<>(Collections.singletonList(new JDBCExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY, null))));
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(inputGroups);
         executionGroupContext.setSchemaName("sharding_db");

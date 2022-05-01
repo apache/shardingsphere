@@ -38,9 +38,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -97,13 +97,13 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setInt(2, chunkSize);
-            Collection<Collection<Object>> records = new ArrayList<>(chunkSize);
+            Collection<Collection<Object>> records = new LinkedList<>();
             Number maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
-                    Collection<Object> record = new ArrayList<>(columnCount);
+                    Collection<Object> record = new LinkedList<>();
                     for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                         record.add(resultSet.getObject(columnIndex));
                     }

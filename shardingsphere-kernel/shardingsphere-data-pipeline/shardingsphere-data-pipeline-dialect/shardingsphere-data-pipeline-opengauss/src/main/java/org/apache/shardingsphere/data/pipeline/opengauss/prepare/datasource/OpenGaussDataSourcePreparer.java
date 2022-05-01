@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,7 +74,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     }
     
     private Collection<ActualTableDefinition> getActualTableDefinitions(final PrepareTargetTablesParameter parameter) throws SQLException {
-        Collection<ActualTableDefinition> result = new ArrayList<>();
+        Collection<ActualTableDefinition> result = new LinkedList<>();
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(
                 parameter.getJobConfig().getSource().getType(), parameter.getJobConfig().getSource().getParameter());
         // TODO reuse PipelineDataSourceManager
