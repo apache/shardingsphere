@@ -26,7 +26,7 @@ public final class DuplicateKeyGeneratorException extends RuleDefinitionViolatio
     
     private static final long serialVersionUID = 4965160371403179153L;
     
-    public DuplicateKeyGeneratorException(final String ruleType, final String schemaName, final Collection<String> keyGeneratorNames) {
-        super(1117, String.format("Duplicate %s key generator names `%s` in schema `%s`", ruleType, keyGeneratorNames, schemaName));
+    public DuplicateKeyGeneratorException(final String ruleType, final String databaseName, final Collection<String> keyGeneratorNames) {
+        super(1117, String.format("Duplicate %s key generator names `%s` in database `%s`", ruleType, keyGeneratorNames, databaseName));
     }
 }
