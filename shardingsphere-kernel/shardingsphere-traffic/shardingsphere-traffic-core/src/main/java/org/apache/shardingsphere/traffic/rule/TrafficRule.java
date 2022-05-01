@@ -36,6 +36,7 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgor
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
+import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -56,7 +57,6 @@ import java.util.Properties;
 public final class TrafficRule implements GlobalRule {
     
     static {
-        ShardingSphereServiceLoader.register(TrafficAlgorithm.class);
         ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
     }
     
@@ -72,7 +72,7 @@ public final class TrafficRule implements GlobalRule {
     private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms) {
         Map<String, TrafficAlgorithm> result = new LinkedHashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
-            result.put(entry.getKey(), ShardingSphereAlgorithmFactory.createAlgorithm(entry.getValue(), TrafficAlgorithm.class));
+            result.put(entry.getKey(), TrafficAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;
     }

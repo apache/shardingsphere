@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.junit.Test;
 
@@ -48,7 +47,6 @@ import static org.mockito.Mockito.when;
 public final class CreateTrafficRuleHandlerTest {
     
     static {
-        ShardingSphereServiceLoader.register(TrafficAlgorithm.class);
         ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
     }
     
