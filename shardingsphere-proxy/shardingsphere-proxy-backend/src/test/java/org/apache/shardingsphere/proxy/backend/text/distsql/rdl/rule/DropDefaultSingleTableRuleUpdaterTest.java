@@ -41,7 +41,7 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    private DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
+    private final DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
@@ -58,24 +58,24 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutResource() throws Exception {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
-        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
+        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
     }
     
     @Test
     public void assertCheckWithIfExists() throws Exception {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement(true);
-        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
+        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
         updater.checkSQLStatement(shardingSphereMetaData, statement, null);
     }
     
     @Test
     public void assertUpdate() {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
-        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
-        currentConfiguration.setDefaultDataSource("default");
-        updater.updateCurrentRuleConfiguration(statement, currentConfiguration);
-        assertFalse(currentConfiguration.getDefaultDataSource().isPresent());
+        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
+        currentConfig.setDefaultDataSource("default");
+        updater.updateCurrentRuleConfiguration(statement, currentConfig);
+        assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }
 }

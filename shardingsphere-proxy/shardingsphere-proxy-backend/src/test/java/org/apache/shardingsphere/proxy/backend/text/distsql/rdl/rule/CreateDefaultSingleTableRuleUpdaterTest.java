@@ -45,7 +45,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private SingleTableRuleConfiguration currentConfiguration;
+    private SingleTableRuleConfiguration currentConfig;
     
     private CreateDefaultSingleTableRuleStatementUpdater updater = new CreateDefaultSingleTableRuleStatementUpdater();
     
@@ -58,14 +58,14 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckWithInvalidResource() throws Exception {
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_1");
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckWithDuplicateResource() throws Exception {
-        when(currentConfiguration.getDefaultDataSource()).thenReturn(Optional.of("single_table"));
+        when(currentConfig.getDefaultDataSource()).thenReturn(Optional.of("single_table"));
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
     }
     
     @Test

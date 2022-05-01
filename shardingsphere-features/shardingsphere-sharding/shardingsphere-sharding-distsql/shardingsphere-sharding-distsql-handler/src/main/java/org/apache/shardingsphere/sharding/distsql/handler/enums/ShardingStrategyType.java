@@ -44,8 +44,8 @@ public enum ShardingStrategyType {
         }
         
         @Override
-        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
-            return Arrays.asList(((StandardShardingStrategyConfiguration) strategyConfiguration).getShardingColumn(), strategyConfiguration.getShardingAlgorithmName());
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfig) {
+            return Arrays.asList(((StandardShardingStrategyConfiguration) strategyConfig).getShardingColumn(), strategyConfig.getShardingAlgorithmName());
         }
         
         @Override
@@ -107,8 +107,8 @@ public enum ShardingStrategyType {
         }
         
         @Override
-        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
-            return Arrays.asList(((ComplexShardingStrategyConfiguration) strategyConfiguration).getShardingColumns(), strategyConfiguration.getShardingAlgorithmName());
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfig) {
+            return Arrays.asList(((ComplexShardingStrategyConfiguration) strategyConfig).getShardingColumns(), strategyConfig.getShardingAlgorithmName());
         }
         
         @Override

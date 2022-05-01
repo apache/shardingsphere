@@ -34,21 +34,21 @@ public final class YamlExampleConfigurationValidator {
     /**
      * Verify the entrance.
      *
-     * @param configuration configuration
+     * @param config Yaml example configuration
      */
-    public static void validate(final YamlExampleConfiguration configuration) {
+    public static void validate(final YamlExampleConfiguration config) {
         Map<String, List<String>> configurationMap = Maps.newHashMap();
-        configurationMap.put("products", configuration.getProducts());
-        configurationMap.put("modes", configuration.getModes());
-        configurationMap.put("transactions", configuration.getTransactions());
-        configurationMap.put("features", configuration.getFeatures());
-        configurationMap.put("frameworks", configuration.getFrameworks());
+        configurationMap.put("products", config.getProducts());
+        configurationMap.put("modes", config.getModes());
+        configurationMap.put("transactions", config.getTransactions());
+        configurationMap.put("features", config.getFeatures());
+        configurationMap.put("frameworks", config.getFrameworks());
         validateConfigurationValues(configurationMap);
-        validateAccountConfigProps(configuration.getProps());
+        validateAccountConfigProps(config.getProps());
     }
 
-    private static void validateConfigurationValues(final Map<String, List<String>> configurationMap) {
-        configurationMap.forEach((configItem, configValues) -> {
+    private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
+        configMap.forEach((configItem, configValues) -> {
             YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
             configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));

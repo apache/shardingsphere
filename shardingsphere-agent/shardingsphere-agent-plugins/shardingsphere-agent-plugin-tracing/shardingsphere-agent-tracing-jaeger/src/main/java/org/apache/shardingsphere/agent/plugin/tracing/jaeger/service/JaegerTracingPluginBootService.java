@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 public final class JaegerTracingPluginBootService implements PluginBootService {
     
-    private Configuration configuration;
+    private Configuration config;
     
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
@@ -43,27 +43,27 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
                 .withSender(Configuration.SenderConfiguration.fromEnv().withAgentHost(pluginConfig.getHost()).withAgentPort(pluginConfig.getPort()));
         String serviceName = Optional.ofNullable(pluginConfig.getProps().getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");
-        configuration = new Configuration(serviceName).withSampler(samplerConfig).withReporter(reporterConfig);
+        config = new Configuration(serviceName).withSampler(samplerConfig).withReporter(reporterConfig);
         if (!GlobalTracer.isRegistered()) {
-            GlobalTracer.register(configuration.getTracer());
+            GlobalTracer.register(config.getTracer());
         }
-    }
-    
-    @Override
-    public void close() {
-        if (null != configuration) {
-            configuration.closeTracer();
-        }
-    }
-    
-    @Override
-    public String getType() {
-        return "Jaeger";
     }
     
     private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
         String host = pluginConfiguration.getHost();
         int port = pluginConfiguration.getPort();
         return null != host && !"".equalsIgnoreCase(host) && port > 0;
+    }
+    
+    @Override
+    public void close() {
+        if (null != config) {
+            config.closeTracer();
+        }
+    }
+    
+    @Override
+    public String getType() {
+        return "Jaeger";
     }
 }

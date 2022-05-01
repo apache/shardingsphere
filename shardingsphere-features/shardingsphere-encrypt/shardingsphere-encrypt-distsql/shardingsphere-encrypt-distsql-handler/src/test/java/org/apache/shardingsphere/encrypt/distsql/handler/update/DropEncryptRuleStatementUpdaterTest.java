@@ -63,16 +63,16 @@ public final class DropEncryptRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), encryptRuleConfiguration));
-        assertTrue(encryptRuleConfiguration.getEncryptors().isEmpty());
+        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
+        assertTrue(ruleConfig.getEncryptors().isEmpty());
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
-        EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), encryptRuleConfiguration));
-        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
+        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
+        assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
@@ -81,12 +81,12 @@ public final class DropEncryptRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
-        EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfiguration();
+        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropEncryptRuleStatement statement = createSQLStatement("t_encrypt_1");
         statement.setContainsExistClause(true);
         updater.checkSQLStatement(shardingSphereMetaData, statement, mock(EncryptRuleConfiguration.class));
-        assertFalse(updater.updateCurrentRuleConfiguration(statement, encryptRuleConfiguration));
-        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
+        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
+        assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

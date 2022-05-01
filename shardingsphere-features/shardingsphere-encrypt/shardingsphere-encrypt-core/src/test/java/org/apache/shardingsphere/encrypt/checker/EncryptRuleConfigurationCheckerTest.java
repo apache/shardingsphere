@@ -46,8 +46,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     
     private EncryptRuleConfiguration createValidConfiguration() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
-        ShardingSphereAlgorithmConfiguration algorithmConfiguration = mock(ShardingSphereAlgorithmConfiguration.class);
-        when(result.getEncryptors()).thenReturn(Collections.singletonMap("type1", algorithmConfiguration));
+        when(result.getEncryptors()).thenReturn(Collections.singletonMap("type1", mock(ShardingSphereAlgorithmConfiguration.class)));
         return result;
     }
     

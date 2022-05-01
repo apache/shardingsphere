@@ -67,9 +67,9 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test
     public void assertRuleAlteredActionEnabled() {
-        ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
-        ruleConfiguration.setScalingName("default_scaling");
-        assertTrue(RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(ruleConfiguration));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setScalingName("default_scaling");
+        assertTrue(RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(ruleConfig));
     }
     
     @Test
