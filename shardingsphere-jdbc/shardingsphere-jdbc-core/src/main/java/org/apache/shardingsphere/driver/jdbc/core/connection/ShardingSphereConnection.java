@@ -39,7 +39,7 @@ import java.sql.Statement;
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
-    private final String schema;
+    private final String databaseName;
     
     @Getter
     private final ContextManager contextManager;
@@ -56,7 +56,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private volatile boolean closed;
     
     public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
-        this.schema = databaseName;
+        this.databaseName = databaseName;
         this.contextManager = contextManager;
         connectionManager = new ConnectionManager(databaseName, contextManager);
     }
