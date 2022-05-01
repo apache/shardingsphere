@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Job completion detect algorithm, SPI.
+ * Job completion detect algorithm.
  *
- * @param <T> completion detect parameter type
+ * @param <T> type of completion detect parameter
  */
 public interface JobCompletionDetectAlgorithm<T> extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     

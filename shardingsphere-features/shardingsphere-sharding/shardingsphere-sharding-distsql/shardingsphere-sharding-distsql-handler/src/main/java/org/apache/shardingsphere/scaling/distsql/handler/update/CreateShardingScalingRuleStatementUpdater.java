@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -51,7 +51,6 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     static {
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
-        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
     }
     
     @Override
@@ -107,8 +106,8 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     }
     
     private void checkCompletionDetectorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getCompletionDetector()) {
-            checkAlgorithm(JobCompletionDetectAlgorithm.class, "completion detector", segment.getCompletionDetector());
+        if (null != segment.getCompletionDetector() && !JobCompletionDetectAlgorithmFactory.contains(segment.getCompletionDetector().getName())) {
+            throw new InvalidAlgorithmConfigurationException("completion detector", segment.getCompletionDetector().getName());
         }
     }
     
