@@ -60,11 +60,6 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     @Override
-    public String getType() {
-        return "IDLE";
-    }
-    
-    @Override
     public boolean isAlmostCompleted(final RuleAlteredJobAlmostCompletedParameter parameter) {
         int jobShardingCount = parameter.getJobShardingCount();
         Collection<JobProgress> jobProgresses = parameter.getJobProgresses();
@@ -97,6 +92,11 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getType() {
+        return "IDLE";
     }
     
     @Override
