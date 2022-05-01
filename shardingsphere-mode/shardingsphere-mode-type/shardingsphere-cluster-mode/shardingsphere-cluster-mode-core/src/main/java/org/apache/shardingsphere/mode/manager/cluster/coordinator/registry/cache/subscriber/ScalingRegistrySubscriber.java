@@ -53,13 +53,14 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void startScaling(final SchemaVersionPreparedEvent event) {
-        String activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(event.getSchemaName()).get();
-        String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), activeVersion));
-        String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName(), event.getVersion()));
-        String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(event.getSchemaName(), activeVersion));
-        String targetRule = repository.get(DatabaseMetaDataNode.getRulePath(event.getSchemaName(), event.getVersion()));
+        String databaseName = event.getDatabaseName();
+        String activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(databaseName).get();
+        String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion));
+        String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, event.getVersion()));
+        String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion));
+        String targetRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, event.getVersion()));
         log.info("start scaling job, locked the schema name, event={}", event);
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetDataSource, targetRule,
+        StartScalingEvent startScalingEvent = new StartScalingEvent(databaseName, sourceDataSource, sourceRule, targetDataSource, targetRule,
                 Integer.parseInt(activeVersion), Integer.parseInt(event.getVersion()));
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }

@@ -31,5 +31,5 @@ public final class SchemaVersionPreparedEvent {
     
     private final String version;
     
-    private final String schemaName;
+    private final String databaseName;
 }
