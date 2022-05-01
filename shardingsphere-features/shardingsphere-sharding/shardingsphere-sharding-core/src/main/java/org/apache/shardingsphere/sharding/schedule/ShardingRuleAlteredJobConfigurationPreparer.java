@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfiguration
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -60,6 +61,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sharding rule altered job configuration preparer.
@@ -143,7 +145,8 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         }
         DumperConfiguration dumperConfig = createDumperConfiguration(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap);
         Optional<ShardingRuleConfiguration> targetRuleConfigOptional = getTargetRuleConfiguration(jobConfig);
-        Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfigOptional.orElse(sourceRuleConfig), new HashSet<>(jobConfig.splitLogicTableNames()));
+        Set<LogicTableName> reShardNeededTables = jobConfig.splitLogicTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
+        Map<LogicTableName, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfigOptional.orElse(sourceRuleConfig), reShardNeededTables);
         ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap);
         TaskConfiguration result = new TaskConfiguration(jobConfig, dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", dataSourceName, result);
@@ -163,26 +166,28 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return Optional.of(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(target.getRootConfig().getRules()));
     }
     
-    private static Map<String, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig, final Set<String> reShardNeededTables) {
+    private static Map<LogicTableName, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig, final Set<LogicTableName> reShardNeededTables) {
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
-        Map<String, Set<String>> result = Maps.newConcurrentMap();
+        Map<LogicTableName, Set<String>> result = Maps.newConcurrentMap();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
-            if (!reShardNeededTables.contains(each.getLogicTable())) {
+            LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
+            if (!reShardNeededTables.contains(logicTableName)) {
                 continue;
             }
             Set<String> shardingColumns = new HashSet<>();
             shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
             shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
-            result.put(each.getLogicTable(), shardingColumns);
+            result.put(logicTableName, shardingColumns);
         }
         for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.getAutoTables()) {
-            if (!reShardNeededTables.contains(each.getLogicTable())) {
+            LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
+            if (!reShardNeededTables.contains(logicTableName)) {
                 continue;
             }
             ShardingStrategyConfiguration shardingStrategy = each.getShardingStrategy();
             Set<String> shardingColumns = new HashSet<>(extractShardingColumns(shardingStrategy));
-            result.put(each.getLogicTable(), shardingColumns);
+            result.put(logicTableName, shardingColumns);
         }
         return result;
     }
@@ -206,10 +211,18 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static ImporterConfiguration createImporterConfiguration(final RuleAlteredJobConfiguration jobConfig,
-                                                                     final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<String, Set<String>> shardingColumnsMap) {
+                                                                     final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
         int batchSize = onRuleAlteredActionConfig.getOutput().getBatchSize();
         int retryTimes = jobConfig.getRetryTimes();
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, batchSize, retryTimes);
+        return new ImporterConfiguration(dataSourceConfig, unmodifiable(shardingColumnsMap), batchSize, retryTimes);
+    }
+    
+    private static Map<LogicTableName, Set<String>> unmodifiable(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        Map<LogicTableName, Set<String>> result = new HashMap<>(shardingColumnsMap.size());
+        for (Entry<LogicTableName, Set<String>> entry : shardingColumnsMap.entrySet()) {
+            result.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(result);
     }
 }

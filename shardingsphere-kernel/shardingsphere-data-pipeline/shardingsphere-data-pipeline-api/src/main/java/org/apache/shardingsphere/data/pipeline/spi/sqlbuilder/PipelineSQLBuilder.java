@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
      * @param shardingColumnsMap sharding columns map
      * @return insert SQL
      */
-    String buildInsertSQL(DataRecord dataRecord, Map<String, Set<String>> shardingColumnsMap);
+    String buildInsertSQL(DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Build update SQL.
@@ -49,7 +50,7 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
      * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<String, Set<String>> shardingColumnsMap);
+    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Extract updated columns.
@@ -58,7 +59,7 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
      * @param shardingColumnsMap sharding columns map
      * @return filtered columns
      */
-    List<Column> extractUpdatedColumns(DataRecord record, Map<String, Set<String>> shardingColumnsMap);
+    List<Column> extractUpdatedColumns(DataRecord record, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Build delete SQL.

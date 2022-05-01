@@ -22,9 +22,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Importer configuration.
@@ -37,9 +42,30 @@ public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    private final Map<String, Set<String>> shardingColumnsMap;
+    // TODO columnName case-insensitive?
+    private final Map<LogicTableName, Set<String>> shardingColumnsMap;
     
     private final int batchSize;
     
     private final int retryTimes;
+    
+    /**
+     * Get logic table names.
+     *
+     * @return logic table names
+     */
+    public Collection<String> getLogicTableNames() {
+        List<String> result = shardingColumnsMap.keySet().stream().map(LogicTableName::getLowercase).collect(Collectors.toList());
+        return Collections.unmodifiableList(result);
+    }
+    
+    /**
+     * Get sharding columns.
+     *
+     * @param logicTableName logic table name
+     * @return sharding columns
+     */
+    public Set<String> getShardingColumns(final String logicTableName) {
+        return shardingColumnsMap.get(new LogicTableName(logicTableName));
+    }
 }

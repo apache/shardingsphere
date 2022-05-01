@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.junit.Before;
@@ -168,7 +169,7 @@ public final class AbstractImporterTest {
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
-        Map<String, Set<String>> shardingColumnsMap = Collections.singletonMap("test_table", Collections.singleton("user"));
+        Map<LogicTableName, Set<String>> shardingColumnsMap = Collections.singletonMap(new LogicTableName("test_table"), Collections.singleton("user"));
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, 1000, 3);
     }
 }

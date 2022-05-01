@@ -43,9 +43,6 @@ public class DumperConfiguration {
     
     private IngestPosition<?> position;
     
-    /**
-     * Table name map. Key is actual table name, value is logic table name.
-     */
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
     /**
