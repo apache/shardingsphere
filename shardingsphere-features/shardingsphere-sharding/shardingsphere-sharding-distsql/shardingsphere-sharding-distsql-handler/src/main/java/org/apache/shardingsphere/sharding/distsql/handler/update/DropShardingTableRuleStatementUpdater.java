@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -102,11 +101,10 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         if (null == currentRuleConfig) {
             return false;
         }
-        Collection<String> currentTableNames = new ArrayList<>(currentRuleConfig.getTables().size() + currentRuleConfig.getAutoTables().size());
+        Collection<String> currentTableNames = new LinkedList<>();
         currentTableNames.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         currentTableNames.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        return !getIdenticalData(currentTableNames,
-                sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet())).isEmpty();
+        return !getIdenticalData(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet())).isEmpty();
     }
     
     @Override
