@@ -89,12 +89,12 @@ public final class ShardingTableRuleStatementConverter {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
         if (null != rule.getTableStrategySegment()) {
             Optional.ofNullable(rule.getTableStrategySegment().getAlgorithmSegment())
-                    .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.TABLE, optional.getName()), 
+                    .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.TABLE, optional.getName()),
                             createAlgorithmConfiguration(optional)));
         }
         if (null != rule.getDatabaseStrategySegment()) {
             Optional.ofNullable(rule.getDatabaseStrategySegment().getAlgorithmSegment())
-                    .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.DATABASE, optional.getName()), 
+                    .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.DATABASE, optional.getName()),
                             createAlgorithmConfiguration(optional)));
         }
         return result;
@@ -127,10 +127,10 @@ public final class ShardingTableRuleStatementConverter {
         String dataSourceNodes = String.join(",", tableRuleSegment.getDataSourceNodes());
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableRuleSegment.getLogicTable(), dataSourceNodes);
         Optional.ofNullable(tableRuleSegment.getTableStrategySegment())
-                .ifPresent(optional -> result.setTableShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), 
+                .ifPresent(optional -> result.setTableShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(),
                         ShardingStrategyLevelType.TABLE, optional.getType(), optional)));
         Optional.ofNullable(tableRuleSegment.getDatabaseStrategySegment())
-                .ifPresent(optional -> result.setDatabaseShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), 
+                .ifPresent(optional -> result.setDatabaseShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(),
                         ShardingStrategyLevelType.DATABASE, optional.getType(), optional)));
         Optional.ofNullable(tableRuleSegment.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(tableRuleSegment.getLogicTable(), optional)));
