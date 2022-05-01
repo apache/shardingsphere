@@ -53,9 +53,9 @@ import java.util.Properties;
 /**
  * Traffic rule.
  */
+@Getter
 public final class TrafficRule implements GlobalRule {
     
-    @Getter
     private final Collection<TrafficStrategyRule> strategyRules;
     
     public TrafficRule(final TrafficRuleConfiguration config) {
