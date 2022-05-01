@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -66,15 +67,33 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
+    private static final int BATCH_SIZE = 1000;
+    
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
+        Collection[] splitTables = splitTabls((List<String>) tables, BATCH_SIZE);
+        for(Collection<String> subTables : splitTables) {
+            columnMetaDataMap.putAll(loadColumnMetaDataMap(dataSource, subTables));
+        }
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
+    }
+    
+    private Collection[] splitTabls(final List<String> tables, final int size) {
+        int counts = (tables.size() / size) + 1;
+        Collection[] batches = new Collection[counts];
+        for(int index = 0; index < counts; index++) {
+            int count = index + 1;
+            int fromIndex = Math.max(((count - 1) * size), 0);
+            int toIndex = Math.min((count * size), tables.size());
+            batches[index] = tables.subList(fromIndex, toIndex);
+        }
+        return batches;
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
