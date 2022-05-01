@@ -35,6 +35,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +65,8 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProperties;
     
+    private EtcdInternalLockHolder etcdInternalLockHolder;
+    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
         etcdProperties = new EtcdProperties(props);
@@ -70,6 +74,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
+        etcdInternalLockHolder = new EtcdInternalLockHolder(client, etcdProperties);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -175,6 +180,17 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @Override
     public void watchSessionConnection(final InstanceContext instanceContext) {
+        // TODO
+    }
+    
+    @Override
+    public Lock getGlobalLock(final String lockName) {
+        return etcdInternalLockHolder.getGlobalLock(lockName);
+    }
+    
+    @Override
+    public Lock getStandardLock(final String lockName) {
+        return etcdInternalLockHolder.getStandardLock(lockName);
     }
     
     @Override

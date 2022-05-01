@@ -34,13 +34,13 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -66,14 +66,14 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-                           final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                           final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
-        channel = createChannel(concurrency, pipelineChannelFactory, progress);
+        channel = createChannel(concurrency, pipelineChannelCreator, progress);
         dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel);
     }
@@ -87,15 +87,15 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
-        Collection<Importer> result = new ArrayList<>(concurrency);
+        Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
             result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel));
         }
         return result;
     }
     
-    private PipelineChannel createChannel(final int concurrency, final PipelineChannelFactory pipelineChannelFactory, final IncrementalTaskProgress progress) {
-        return pipelineChannelFactory.createPipelineChannel(concurrency, records -> {
+    private PipelineChannel createChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
+        return pipelineChannelCreator.createPipelineChannel(concurrency, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());

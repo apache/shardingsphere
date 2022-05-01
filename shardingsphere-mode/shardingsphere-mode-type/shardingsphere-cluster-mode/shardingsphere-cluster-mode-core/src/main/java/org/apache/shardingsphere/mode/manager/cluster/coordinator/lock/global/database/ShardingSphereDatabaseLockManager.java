@@ -68,20 +68,20 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getGlobalLocksNodePath());
+        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
-            clusterRepository.persist(lockNodeService.getGlobalLocksNodePath(), "");
-            clusterRepository.persist(lockNodeService.getGlobalLockedAckNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLocksNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLockedAckNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {
-            Optional<String> databaseLock = lockNodeService.parseGlobalLocksNodePath(each);
+            Optional<String> databaseLock = lockNodeService.parseLocksNodePath(each);
             databaseLock.ifPresent(database -> locks.put(database, crateDatabaseLock()));
         }
     }
     
     private ShardingSphereDatabaseLock crateDatabaseLock() {
-        return new ShardingSphereDatabaseLock(clusterRepository, currentInstance, computeNodeInstances);
+        return new ShardingSphereDatabaseLock(clusterRepository, lockNodeService, currentInstance, computeNodeInstances);
     }
     
     @Override
@@ -107,7 +107,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked(lockName);
+            return lock.isLocked();
         }
         return false;
     }

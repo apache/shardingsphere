@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 @ToString
 public final class TaskConfiguration {
     
-    private final HandleConfiguration handleConfig;
+    private final RuleAlteredJobConfiguration jobConfig;
     
     private final DumperConfiguration dumperConfig;
     

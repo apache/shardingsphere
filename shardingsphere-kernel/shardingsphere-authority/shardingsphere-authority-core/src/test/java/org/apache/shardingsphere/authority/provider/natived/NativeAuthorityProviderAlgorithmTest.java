@@ -19,13 +19,9 @@ package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -35,29 +31,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class NativeAuthorityProviderAlgorithmTest {
-    
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
-    }
-    
-    @Test
-    public void assertAlgorithmType() {
-        Optional<AuthorityProviderAlgorithm> algorithm = TypedSPIRegistry.findRegisteredService(AuthorityProviderAlgorithm.class, "NATIVE", new Properties());
-        assertTrue(algorithm.isPresent());
-        assertThat(algorithm.get().getType(), is("NATIVE"));
-    }
     
     @Test
     public void assertFindPrivileges() throws SQLException {

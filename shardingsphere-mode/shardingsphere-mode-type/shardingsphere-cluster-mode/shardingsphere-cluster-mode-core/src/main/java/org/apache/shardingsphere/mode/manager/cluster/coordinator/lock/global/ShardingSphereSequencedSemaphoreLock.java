@@ -49,7 +49,7 @@ public final class ShardingSphereSequencedSemaphoreLock implements ShardingSpher
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
-        return false;
+    public boolean isLocked() {
+        throw new UnsupportedOperationException();
     }
 }

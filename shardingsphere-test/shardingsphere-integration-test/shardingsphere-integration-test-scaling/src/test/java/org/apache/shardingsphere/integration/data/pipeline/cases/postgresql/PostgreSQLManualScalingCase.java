@@ -19,10 +19,16 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.data.pipeline.cases.IncrementTaskRunnable;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,33 +38,36 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @Slf4j
-public final class PostgreSQLManualScalingCase extends BasePostgreSQLScalingIT {
+@RunWith(Parameterized.class)
+public final class PostgreSQLManualScalingCase extends BasePostgreSQLITCase {
     
-    private Thread increaseTaskThread;
+    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    @Before
-    public void initEnv() {
-        super.initTableAndData();
-        increaseTaskThread = new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand()));
-        increaseTaskThread.start();
+    public PostgreSQLManualScalingCase(final ScalingParameterized parameterized) {
+        super(parameterized);
     }
     
-    // TODO Wait the create database bug of proxy fixed.
-    // @Test
+    @Parameters(name = "{0}")
+    public static Collection<ScalingParameterized> getParameters() {
+        Collection<ScalingParameterized> result = new LinkedList<>();
+        for (String dockerImageName : ENV.getPostgresVersionList()) {
+            if (StringUtils.isBlank(dockerImageName)) {
+                continue;
+            }
+            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgres"));
+        }
+        return result;
+    }
+    
+    @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList(getCommonSQLCommand().getPreviewSelectOrder());
+        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap(getCommonSQLCommand().getShowScalingList());
-        String jobId = showScalingResMap.get("id").toString();
-        increaseTaskThread.join(60 * 1000);
+        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
+        String jobId = String.valueOf(showScalingResMap.get("id"));
+        getIncreaseTaskThread().join(60 * 1000);
         checkMatchConsistency(getJdbcTemplate(), jobId);
-        super.stopContainer();
-    }
-    
-    @After
-    public void stop() {
-        super.stopContainer();
     }
 }

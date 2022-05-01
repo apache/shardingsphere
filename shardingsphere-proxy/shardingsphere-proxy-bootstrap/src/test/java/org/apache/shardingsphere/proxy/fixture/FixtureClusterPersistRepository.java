@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 public final class FixtureClusterPersistRepository implements ClusterPersistRepository {
     
@@ -80,6 +81,16 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void watchSessionConnection(final InstanceContext instanceContext) {
+    }
+    
+    @Override
+    public Lock getGlobalLock(final String lockName) {
+        return null;
+    }
+    
+    @Override
+    public Lock getStandardLock(final String lockName) {
+        return null;
     }
     
     @Override

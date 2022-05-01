@@ -104,6 +104,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
             String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
             byte[] sm4IvBytes = ByteUtils.fromHexString(sm4IvValue);
             Preconditions.checkState(IV_LENGTH == sm4IvBytes.length, "Iv length must be " + IV_LENGTH + " bytes long.");
+            return sm4IvBytes;
         }
         return null;
     }

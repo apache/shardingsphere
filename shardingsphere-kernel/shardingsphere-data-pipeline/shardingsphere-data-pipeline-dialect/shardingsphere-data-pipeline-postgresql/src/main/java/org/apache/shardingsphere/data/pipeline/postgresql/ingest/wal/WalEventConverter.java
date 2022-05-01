@@ -72,7 +72,7 @@ public final class WalEventConverter {
     private boolean filter(final AbstractWalEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperConfig.getTableNameMap().containsKey(rowEvent.getTableName());
+            return !dumperConfig.containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -114,7 +114,7 @@ public final class WalEventConverter {
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WalPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
         return result;
     }
     

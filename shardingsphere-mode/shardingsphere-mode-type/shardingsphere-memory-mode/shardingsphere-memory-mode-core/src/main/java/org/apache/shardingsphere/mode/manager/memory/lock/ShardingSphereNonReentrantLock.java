@@ -69,7 +69,7 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
+    public boolean isLocked() {
         return locked;
     }
 }

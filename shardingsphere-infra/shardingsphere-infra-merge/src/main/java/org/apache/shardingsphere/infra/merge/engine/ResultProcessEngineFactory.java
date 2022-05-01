@@ -39,7 +39,7 @@ public final class ResultProcessEngineFactory {
     /**
      * Create new instance of result process engine.
      * 
-     * @param rules ShardingSphere rules
+     * @param rules rules
      * @return new instance of result process engine
      */
     @SuppressWarnings("rawtypes")

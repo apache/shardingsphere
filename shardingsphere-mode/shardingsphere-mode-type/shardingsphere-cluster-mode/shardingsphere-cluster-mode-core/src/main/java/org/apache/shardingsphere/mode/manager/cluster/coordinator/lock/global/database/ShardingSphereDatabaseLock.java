@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ShardingSphereDistributeGlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GlobalLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -33,11 +32,13 @@ import java.util.Collection;
  */
 public final class ShardingSphereDatabaseLock implements ShardingSphereGlobalLock {
     
-    private final LockNodeService lockNodeService = new DatabaseLockNodeService();
+    private final LockNodeService lockNodeService;
     
     private final ShardingSphereDistributeGlobalLock innerDistributeGlobalLock;
     
-    public ShardingSphereDatabaseLock(final ClusterPersistRepository clusterRepository, final ComputeNodeInstance currentInstance, final Collection<ComputeNodeInstance> computeNodeInstances) {
+    public ShardingSphereDatabaseLock(final ClusterPersistRepository clusterRepository, final LockNodeService lockNodeService, final ComputeNodeInstance currentInstance,
+                                      final Collection<ComputeNodeInstance> computeNodeInstances) {
+        this.lockNodeService = lockNodeService;
         innerDistributeGlobalLock = new ShardingSphereDistributeGlobalLock(new GlobalLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
     }
     
@@ -48,27 +49,27 @@ public final class ShardingSphereDatabaseLock implements ShardingSphereGlobalLoc
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return innerDistributeGlobalLock.tryLock(lockNodeService.generateGlobalLocksName(lockName), timeoutMillis);
+        return innerDistributeGlobalLock.tryLock(lockNodeService.generateLocksName(lockName), timeoutMillis);
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        innerDistributeGlobalLock.releaseLock(lockNodeService.generateGlobalLocksName(lockName));
+        innerDistributeGlobalLock.releaseLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
-        return innerDistributeGlobalLock.isLocked(lockName);
+    public boolean isLocked() {
+        return innerDistributeGlobalLock.isLocked();
     }
     
     @Override
     public void ackLock(final String lockName, final String lockedInstanceId) {
-        innerDistributeGlobalLock.ackLock(lockNodeService.generateGlobalAckLockName(lockName, lockedInstanceId), lockedInstanceId);
+        innerDistributeGlobalLock.ackLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
     }
     
     @Override
     public void releaseAckLock(final String lockName, final String lockedInstanceId) {
-        innerDistributeGlobalLock.releaseAckLock(lockNodeService.generateGlobalAckLockName(lockName, lockedInstanceId), lockedInstanceId);
+        innerDistributeGlobalLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
     }
     
     @Override

@@ -40,6 +40,6 @@ public final class PipelineSQLBuilderFactory {
      * @return new instance of pipeline SQL builder
      */
     public static PipelineSQLBuilder newInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType);
+        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType, null);
     }
 }

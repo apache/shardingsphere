@@ -40,7 +40,7 @@ public final class SingleTableRulesQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<SingleTableRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof SingleTableRuleConfiguration).map(each -> (SingleTableRuleConfiguration) each).findAny();
-        ruleConfiguration.flatMap(SingleTableRuleConfiguration::getDefaultDataSource).ifPresent(op -> data = Collections.singletonList(op).iterator());
+        ruleConfiguration.flatMap(SingleTableRuleConfiguration::getDefaultDataSource).ifPresent(optional -> data = Collections.singletonList(optional).iterator());
     }
     
     @Override
