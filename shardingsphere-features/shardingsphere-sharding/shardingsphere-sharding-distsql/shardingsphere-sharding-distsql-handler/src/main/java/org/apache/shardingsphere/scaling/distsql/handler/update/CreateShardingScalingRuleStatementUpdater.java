@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -50,7 +50,6 @@ import java.util.Properties;
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
     static {
-        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
     }
@@ -88,16 +87,16 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getInputSegment()) {
-            checkRateLimiterAlgorithm(segment.getInputSegment().getRateLimiter());
+            checkRateLimitAlgorithm(segment.getInputSegment().getRateLimiter());
         }
         if (null != segment.getOutputSegment()) {
-            checkRateLimiterAlgorithm(segment.getOutputSegment().getRateLimiter());
+            checkRateLimitAlgorithm(segment.getOutputSegment().getRateLimiter());
         }
     }
     
-    private void checkRateLimiterAlgorithm(final AlgorithmSegment rateLimiter) throws DistSQLException {
-        if (null != rateLimiter) {
-            checkAlgorithm(JobRateLimitAlgorithm.class, "rate limiter", rateLimiter);
+    private void checkRateLimitAlgorithm(final AlgorithmSegment rateLimit) throws DistSQLException {
+        if (null != rateLimit && !JobRateLimitAlgorithmFactory.contains(rateLimit.getName())) {
+            throw new InvalidAlgorithmConfigurationException("rate limit", rateLimit.getName());
         }
     }
     
