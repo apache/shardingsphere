@@ -55,10 +55,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String schema, final ContextManager contextManager) {
-        this.schema = schema;
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
+        this.schema = databaseName;
         this.contextManager = contextManager;
-        connectionManager = new ConnectionManager(schema, contextManager);
+        connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     
     /**
