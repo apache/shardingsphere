@@ -46,12 +46,15 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> currentConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        Optional<TrafficRuleConfiguration> currentConfig = findCurrentConfiguration();
         DistSQLException.predictionThrow(currentConfig.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
         check(sqlStatement, currentConfig.get());
         TrafficRuleConfiguration toBeAlteredConfig = TrafficRuleConverter.convert(sqlStatement.getSegments());
-        updateToRepository(toBeAlteredConfig, currentConfig.get());
+        persistNewRuleConfigurations(toBeAlteredConfig, currentConfig.get());
+    }
+    
+    private Optional<TrafficRuleConfiguration> findCurrentConfiguration() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
     }
     
     private void check(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentConfig) throws DistSQLException {
@@ -64,18 +67,18 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     private Collection<String> getInvalidAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        sqlStatement.getSegments().forEach(each -> {
+        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 result.add(each.getAlgorithm().getName());
             }
             if (null != each.getLoadBalancer() && !TrafficLoadBalanceAlgorithmFactory.contains(each.getLoadBalancer().getName())) {
                 result.add(each.getLoadBalancer().getName());
             }
-        });
+        }
         return result;
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration toBeAlteredConfig, final TrafficRuleConfiguration currentConfig) {
+    private void persistNewRuleConfigurations(final TrafficRuleConfiguration toBeAlteredConfig, final TrafficRuleConfiguration currentConfig) {
         Collection<String> toBeAlteredConfigNames = toBeAlteredConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         currentConfig.getTrafficStrategies().removeIf(each -> toBeAlteredConfigNames.contains(each.getName()));
         currentConfig.getTrafficStrategies().addAll(toBeAlteredConfig.getTrafficStrategies());
@@ -87,8 +90,8 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }
     
-    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration config) {
-        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
-        return config.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration currentConfig) {
+        Collection<String> currentlyInUse = currentConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        return currentConfig.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
 }
