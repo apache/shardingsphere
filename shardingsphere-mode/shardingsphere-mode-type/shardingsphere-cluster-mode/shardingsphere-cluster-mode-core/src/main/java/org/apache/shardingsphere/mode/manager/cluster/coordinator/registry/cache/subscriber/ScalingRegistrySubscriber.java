@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionPreparedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -52,7 +52,7 @@ public final class ScalingRegistrySubscriber {
      * @param event Schema version prepared event.
      */
     @Subscribe
-    public void startScaling(final SchemaVersionPreparedEvent event) {
+    public void startScaling(final MetadataVersionPreparedEvent event) {
         String databaseName = event.getDatabaseName();
         String activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(databaseName).get();
         String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion));
