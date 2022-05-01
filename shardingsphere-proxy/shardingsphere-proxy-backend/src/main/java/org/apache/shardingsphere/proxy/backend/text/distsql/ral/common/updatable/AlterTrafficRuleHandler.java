@@ -67,14 +67,14 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     private Collection<String> getInvalidAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        sqlStatement.getSegments().forEach(each -> {
+        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 result.add(each.getAlgorithm().getName());
             }
             if (null != each.getLoadBalancer() && !TrafficLoadBalanceAlgorithmFactory.contains(each.getLoadBalancer().getName())) {
                 result.add(each.getLoadBalancer().getName());
             }
-        });
+        }
         return result;
     }
     
@@ -90,8 +90,8 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }
     
-    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration config) {
-        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
-        return config.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration currentConfig) {
+        Collection<String> currentlyInUse = currentConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        return currentConfig.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
 }
