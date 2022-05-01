@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -55,7 +56,6 @@ public final class RuleAlteredContext {
     private static final OnRuleAlteredActionConfigurationYamlSwapper ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     static {
-        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
         ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
         ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
         ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
@@ -89,10 +89,10 @@ public final class RuleAlteredContext {
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
         ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
-        inputRateLimitAlgorithm = null != inputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(inputRateLimiter, JobRateLimitAlgorithm.class) : null;
+        inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
         OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
         ShardingSphereAlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
-        outputRateLimitAlgorithm = null != outputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(outputRateLimiter, JobRateLimitAlgorithm.class) : null;
+        outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
         ShardingSphereAlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
         pipelineChannelFactory = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelFactory.class);
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();

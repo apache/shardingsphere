@@ -30,7 +30,7 @@ public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, Sharding
      * Intercept.
      *
      * @param type job operation type
-     * @param data it's delta that means how much changed if type is INSERT, DELETE, UPDATE, SELECT; it's null if type is SYSTEM_LOAD, CPU_USAGE
+     * @param data delta value for how much changed if type is INSERT, DELETE, UPDATE and SELECT; null value for SYSTEM_LOAD and CPU_USAGE type
      */
     void intercept(JobOperationType type, Number data);
 }

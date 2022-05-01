@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.factory;
+package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -28,34 +27,32 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Encrypt algorithm factory.
+ * Job rate limit algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptAlgorithmFactory {
+public final class JobRateLimitAlgorithmFactory {
     
     static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
     }
     
     /**
-     * Create new instance of encrypt algorithm.
-     * 
-     * @param encryptAlgorithmConfig encrypt algorithm configuration
-     * @param <I> type of to be encrypted data
-     * @param <O> type of to be decrypted data
-     * @return new instance of encrypt algorithm
+     * Create new instance of job rate limit algorithm.
+     *
+     * @param jobRateLimitAlgorithmConfig job rate limit algorithm configuration
+     * @return new instance of job rate limit algorithm
      */
-    public static <I, O> EncryptAlgorithm<I, O> newInstance(final ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(encryptAlgorithmConfig, EncryptAlgorithm.class);
+    public static JobRateLimitAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobRateLimitAlgorithmConfig) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(jobRateLimitAlgorithmConfig, JobRateLimitAlgorithm.class);
     }
     
     /**
-     * Judge whether contains encrypt algorithm.
-     * 
-     * @param encryptAlgorithmType encrypt algorithm type
-     * @return contains encrypt algorithm or not
+     * Judge whether contains job rate limit algorithm.
+     *
+     * @param jobRateLimitAlgorithmType job rate limit algorithm type
+     * @return contains job rate limit algorithm or not
      */
-    public static boolean contains(final String encryptAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType, new Properties()).isPresent();
+    public static boolean contains(final String jobRateLimitAlgorithmType) {
+        return TypedSPIRegistry.findRegisteredService(JobRateLimitAlgorithm.class, jobRateLimitAlgorithmType, new Properties()).isPresent();
     }
 }
