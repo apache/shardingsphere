@@ -68,7 +68,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String databaseName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
@@ -85,7 +85,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        return Collections.singletonMap(schemaName, result);
+        return Collections.singletonMap(databaseName, result);
     }
     
     @Override
