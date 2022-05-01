@@ -46,12 +46,15 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> currentConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        Optional<TrafficRuleConfiguration> currentConfig = findCurrentConfiguration();
         DistSQLException.predictionThrow(currentConfig.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
         check(sqlStatement, currentConfig.get());
         TrafficRuleConfiguration toBeAlteredConfig = TrafficRuleConverter.convert(sqlStatement.getSegments());
-        updateToRepository(toBeAlteredConfig, currentConfig.get());
+        persistNewRuleConfigurations(toBeAlteredConfig, currentConfig.get());
+    }
+    
+    private Optional<TrafficRuleConfiguration> findCurrentConfiguration() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
     }
     
     private void check(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentConfig) throws DistSQLException {
@@ -75,7 +78,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         return result;
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration toBeAlteredConfig, final TrafficRuleConfiguration currentConfig) {
+    private void persistNewRuleConfigurations(final TrafficRuleConfiguration toBeAlteredConfig, final TrafficRuleConfiguration currentConfig) {
         Collection<String> toBeAlteredConfigNames = toBeAlteredConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         currentConfig.getTrafficStrategies().removeIf(each -> toBeAlteredConfigNames.contains(each.getName()));
         currentConfig.getTrafficStrategies().addAll(toBeAlteredConfig.getTrafficStrategies());
