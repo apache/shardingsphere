@@ -31,6 +31,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -133,13 +135,13 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         Map<String, DataSourceProperties> dataSourcePropsMap = new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(sourceConfig.getRootConfig());
         JobDataNodeLine dataNodeLine = JobDataNodeLine.unmarshal(jobConfig.getJobShardingDataNodes().get(jobConfig.getJobShardingItem()));
         String dataSourceName = dataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
-        Map<String, String> tableMap = new LinkedHashMap<>();
+        Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         for (JobDataNodeEntry each : dataNodeLine.getEntries()) {
             for (DataNode dataNode : each.getDataNodes()) {
-                tableMap.put(dataNode.getTableName(), each.getLogicTableName());
+                tableNameMap.put(new ActualTableName(dataNode.getTableName()), new LogicTableName(each.getLogicTableName()));
             }
         }
-        DumperConfiguration dumperConfig = createDumperConfiguration(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableMap);
+        DumperConfiguration dumperConfig = createDumperConfiguration(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap);
         Optional<ShardingRuleConfiguration> targetRuleConfigOptional = getTargetRuleConfiguration(jobConfig);
         Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfigOptional.orElse(sourceRuleConfig), new HashSet<>(jobConfig.splitLogicTableNames()));
         ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap);
@@ -195,11 +197,11 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return Collections.emptySet();
     }
     
-    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
+    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final Map<String, Object> props, final Map<ActualTableName, LogicTableName> tableNameMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
-        result.setTableNameMap(tableMap);
+        result.setTableNameMap(tableNameMap);
         return result;
     }
     

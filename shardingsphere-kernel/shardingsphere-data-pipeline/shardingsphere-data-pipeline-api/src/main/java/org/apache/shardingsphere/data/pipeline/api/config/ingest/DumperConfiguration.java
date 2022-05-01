@@ -22,6 +22,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public class DumperConfiguration {
     /**
      * Table name map. Key is actual table name, value is logic table name.
      */
-    private Map<String, String> tableNameMap;
+    private Map<ActualTableName, LogicTableName> tableNameMap;
     
     /**
      * Get logic table name.
@@ -52,8 +54,8 @@ public class DumperConfiguration {
      * @param actualTableName actual table name
      * @return logic table name
      */
-    public String getLogicTableName(final String actualTableName) {
-        return tableNameMap.get(actualTableName);
+    public LogicTableName getLogicTableName(final String actualTableName) {
+        return tableNameMap.get(new ActualTableName(actualTableName));
     }
     
     /**
@@ -63,6 +65,6 @@ public class DumperConfiguration {
      * @return contains or not
      */
     public boolean containsTable(final String actualTableName) {
-        return tableNameMap.containsKey(actualTableName);
+        return tableNameMap.containsKey(new ActualTableName(actualTableName));
     }
 }

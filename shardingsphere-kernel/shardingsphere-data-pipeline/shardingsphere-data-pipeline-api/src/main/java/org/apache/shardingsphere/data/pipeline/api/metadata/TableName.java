@@ -30,6 +30,8 @@ import java.util.Objects;
 @Getter
 public class TableName {
     
+    // TODO original
+    
     @NonNull
     private final String lowercase;
     

@@ -94,8 +94,8 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            inventoryDumperConfig.setActualTableName(key);
-            inventoryDumperConfig.setLogicTableName(value);
+            inventoryDumperConfig.setActualTableName(key.getLowercase());
+            inventoryDumperConfig.setLogicTableName(value.getLowercase());
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
             result.add(inventoryDumperConfig);
         });
