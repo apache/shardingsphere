@@ -21,9 +21,9 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-public final class DefaultSourceWritingStopAlgorithmTest {
+public final class DefaultSourceWritingStopLockTest {
     
-    private final DefaultSourceWritingStop defaultSourceWritingStopAlgorithm = new DefaultSourceWritingStop();
+    private final DefaultSourceWritingStopLock defaultSourceWritingStopLock = new DefaultSourceWritingStopLock();
     
     private final String lockName = "lock1";
     
@@ -36,26 +36,26 @@ public final class DefaultSourceWritingStopAlgorithmTest {
     
     @Test
     public void assertSuccessLockReleaseLock() {
-        defaultSourceWritingStopAlgorithm.lock(lockName, jobId);
-        defaultSourceWritingStopAlgorithm.releaseLock(lockName, jobId);
+        defaultSourceWritingStopLock.lock(lockName, jobId);
+        defaultSourceWritingStopLock.releaseLock(lockName, jobId);
     }
     
     @Test
     public void assertSuccessLockTwiceReleaseLock() {
-        defaultSourceWritingStopAlgorithm.lock(lockName, jobId);
-        defaultSourceWritingStopAlgorithm.lock(lockName, jobId);
-        defaultSourceWritingStopAlgorithm.releaseLock(lockName, jobId);
+        defaultSourceWritingStopLock.lock(lockName, jobId);
+        defaultSourceWritingStopLock.lock(lockName, jobId);
+        defaultSourceWritingStopLock.releaseLock(lockName, jobId);
     }
     
     @Test
     public void assertSuccessLockReleaseLockTwice() {
-        defaultSourceWritingStopAlgorithm.lock(lockName, jobId);
-        defaultSourceWritingStopAlgorithm.releaseLock(lockName, jobId);
-        defaultSourceWritingStopAlgorithm.releaseLock(lockName, jobId);
+        defaultSourceWritingStopLock.lock(lockName, jobId);
+        defaultSourceWritingStopLock.releaseLock(lockName, jobId);
+        defaultSourceWritingStopLock.releaseLock(lockName, jobId);
     }
     
     @Test
     public void assertSuccessReleaseNullLock() {
-        defaultSourceWritingStopAlgorithm.releaseLock(lockName, jobId);
+        defaultSourceWritingStopLock.releaseLock(lockName, jobId);
     }
 }

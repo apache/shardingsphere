@@ -71,11 +71,11 @@ public final class RuleAlteredContext {
     
     private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
-    private final RowBasedJobLock sourceWritingStopAlgorithm;
-    
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
-    private final RuleBasedJobLock checkoutLockAlgorithm;
+    private final RowBasedJobLock rowBasedJobLock;
+    
+    private final RuleBasedJobLock ruleBasedJobLock;
     
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -97,12 +97,12 @@ public final class RuleAlteredContext {
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
-        sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyCalculator();
-        dataConsistencyCalculateAlgorithm = null != dataConsistencyChecker
-                ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps())
+        ShardingSphereAlgorithmConfiguration dataConsistencyCheckerConfig = onRuleAlteredActionConfig.getDataConsistencyCalculator();
+        dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
+                ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;
-        checkoutLockAlgorithm = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
+        rowBasedJobLock = RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
+        ruleBasedJobLock = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
