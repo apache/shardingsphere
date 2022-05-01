@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlg
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -58,7 +58,7 @@ public final class RuleAlteredContext {
     
     static {
         ShardingSphereServiceLoader.register(RowBasedJobLock.class);
-        ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleBasedJobLock.class);
     }
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
@@ -75,7 +75,7 @@ public final class RuleAlteredContext {
     
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
-    private final RuleBasedJobLockAlgorithm checkoutLockAlgorithm;
+    private final RuleBasedJobLock checkoutLockAlgorithm;
     
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
@@ -102,7 +102,7 @@ public final class RuleAlteredContext {
         dataConsistencyCalculateAlgorithm = null != dataConsistencyChecker
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps())
                 : null;
-        checkoutLockAlgorithm = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLockAlgorithm.class);
+        checkoutLockAlgorithm = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -81,7 +81,7 @@ public final class FinishedCheckJob implements SimpleJob {
                         log.error("data consistency check failed, job {}", jobId);
                         continue;
                     }
-                    RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
+                    RuleBasedJobLock checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
                     switchClusterConfiguration(databaseName, jobConfig, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
@@ -115,7 +115,7 @@ public final class FinishedCheckJob implements SimpleJob {
         return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, ruleAlteredJobAPI.dataConsistencyCheck(jobConfig));
     }
     
-    private void switchClusterConfiguration(final String databaseName, final RuleAlteredJobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String databaseName, final RuleAlteredJobConfiguration jobConfig, final RuleBasedJobLock checkoutLockAlgorithm) {
         String jobId = jobConfig.getJobId();
         try {
             if (null != checkoutLockAlgorithm) {
