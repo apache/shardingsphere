@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -47,12 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@Slf4j
 public final class PipelineContextUtil {
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
     
-    private static final PipelineChannelCreator PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelCreator();
+    private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = new MemoryPipelineChannelCreator();
     
     private static final ClusterPersistRepositoryConfiguration PERSIST_REPOSITORY_CONFIG;
     
@@ -130,7 +128,7 @@ public final class PipelineContextUtil {
      *
      * @return channel factory
      */
-    public static PipelineChannelCreator getPipelineChannelFactory() {
-        return PIPELINE_CHANNEL_FACTORY;
+    public static PipelineChannelCreator getPipelineChannelCreator() {
+        return PIPELINE_CHANNEL_CREATOR;
     }
 }

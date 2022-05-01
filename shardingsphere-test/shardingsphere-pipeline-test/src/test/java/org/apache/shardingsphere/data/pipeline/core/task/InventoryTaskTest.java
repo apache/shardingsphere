@@ -71,7 +71,7 @@ public final class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelFactory(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
                         DATA_SOURCE_MANAGER, dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
@@ -93,7 +93,7 @@ public final class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelFactory(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
                         new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
