@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 
 /**
- * Row based job lock algorithm, SPI.
+ * Default metadata checkout lock.
  */
-public interface RowBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+public final class DefaultMetadataCheckoutLock implements RuleBasedJobLock {
+    
+    // TODO to be finished
+    @Override
+    public void lock(final String databaseName, final String jobId) {
+    }
+    
+    @Override
+    public void releaseLock(final String databaseName, final String jobId) {
+    }
 }

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -66,11 +66,11 @@ public final class FinishedCheckJob implements SimpleJob {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
-                RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
+                RowBasedJobLock rowBasedJobLock = ruleAlteredContext.getRowBasedJobLock();
                 String databaseName = jobConfig.getDatabaseName();
                 try {
-                    if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.lock(databaseName, jobId + "");
+                    if (null != rowBasedJobLock) {
+                        rowBasedJobLock.lock(databaseName, jobId + "");
                     }
                     if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
                         log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
@@ -81,11 +81,11 @@ public final class FinishedCheckJob implements SimpleJob {
                         log.error("data consistency check failed, job {}", jobId);
                         continue;
                     }
-                    RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
-                    switchClusterConfiguration(databaseName, jobConfig, checkoutLockAlgorithm);
+                    RuleBasedJobLock ruleBasedJobLock = ruleAlteredContext.getRuleBasedJobLock();
+                    switchClusterConfiguration(databaseName, jobConfig, ruleBasedJobLock);
                 } finally {
-                    if (null != sourceWritingStopAlgorithm) {
-                        sourceWritingStopAlgorithm.releaseLock(databaseName, jobId + "");
+                    if (null != rowBasedJobLock) {
+                        rowBasedJobLock.releaseLock(databaseName, jobId + "");
                     }
                 }
                 log.info("job {} finished", jobId);
@@ -115,16 +115,16 @@ public final class FinishedCheckJob implements SimpleJob {
         return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, ruleAlteredJobAPI.dataConsistencyCheck(jobConfig));
     }
     
-    private void switchClusterConfiguration(final String databaseName, final RuleAlteredJobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String databaseName, final RuleAlteredJobConfiguration jobConfig, final RuleBasedJobLock ruleBasedJobLock) {
         String jobId = jobConfig.getJobId();
         try {
-            if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.lock(databaseName, jobId + "");
+            if (null != ruleBasedJobLock) {
+                ruleBasedJobLock.lock(databaseName, jobId + "");
             }
             ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
         } finally {
-            if (null != checkoutLockAlgorithm) {
-                checkoutLockAlgorithm.releaseLock(databaseName, jobId + "");
+            if (null != ruleBasedJobLock) {
+                ruleBasedJobLock.releaseLock(databaseName, jobId + "");
             }
         }
     }

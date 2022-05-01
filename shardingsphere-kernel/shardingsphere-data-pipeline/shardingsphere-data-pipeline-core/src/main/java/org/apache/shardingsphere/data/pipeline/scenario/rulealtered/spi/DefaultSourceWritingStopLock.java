@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 
 /**
- * Default source writing stop algorithm.
+ * Default source writing stop lock.
  */
 @Slf4j
-public final class DefaultSourceWritingStopAlgorithm implements RowBasedJobLockAlgorithm {
+public final class DefaultSourceWritingStopLock implements RowBasedJobLock {
     
     private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
     
