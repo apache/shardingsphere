@@ -22,16 +22,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 
 import java.util.Properties;
 
 /**
- * Memory implementation of pipeline channel factory.
+ * Memory implementation of pipeline channel creator.
  */
 @Getter
 @Setter
-public final class MemoryPipelineChannelFactory implements PipelineChannelFactory {
+public final class MemoryPipelineChannelCreator implements PipelineChannelCreator {
     
     public static final String TYPE = "MEMORY";
     

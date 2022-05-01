@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
@@ -50,7 +50,7 @@ import java.util.Properties;
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
     static {
-        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
+        ShardingSphereServiceLoader.register(PipelineChannelCreator.class);
     }
     
     @Override
@@ -101,7 +101,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkStreamChannelExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getStreamChannel()) {
-            checkAlgorithm(PipelineChannelFactory.class, "stream channel", segment.getStreamChannel());
+            checkAlgorithm(PipelineChannelCreator.class, "stream channel", segment.getStreamChannel());
         }
     }
     
