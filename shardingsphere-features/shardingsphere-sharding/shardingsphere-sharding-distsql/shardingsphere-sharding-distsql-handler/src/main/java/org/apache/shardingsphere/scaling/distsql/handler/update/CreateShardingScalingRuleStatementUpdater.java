@@ -106,7 +106,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     }
     
     private void checkCompletionDetectorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getCompletionDetector() && JobCompletionDetectAlgorithmFactory.contains(segment.getCompletionDetector().getName())) {
+        if (null != segment.getCompletionDetector() && !JobCompletionDetectAlgorithmFactory.contains(segment.getCompletionDetector().getName())) {
             throw new InvalidAlgorithmConfigurationException("completion detector", segment.getCompletionDetector().getName());
         }
     }
