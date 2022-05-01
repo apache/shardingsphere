@@ -95,7 +95,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
         assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
-        assertThat(yamlExecuteProcessContext.getSchemaName(), is("sharding_db"));
+        assertThat(yamlExecuteProcessContext.getDatabaseName(), is("sharding_db"));
         assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
         assertThat(yamlExecuteProcessContext.getHostname(), is("127.0.0.1"));
         assertThat(yamlExecuteProcessContext.getSql(), is("sql1"));
