@@ -60,7 +60,7 @@ public final class ShowTableMetadataHandlerTest {
         ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), connectionSession));
         handler.execute();
         handler.next();
-        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("db_name"));
         assertThat(data.get(1), is("t_order"));

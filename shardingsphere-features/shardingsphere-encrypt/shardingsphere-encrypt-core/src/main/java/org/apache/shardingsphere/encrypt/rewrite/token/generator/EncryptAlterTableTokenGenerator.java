@@ -80,7 +80,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     
     private Collection<SQLToken> mergeDropColumnStatement(final Collection<SQLToken> dropCollection, final String leftJoiner, final String rightJoiner) {
         Collection<SQLToken> result = new LinkedList<>();
-        ArrayList<String> dropColumnList = new ArrayList<>();
+        List<String> dropColumnList = new ArrayList<>();
         int lastStartIndex = -1;
         for (int i = 0; i < dropCollection.size(); i++) {
             SQLToken token = (SQLToken) ((List) dropCollection).get(i);
