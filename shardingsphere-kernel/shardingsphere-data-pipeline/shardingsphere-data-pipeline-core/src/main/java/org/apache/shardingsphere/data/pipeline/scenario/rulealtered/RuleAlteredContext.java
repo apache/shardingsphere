@@ -29,7 +29,9 @@ import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlg
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockFactory;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -41,8 +43,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAl
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Properties;
 
@@ -54,12 +54,7 @@ import java.util.Properties;
 // TODO extract Pipeline Context
 public final class RuleAlteredContext {
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
-    
-    static {
-        ShardingSphereServiceLoader.register(RowBasedJobLock.class);
-        ShardingSphereServiceLoader.register(RuleBasedJobLock.class);
-    }
+    private static final OnRuleAlteredActionConfigurationYamlSwapper SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
@@ -101,15 +96,15 @@ public final class RuleAlteredContext {
         dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;
-        rowBasedJobLock = RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
-        ruleBasedJobLock = RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
+        rowBasedJobLock = RowBasedJobLockFactory.newInstance();
+        ruleBasedJobLock = RuleBasedJobLockFactory.newInstance();
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
     }
     
     private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
-        YamlOnRuleAlteredActionConfiguration yamlActionConfig = ACTION_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(actionConfig);
+        YamlOnRuleAlteredActionConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(actionConfig);
         if (null == yamlActionConfig.getInput()) {
             yamlActionConfig.setInput(YamlInputConfiguration.buildWithDefaultValue());
         }
@@ -119,6 +114,6 @@ public final class RuleAlteredContext {
         if (null == yamlActionConfig.getStreamChannel()) {
             yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
         }
-        return ACTION_CONFIG_YAML_SWAPPER.swapToObject(yamlActionConfig);
+        return SWAPPER.swapToObject(yamlActionConfig);
     }
 }
