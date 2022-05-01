@@ -17,45 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
-import lombok.Getter;
-import lombok.NonNull;
+import org.junit.Test;
 
-import java.util.Objects;
+import java.util.Arrays;
 
-/**
- * Table name.
- * <p>It might be logic table name or actual table name.</p>
- * <p>It's case-insensitive.</p>
- */
-@Getter
-public class TableName {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class TableNameTest {
     
-    @NonNull
-    private final String lowercase;
-    
-    public TableName(final String tableName) {
-        this.lowercase = tableName.toLowerCase();
-    }
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    @Test
+    public void assertGetLowercase() {
+        for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
+            TableName actual = new TableName(tableName);
+            assertThat(actual.getLowercase(), is("t_order"));
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+    }
+    
+    @Test
+    public void assertToString() {
+        for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
+            TableName actual = new TableName(tableName);
+            assertThat(actual.toString(), is("t_order"));
         }
-        final TableName tableName = (TableName) o;
-        return lowercase.equals(tableName.lowercase);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(lowercase);
-    }
-    
-    @Override
-    public String toString() {
-        return lowercase;
     }
 }
