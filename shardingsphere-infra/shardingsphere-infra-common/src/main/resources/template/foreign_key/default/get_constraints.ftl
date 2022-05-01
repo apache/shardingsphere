@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT   cls.oid, cls.relname as idxname, indnatts as col_count
 FROM pg_catalog.pg_index idx
 JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid

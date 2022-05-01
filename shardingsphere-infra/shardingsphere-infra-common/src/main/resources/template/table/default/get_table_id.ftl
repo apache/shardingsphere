@@ -14,4 +14,5 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT tablename::REGCLASS::OID AS tid FROM pg_catalog.pg_tables WHERE schemaname = '${schemaName}' and tablename = '${tableName}';

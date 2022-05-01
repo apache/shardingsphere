@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT c.oid, conname as name, relname, nspname, description as comment,
 pg_catalog.pg_get_expr(conbin, conrelid, true) as consrc,
 connoinherit, NOT convalidated as convalidated, conislocal

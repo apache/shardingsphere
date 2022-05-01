@@ -14,4 +14,5 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 select oid as did, datlastsysoid from pg_catalog.pg_database where datname = '${databaseName}';

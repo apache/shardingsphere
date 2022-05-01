@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <#macro PRIMARY_KEY data>
 <#if data.columns?size gt 0 >
 <#if data.name?? >CONSTRAINT ${data.name} </#if>PRIMARY KEY (<#list data.columns as c>

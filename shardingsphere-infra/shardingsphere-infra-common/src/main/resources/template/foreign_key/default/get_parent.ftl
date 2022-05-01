@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT nsp.nspname AS schema,
 rel.relname AS table
 FROM

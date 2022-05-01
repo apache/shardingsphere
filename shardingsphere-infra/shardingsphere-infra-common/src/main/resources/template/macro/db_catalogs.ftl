@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <#macro VALID_CATALOGS(server_type) >
 AND n.nspname NOT LIKE 'pg\_%' <#if server_type == 'ppas' >
 AND n.nspname NOT IN ('information_schema', 'pgagent', 'dbo', 'sys') <#else>

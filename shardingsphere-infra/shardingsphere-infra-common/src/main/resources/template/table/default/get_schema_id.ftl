@@ -14,4 +14,5 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 select oid as scid from pg_catalog.pg_namespace where nspname = '${schemaName}';

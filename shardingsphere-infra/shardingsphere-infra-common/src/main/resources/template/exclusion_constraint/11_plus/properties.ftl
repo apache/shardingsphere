@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT cls.oid,
 cls.relname as name,
 indnkeyatts as col_count,

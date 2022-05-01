@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <#import "../../macro/db_catalogs.ftl" as CATALOG>
 SELECT c.oid, c.relname , nspname,
 CASE WHEN nspname NOT LIKE 'pg\_%' THEN

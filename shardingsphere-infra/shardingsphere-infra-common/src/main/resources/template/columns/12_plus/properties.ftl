@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 att.atttypmod, att.attacl, att.attnotnull, att.attoptions, att.attstattarget,
 att.attstorage, att.attidentity,

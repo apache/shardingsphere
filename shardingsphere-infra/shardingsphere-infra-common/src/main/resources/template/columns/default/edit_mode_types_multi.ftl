@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT t.main_oid, pg_catalog.ARRAY_AGG(t.typname) as edit_types
 FROM
 (SELECT pc.castsource AS main_oid, pg_catalog.format_type(tt.oid,NULL) AS typname

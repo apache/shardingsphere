@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 SELECT
     a.attname AS name, pg_catalog.format_type(a.atttypid, NULL) AS cltype,
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval, a.attidentity as clidentity,

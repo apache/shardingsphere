@@ -169,12 +169,12 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
             Collection<Map<String, Object>> columns = new LinkedList<>();
             Set<String> cols = new HashSet<>();
             for (Map<String, Object> col : getForeignKeysCols(tid, each)) {
-                Map<String, Object> f = new HashMap<>();
-                f.put("local_column", col.get("conattname"));
-                f.put("references", each.get("confrelid"));
-                f.put("referenced", col.get("confattname"));
-                f.put("references_table_name", each.get("refnsp") + "." + each.get("reftab"));
-                columns.add(f);
+                Map<String, Object> foreignKeysRef = new HashMap<>();
+                foreignKeysRef.put("local_column", col.get("conattname"));
+                foreignKeysRef.put("references", each.get("confrelid"));
+                foreignKeysRef.put("referenced", col.get("confattname"));
+                foreignKeysRef.put("references_table_name", each.get("refnsp") + "." + each.get("reftab"));
+                columns.add(foreignKeysRef);
                 cols.add((String) col.get("conattname"));
             }
             setRemoteName(each, columns);
@@ -187,25 +187,25 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
         return result;
     }
     
-    private void setRemoteName(final Map<String, Object> each, final Collection<Map<String, Object>> columns) {
+    private void setRemoteName(final Map<String, Object> foreignKey, final Collection<Map<String, Object>> columns) {
         Map<String, Object> param = new HashMap<>();
         param.put("tid", columns.iterator().next().get("references"));
-        Collection<Map<String, Object>> r = executeByTemplate(param, "foreign_key/default/get_parent.ftl");
-        for (Map<String, Object> sf : r) {
-            each.put("remote_schema", sf.get("schema"));
-            each.put("remote_table", sf.get("table"));
+        Collection<Map<String, Object>> parents = executeByTemplate(param, "foreign_key/default/get_parent.ftl");
+        for (Map<String, Object> each : parents) {
+            foreignKey.put("remote_schema", each.get("schema"));
+            foreignKey.put("remote_table", each.get("table"));
             break;
         }
     }
     
-    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreginKeyProperties) {
+    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProperties) {
         Map<String, Object> param = new HashMap<>();
         param.put("tid", tid);
         Collection<Map<String, Object>> keys = new LinkedList<>();
-        Map<String, Object> s = new HashMap<>();
-        s.put("confkey", foreginKeyProperties.get("confkey"));
-        s.put("conkey", foreginKeyProperties.get("conkey"));
-        keys.add(s);
+        Map<String, Object> key = new HashMap<>();
+        key.put("confkey", foreignKeyProperties.get("confkey"));
+        key.put("conkey", foreignKeyProperties.get("conkey"));
+        keys.add(key);
         param.put("keys", keys);
         return executeByTemplate(param, "foreign_key/default/get_constraint_cols.ftl");
     }
@@ -234,12 +234,12 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private boolean isSame(final Set<String> indexCols, final Set<String> cols) {
-        Set<String> a = new HashSet<>(indexCols);
-        Set<String> b = new HashSet<>(cols);
-        a.removeAll(b);
-        if (a.size() == 0) {
+        Set<String> copyIndexCols = new HashSet<>(indexCols);
+        Set<String> copyCols = new HashSet<>(cols);
+        copyIndexCols.removeAll(copyCols);
+        if (0 == copyIndexCols.size()) {
             cols.removeAll(indexCols);
-            return cols.size() == 0;
+            return 0 == cols.size();
         }
         return false;
     }
