@@ -85,9 +85,8 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Collection[] splitTables(final List<String> tables, final int size) {
-        int counts = (tables.size() / size) + 1;
-        Collection[] result = new Collection[counts];
-        for (int index = 0; index < counts; index++) {
+        Collection[] result = new Collection[(tables.size() / size) + 1];
+        for (int index = 0; index < result.length; index++) {
             int count = index + 1;
             result[index] = tables.subList(Math.max(((count - 1) * size), 0), Math.min((count * size), tables.size()));
         }
