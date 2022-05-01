@@ -146,7 +146,7 @@ public final class RuleAlteredJobPreparer {
         DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
-        dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getShardingColumnsMap().keySet());
+        dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getLogicTableNames());
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {

@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public final class PipelineSQLBuilderTest {
     
     private final PipelineSQLBuilder pipelineSQLBuilder = new FixturePipelineSQLBuilder();
     
-    private final Map<String, Set<String>> shardingColumnsMap = ImmutableMap.<String, Set<String>>builder().put("t2", Collections.singleton("sc")).build();
+    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder().put(new LogicTableName("t2"), Collections.singleton("sc")).build();
     
     @Test
     public void assertBuildInsertSQL() {

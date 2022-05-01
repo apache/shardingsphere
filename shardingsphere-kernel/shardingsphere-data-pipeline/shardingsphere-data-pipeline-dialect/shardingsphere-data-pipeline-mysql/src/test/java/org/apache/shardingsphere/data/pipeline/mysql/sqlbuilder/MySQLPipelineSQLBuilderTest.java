@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,7 +37,7 @@ public final class MySQLPipelineSQLBuilderTest {
     
     private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
     
-    private final Map<String, Set<String>> shardingColumnsMap = ImmutableMap.<String, Set<String>>builder().put("t2", Collections.singleton("sc")).build();
+    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder().put(new LogicTableName("t2"), Collections.singleton("sc")).build();
     
     @Test
     public void assertBuildInsertSQL() {

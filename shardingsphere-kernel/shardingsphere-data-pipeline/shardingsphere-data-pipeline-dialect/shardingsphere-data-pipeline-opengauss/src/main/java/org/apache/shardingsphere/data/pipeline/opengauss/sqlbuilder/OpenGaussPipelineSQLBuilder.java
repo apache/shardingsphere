@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
 import java.util.List;
@@ -42,16 +43,16 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<String, Set<String>> shardingColumnsMap) {
+    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildConflictSQL(shardingColumnsMap);
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<String, Set<String>> shardingColumnsMap) {
+    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return record.getColumns().stream().filter(each -> !(each.isPrimaryKey() || isShardingColumn(shardingColumnsMap, record.getTableName(), each.getName()))).collect(Collectors.toList());
     }
     
-    private String buildConflictSQL(final Map<String, Set<String>> shardingColumnsMap) {
+    private String buildConflictSQL(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         // TODO there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
         return "";
     }

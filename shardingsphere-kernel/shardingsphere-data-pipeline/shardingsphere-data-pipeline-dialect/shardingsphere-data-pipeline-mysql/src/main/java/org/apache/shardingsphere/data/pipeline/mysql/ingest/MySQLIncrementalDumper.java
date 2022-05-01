@@ -176,7 +176,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()));
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }

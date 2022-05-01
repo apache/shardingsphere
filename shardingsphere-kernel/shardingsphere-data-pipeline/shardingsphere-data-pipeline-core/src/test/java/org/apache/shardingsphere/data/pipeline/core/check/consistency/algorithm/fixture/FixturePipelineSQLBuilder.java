@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import java.util.Collection;
@@ -31,17 +32,17 @@ import java.util.Set;
 public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<String, Set<String>> shardingColumnsMap) {
+    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return "";
     }
     
     @Override
-    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<String, Set<String>> shardingColumnsMap) {
+    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return "";
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<String, Set<String>> shardingColumnsMap) {
+    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return Collections.emptyList();
     }
     

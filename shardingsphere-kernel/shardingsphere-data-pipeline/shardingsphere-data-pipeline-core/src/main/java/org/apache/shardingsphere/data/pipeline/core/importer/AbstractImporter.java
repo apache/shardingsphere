@@ -170,9 +170,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        Set<String> shardingColumns = importerConfig.getShardingColumnsMap().get(record.getTableName());
+        Set<String> shardingColumns = importerConfig.getShardingColumns(record.getTableName());
         if (null == shardingColumns) {
-            log.error("executeUpdate, could not get shardingColumns, tableName={}, shardingColumnsMap.keySet={}", record.getTableName(), importerConfig.getShardingColumnsMap().keySet());
+            log.error("executeUpdate, could not get shardingColumns, tableName={}, logicTableNames={}", record.getTableName(), importerConfig.getLogicTableNames());
         }
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record, importerConfig.getShardingColumnsMap());
@@ -190,12 +190,12 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumnsMap().get(dataRecords.get(0).getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumns(dataRecords.get(0).getTableName()));
         String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
             ps.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
+                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     ps.setObject(i + 1, conditionColumns.get(i).getValue());
                 }
