@@ -161,7 +161,7 @@ public final class RuleAlteredJobPreparer {
         PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
-        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getJobConfig().getConcurrency(), 
+        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getJobConfig().getConcurrency(),
                 taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine);
         jobContext.getIncrementalTasks().add(incrementalTask);
     }

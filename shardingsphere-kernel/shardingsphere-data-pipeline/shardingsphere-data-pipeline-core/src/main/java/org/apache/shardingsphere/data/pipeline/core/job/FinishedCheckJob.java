@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -66,7 +66,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
-                RowBasedJobLockAlgorithm sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
+                RowBasedJobLock sourceWritingStopAlgorithm = ruleAlteredContext.getSourceWritingStopAlgorithm();
                 String databaseName = jobConfig.getDatabaseName();
                 try {
                     if (null != sourceWritingStopAlgorithm) {

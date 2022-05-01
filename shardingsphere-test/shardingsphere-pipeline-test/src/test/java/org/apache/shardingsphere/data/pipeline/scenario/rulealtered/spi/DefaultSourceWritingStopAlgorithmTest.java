@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public final class DefaultSourceWritingStopAlgorithmTest {
     
-    private final DefaultSourceWritingStopAlgorithm defaultSourceWritingStopAlgorithm = new DefaultSourceWritingStopAlgorithm();
+    private final DefaultSourceWritingStop defaultSourceWritingStopAlgorithm = new DefaultSourceWritingStop();
     
     private final String lockName = "lock1";
     

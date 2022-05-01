@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.lock;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
- * Row based job lock algorithm, SPI.
+ * Row based job lock.
  */
-public interface RowBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+public interface RowBasedJobLock extends JobLock, RequiredSPI {
 }

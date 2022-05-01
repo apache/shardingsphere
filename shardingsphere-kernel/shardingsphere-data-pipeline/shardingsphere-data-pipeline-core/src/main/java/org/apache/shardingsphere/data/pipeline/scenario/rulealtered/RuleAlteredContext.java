@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlg
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
@@ -57,7 +57,7 @@ public final class RuleAlteredContext {
     private static final OnRuleAlteredActionConfigurationYamlSwapper ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     static {
-        ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
+        ShardingSphereServiceLoader.register(RowBasedJobLock.class);
         ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
     
@@ -71,7 +71,7 @@ public final class RuleAlteredContext {
     
     private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
-    private final RowBasedJobLockAlgorithm sourceWritingStopAlgorithm;
+    private final RowBasedJobLock sourceWritingStopAlgorithm;
     
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
@@ -97,7 +97,7 @@ public final class RuleAlteredContext {
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
-        sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLockAlgorithm.class);
+        sourceWritingStopAlgorithm = RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyCalculator();
         dataConsistencyCalculateAlgorithm = null != dataConsistencyChecker
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyChecker.getType(), dataConsistencyChecker.getProps())
