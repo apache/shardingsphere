@@ -76,5 +76,6 @@ execute
     | createEdition
     | alterDatabaseLink
     | alterDatabaseDictionary
+    | createSynonym
     ) SEMI_?
     ;
