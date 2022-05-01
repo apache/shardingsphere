@@ -30,9 +30,9 @@ public interface DriverState extends StatelessTypedSPI {
     /**
      * Get connection.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param contextManager context manager
      * @return connection
      */
-    Connection getConnection(String schemaName, ContextManager contextManager);
+    Connection getConnection(String databaseName, ContextManager contextManager);
 }
