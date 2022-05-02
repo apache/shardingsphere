@@ -137,7 +137,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         String db = resultSet.getString("table_catalog");
         String tableName = resultSet.getString("table_name");
         String privilegeType = resultSet.getString("privilege_type");
-        boolean hasPrivilege = "TRUE".equalsIgnoreCase(resultSet.getString("is_grantable"));
+        boolean hasPrivilege = Boolean.TRUE.toString().equalsIgnoreCase(resultSet.getString("is_grantable"));
         String grantee = resultSet.getString("grantee");
         if (hasPrivilege) {
             privilegeCache

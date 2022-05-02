@@ -52,12 +52,6 @@ import static org.mockito.Mockito.when;
 public final class TrafficRuleTest {
     
     @Test
-    public void assertGetRuleType() {
-        TrafficRule authorityRule = new TrafficRule(new TrafficRuleConfiguration());
-        assertThat(authorityRule.getType(), is(TrafficRule.class.getSimpleName()));
-    }
-    
-    @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(true), false);

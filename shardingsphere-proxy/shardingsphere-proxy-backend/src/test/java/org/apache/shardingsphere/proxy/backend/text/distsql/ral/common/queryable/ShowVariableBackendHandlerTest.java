@@ -122,7 +122,7 @@ public final class ShowVariableBackendHandlerTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
-        props.put("sql-show", "true");
+        props.put("sql-show", Boolean.TRUE.toString());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));

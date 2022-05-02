@@ -169,11 +169,6 @@ public final class EncryptRuleTest {
         assertTrue(logicTables.equals(theSameLogicTables));
     }
     
-    @Test
-    public void assertGetRuleType() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getType(), is(EncryptRule.class.getSimpleName()));
-    }
-    
     @SuppressWarnings("rawtypes")
     @Test
     public void assertSetUpEncryptorSchema() {

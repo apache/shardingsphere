@@ -81,7 +81,7 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
         Properties props = new Properties();
-        props.setProperty("shadow", "true");
+        props.setProperty("shadow", Boolean.TRUE.toString());
         simpleHintShadowAlgorithm.setProps(props);
         simpleHintShadowAlgorithm.init();
         return Collections.singletonMap("simple-hint-algorithm", simpleHintShadowAlgorithm);
