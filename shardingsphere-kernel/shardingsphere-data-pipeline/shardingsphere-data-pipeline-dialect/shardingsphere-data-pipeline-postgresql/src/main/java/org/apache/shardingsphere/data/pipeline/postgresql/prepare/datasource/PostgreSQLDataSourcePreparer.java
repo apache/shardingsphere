@@ -142,7 +142,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                     joiner.add(queryCreateTableSql(sourceConnection, schemaName, actualTableName, primaryKeyPair.getRight()));
                     queryCreateIndexes(sourceConnection, schemaName, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
                     // TODO support query comment for multi schema
-                    //queryCommentOnList(sourceConnection, schemaName, actualTableName).forEach(joiner::add);
+                    // queryCommentOnList(sourceConnection, schemaName, actualTableName).forEach(joiner::add);
                     String tableDefinition = joiner.toString();
                     result.add(new ActualTableDefinition(each.getLogicTableName(), actualTableName, tableDefinition));
                 }
