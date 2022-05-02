@@ -55,10 +55,10 @@ public final class ShadowTableRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("foo", "bar");
+        Properties props = new Properties();
+        props.setProperty("foo", "bar");
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", properties));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", props));
         return result;
     }
 }
