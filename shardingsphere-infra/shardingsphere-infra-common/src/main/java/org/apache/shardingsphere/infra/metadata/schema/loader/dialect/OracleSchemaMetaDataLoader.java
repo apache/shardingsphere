@@ -75,8 +75,10 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
         Collection[] splitTables = splitTables(new ArrayList(tables), BATCH_SIZE);
-        for (Collection<String> subTables : splitTables) {
-            columnMetaDataMap.putAll(loadColumnMetaDataMap(dataSource, subTables));
+        try(Connection connection = dataSource.getConnection()){
+            for (Collection<String> subTables : splitTables) {
+                columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, subTables));
+            } 
         }
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
@@ -94,9 +96,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return result;
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             appendNumberDataType(dataTypes);
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
