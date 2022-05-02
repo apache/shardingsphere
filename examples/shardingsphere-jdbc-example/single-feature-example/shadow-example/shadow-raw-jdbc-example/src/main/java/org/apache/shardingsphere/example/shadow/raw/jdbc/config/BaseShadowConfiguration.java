@@ -42,7 +42,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return result;
     }
     
