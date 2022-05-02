@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,9 +33,9 @@ public final class DatabaseTypedSQLParserFacadeRegistryTest {
     @Test
     public void assertGetFacade() {
         DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("Fixture");
-        assertThat(databaseTypedSQLParserFacade.getClass(), instanceOf(DatabaseTypedSQLParserFacadeFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getLexerClass(), instanceOf(LexerFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getParserClass(), instanceOf(ParserFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(LexerFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(ParserFixture.class));
         assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("Fixture"));
     }
 }
