@@ -23,7 +23,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -32,6 +31,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class OpenGaussComBatchBindPacketTest {
     
@@ -54,7 +54,7 @@ public final class OpenGaussComBatchBindPacketTest {
     @Test
     public void assertConstructOpenGaussComBatchBindPacket() {
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
-        SQLStatement expectedSQLStatement = Mockito.mock(SQLStatement.class);
+        SQLStatement expectedSQLStatement = mock(SQLStatement.class);
         List<PostgreSQLColumnType> columnTypes = Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR, PostgreSQLColumnType.POSTGRESQL_TYPE_INT4);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, "S_1", "", expectedSQLStatement, columnTypes);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BATCH_BIND_MESSAGE_BYTES), StandardCharsets.UTF_8);
