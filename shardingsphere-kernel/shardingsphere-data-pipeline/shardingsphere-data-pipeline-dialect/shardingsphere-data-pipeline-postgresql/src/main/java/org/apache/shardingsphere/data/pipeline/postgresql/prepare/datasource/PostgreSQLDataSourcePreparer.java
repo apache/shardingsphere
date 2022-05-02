@@ -141,7 +141,8 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                     Pair<String, List<String>> primaryKeyPair = queryTablePrimaryKey(sourceConnection, schemaName, actualTableName);
                     joiner.add(queryCreateTableSql(sourceConnection, schemaName, actualTableName, primaryKeyPair.getRight()));
                     queryCreateIndexes(sourceConnection, schemaName, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
-                    queryCommentOnList(sourceConnection, schemaName, actualTableName).forEach(joiner::add);
+                    // TODO support query comment for multi schema
+                    //queryCommentOnList(sourceConnection, schemaName, actualTableName).forEach(joiner::add);
                     String tableDefinition = joiner.toString();
                     result.add(new ActualTableDefinition(each.getLogicTableName(), actualTableName, tableDefinition));
                 }
@@ -198,6 +199,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     
     private List<String> queryCommentOnList(final Connection sourceConnection, final String schemaName, final String actualTableName) throws SQLException {
         final String fetchCommentSql = String.format(FETCH_COMMENT_TEMPLATE, actualTableName);
+        log.info("queryCommentOnList, fetchCommentSql={}", fetchCommentSql);
         List<String> result = new LinkedList<>();
         Map<Integer, String> commentMap = Maps.newHashMap();
         try (
