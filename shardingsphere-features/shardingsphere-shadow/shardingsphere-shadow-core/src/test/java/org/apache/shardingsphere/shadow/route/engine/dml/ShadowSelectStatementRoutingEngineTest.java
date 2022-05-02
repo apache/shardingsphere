@@ -42,9 +42,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -97,7 +95,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(createDataSources());
+        result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("user-id-select-regex-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("user-id-select-regex-algorithm", createColumnShadowAlgorithm()));
         return result;
@@ -108,15 +106,9 @@ public final class ShadowSelectStatementRoutingEngineTest {
         props.setProperty("column", "user_id");
         props.setProperty("operation", "select");
         props.setProperty("regex", "[1]");
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(props);
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
-    }
-    
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
+        result.setProps(props);
+        result.init();
         return result;
     }
     
