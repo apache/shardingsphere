@@ -62,13 +62,13 @@ public final class EncryptAssignmentTokenGeneratorTest {
     
     @Before
     public void setup() {
-        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         updateStatement = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         insertStatement = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         assignmentSegment = mock(AssignmentSegment.class, RETURNS_DEEP_STUBS);
         setAssignmentSegment = mock(SetAssignmentSegment.class, RETURNS_DEEP_STUBS);
         literalExpression = mock(LiteralExpressionSegment.class, RETURNS_DEEP_STUBS);
         parameterMarkerExpression = mock(ParameterMarkerExpressionSegment.class, RETURNS_DEEP_STUBS);
+        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         tokenGenerator.setEncryptRule(encryptRule);
         when(updateStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
