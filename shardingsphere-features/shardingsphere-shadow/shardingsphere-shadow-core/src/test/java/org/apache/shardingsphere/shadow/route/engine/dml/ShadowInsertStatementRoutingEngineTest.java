@@ -109,8 +109,8 @@ public final class ShadowInsertStatementRoutingEngineTest {
     
     @Test
     public void assertGetAllTables() {
-        Collection<SimpleTableSegment> allTables = shadowRouteEngine.getAllTables();
-        assertThat(allTables.size(), is(1));
-        assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
+        Collection<SimpleTableSegment> actual = shadowRouteEngine.getAllTables();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
 }
