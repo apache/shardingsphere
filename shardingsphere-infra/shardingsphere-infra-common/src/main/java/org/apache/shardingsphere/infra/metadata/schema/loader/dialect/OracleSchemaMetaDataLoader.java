@@ -75,7 +75,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
         Collection[] splitTables = splitTables(new ArrayList(tables), BATCH_SIZE);
-        try(Connection connection = dataSource.getConnection()){
+        try (Connection connection = dataSource.getConnection()) {
             for (Collection<String> subTables : splitTables) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, subTables));
             } 
