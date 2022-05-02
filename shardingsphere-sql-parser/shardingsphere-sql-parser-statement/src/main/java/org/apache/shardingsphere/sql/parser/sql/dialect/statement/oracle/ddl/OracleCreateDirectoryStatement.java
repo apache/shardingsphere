@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDirec
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle drop view statement.
+ * Oracle create directory statement.
  */
 @ToString
 public final class OracleCreateDirectoryStatement extends CreateDirectoryStatement implements OracleStatement {
