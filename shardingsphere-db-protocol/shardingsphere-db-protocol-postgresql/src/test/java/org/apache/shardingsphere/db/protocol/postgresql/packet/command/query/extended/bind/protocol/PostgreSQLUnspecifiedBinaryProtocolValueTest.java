@@ -25,10 +25,9 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
@@ -48,8 +47,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
-        assertNotNull(result);
-        assertTrue(result instanceof PostgreSQLTypeUnspecifiedSQLParameter);
+        assertThat(result, instanceOf(PostgreSQLTypeUnspecifiedSQLParameter.class));
         assertThat(result.toString(), is(timestampStr));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }

@@ -38,7 +38,6 @@ import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -147,7 +146,6 @@ public final class ResultSetUtilTest {
     public void assertConvertURLValue() throws SQLException {
         String urlString = "http://apache.org";
         URL url = (URL) ResultSetUtil.convertValue(urlString, URL.class);
-        assertNotNull(url);
         assertThat(url, is(new URL(urlString)));
     }
     

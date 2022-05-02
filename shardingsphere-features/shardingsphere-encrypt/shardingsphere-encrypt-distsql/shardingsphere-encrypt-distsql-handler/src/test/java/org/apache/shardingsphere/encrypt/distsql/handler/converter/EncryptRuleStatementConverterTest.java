@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class EncryptRuleStatementConverterTest {
@@ -36,7 +35,6 @@ public final class EncryptRuleStatementConverterTest {
     @Test
     public void assertCovert() {
         EncryptRuleConfiguration ruleConfig = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
-        assertNotNull(ruleConfig);
         assertThat(ruleConfig.getTables().iterator().next().getName(), is("t_encrypt"));
         assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
         assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));

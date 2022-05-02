@@ -46,8 +46,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -60,8 +60,7 @@ public final class SQLStatementContextFactoryTest {
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof SelectStatementContext);
+        assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
     @Test
@@ -98,15 +97,13 @@ public final class SQLStatementContextFactoryTest {
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof InsertStatementContext);
+        assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), mock(MySQLStatement.class), DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
+        assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
