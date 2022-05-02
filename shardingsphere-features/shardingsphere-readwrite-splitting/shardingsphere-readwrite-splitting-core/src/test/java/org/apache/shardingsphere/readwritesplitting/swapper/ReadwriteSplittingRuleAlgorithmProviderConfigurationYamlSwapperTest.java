@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -70,21 +68,6 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertThat(ruleConfig.getProps().getProperty("read-data-source-names"), is("readDataSourceName"));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(swapper.getTypeClass(), equalTo(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class));
-    }
-    
-    @Test
-    public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("READWRITE_SPLITTING"));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(ReadwriteSplittingOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
