@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
-import org.apache.commons.lang3.StringUtils;
+import jdk.internal.joptsimple.internal.Strings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +63,7 @@ public final class H2RepositoryTest {
     @Test
     public void assertDelete() {
         h2Repository.delete("/testPath");
-        assertTrue(StringUtils.isBlank(h2Repository.get("/testPath")));
+        assertTrue(Strings.isNullOrEmpty(h2Repository.get("/testPath")));
     }
     
     @After

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.boot.datasource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.util.StringUtils;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -76,7 +76,7 @@ public final class DataSourceMapSetter {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
         String dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAME);
-        if (StringUtils.isEmpty(dataSourceNames)) {
+        if (Strings.isNullOrEmpty(dataSourceNames)) {
             dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAMES);
         }
         return new InlineExpressionParser(dataSourceNames).splitAndEvaluate();

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.encrypt.algorithm;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Properties;
 
@@ -57,15 +57,12 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private byte[] createSm3Salt() {
         String salt = null == props.getProperty(SM3_SALT) ? "" : String.valueOf(props.getProperty(SM3_SALT));
         Preconditions.checkState(0 == salt.length() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
-        return 0 == salt.length() ? new byte[0] : StringUtils.getBytesUtf8(salt);
+        return 0 == salt.length() ? new byte[0] : salt.getBytes(StandardCharsets.UTF_8);
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        if (null == plainValue) {
-            return null;
-        }
-        return ByteUtils.toHexString(digest(StringUtils.getBytesUtf8(String.valueOf(plainValue)), sm3Salt));
+        return null == plainValue ? null : ByteUtils.toHexString(digest(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), sm3Salt));
     }
     
     @Override
