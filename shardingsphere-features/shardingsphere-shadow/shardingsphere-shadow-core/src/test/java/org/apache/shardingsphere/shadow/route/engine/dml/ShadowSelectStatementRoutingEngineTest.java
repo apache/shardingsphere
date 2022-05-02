@@ -66,8 +66,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
-        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
+        when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, binaryOperationExpression)));
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
         selectStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
@@ -78,8 +77,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = Collections.singletonList(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList()));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
         shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
