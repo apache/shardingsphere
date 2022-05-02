@@ -55,17 +55,15 @@ public final class ShadowUpdateStatementRoutingEngineTest {
     
     private UpdateStatementContext createUpdateStatementContext() {
         UpdateStatementContext result = mock(UpdateStatementContext.class);
-        Collection<SimpleTableSegment> allTables = Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order"))));
-        when(result.getAllTables()).thenReturn(allTables);
+        when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
-        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
-        MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
-        updateStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
-        updateStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
-        when(result.getSqlStatement()).thenReturn(updateStatement);
+        when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, binaryOperationExpression)));
+        MySQLUpdateStatement sqlStatement = new MySQLUpdateStatement();
+        sqlStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        sqlStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
     
