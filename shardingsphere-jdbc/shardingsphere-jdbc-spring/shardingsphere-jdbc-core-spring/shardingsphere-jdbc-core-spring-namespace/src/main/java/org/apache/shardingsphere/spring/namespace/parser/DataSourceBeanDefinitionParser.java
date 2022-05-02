@@ -31,7 +31,6 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -50,7 +49,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseDatabaseName(element));
         factory.addConstructorArgValue(parseModeConfiguration(element));
-        if (!StringUtils.isEmpty(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_ATTRIBUTE))) {
+        if (!Strings.isNullOrEmpty(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_ATTRIBUTE))) {
             factory.addConstructorArgValue(parseDataSources(element));
             factory.addConstructorArgValue(parseRuleConfigurations(element));
             factory.addConstructorArgValue(parseProperties(element, parserContext));

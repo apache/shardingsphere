@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.Connection;
@@ -125,7 +124,7 @@ public final class H2Repository implements StandalonePersistRepository {
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
                 String tempKeyVal = get(tempKey);
-                if (StringUtils.isBlank(tempKeyVal)) {
+                if (Strings.isNullOrEmpty(tempKeyVal)) {
                     if (i != 0) {
                         parent = tempPrefix;
                     }
@@ -135,7 +134,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 parent = tempKey;
             }
             String keyValue = get(key);
-            if (StringUtils.isBlank(keyValue)) {
+            if (Strings.isNullOrEmpty(keyValue)) {
                 insert(key, insensitiveValue, parent);
             } else {
                 update(key, insensitiveValue);

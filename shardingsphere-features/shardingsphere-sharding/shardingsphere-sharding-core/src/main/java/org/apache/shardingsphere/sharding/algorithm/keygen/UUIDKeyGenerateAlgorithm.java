@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.UUID;
@@ -35,7 +34,7 @@ public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     @Override
     public Comparable<?> generateKey() {
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        return StringUtils.replace(new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString(), "-", "");
+        return new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "");
     }
     
     @Override

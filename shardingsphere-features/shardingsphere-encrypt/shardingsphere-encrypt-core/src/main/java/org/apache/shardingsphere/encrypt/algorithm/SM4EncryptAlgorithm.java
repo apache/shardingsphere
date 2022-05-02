@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -30,6 +29,7 @@ import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -118,10 +118,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        if (null == plainValue) {
-            return null;
-        }
-        return ByteUtils.toHexString(encrypt(StringUtils.getBytesUtf8(String.valueOf(plainValue))));
+        return null == plainValue ? null : ByteUtils.toHexString(encrypt(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
     }
     
     private byte[] encrypt(final byte[] plainValue) {
@@ -131,10 +128,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     @SneakyThrows
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        if (null == cipherValue) {
-            return null;
-        }
-        return StringUtils.newStringUtf8(decrypt(ByteUtils.fromHexString(cipherValue)));
+        return null == cipherValue ? null : new String(decrypt(ByteUtils.fromHexString(cipherValue)), StandardCharsets.UTF_8);
     }
     
     private byte[] decrypt(final byte[] cipherValue) {

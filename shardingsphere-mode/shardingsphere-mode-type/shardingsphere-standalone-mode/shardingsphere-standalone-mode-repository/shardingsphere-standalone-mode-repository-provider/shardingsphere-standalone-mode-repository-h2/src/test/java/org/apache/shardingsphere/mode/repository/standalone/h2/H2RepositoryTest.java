@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class H2RepositoryTest {
     
@@ -63,7 +61,7 @@ public final class H2RepositoryTest {
     @Test
     public void assertDelete() {
         h2Repository.delete("/testPath");
-        assertTrue(StringUtils.isBlank(h2Repository.get("/testPath")));
+        assertThat(h2Repository.get("/testPath"), is(""));
     }
     
     @After
