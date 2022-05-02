@@ -24,19 +24,19 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class OpenGaussScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry actual = ScalingEntryFactory.getInstance("openGauss");
-        assertTrue(actual instanceof OpenGaussScalingEntry);
-        assertThat(actual.getEnvironmentCheckerClass(), instanceOf(OpenGaussEnvironmentChecker.class));
-        assertThat(actual.getImporterClass(), instanceOf(OpenGaussImporter.class));
-        assertThat(actual.getInventoryDumperClass(), instanceOf(PostgreSQLInventoryDumper.class));
-        assertThat(actual.getIncrementalDumperClass(), instanceOf(OpenGaussWalDumper.class));
+        assertThat(actual, instanceOf(OpenGaussScalingEntry.class));
+        assertThat(actual.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
+        assertThat(actual.getImporterClass(), equalTo(OpenGaussImporter.class));
+        assertThat(actual.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
+        assertThat(actual.getIncrementalDumperClass(), equalTo(OpenGaussWalDumper.class));
     }
 }
