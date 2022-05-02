@@ -65,9 +65,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
     
     private InsertStatementContext createInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class);
-        Collection<SimpleTableSegment> allTables = new LinkedList<>();
-        allTables.add(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order"))));
-        when(result.getAllTables()).thenReturn(allTables);
+        when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         when(result.getInsertColumnNames()).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
         List<ExpressionSegment> valueExpressions = new ArrayList<>();
         valueExpressions.add(new LiteralExpressionSegment(0, 10, "1"));
