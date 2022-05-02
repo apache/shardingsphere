@@ -183,7 +183,7 @@ public final class DatabaseMetaDataResultSetTest {
     public void assertGetNStringWithIndex() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getNString(1), is(LOGIC_TABLE_NAME));
-        assertThat(databaseMetaDataResultSet.getNString(2), is("true"));
+        assertThat(databaseMetaDataResultSet.getNString(2), is(Boolean.TRUE.toString()));
         assertThat(databaseMetaDataResultSet.getNString(3), is("100"));
         assertThat(databaseMetaDataResultSet.getNString(6), is(LOGIC_INDEX_NAME));
     }
@@ -192,7 +192,7 @@ public final class DatabaseMetaDataResultSetTest {
     public void assertGetNStringWithLabel() throws SQLException {
         databaseMetaDataResultSet.next();
         assertThat(databaseMetaDataResultSet.getNString(TABLE_NAME_COLUMN_LABEL), is(LOGIC_TABLE_NAME));
-        assertThat(databaseMetaDataResultSet.getNString(NON_TABLE_NAME_COLUMN_LABEL), is("true"));
+        assertThat(databaseMetaDataResultSet.getNString(NON_TABLE_NAME_COLUMN_LABEL), is(Boolean.TRUE.toString()));
         assertThat(databaseMetaDataResultSet.getNString(NUMBER_COLUMN_LABEL), is("100"));
         assertThat(databaseMetaDataResultSet.getNString(INDEX_NAME_COLUMN_LABEL), is(LOGIC_INDEX_NAME));
     }

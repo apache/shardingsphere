@@ -29,8 +29,8 @@ public final class PropertiesUtilTest {
     @Test
     public void assertGetRequiredValue() {
         Properties props = new Properties();
-        props.setProperty("sql-show", "true");
-        assertThat(PropertiesUtil.getRequiredValue(props, "sql-show"), is("true"));
+        props.setProperty("sql-show", Boolean.TRUE.toString());
+        assertThat(PropertiesUtil.getRequiredValue(props, "sql-show"), is(Boolean.TRUE.toString()));
     }
     
     @Test(expected = IllegalArgumentException.class)
