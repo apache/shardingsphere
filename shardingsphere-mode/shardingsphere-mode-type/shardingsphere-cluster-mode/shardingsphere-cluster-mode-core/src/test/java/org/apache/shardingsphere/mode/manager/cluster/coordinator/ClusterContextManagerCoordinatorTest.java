@@ -142,10 +142,9 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDatabaseAdd() throws SQLException {
-        DatabaseAddedEvent event = new DatabaseAddedEvent("db_add");
         when(metaDataPersistService.getDataSourceService().load("db_add")).thenReturn(getDataSourcePropertiesMap());
         when(metaDataPersistService.getDatabaseRulePersistService().load("db_add")).thenReturn(Collections.emptyList());
-        coordinator.renew(event);
+        coordinator.renew(new DatabaseAddedEvent("db_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("db_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("db_add").getResource().getDataSources());
     }
@@ -161,17 +160,15 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaDelete() {
-        DatabaseDeletedEvent event = new DatabaseDeletedEvent("db");
-        coordinator.renew(event);
+        coordinator.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getMetaData("db"));
     }
     
     @Test
     public void assertPropertiesChanged() {
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
-        coordinator.renew(event);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        coordinator.renew(new PropertiesChangedEvent(props));
         assertThat(contextManager.getMetaDataContexts().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
@@ -188,8 +185,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRuleConfigurationsChanged() {
         when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(Boolean.TRUE);
         assertThat(contextManager.getMetaDataContexts().getMetaData("db"), is(metaData));
-        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("db", "0", new LinkedList<>());
-        coordinator.renew(event);
+        coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", new LinkedList<>()));
         assertThat(contextManager.getMetaDataContexts().getMetaData("db"), not(metaData));
     }
     
@@ -206,8 +202,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertDataSourceChanged() {
         when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(Boolean.TRUE);
-        DataSourceChangedEvent event = new DataSourceChangedEvent("db", "0", getChangedDataSourcePropertiesMap());
-        coordinator.renew(event);
+        coordinator.renew(new DataSourceChangedEvent("db", "0", getChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData("db").getResource().getDataSources().containsKey("ds_2"));
     }
     
