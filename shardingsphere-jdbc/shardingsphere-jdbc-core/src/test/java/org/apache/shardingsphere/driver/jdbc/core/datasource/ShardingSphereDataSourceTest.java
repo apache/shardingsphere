@@ -58,7 +58,7 @@ public final class ShardingSphereDataSourceTest {
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
         assertThat(actual.getContextManager().getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
-        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
+        assertTrue(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).isEmpty());
     }
     
     @Test
@@ -91,7 +91,7 @@ public final class ShardingSphereDataSourceTest {
     @Test
     public void assertEmptyDataSourceMap() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null);
-        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
+        assertTrue(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).isEmpty());
         assertThat(actual.getLoginTimeout(), is(0));
     }
     
