@@ -63,7 +63,7 @@ public final class CosIdModShardingAlgorithmTest {
     public static class PreciseValueDoShardingTest {
         
         private final long id;
-    
+        
         private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         @Before

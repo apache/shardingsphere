@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import jdk.internal.joptsimple.internal.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.junit.Test;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Slf4j
 @RunWith(Parameterized.class)
 public final class PostgreSQLManualScalingCase extends BasePostgreSQLITCase {
     
@@ -61,13 +59,13 @@ public final class PostgreSQLManualScalingCase extends BasePostgreSQLITCase {
     
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResList.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
+        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = String.valueOf(showScalingResMap.get("id"));
-        getIncreaseTaskThread().join(60 * 1000);
+        getIncreaseTaskThread().join(60 * 1000L);
         checkMatchConsistency(getJdbcTemplate(), jobId);
     }
 }
