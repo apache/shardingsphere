@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,9 +41,9 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         when(routeContext.isFederated()).thenReturn(true);
         decorator.decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, routeContext);
         assertTrue(sqlRewriteContext.getSchemas().isEmpty());
-        assertTrue(Objects.isNull(sqlRewriteContext.getSqlStatementContext()));
+        assertNull(sqlRewriteContext.getSqlStatementContext());
         assertTrue(sqlRewriteContext.getParameters().isEmpty());
-        assertTrue(Objects.isNull(sqlRewriteContext.getParameterBuilder()));
+        assertNull(sqlRewriteContext.getParameterBuilder());
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }
     
