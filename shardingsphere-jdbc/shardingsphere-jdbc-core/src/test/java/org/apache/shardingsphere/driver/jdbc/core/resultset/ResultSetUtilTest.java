@@ -70,8 +70,8 @@ public final class ResultSetUtilTest {
     public void assertConvertBooleanValue() throws SQLException {
         String dbFalse = "-2";
         String dbTrue = "1";
-        assertThat(ResultSetUtil.convertValue(dbFalse, boolean.class), is(false));
-        assertThat(ResultSetUtil.convertValue(dbTrue, boolean.class), is(true));
+        assertFalse((boolean) ResultSetUtil.convertValue(dbFalse, boolean.class));
+        assertTrue((boolean )ResultSetUtil.convertValue(dbTrue, boolean.class));
     }
     
     @Test

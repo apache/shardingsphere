@@ -114,7 +114,7 @@ public final class ShardingSphereDataSourceTest {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         actual.close();
         Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
-        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+        assertTrue(((HikariDataSource) dataSourceMap.get("ds")).isClosed());
     }
     
     @Test
@@ -122,7 +122,7 @@ public final class ShardingSphereDataSourceTest {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         actual.close(Collections.singleton("ds"));
         Map<String, DataSource> dataSourceMap = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME);
-        assertThat(((HikariDataSource) dataSourceMap.get("ds")).isClosed(), is(true));
+        assertTrue(((HikariDataSource) dataSourceMap.get("ds")).isClosed());
     }
     
     private DataSource createHikariDataSource() {

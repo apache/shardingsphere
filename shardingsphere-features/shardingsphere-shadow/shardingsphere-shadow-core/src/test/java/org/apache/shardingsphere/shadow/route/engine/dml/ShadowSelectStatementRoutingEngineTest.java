@@ -50,6 +50,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,7 +88,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
-        assertThat(sqlNotes.isPresent(), is(true));
+        assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));

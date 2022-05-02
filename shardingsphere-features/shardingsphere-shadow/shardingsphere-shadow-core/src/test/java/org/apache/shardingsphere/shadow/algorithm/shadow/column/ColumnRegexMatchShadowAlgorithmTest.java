@@ -23,9 +23,7 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
@@ -51,6 +49,6 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
+        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
 }
