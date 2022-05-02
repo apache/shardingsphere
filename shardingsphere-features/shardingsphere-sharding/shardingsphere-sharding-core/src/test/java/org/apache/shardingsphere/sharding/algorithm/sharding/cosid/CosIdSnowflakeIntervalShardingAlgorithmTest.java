@@ -40,20 +40,24 @@ import static org.junit.Assert.assertThat;
 
 public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     
-    static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlg() {
-        Properties props = new Properties();
-        props.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
-        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
-                CosIdIntervalShardingAlgorithmTest.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
-                CosIdIntervalShardingAlgorithmTest.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        props.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
-        props.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        props.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
+    static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlgorithm() {
         CosIdSnowflakeIntervalShardingAlgorithm result = new CosIdSnowflakeIntervalShardingAlgorithm();
-        result.setProps(props);
+        result.setProps(createAlgorithmProperties());
         result.init();
+        return result;
+    }
+    
+    private static Properties createAlgorithmProperties() {
+        Properties result = new Properties();
+        result.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
+        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
+        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
+                CosIdIntervalShardingAlgorithmTest.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
+                CosIdIntervalShardingAlgorithmTest.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        result.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
+        result.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
+        result.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         return result;
     }
     
@@ -83,7 +87,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameters
@@ -112,7 +116,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameters

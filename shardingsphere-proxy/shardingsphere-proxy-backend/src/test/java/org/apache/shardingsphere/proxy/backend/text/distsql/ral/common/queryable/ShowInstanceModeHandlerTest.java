@@ -53,7 +53,7 @@ public final class ShowInstanceModeHandlerTest {
         assertThat(data.get(1), is("Cluster"));
         assertThat(data.get(2), is("ZooKeeper"));
         assertThat(data.get(3), is("{\"key\":\"value1,value2\"}"));
-        assertThat(data.get(4), is("false"));
+        assertThat(data.get(4), is(Boolean.FALSE.toString()));
     }
     
     private InstanceContext createInstanceContext() {
