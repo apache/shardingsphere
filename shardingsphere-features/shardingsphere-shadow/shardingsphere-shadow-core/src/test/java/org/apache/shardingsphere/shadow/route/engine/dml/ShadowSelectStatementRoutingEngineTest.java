@@ -42,7 +42,6 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -63,9 +62,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     
     private SelectStatementContext createSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class);
-        Collection<SimpleTableSegment> allTables = new LinkedList<>();
-        allTables.add(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order"))));
-        when(result.getAllTables()).thenReturn(allTables);
+        when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
