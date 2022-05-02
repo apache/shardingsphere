@@ -964,6 +964,10 @@ clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
+    ;
+
 clusteringColumns
     : LP_? clusteringColumnGroup (COMMA_ clusteringColumnGroup)* RP_?
     ;
