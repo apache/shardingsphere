@@ -107,7 +107,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         private final Range<Long> rangeValue;
         
         private final Collection<String> expected;
-    
+        
         private CosIdSnowflakeIntervalShardingAlgorithm shardingAlgorithm;
         
         @Before
