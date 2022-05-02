@@ -1,0 +1,262 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
+
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Postgres constraints loader.
+ */
+public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
+    
+    public PostgresConstraintsLoader(final Connection connection) {
+        super(connection);
+    }
+    
+    /**
+     * Load constraints.
+     * 
+     * @param context load context
+     */
+    public void loadConstraints(final Map<String, Object> context) {
+        loadPrimaryOrUniqueConstraint(context, "primary_key", "p");
+        loadPrimaryOrUniqueConstraint(context, "unique_constraint", "u");
+        context.put("foreign_key", fetchForeignKeys(context));
+        context.put("check_constraint", fetchCheckConstraints(context));
+        context.put("exclude_constraint", getExclusionConstraints(context));
+    }
+    
+    private Collection<Map<String, Object>> fetchCheckConstraints(final Map<String, Object> context) {
+        Collection<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : getCheckConstraints((Long) context.get("tid"))) {
+            if (!isPartitionAndConstraintInherited(each, context)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Map<String, Object>> fetchForeignKeys(final Map<String, Object> context) {
+        Collection<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : getForeignKeys((Long) context.get("tid"))) {
+            if (!isPartitionAndConstraintInherited(each, context)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
+        Collection<Map<String, Object>> constraintsProperties = fetchConstraintsProperties(context, type);
+        fetchConstraintsColumns(constraintsProperties);
+        context.put(name, constraintsProperties.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
+    }
+    
+    private void fetchConstraintsColumns(final Collection<Map<String, Object>> constraintsProperties) {
+        for (Map<String, Object> each : constraintsProperties) {
+            Collection<Map<String, Object>> columns = new LinkedList<>();
+            for (Map<String, Object> col : fetchConstraintsCols(each)) {
+                Map<String, Object> column = new HashMap<>();
+                column.put("column", stripQuote((String) col.get("column")));
+                columns.add(column);
+            }
+            each.put("columns", columns);
+            Map<String, Object> param = new LinkedHashMap<>();
+            param.put("cid", each.get("oid"));
+            Collection<Object> includes = new LinkedList<>();
+            for (Map<String, Object> include : executeByTemplate(param, "index_constraint/11_plus/get_constraint_include.ftl")) {
+                includes.add(include.get("colname"));
+            }
+            each.put("include", includes);
+        }
+    }
+    
+    private String stripQuote(final String column) {
+        String result = column;
+        if (column.startsWith("\"")) {
+            result = result.substring(1);
+        }
+        if (column.endsWith("\"")) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result;
+    }
+    
+    private Collection<Map<String, Object>> fetchConstraintsCols(final Map<String, Object> constraintColProperties) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("cid", constraintColProperties.get("oid"));
+        map.put("colcnt", constraintColProperties.get("col_count"));
+        return executeByTemplate(map, "index_constraint/default/get_costraint_cols.ftl");
+    }
+    
+    private Collection<Map<String, Object>> fetchConstraintsProperties(final Map<String, Object> context, final String constraintType) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("did", context.get("did"));
+        param.put("tid", context.get("tid"));
+        param.put("cid", context.get("cid"));
+        param.put("constraint_type", constraintType);
+        return executeByTemplate(param, "index_constraint/11_plus/properties.ftl");
+    }
+    
+    private Collection<Map<String, Object>> getExclusionConstraints(final Map<String, Object> context) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", context.get("tid"));
+        param.put("did", context.get("did"));
+        Collection<Map<String, Object>> result = executeByTemplate(param, "exclusion_constraint/11_plus/properties.ftl");
+        for (Map<String, Object> each : result) {
+            getExclusionConstraintsColumns(each);
+        }
+        return result;
+    }
+    
+    private void getExclusionConstraintsColumns(final Map<String, Object> exclusionConstraintsProperties) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("cid", exclusionConstraintsProperties.get("oid"));
+        param.put("col_count", exclusionConstraintsProperties.get("col_count"));
+        Collection<Map<String, Object>> columns = new LinkedList<>();
+        for (Map<String, Object> each : executeByTemplate(param, "exclusion_constraint/9.2_plus/get_constraint_cols.ftl")) {
+            boolean order = (((int) each.get("options")) & 1) == 0;
+            boolean nullsOrder = (((int) each.get("options")) & 2) != 0;
+            Map<String, Object> col = new HashMap<>();
+            col.put("column", strip((String) each.get("coldef")));
+            col.put("oper_class", each.get("opcname"));
+            col.put("order", order);
+            col.put("nulls_order", nullsOrder);
+            col.put("operator", each.get("oprname"));
+            col.put("col_type", each.get("datatype"));
+            col.put("is_exp", each.get("is_exp"));
+            columns.add(col);
+        }
+        exclusionConstraintsProperties.put("columns", columns);
+        Map<String, Object> map = new HashMap<>();
+        map.put("cid", exclusionConstraintsProperties.get("oid"));
+        Collection<String> include = new LinkedList<>();
+        for (Map<String, Object> each : executeByTemplate(map, "exclusion_constraint/11_plus/get_constraint_include.ftl")) {
+            include.add(each.get("colname").toString());
+        }
+        exclusionConstraintsProperties.put("include", include);
+    }
+    
+    private Collection<Map<String, Object>> getForeignKeys(final Long tid) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", tid);
+        Collection<Map<String, Object>> result = executeByTemplate(param, "foreign_key/9.1_plus/properties.ftl");
+        for (Map<String, Object> each : result) {
+            Collection<Map<String, Object>> columns = new LinkedList<>();
+            Set<String> cols = new HashSet<>();
+            for (Map<String, Object> col : getForeignKeysCols(tid, each)) {
+                Map<String, Object> foreignKeysRef = new HashMap<>();
+                foreignKeysRef.put("local_column", col.get("conattname"));
+                foreignKeysRef.put("references", each.get("confrelid"));
+                foreignKeysRef.put("referenced", col.get("confattname"));
+                foreignKeysRef.put("references_table_name", each.get("refnsp") + "." + each.get("reftab"));
+                columns.add(foreignKeysRef);
+                cols.add((String) col.get("conattname"));
+            }
+            setRemoteName(each, columns);
+            Optional<String> coveringindex = searchCoveringIndex(tid, cols);
+            each.put("coveringindex", coveringindex.orElse(null));
+            each.put("autoindex", !coveringindex.isPresent());
+            each.put("hasindex", coveringindex.isPresent());
+            each.put("columns", columns);
+        }
+        return result;
+    }
+    
+    private void setRemoteName(final Map<String, Object> foreignKey, final Collection<Map<String, Object>> columns) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", columns.iterator().next().get("references"));
+        Collection<Map<String, Object>> parents = executeByTemplate(param, "foreign_key/default/get_parent.ftl");
+        for (Map<String, Object> each : parents) {
+            foreignKey.put("remote_schema", each.get("schema"));
+            foreignKey.put("remote_table", each.get("table"));
+            break;
+        }
+    }
+    
+    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProperties) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", tid);
+        Collection<Map<String, Object>> keys = new LinkedList<>();
+        Map<String, Object> key = new HashMap<>();
+        key.put("confkey", foreignKeyProperties.get("confkey"));
+        key.put("conkey", foreignKeyProperties.get("conkey"));
+        keys.add(key);
+        param.put("keys", keys);
+        return executeByTemplate(param, "foreign_key/default/get_constraint_cols.ftl");
+    }
+    
+    private boolean isPartitionAndConstraintInherited(final Map<String, Object> constraint, final Map<String, Object> context) {
+        return context.containsKey("relispartition") && (boolean) context.get("relispartition") && constraint.containsKey("conislocal") && (boolean) constraint.get("conislocal");
+    }
+    
+    private Optional<String> searchCoveringIndex(final Long tid, final Set<String> cols) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", tid);
+        for (Map<String, Object> each : executeByTemplate(param, "foreign_key/default/get_constraints.ftl")) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("cid", each.get("oid"));
+            map.put("colcnt", each.get("col_count"));
+            Collection<Map<String, Object>> rows = executeByTemplate(map, "foreign_key/default/get_cols.ftl");
+            Set<String> indexCols = new HashSet<>();
+            for (Map<String, Object> row : rows) {
+                indexCols.add(strip(row.get("column").toString()));
+            }
+            if (isSame(indexCols, cols)) {
+                return Optional.of((String) each.get("idxname"));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isSame(final Set<String> indexCols, final Set<String> cols) {
+        Set<String> copyIndexCols = new HashSet<>(indexCols);
+        Set<String> copyCols = new HashSet<>(cols);
+        copyIndexCols.removeAll(copyCols);
+        if (0 == copyIndexCols.size()) {
+            cols.removeAll(indexCols);
+            return 0 == cols.size();
+        }
+        return false;
+    }
+    
+    private String strip(final String column) {
+        if (column.startsWith("\"")) {
+            return column.substring(1);
+        }
+        if (column.endsWith("\"")) {
+            return column.substring(0, column.length() - 1);
+        }
+        return column;
+    }
+    
+    private Collection<Map<String, Object>> getCheckConstraints(final Long tid) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("tid", tid);
+        return executeByTemplate(param, "check_constraint/9.2_plus/get_cols.ftl");
+    }
+}
