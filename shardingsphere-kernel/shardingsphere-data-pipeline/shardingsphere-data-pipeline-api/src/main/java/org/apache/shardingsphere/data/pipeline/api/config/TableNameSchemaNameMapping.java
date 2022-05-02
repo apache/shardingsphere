@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 /**
  * Table name and schema name mapping.
  */
+@Slf4j
 public final class TableNameSchemaNameMapping {
     
     private final Map<LogicTableName, String> mapping;
@@ -38,6 +40,7 @@ public final class TableNameSchemaNameMapping {
             }
         });
         this.mapping = mapping;
+        log.info("mapping={}", mapping);
     }
     
     /**

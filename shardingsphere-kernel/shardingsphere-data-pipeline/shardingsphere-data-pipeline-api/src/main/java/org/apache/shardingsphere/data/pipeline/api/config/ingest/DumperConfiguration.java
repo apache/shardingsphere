@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -49,7 +48,6 @@ public class DumperConfiguration {
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
-    @Getter(AccessLevel.PROTECTED)
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     /**
