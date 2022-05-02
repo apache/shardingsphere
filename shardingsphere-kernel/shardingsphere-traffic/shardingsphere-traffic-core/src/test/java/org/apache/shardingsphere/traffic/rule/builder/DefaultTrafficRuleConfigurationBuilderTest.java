@@ -20,18 +20,15 @@ package org.apache.shardingsphere.traffic.rule.builder;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DefaultTrafficRuleConfigurationBuilderTest {
     
     @Test
     public void assertBuild() {
         TrafficRuleConfiguration actual = new DefaultTrafficRuleConfigurationBuilder().build();
-        assertNotNull(actual);
-        assertThat(actual.getTrafficStrategies().size(), is(0));
-        assertThat(actual.getTrafficAlgorithms().size(), is(0));
-        assertThat(actual.getLoadBalancers().size(), is(0));
+        assertTrue(actual.getTrafficStrategies().isEmpty());
+        assertTrue(actual.getTrafficAlgorithms().isEmpty());
+        assertTrue(actual.getLoadBalancers().isEmpty());
     }
 }

@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -58,7 +59,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         Collection<String> columnNames = resultSet.getColumnNames();
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(5));
-        assertThat(columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")), is(true));
+        assertTrue(columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")));
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), is("ms_group"));
         assertThat(actual.get(1), is("ds_0,ds_1"));

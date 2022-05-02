@@ -50,10 +50,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertGenerateKey() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         long firstActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
         long secondActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
@@ -69,11 +67,11 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertGenerateKeyAsString() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, "true");
+        Properties props = new Properties();
+        props.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, "true");
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
+        cosIdSnowflakeKeyGenerateAlgorithm.setProps(props);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         Comparable<?> actualKey = cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
         assertThat(actualKey, Matchers.instanceOf(String.class));
@@ -88,8 +86,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = NullPointerException.class)
     public void assertGenerateKeyWhenNoneInstanceContext() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }
@@ -97,10 +93,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenNegative() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }
@@ -108,10 +102,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(1024),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }

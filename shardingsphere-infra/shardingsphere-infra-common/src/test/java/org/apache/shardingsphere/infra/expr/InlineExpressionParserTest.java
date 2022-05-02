@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.expr;
 
-import groovy.lang.Closure;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -25,7 +24,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class InlineExpressionParserTest {
     
@@ -110,29 +111,23 @@ public final class InlineExpressionParserTest {
     
     @Test
     public void assertValidInlineExpression() {
-        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_$->{\"new_order1\"}");
-        boolean actualExpression2 = InlineExpressionParser.isInlineExpression("t_${\"new_order2\"}");
-        assertThat(actualExpression1, is(true));
-        assertThat(actualExpression2, is(true));
+        assertTrue(InlineExpressionParser.isInlineExpression("t_$->{\"new_order1\"}"));
+        assertTrue(InlineExpressionParser.isInlineExpression("t_${\"new_order2\"}"));
     }
     
     @Test
     public void assertInValidInLineExpression() {
-        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}");
-        assertThat(actualExpression1, is(false));
+        assertFalse(InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}"));
     }
     
     @Test
     public void assertHandlePlaceHolder() {
-        String actualExpression1 = InlineExpressionParser.handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}");
-        String actualExpression2 = InlineExpressionParser.handlePlaceHolder("t_${[\"new$->{1+2}\"]}");
-        assertThat(actualExpression1, is("t_${[\"new${1+2}\"]}"));
-        assertThat(actualExpression2, is("t_${[\"new${1+2}\"]}"));
+        assertThat(InlineExpressionParser.handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
+        assertThat(InlineExpressionParser.handlePlaceHolder("t_${[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
     }
     
     @Test
     public void assertEvaluateClosure() {
-        Closure<?> closure = new InlineExpressionParser("${1+2}").evaluateClosure();
-        assertThat(closure.call().toString(), is("3"));
+        assertThat(new InlineExpressionParser("${1+2}").evaluateClosure().call().toString(), is("3"));
     }
 }
