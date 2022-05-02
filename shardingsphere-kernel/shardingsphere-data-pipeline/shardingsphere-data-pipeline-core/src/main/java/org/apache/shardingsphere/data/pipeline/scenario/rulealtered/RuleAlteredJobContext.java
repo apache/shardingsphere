@@ -28,10 +28,13 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -72,6 +75,14 @@ public final class RuleAlteredJobContext {
         }
     };
     
+    private final LazyInitializer<TableNameSchemaNameMapping> schemaNameMappingLazyInitializer = new LazyInitializer<TableNameSchemaNameMapping>() {
+        @Override
+        protected TableNameSchemaNameMapping initialize() {
+            ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
+            return new TableNameSchemaNameMapping(metaData);
+        }
+    };
+    
     private final LazyInitializer<PipelineTableMetaDataLoader> sourceMetaDataLoaderLazyInitializer = new LazyInitializer<PipelineTableMetaDataLoader>() {
         @Override
         protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
@@ -108,6 +119,16 @@ public final class RuleAlteredJobContext {
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
+    }
+    
+    /**
+     * Get table name and schema name mapping.
+     *
+     * @return mapping
+     */
+    @SneakyThrows(ConcurrentException.class)
+    public TableNameSchemaNameMapping getTableNameSchemaNameMapping() {
+        return schemaNameMappingLazyInitializer.get();
     }
     
     /**
