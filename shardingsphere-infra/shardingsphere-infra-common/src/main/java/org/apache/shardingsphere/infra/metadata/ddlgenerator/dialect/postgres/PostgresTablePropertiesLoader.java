@@ -84,7 +84,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     private void updateAutovacuumProperties(final Map<String, Object> context) {
         if (null == context.get("autovacuum_enabled")) {
             context.put("autovacuum_enabled", "x");
-        } else if ("true".equalsIgnoreCase(context.get("autovacuum_enabled").toString())) {
+        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("autovacuum_enabled").toString())) {
             context.put("autovacuum_enabled", "t");
         } else {
             context.put("autovacuum_enabled", "f");
@@ -120,7 +120,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     
     private void checkRlspolicySupport(final Map<String, Object> context) {
         if (context.containsKey("rlspolicy")) {
-            if (context.get("rlspolicy") instanceof String && "true".equals(context.get("rlspolicy"))) {
+            if (context.get("rlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("rlspolicy"))) {
                 context.put("rlspolicy", true);
             }
             if (context.get("forcerlspolicy") instanceof String && "true".equals(context.get("forcerlspolicy"))) {
