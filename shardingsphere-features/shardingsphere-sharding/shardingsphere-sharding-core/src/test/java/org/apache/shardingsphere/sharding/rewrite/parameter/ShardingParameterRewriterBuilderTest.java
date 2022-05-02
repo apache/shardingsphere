@@ -43,22 +43,19 @@ public final class ShardingParameterRewriterBuilderTest {
     public void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(
-                mock(ShardingRule.class), mock(RouteContext.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext);
-        Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters();
+        Collection<ParameterRewriter> actual = new ShardingParameterRewriterBuilder(
+                mock(ShardingRule.class), mock(RouteContext.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(ShardingPaginationParameterRewriter.class));
     }
     
     @Test
     public void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isSingleRouting()).thenReturn(true);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(
-                shardingRule, routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext);
-        assertTrue(shardingParameterRewriterBuilder.getParameterRewriters().isEmpty());
+        assertTrue(new ShardingParameterRewriterBuilder(
+                mock(ShardingRule.class), routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext).getParameterRewriters().isEmpty());
     }
 }
