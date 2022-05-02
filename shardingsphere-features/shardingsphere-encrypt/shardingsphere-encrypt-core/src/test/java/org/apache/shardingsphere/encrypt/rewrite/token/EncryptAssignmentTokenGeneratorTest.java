@@ -30,9 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,12 +46,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class EncryptAssignmentTokenGeneratorTest {
     
     private EncryptAssignmentTokenGenerator tokenGenerator;
-    
-    private EncryptRule encryptRule;
     
     private UpdateStatementContext updateStatement;
     
@@ -67,12 +62,9 @@ public final class EncryptAssignmentTokenGeneratorTest {
     
     private ParameterMarkerExpressionSegment parameterMarkerExpression;
     
-    private EncryptAlgorithm<?, ?> encryptAlgorithm;
-    
     @Before
     public void setup() {
-        encryptAlgorithm = mock(EncryptAlgorithm.class);
-        encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         updateStatement = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         insertStatement = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         assignmentSegment = mock(AssignmentSegment.class, RETURNS_DEEP_STUBS);
@@ -84,7 +76,7 @@ public final class EncryptAssignmentTokenGeneratorTest {
         when(updateStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
-        when(encryptRule.findEncryptor(eq("table"), eq("columns"))).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findEncryptor(eq("table"), eq("columns"))).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
         when(insertStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
     }
@@ -102,22 +94,21 @@ public final class EncryptAssignmentTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(parameterMarkerExpression);
-        Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
-        assertThat(resultCollection.size(), is(1));
+        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(updateStatement);
+        assertThat(sqlTokens.size(), is(1));
     }
     
     @Test
     public void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(literalExpression);
-        Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
-        assertThat(resultCollection.size(), is(1));
+        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(updateStatement);
+        assertThat(sqlTokens.size(), is(1));
     }
     
     @Test
     public void assertGenerateSQLTokenWithUpdateEmpty() {
         when(assignmentSegment.getValue()).thenReturn(null);
-        Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(updateStatement);
-        assertThat(resultCollection.size(), is(0));
+        assertTrue(tokenGenerator.generateSQLTokens(updateStatement).isEmpty());
     }
     
     @Test
@@ -125,7 +116,7 @@ public final class EncryptAssignmentTokenGeneratorTest {
         MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class);
         insertStatementHandlerMockedStatic.when(() -> InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(literalExpression);
-        Collection<EncryptAssignmentToken> resultCollection = tokenGenerator.generateSQLTokens(insertStatement);
-        assertThat(resultCollection.size(), is(1));
+        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(insertStatement);
+        assertThat(sqlTokens.size(), is(1));
     }
 }
