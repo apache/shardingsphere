@@ -98,7 +98,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(createDataSources());
-        result.setTables(createTables());
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("user-id-select-regex-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("user-id-select-regex-algorithm", createColumnShadowAlgorithm()));
         return result;
     }
@@ -112,13 +112,6 @@ public final class ShadowSelectStatementRoutingEngineTest {
         columnRegexMatchShadowAlgorithm.setProps(props);
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
-    }
-    
-    private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        Collection<String> shadowAlgorithmNames = Collections.singleton("user-id-select-regex-algorithm");
-        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
-        return result;
     }
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
