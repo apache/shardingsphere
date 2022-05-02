@@ -74,15 +74,14 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap;
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 0.75f);
         List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
         try (Connection connection = dataSource.getConnection()) {
             for (List<String> each : splitTables) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
             }
-            indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
         }
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
@@ -163,9 +162,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
     }
     
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
