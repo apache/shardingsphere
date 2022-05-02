@@ -91,7 +91,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         }
         if (null == context.get("toast_autovacuum_enabled")) {
             context.put("toast_autovacuum_enabled", "x");
-        } else if ("true".equalsIgnoreCase(context.get("toast_autovacuum_enabled").toString())) {
+        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("toast_autovacuum_enabled").toString())) {
             context.put("toast_autovacuum_enabled", "t");
         } else {
             context.put("toast_autovacuum_enabled", "f");
@@ -123,7 +123,7 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
             if (context.get("rlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("rlspolicy"))) {
                 context.put("rlspolicy", true);
             }
-            if (context.get("forcerlspolicy") instanceof String && "true".equals(context.get("forcerlspolicy"))) {
+            if (context.get("forcerlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("forcerlspolicy"))) {
                 context.put("forcerlspolicy", true);
             }
         }
