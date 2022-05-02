@@ -72,16 +72,16 @@ public final class ShadowRuleTest {
     }
     
     private Properties createHintProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        return properties;
+        Properties props = new Properties();
+        props.setProperty("shadow", Boolean.TRUE.toString());
+        return props;
     }
     
     private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties(column, operation));
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
+        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
+        result.setProps(createColumnProperties(column, operation));
+        result.init();
+        return result;
     }
     
     private Properties createColumnProperties(final String column, final String operation) {
