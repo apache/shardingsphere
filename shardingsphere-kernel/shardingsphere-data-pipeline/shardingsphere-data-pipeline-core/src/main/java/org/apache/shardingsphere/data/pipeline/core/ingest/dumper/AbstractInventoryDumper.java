@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -84,7 +85,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             
             @Override
             protected PipelineTableMetaData initialize() {
-                return metaDataLoader.getTableMetaData(inventoryDumperConfig.getActualTableName());
+                String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
+                return metaDataLoader.getTableMetaData(schemaName, inventoryDumperConfig.getActualTableName());
             }
         };
     }

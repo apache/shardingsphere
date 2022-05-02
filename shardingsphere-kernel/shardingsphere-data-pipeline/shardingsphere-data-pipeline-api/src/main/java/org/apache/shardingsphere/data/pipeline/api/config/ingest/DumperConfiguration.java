@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -37,6 +38,8 @@ import java.util.Map;
 // TODO fields final
 public class DumperConfiguration {
     
+    private String databaseName;
+    
     private String dataSourceName;
     
     private PipelineDataSourceConfiguration dataSourceConfig;
@@ -44,6 +47,8 @@ public class DumperConfiguration {
     private IngestPosition<?> position;
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
+    
+    private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     /**
      * Get logic table name.
@@ -55,6 +60,10 @@ public class DumperConfiguration {
         return tableNameMap.get(new ActualTableName(actualTableName));
     }
     
+    private LogicTableName getLogicTableName(final ActualTableName actualTableName) {
+        return tableNameMap.get(actualTableName);
+    }
+    
     /**
      * Whether contains table.
      *
@@ -63,5 +72,25 @@ public class DumperConfiguration {
      */
     public boolean containsTable(final String actualTableName) {
         return tableNameMap.containsKey(new ActualTableName(actualTableName));
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param logicTableName logic table name
+     * @return schema name. nullable
+     */
+    public String getSchemaName(final LogicTableName logicTableName) {
+        return tableNameSchemaNameMapping.getSchemaName(logicTableName);
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param actualTableName actual table name
+     * @return schema name. nullable
+     */
+    public String getSchemaName(final ActualTableName actualTableName) {
+        return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
     }
 }
