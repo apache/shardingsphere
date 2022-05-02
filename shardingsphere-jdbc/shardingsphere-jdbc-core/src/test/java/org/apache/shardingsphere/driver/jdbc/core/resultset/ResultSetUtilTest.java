@@ -71,7 +71,7 @@ public final class ResultSetUtilTest {
         String dbFalse = "-2";
         String dbTrue = "1";
         assertFalse((boolean) ResultSetUtil.convertValue(dbFalse, boolean.class));
-        assertTrue((boolean )ResultSetUtil.convertValue(dbTrue, boolean.class));
+        assertTrue((boolean) ResultSetUtil.convertValue(dbTrue, boolean.class));
     }
     
     @Test
