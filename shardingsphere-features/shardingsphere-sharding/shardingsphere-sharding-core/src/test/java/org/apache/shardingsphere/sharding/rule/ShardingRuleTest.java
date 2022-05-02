@@ -536,12 +536,6 @@ public final class ShardingRuleTest {
         assertThat(actual.get(), is("COLUMN1"));
     }
     
-    @Test
-    public void assertGetRuleType() {
-        ShardingRule shardingRule = createMinimumShardingRule();
-        assertThat(shardingRule.getType(), is(ShardingRule.class.getSimpleName()));
-    }
-    
     private ShardingTableRuleConfiguration createTableRuleConfigWithComplexStrategies() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("COLUMN1,COLUMN2", "COMPLEX_TEST"));

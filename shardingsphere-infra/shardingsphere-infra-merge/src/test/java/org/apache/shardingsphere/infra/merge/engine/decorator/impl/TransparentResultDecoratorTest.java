@@ -35,8 +35,7 @@ public final class TransparentResultDecoratorTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), new TransparentRule());
-        assertTrue(actual.next());
+        assertTrue(decorator.decorate(queryResult, mock(SQLStatementContext.class), new TransparentRule()).next());
     }
     
     @Test
@@ -44,7 +43,6 @@ public final class TransparentResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), new TransparentRule());
-        assertTrue(actual.next());
+        assertTrue(decorator.decorate(mergedResult, mock(SQLStatementContext.class), new TransparentRule()).next());
     }
 }
