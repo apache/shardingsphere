@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,14 +46,14 @@ public final class ShardingParameterRewriterBuilderTest {
         when(routeContext.isSingleRouting()).thenReturn(false);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mockSchemaMap(), statementContext);
+        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(
+                shardingRule, routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext);
         Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters();
         assertThat(actual.size(), is(1));
         ParameterRewriter parameterRewriter = actual.iterator().next();
         assertThat(parameterRewriter, instanceOf(ShardingPaginationParameterRewriter.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
         ShardingRule shardingRule = mock(ShardingRule.class);
@@ -61,14 +61,8 @@ public final class ShardingParameterRewriterBuilderTest {
         when(routeContext.isSingleRouting()).thenReturn(true);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
-        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(shardingRule, routeContext, mockSchemaMap(), statementContext);
-        Collection<ParameterRewriter> actual = shardingParameterRewriterBuilder.getParameterRewriters();
-        assertThat(actual.size(), is(0));
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
-        result.put("test", mock(ShardingSphereSchema.class));
-        return result;
+        ShardingParameterRewriterBuilder shardingParameterRewriterBuilder = new ShardingParameterRewriterBuilder(
+                shardingRule, routeContext, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), statementContext);
+        assertTrue(shardingParameterRewriterBuilder.getParameterRewriters().isEmpty());
     }
 }
