@@ -84,7 +84,8 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     @Override
     protected List<TestRule> classRules() {
         List<TestRule> result = super.classRules();
-        collectorRule = result.stream().filter(each -> each instanceof CollectorRule).findFirst().map(optional -> (CollectorRule) optional).orElse(() -> { });
+        collectorRule = result.stream().filter(each -> each instanceof CollectorRule).findFirst().map(optional -> (CollectorRule) optional).orElse(() -> {
+        });
         return result;
     }
     
