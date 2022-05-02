@@ -48,6 +48,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,7 +66,7 @@ public final class SingleTableSQLRouterTest {
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("ds_0"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertFalse(actual.isFederated());
     }
     
@@ -80,7 +81,7 @@ public final class SingleTableSQLRouterTest {
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("readwrite_ds"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("write_ds"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertFalse(actual.isFederated());
     }
     
