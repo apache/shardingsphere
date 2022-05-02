@@ -167,7 +167,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     
     private Optional<SQLToken> getAddColumnPositionToken(final String tableName, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
         Optional<EncryptAlgorithm> encryptor = addColumnDefinitionSegment.getColumnPosition().filter(optional -> null != optional.getColumnName())
-                .flatMap(each -> encryptRule.findEncryptor(tableName, each.getColumnName().getIdentifier().getValue()));
+                .flatMap(optional -> encryptRule.findEncryptor(tableName, optional.getColumnName().getIdentifier().getValue()));
         if (encryptor.isPresent()) {
             return Optional.of(getPositionColumnToken(addColumnDefinitionSegment.getColumnPosition().get(), tableName));
         }
@@ -179,6 +179,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
                 .getCipherColumn(tableName, positionSegment.getColumnName().getIdentifier().getValue()), null);
     }
     
+    @SuppressWarnings("rawtypes")
     private Collection<SQLToken> getModifyColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
@@ -227,12 +228,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private Optional<SQLToken> getColumnPositionToken(final String tableName, final ColumnPositionSegment columnPositionSegment) {
-        Optional<EncryptAlgorithm> encryptor = Optional.of(columnPositionSegment).filter(each -> null != each.getColumnName())
-                .flatMap(each -> encryptRule.findEncryptor(tableName, each.getColumnName().getIdentifier().getValue()));
-        if (encryptor.isPresent()) {
-            return Optional.of(getPositionColumnToken(columnPositionSegment, tableName));
-        }
-        return Optional.empty();
+        Optional<EncryptAlgorithm> encryptor = Optional.of(columnPositionSegment).filter(optional -> null != optional.getColumnName())
+                .flatMap(optional -> encryptRule.findEncryptor(tableName, optional.getColumnName().getIdentifier().getValue()));
+        return encryptor.isPresent() ? Optional.of(getPositionColumnToken(columnPositionSegment, tableName)) : Optional.empty();
     }
     
     private Collection<SQLToken> getChangeColumnTokens(final String tableName, final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions) {

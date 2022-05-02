@@ -668,7 +668,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        return findTableRule(logicTable).flatMap(each -> findActualTableFromActualDataNode(catalog, each.getActualDataNodes()));
+        return findTableRule(logicTable).flatMap(optional -> findActualTableFromActualDataNode(catalog, optional.getActualDataNodes()));
     }
     
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
