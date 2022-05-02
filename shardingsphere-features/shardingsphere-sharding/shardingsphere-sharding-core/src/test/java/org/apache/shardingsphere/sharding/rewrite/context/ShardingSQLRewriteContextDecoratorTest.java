@@ -59,6 +59,6 @@ public final class ShardingSQLRewriteContextDecoratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isFederated()).thenReturn(false);
         decorator.decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, routeContext);
-        assertTrue(Objects.nonNull(sqlRewriteContext.getSqlTokens()));
+        assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }
 }
