@@ -79,7 +79,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         userIdSelectProps.setProperty("value", "1");
         result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
-        noteAlgorithmProps.setProperty("shadow", "true");
+        noteAlgorithmProps.setProperty("shadow", Boolean.TRUE.toString());
         noteAlgorithmProps.setProperty("foo", "bar");
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
