@@ -820,7 +820,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         OpenGaussCommentStatement result = new OpenGaussCommentStatement();
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        columnName.ifPresent(name -> result.setColumn(new ColumnSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }
@@ -835,10 +835,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     private void setTableSegment(final OpenGaussCommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
         Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        tableName.ifPresent(name -> statement.setTable(new SimpleTableSegment(new TableNameSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
+        tableName.ifPresent(optional -> statement.setTable(new SimpleTableSegment(new TableNameSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
         Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        schemaName.ifPresent(name -> statement.getTable().setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier())));
+        schemaName.ifPresent(optional -> statement.getTable().setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
         Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        databaseName.ifPresent(name -> statement.getTable().getOwner().ifPresent(owner -> owner.setOwner(new OwnerSegment(name.getStartIndex(), name.getStopIndex(), name.getIdentifier()))));
+        databaseName.ifPresent(optional -> statement.getTable().getOwner()
+                .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
     }
 }

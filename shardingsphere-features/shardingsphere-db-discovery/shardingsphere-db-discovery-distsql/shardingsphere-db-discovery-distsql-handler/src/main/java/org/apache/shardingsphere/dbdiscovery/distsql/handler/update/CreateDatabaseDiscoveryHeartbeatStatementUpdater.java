@@ -66,7 +66,7 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement) {
-        return sqlStatement.getHeartbeats().stream().collect(Collectors.toMap(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName, e -> 1, Integer::sum))
+        return sqlStatement.getHeartbeats().stream().collect(Collectors.toMap(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     

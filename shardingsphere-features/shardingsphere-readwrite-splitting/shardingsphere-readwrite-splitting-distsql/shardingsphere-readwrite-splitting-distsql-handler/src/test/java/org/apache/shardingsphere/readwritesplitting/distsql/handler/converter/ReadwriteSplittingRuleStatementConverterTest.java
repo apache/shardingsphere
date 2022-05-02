@@ -87,9 +87,9 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigs = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
         Stream.iterate(0, i -> i + 1)
                 .limit(expectedMultipleReadwriteSplittingRuleSegments.size())
-                .forEach(i -> {
-                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(i);
-                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(i);
+                .forEach(each -> {
+                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(each);
+                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(each);
                     assertThat(actualRuleConfig.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
                     String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer());
                     assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));

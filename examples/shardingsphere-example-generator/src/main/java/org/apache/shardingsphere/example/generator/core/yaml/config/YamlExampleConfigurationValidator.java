@@ -30,7 +30,7 @@ import java.util.Set;
  * Example configuration validator.
  */
 public final class YamlExampleConfigurationValidator {
-
+    
     /**
      * Verify the entrance.
      *
@@ -46,7 +46,7 @@ public final class YamlExampleConfigurationValidator {
         validateConfigurationValues(configurationMap);
         validateAccountConfigProps(config.getProps());
     }
-
+    
     private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
         configMap.forEach((configItem, configValues) -> {
             YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
@@ -54,16 +54,16 @@ public final class YamlExampleConfigurationValidator {
             configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
         });
     }
-
+    
     private static void validateAccountConfigProps(final Properties props) {
         List<String> accountConfigItemList = Lists.newArrayList("host", "port", "username", "password");
-        accountConfigItemList.forEach(item -> Preconditions.checkArgument(props.get(item) != null, getConfigItemErrorMessage(item)));
+        accountConfigItemList.forEach(each -> Preconditions.checkArgument(props.get(each) != null, getConfigItemErrorMessage(each)));
     }
-
+    
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",it only supports:" + supportedValues.toString() + ",the currently configured value:" + errorValue;
     }
-
+    
     private static String getConfigItemErrorMessage(final String configItem) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",the configuration item missed or its value is null";
     }

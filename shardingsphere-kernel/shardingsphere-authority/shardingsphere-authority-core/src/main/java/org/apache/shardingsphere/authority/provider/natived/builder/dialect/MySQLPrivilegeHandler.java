@@ -96,7 +96,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new NativePrivileges()));
+        users.forEach(each -> result.put(each, new NativePrivileges()));
         fillGlobalPrivileges(result, dataSource, users);
         fillSchemaPrivileges(result, dataSource, users);
         fillTablePrivileges(result, dataSource, users);

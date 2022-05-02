@@ -51,7 +51,7 @@ public class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-                tableRule.ifPresent(rule -> memoryResultSetRow.setCell(1, rule.getLogicTable()));
+                tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 memoryResultSetRow.setCell(3, IndexMetaDataUtil.getLogicIndexName(actualIndexName, actualTableName));
                 result.add(memoryResultSetRow);
             }

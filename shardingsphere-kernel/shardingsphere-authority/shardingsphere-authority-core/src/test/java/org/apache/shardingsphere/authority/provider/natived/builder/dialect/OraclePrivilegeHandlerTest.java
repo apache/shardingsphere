@@ -127,7 +127,7 @@ public final class OraclePrivilegeHandlerTest {
         ResultSet sysPrivilegeResultSet = mockSysPrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         String sysPrivilegeSql = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(sysPrivilegeSql, userList))).thenReturn(sysPrivilegeResultSet);
         ResultSet tabPrivilegeResultSet = mockTabPrivilegeResultSet();
         String tabPrivilegeSql = "SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE, GRANTABLE, INHERITED FROM ALL_TAB_PRIVS WHERE GRANTEE IN (%s)";
@@ -141,7 +141,7 @@ public final class OraclePrivilegeHandlerTest {
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         String diffUsersSQL = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
         when(connection.createStatement()).thenReturn(statement);
         when(result.getConnection()).thenReturn(connection);

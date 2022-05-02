@@ -101,17 +101,10 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         assertThat(group.getProps().getProperty("read-data-source-names"), is("read"));
     }
     
-    @Test
-    public void assertGetTypeClass() {
-        ReadwriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
-        Class<ReadwriteSplittingRuleConfiguration> actual = swapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(ReadwriteSplittingRuleConfiguration.class));
-    }
-    
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
         Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
-                .filter(swapper -> swapper instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
-                .map(swapper -> (ReadwriteSplittingRuleConfigurationYamlSwapper) swapper)
+                .filter(each -> each instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
+                .map(each -> (ReadwriteSplittingRuleConfigurationYamlSwapper) each)
                 .findFirst();
         assertTrue(optional.isPresent());
         return optional.get();
