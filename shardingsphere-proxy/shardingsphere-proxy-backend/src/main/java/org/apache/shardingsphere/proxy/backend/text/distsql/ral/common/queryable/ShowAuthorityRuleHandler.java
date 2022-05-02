@@ -54,11 +54,11 @@ public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<S
         if (!authorityRuleConfigurationOptional.isPresent()) {
             return Collections.emptyList();
         }
-        AuthorityRuleConfiguration authorityRuleConfiguration = authorityRuleConfigurationOptional.get();
+        AuthorityRuleConfiguration ruleConfig = authorityRuleConfigurationOptional.get();
         List<Object> row = new LinkedList<>();
-        row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
-        row.add(authorityRuleConfiguration.getProvider().getType());
-        row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
+        row.add(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
+        row.add(ruleConfig.getProvider().getType());
+        row.add(ruleConfig.getProvider().getProps().size() == 0 ? "" : ruleConfig.getProvider().getProps());
         Collection<List<Object>> result = new LinkedList<>();
         result.add(row);
         return result;

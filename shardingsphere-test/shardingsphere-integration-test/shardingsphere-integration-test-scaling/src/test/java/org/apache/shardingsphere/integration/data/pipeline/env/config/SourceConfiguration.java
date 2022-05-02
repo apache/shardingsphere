@@ -78,9 +78,9 @@ public final class SourceConfiguration {
         dataSources.put("password", ENGINE_ENV_PROPS.getProperty("db.password"));
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDataSources(Collections.singletonMap("ds_src", dataSources));
-        YamlShardingRuleConfiguration shardingRuleConfiguration = new YamlShardingRuleConfiguration();
-        shardingRuleConfiguration.setTables(tableRules);
-        result.setRules(Collections.singleton(shardingRuleConfiguration));
+        YamlShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfiguration();
+        shardingRuleConfig.setTables(tableRules);
+        result.setRules(Collections.singleton(shardingRuleConfig));
         return result;
     }
     

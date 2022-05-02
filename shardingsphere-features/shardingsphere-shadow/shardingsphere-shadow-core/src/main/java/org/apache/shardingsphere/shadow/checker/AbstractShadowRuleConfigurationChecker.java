@@ -78,8 +78,8 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     
     protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
         if (null != defaultShadowAlgorithmName) {
-            ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = shadowAlgorithmConfigurations.get(defaultShadowAlgorithmName);
-            boolean state = null != shardingSphereAlgorithmConfiguration && "SIMPLE_HINT".equals(shardingSphereAlgorithmConfiguration.getType());
+            ShardingSphereAlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigurations.get(defaultShadowAlgorithmName);
+            boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
             Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }
     }

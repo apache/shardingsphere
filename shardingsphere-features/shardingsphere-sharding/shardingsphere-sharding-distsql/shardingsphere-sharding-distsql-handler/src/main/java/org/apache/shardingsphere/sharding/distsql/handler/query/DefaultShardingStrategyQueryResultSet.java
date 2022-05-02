@@ -66,9 +66,9 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
         }
         LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));
         result.addAll(strategyType.getConfigurationContents(strategyConfig));
-        ShardingSphereAlgorithmConfiguration algorithmConfiguration = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
-        result.add(algorithmConfiguration.getType());
-        result.add(algorithmConfiguration.getProps());
+        ShardingSphereAlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
+        result.add(algorithmConfig.getType());
+        result.add(algorithmConfig.getProps());
         return result;
     }
     

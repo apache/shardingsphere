@@ -73,8 +73,8 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private void checkExist(final String databaseName, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Optional<ShardingStrategyConfiguration> strategyConfiguration = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
-        DistSQLException.predictionThrow(!strategyConfiguration.isPresent(), () -> new DuplicateRuleException(
+        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
+        DistSQLException.predictionThrow(!strategyConfig.isPresent(), () -> new DuplicateRuleException(
                 String.format("default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
     }
     

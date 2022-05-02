@@ -48,19 +48,19 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration expected = buildAlgorithmProvidedShadowRuleConfiguration();
-        YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expected);
-        actualConfiguration.getDataSources().forEach((key, value) -> {
+        YamlShadowRuleConfiguration actual = swapper.swapToYamlConfiguration(expected);
+        actual.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfig = expected.getDataSources().get(key);
             assertNotNull(dataSourceConfig);
             assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
             assertThat(value.getSourceDataSourceName(), is(dataSourceConfig.getSourceDataSourceName()));
         });
-        actualConfiguration.getTables().forEach((key, value) -> {
+        actual.getTables().forEach((key, value) -> {
             ShadowTableConfiguration shadowTableConfig = expected.getTables().get(key);
             assertNotNull(shadowTableConfig);
             assertThat(value.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
         });
-        actualConfiguration.getShadowAlgorithms().forEach((key, value) -> {
+        actual.getShadowAlgorithms().forEach((key, value) -> {
             ShadowAlgorithm shadowAlgorithm = expected.getShadowAlgorithms().get(key);
             assertNotNull(shadowAlgorithm);
             assertThat(value.getType(), is(shadowAlgorithm.getType()));

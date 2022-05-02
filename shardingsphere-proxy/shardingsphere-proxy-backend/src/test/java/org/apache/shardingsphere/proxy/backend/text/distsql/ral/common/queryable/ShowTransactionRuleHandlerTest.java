@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -73,8 +72,7 @@ public final class ShowTransactionRuleHandlerTest {
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration(defaultType, providerType, props);
-        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRuleConfiguration), Collections.emptyList());
+        return new ShardingSphereRuleMetaData(Collections.singleton(new TransactionRuleConfiguration(defaultType, providerType, props)), Collections.emptyList());
     }
     
     private Properties getProperties() {

@@ -32,9 +32,9 @@ public final class ShadowTableConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         ShadowTableConfiguration shadowTableConfig = new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("t_order", "t_user"));
-        YamlShadowTableConfiguration yamlShadowTableConfiguration = new ShadowTableConfigurationYamlSwapper().swapToYamlConfiguration(shadowTableConfig);
-        assertThat(yamlShadowTableConfiguration.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
-        assertThat(yamlShadowTableConfiguration.getDataSourceNames(), is(shadowTableConfig.getDataSourceNames()));
+        YamlShadowTableConfiguration yamlShadowTableConfig = new ShadowTableConfigurationYamlSwapper().swapToYamlConfiguration(shadowTableConfig);
+        assertThat(yamlShadowTableConfig.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
+        assertThat(yamlShadowTableConfig.getDataSourceNames(), is(shadowTableConfig.getDataSourceNames()));
     }
     
     @Test
