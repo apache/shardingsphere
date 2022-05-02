@@ -190,9 +190,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementManager = new StatementManager();
     }
     
-    private boolean isStatementsCacheable(final Collection<RuleConfiguration> configurations) {
+    private boolean isStatementsCacheable(final Collection<RuleConfiguration> configs) {
         // TODO Consider cache statements with more case
-        return 1 == configurations.size() && configurations.iterator().next() instanceof ReadwriteSplittingRuleConfiguration && !HintManager.isInstantiated();
+        return 1 == configs.size() && configs.iterator().next() instanceof ReadwriteSplittingRuleConfiguration && !HintManager.isInstantiated();
     }
     
     @Override

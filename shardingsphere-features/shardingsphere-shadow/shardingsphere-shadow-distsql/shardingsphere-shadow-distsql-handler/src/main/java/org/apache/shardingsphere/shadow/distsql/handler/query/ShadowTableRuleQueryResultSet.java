@@ -48,7 +48,7 @@ public final class ShadowTableRuleQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(configuration -> data = buildData(configuration).iterator());
+        rule.ifPresent(each -> data = buildData(each).iterator());
     }
     
     private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfiguration) {

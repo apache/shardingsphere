@@ -525,20 +525,20 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> dataSourceMap = new HashMap<>(originalMetaData.getResource().getDataSources());
         dataSourceMap.putAll(DataSourcePoolCreator.create(addedDataSourceProps));
         Properties props = metaDataContexts.getProps().getProps();
-        DatabaseConfiguration databaseConfiguration = new DataSourceProvidedDatabaseConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations());
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations());
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(databaseConfiguration, optional));
+        metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(databaseConfig, optional));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(), databaseConfiguration, props);
+        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(), databaseConfig, props);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                 .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getDatabaseName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
-    private void persistTransactionConfiguration(final DatabaseConfiguration databaseConfiguration, final MetaDataPersistService metaDataPersistService) {
+    private void persistTransactionConfiguration(final DatabaseConfiguration databaseConfig, final MetaDataPersistService metaDataPersistService) {
         Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
         if (fileGenerator.isPresent()) {
-            Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), databaseConfiguration, instanceContext.getModeConfiguration().getType());
+            Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), databaseConfig, instanceContext.getModeConfiguration().getType());
             metaDataPersistService.persistTransactionRule(transactionProps, true);
         }
     }

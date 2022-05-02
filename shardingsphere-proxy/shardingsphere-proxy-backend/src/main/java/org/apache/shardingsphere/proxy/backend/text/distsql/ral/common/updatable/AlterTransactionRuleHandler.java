@@ -44,15 +44,15 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getGlobalRuleMetaData();
         Collection<ShardingSphereRule> globalRules = globalRuleMetaData.getRules();
         globalRules.removeIf(each -> each instanceof TransactionRule);
-        Collection<RuleConfiguration> globalRuleConfigurations = new LinkedList<>(globalRuleMetaData.getConfigurations());
-        globalRuleConfigurations.removeIf(each -> each instanceof TransactionRuleConfiguration);
+        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(globalRuleMetaData.getConfigurations());
+        globalRuleConfigs.removeIf(each -> each instanceof TransactionRuleConfiguration);
         TransactionRuleConfiguration toBeAlteredRuleConfig = buildTransactionRuleConfiguration();
         globalRules.add(new TransactionRule(toBeAlteredRuleConfig));
-        globalRuleConfigurations.add(toBeAlteredRuleConfig);
+        globalRuleConfigs.add(toBeAlteredRuleConfig);
         ProxyContext.getInstance().getContextManager().renewAllTransactionContext();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
-            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);
+            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigs, true);
         }
     }
     

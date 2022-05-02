@@ -20,31 +20,18 @@ package org.apache.shardingsphere.traffic.rule.builder;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultTrafficRuleConfigurationBuilderTest {
     
-    private final DefaultTrafficRuleConfigurationBuilder builder = new DefaultTrafficRuleConfigurationBuilder();
-    
     @Test
     public void assertBuild() {
-        TrafficRuleConfiguration configuration = builder.build();
-        assertNotNull(configuration);
-        assertThat(configuration.getTrafficStrategies().size(), is(0));
-        assertThat(configuration.getTrafficAlgorithms().size(), is(0));
-        assertThat(configuration.getLoadBalancers().size(), is(0));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(builder.getOrder(), is(800));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(builder.getTypeClass(), equalTo(TrafficRuleBuilder.class));
+        TrafficRuleConfiguration actual = new DefaultTrafficRuleConfigurationBuilder().build();
+        assertNotNull(actual);
+        assertThat(actual.getTrafficStrategies().size(), is(0));
+        assertThat(actual.getTrafficAlgorithms().size(), is(0));
+        assertThat(actual.getLoadBalancers().size(), is(0));
     }
 }

@@ -94,10 +94,10 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments), currentRuleConfig);
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
                 (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(algorithmSegments));
-        DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        updater.updateCurrentRuleConfiguration(currentConfiguration, databaseDiscoveryRuleConfig);
-        assertThat(currentConfiguration.getDiscoveryTypes().size(), is(1));
-        assertThat(currentConfiguration.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
-        assertThat(currentConfiguration.getDiscoveryTypes().get("discovery_type").getProps().get("key"), is("value_1"));
+        DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        updater.updateCurrentRuleConfiguration(currentConfig, databaseDiscoveryRuleConfig);
+        assertThat(currentConfig.getDiscoveryTypes().size(), is(1));
+        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
+        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getProps().get("key"), is("value_1"));
     }
 }

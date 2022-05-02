@@ -87,8 +87,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         rules.add(createCompleteTableRule("t_order"));
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(rules);
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order"));
@@ -115,8 +115,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         rules.add(createCompleteTableRule("t_order_item"));
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(rules);
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order_item"));

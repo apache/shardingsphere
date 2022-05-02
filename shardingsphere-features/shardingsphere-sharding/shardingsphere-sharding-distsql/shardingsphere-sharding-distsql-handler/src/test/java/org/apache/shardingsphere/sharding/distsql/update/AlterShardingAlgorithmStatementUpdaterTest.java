@@ -65,9 +65,9 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("notExistAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -75,9 +75,9 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     private AlterShardingAlgorithmStatement createSQLStatement(final ShardingAlgorithmSegment... ruleSegments) {
