@@ -120,7 +120,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(optional -> (DataNodeContainedRule) optional);
     }
     
     @Override

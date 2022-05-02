@@ -88,7 +88,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     private Optional<EncryptConfigDataTypeToken> findEncryptConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(each -> each.findEncryptColumn(columnName));
         if (encryptColumn.isPresent() && null != encryptColumn.get().getCipherDataType()) {
             return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), encryptColumn.get().getCipherColumn(), encryptColumn.get().getCipherDataType().getTypeName()));
         }
@@ -107,7 +107,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     
     private Optional<EncryptConfigDataTypeToken> findAssistedConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                                                  final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(each -> each.findEncryptColumn(columnName));
         Optional<String> assistedQueryColumn = encryptColumn.flatMap(EncryptColumn::getAssistedQueryColumn);
         if (assistedQueryColumn.isPresent()) {
             if (null != encryptColumn.get().getAssistedQueryDataType()) {
@@ -130,7 +130,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     
     private Optional<EncryptConfigDataTypeToken> findPlainConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                                               final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(each -> each.findEncryptColumn(columnName));
         Optional<String> plainColumn = encryptColumn.flatMap(EncryptColumn::getPlainColumn);
         if (plainColumn.isPresent()) {
             if (null != encryptColumn.get().getPlainDataType()) {

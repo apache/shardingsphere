@@ -89,7 +89,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     @Override
     public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule authorityRule) {
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
-        return user.filter(shardingSphereUser -> validator.test(shardingSphereUser, cipher)).isPresent();
+        return user.filter(each -> validator.test(each, cipher)).isPresent();
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {

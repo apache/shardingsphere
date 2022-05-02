@@ -57,12 +57,12 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(viewName), materials);
         Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
-        actualViewMetaData.ifPresent(viewMetaData -> {
-            metaData.getSchemaByName(schemaName).put(viewName, viewMetaData);
-            database.put(schemaName, viewMetaData);
+        actualViewMetaData.ifPresent(optional -> {
+            metaData.getSchemaByName(schemaName).put(viewName, optional);
+            database.put(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
-            event.getAlteredTables().add(viewMetaData);
+            event.getAlteredTables().add(optional);
             ShardingSphereEventBus.getInstance().post(event);
         });
     }

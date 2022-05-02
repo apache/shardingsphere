@@ -62,7 +62,7 @@ public final class PostgreSQLManualScalingCase extends BasePostgreSQLITCase {
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
         List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
+        Set<Object> originalSourceList = previewResList.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");

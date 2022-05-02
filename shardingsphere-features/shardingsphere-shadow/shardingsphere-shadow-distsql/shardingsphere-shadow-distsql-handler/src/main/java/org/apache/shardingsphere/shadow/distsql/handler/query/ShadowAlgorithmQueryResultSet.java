@@ -55,9 +55,9 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(each -> {
-            data = each.getShadowAlgorithms().entrySet().iterator();
-            defaultAlgorithm = each.getDefaultShadowAlgorithmName();
+        rule.ifPresent(optional -> {
+            data = optional.getShadowAlgorithms().entrySet().iterator();
+            defaultAlgorithm = optional.getDefaultShadowAlgorithmName();
         });
     }
     

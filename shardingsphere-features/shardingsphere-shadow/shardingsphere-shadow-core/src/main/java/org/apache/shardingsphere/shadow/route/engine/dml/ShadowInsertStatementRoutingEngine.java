@@ -88,7 +88,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
             String columnName = iterator.next();
             Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
             index++;
-            return columnValues.map(values -> new ShadowColumnCondition(getSingleTableName(), columnName, values));
+            return columnValues.map(each -> new ShadowColumnCondition(getSingleTableName(), columnName, each));
         }
         
         private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {

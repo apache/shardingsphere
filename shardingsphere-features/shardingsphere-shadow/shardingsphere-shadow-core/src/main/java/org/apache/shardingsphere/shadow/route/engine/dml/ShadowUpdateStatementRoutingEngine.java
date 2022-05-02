@@ -95,8 +95,8 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
         @Override
         public Optional<ShadowColumnCondition> next() {
             ExpressionSegment expressionSegment = iterator.next();
-            return ShadowExtractor.extractColumn(expressionSegment).flatMap(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                    .map(values -> new ShadowColumnCondition(getSingleTableName(), segment.getIdentifier().getValue(), values)));
+            return ShadowExtractor.extractColumn(expressionSegment).flatMap(optional -> ShadowExtractor.extractValues(expressionSegment, parameters)
+                    .map(values -> new ShadowColumnCondition(getSingleTableName(), optional.getIdentifier().getValue(), values)));
         }
     }
 }

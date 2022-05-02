@@ -91,7 +91,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
         ByteSequence prefixByteSequence = ByteSequence.from(prefix, StandardCharsets.UTF_8);
         GetOption getOption = GetOption.newBuilder().withPrefix(prefixByteSequence).withSortField(GetOption.SortTarget.KEY).withSortOrder(GetOption.SortOrder.ASCEND).build();
         List<KeyValue> keyValues = client.getKVClient().get(prefixByteSequence, getOption).get().getKvs();
-        return keyValues.stream().map(e -> getSubNodeKeyName(prefix, e.getKey().toString(StandardCharsets.UTF_8))).distinct().collect(Collectors.toList());
+        return keyValues.stream().map(each -> getSubNodeKeyName(prefix, each.getKey().toString(StandardCharsets.UTF_8))).distinct().collect(Collectors.toList());
     }
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {

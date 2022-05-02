@@ -174,17 +174,17 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     }
     
     private void addAssistedQueryAssignment(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
-        encryptRule.findAssistedQueryColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(assistedQueryColumn -> {
+        encryptRule.findAssistedQueryColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> {
             Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
             Object assistedQueryValue = encryptRule
                     .getEncryptAssistedQueryValues(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue))
                     .iterator().next();
-            token.addAssignment(assistedQueryColumn, assistedQueryValue);
+            token.addAssignment(optional, assistedQueryValue);
         });
     }
     
     private void addPlainAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        encryptRule.findPlainColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(plainColumn -> token.addAssignment(plainColumn, originalValue));
+        encryptRule.findPlainColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> token.addAssignment(optional, originalValue));
     }
 }
