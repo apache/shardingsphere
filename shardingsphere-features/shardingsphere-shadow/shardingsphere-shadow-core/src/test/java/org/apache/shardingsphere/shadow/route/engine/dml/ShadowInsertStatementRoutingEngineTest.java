@@ -43,10 +43,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -102,13 +100,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("user-id-insert-regex-algorithm"))));
-        result.setShadowAlgorithms(createShadowAlgorithms());
-        return result;
-    }
-    
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm());
+        result.setShadowAlgorithms(Collections.singletonMap("user-id-insert-regex-algorithm", createColumnShadowAlgorithm()));
         return result;
     }
     
