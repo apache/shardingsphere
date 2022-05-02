@@ -143,15 +143,15 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
                 (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         DatabaseDiscoveryDataSourceRuleConfiguration constructionRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds_1", Collections.emptyList(), "", "");
         DatabaseDiscoveryDataSourceRuleConfiguration definitionRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds_2", Collections.emptyList(), "", "");
-        DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Arrays.asList(constructionRuleConfig, definitionRuleConfig)),
+        DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Arrays.asList(constructionRuleConfig, definitionRuleConfig)),
                 new HashMap<>(Collections.singletonMap("discovery_type_name", null)), new HashMap<>(Collections.singletonMap("heartbeat_name", null)));
-        updater.updateCurrentRuleConfiguration(currentConfiguration, toBeCreatedRuleConfig);
-        assertThat(currentConfiguration.getDataSources().size(), is(2));
-        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
+        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        assertThat(currentConfig.getDataSources().size(), is(2));
+        assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
-        assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
+        assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_2")));
-        assertTrue(currentConfiguration.getDiscoveryTypes().containsKey("readwrite_ds_2_MySQL.MGR"));
-        assertTrue(currentConfiguration.getDiscoveryHeartbeats().containsKey("readwrite_ds_2_heartbeat"));
+        assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_2_MySQL.MGR"));
+        assertTrue(currentConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_2_heartbeat"));
     }
 }

@@ -113,11 +113,11 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
         return String.format("default_%s_%s", defaultType.toLowerCase(), algorithmType);
     }
     
-    private void setStrategyConfiguration(final ShardingRuleConfiguration configuration, final String type, final ShardingStrategyConfiguration shardingStrategyConfig) {
+    private void setStrategyConfiguration(final ShardingRuleConfiguration ruleConfig, final String type, final ShardingStrategyConfiguration shardingStrategyConfig) {
         if (type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            configuration.setDefaultTableShardingStrategy(shardingStrategyConfig);
+            ruleConfig.setDefaultTableShardingStrategy(shardingStrategyConfig);
         } else {
-            configuration.setDefaultDatabaseShardingStrategy(shardingStrategyConfig);
+            ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyConfig);
         }
     }
     

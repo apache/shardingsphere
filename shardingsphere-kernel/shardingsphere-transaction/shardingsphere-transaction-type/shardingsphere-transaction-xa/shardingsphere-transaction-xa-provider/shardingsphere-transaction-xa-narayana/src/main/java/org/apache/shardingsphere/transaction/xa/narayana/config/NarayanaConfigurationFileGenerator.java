@@ -140,12 +140,12 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @Override
-    public Properties getTransactionProps(final Properties originTransactionProps, final DatabaseConfiguration databaseConfiguration, final String modeType) {
+    public Properties getTransactionProps(final Properties originTransactionProps, final DatabaseConfiguration databaseConfig, final String modeType) {
         Properties result = new Properties();
         if (!originTransactionProps.isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
         } else if ("Cluster".equals(modeType)) {
-            generateDefaultJdbcStoreConfiguration(databaseConfiguration, result);
+            generateDefaultJdbcStoreConfiguration(databaseConfig, result);
         }
         return result;
     }
@@ -158,8 +158,8 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     
-    private void generateDefaultJdbcStoreConfiguration(final DatabaseConfiguration databaseConfiguration, final Properties props) {
-        Map<String, DataSource> datasourceMap = databaseConfiguration.getDataSources();
+    private void generateDefaultJdbcStoreConfiguration(final DatabaseConfiguration databaseConfig, final Properties props) {
+        Map<String, DataSource> datasourceMap = databaseConfig.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
         if (!dataSource.isPresent()) {
             return;
