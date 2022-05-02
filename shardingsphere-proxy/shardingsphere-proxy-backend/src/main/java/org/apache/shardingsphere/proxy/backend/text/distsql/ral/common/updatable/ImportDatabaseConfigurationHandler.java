@@ -105,14 +105,14 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
     }
     
-    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
-        if (null == yamlRuleConfigurations || yamlRuleConfigurations.isEmpty()) {
+    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) throws DistSQLException {
+        if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
-        for (YamlRuleConfiguration each : yamlRuleConfigurations) {
+        for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
                 shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfig);
