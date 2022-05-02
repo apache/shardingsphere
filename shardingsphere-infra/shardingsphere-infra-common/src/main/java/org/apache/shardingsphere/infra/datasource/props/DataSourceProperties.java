@@ -96,15 +96,15 @@ public final class DataSourceProperties {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
     }
     
-    private boolean equalsByProperties(final DataSourceProperties dataSourceProperties) {
-        if (!dataSourceClassName.equals(dataSourceProperties.dataSourceClassName)) {
+    private boolean equalsByProperties(final DataSourceProperties dataSourceProps) {
+        if (!dataSourceClassName.equals(dataSourceProps.dataSourceClassName)) {
             return false;
         }
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
-            if (!dataSourceProperties.getAllLocalProperties().containsKey(entry.getKey())) {
+            if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.getAllLocalProperties().get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProps.getAllLocalProperties().get(entry.getKey())))) {
                 return false;
             }
         }
