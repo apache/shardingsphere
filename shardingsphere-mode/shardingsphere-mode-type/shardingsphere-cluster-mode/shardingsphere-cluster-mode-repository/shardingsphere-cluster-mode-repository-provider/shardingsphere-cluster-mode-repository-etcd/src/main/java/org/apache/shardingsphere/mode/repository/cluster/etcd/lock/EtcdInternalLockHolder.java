@@ -35,15 +35,15 @@ import java.util.concurrent.locks.Lock;
 /**
  * Etcd internal lock holder.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class EtcdInternalLockHolder {
     
     private final Map<String, EtcdInternalLock> locks = new ConcurrentHashMap<>();
     
     private final Client client;
     
-    private final EtcdProperties etcdProperties;
+    private final EtcdProperties etcdProps;
     
     /**
      * Get global lock.
@@ -72,7 +72,7 @@ public class EtcdInternalLockHolder {
     
     private EtcdInternalLock createLock(final String lockName) {
         try {
-            long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
             return new EtcdInternalLock(client.getLockClient(), lockName, leaseId);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

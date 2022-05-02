@@ -116,7 +116,7 @@ public final class EtcdRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
+        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProps"), new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
