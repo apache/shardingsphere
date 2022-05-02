@@ -86,13 +86,6 @@ public final class SingleTableRuleTest {
     }
     
     @Test
-    public void assertGetRuleType() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
-                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        assertThat(singleTableRule.getType(), is(SingleTableRule.class.getSimpleName()));
-    }
-    
-    @Test
     public void assertGetSingleTableDataNodes() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllTables()).thenReturn(Arrays.asList("t_order", "t_order_0", "t_order_1"));
