@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata;
+package org.apache.shardingsphere.data.pipeline.api.config;
 
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

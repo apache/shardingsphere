@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
@@ -90,14 +91,18 @@ public final class WalEventConverter {
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
         result.setType(IngestDataChangeType.INSERT);
-        putColumnsIntoDataRecord(result, metaDataLoader.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, getPipelineTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
         return result;
+    }
+    
+    private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
+        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
         result.setType(IngestDataChangeType.UPDATE);
-        putColumnsIntoDataRecord(result, metaDataLoader.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, getPipelineTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
         return result;
     }
     
@@ -105,7 +110,7 @@ public final class WalEventConverter {
         // TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(IngestDataChangeType.DELETE);
-        List<String> primaryKeyColumns = metaDataLoader.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
+        List<String> primaryKeyColumns = getPipelineTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
