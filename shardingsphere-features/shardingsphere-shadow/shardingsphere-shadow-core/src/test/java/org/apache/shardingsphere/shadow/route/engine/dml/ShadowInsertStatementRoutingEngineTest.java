@@ -38,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,10 +66,8 @@ public final class ShadowInsertStatementRoutingEngineTest {
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         when(result.getInsertColumnNames()).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
-        List<ExpressionSegment> valueExpressions = new ArrayList<>();
-        valueExpressions.add(new LiteralExpressionSegment(0, 10, "1"));
-        valueExpressions.add(new LiteralExpressionSegment(11, 20, "orderCode"));
-        valueExpressions.add(new LiteralExpressionSegment(21, 30, "orderName"));
+        List<ExpressionSegment> valueExpressions = Arrays.asList(new LiteralExpressionSegment(0, 10, "1"), 
+                new LiteralExpressionSegment(11, 20, "orderCode"), new LiteralExpressionSegment(21, 30, "orderName"));
         when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(valueExpressions, Collections.emptyList(), 0)));
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
