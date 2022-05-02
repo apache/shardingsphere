@@ -194,10 +194,10 @@ public final class MySQLJsonValueDecoder {
                 out.append("null");
                 break;
             case JsonValueTypes.LITERAL_TRUE:
-                out.append(Boolean.TRUE);
+                out.append("true");
                 break;
             case JsonValueTypes.LITERAL_FALSE:
-                out.append(Boolean.FALSE);
+                out.append("false");
                 break;
             default:
                 throw new UnsupportedOperationException(String.valueOf(inlineValue));
