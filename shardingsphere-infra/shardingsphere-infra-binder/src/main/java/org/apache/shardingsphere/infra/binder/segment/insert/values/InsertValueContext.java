@@ -41,7 +41,7 @@ public final class InsertValueContext {
     private final int parameterCount;
     
     private final List<ExpressionSegment> valueExpressions;
-
+    
     private final List<ParameterMarkerExpressionSegment> parameterMarkerExpressions;
     
     private final List<Object> parameters;

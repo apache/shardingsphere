@@ -58,7 +58,7 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
             return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         if ("CONCAT".equalsIgnoreCase(segment.getFunctionName())) {
-            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO), 
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO),
                     null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         return Optional.empty();
@@ -84,18 +84,18 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
     
     private List<ExpressionSegment> getParameters(final SqlBasicCall sqlBasicCall) {
         List<ExpressionSegment> result = new ArrayList<>();
-        sqlBasicCall.getOperandList().forEach(operand -> {
-            if (operand instanceof SqlDataTypeSpec) {
+        sqlBasicCall.getOperandList().forEach(each -> {
+            if (each instanceof SqlDataTypeSpec) {
                 DataTypeSegment dataTypeSegment = new DataTypeSegment();
-                dataTypeSegment.setStartIndex(getStartIndex(operand));
-                dataTypeSegment.setStopIndex(getStopIndex(operand));
-                dataTypeSegment.setDataTypeName(operand.toString().replace("`", ""));
+                dataTypeSegment.setStartIndex(getStartIndex(each));
+                dataTypeSegment.setStopIndex(getStopIndex(each));
+                dataTypeSegment.setDataTypeName(each.toString().replace("`", ""));
                 result.add(dataTypeSegment);
-            } else if (operand instanceof SqlCharStringLiteral) {
-                result.add(new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", "")));
-            } else if (operand instanceof SqlDynamicParam) {
+            } else if (each instanceof SqlCharStringLiteral) {
+                result.add(new LiteralExpressionSegment(getStartIndex(each), getStopIndex(each), each.toString().replace("'", "")));
+            } else if (each instanceof SqlDynamicParam) {
                 ConverterContextHolder.get().getParameterCount().getAndIncrement();
-                result.add(new ParameterMarkerExpressionSegment(getStartIndex(operand), getStopIndex(operand), ((SqlDynamicParam) operand).getIndex()));
+                result.add(new ParameterMarkerExpressionSegment(getStartIndex(each), getStopIndex(each), ((SqlDynamicParam) each).getIndex()));
             }
         });
         return result;
@@ -103,15 +103,15 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
     
     private SqlNode[] getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> sqlNodes = new ArrayList<>();
-        sqlSegments.forEach(sqlSegment -> {
-            if (sqlSegment instanceof LiteralExpressionSegment) {
-                sqlNodes.add(SqlLiteral.createCharString(((LiteralExpressionSegment) sqlSegment).getLiterals().toString(), SqlParserPos.ZERO));
+        sqlSegments.forEach(each -> {
+            if (each instanceof LiteralExpressionSegment) {
+                sqlNodes.add(SqlLiteral.createCharString(((LiteralExpressionSegment) each).getLiterals().toString(), SqlParserPos.ZERO));
             }
-            if (sqlSegment instanceof DataTypeSegment) {
-                sqlNodes.add(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(((DataTypeSegment) sqlSegment).getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
+            if (each instanceof DataTypeSegment) {
+                sqlNodes.add(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(((DataTypeSegment) each).getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
             }
-            if (sqlSegment instanceof ParameterMarkerExpressionSegment) {
-                sqlNodes.add(new SqlDynamicParam(((ParameterMarkerExpressionSegment) sqlSegment).getParameterMarkerIndex(), SqlParserPos.ZERO));
+            if (each instanceof ParameterMarkerExpressionSegment) {
+                sqlNodes.add(new SqlDynamicParam(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex(), SqlParserPos.ZERO));
             }
         });
         return sqlNodes.toArray(new SqlNode[0]);

@@ -27,8 +27,6 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -39,6 +37,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -52,10 +51,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of ZooKeeper.
@@ -68,7 +66,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private final Builder builder = CuratorFrameworkFactory.builder();
     
-    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
+    private ZookeeperInternalLockHolder internalLockHolder;
     
     @Getter
     @Setter
@@ -78,6 +76,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     public void init(final ClusterPersistRepositoryConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProps);
+        internalLockHolder = new ZookeeperInternalLockHolder(client);
         initCuratorClient(zookeeperProps);
     }
     
@@ -87,8 +86,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
         builder.connectString(config.getServerLists())
-            .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
-            .namespace(config.getNamespace());
+                .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
+                .namespace(config.getNamespace());
         if (0 != timeToLiveSeconds) {
             builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }
@@ -98,18 +97,18 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
-                .aclProvider(new ACLProvider() {
-                    
-                    @Override
-                    public List<ACL> getDefaultAcl() {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                    
-                    @Override
-                    public List<ACL> getAclForPath(final String path) {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                });
+                    .aclProvider(new ACLProvider() {
+                        
+                        @Override
+                        public List<ACL> getDefaultAcl() {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                        
+                        @Override
+                        public List<ACL> getAclForPath(final String path) {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                    });
         }
         return builder.build();
     }
@@ -276,9 +275,19 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
+    public Lock getGlobalLock(final String lockName) {
+        return internalLockHolder.getGlobalLock(lockName);
+    }
+    
+    @Override
+    public Lock getStandardLock(final String lockName) {
+        return internalLockHolder.getStandardLock(lockName);
+    }
+    
+    @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         try {
-            return getLock(key).acquire(time, unit);
+            return internalLockHolder.getGlobalLock(key).tryLock(time, unit);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -290,27 +299,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public void releaseLock(final String key) {
         try {
-            if (availableLock(key)) {
-                locks.get(key).release();
-            }
+            internalLockHolder.getGlobalLock(key).unlock();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-    }
-    
-    private InterProcessLock getLock(final String key) {
-        if (availableLock(key)) {
-            return locks.get(key);
-        }
-        InterProcessLock lock = new InterProcessSemaphoreMutex(client, key);
-        locks.put(key, lock);
-        return lock;
-    }
-    
-    private boolean availableLock(final String key) {
-        return Objects.nonNull(locks.get(key));
     }
     
     @Override
@@ -320,11 +314,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO wait 500ms, close cache before close client, or will throw exception
-     * Because of asynchronous processing, may cause client to close
-     * first and cache has not yet closed the end.
-     * Wait for new version of Curator to fix this.
-     * BUG address: https://issues.apache.org/jira/browse/CURATOR-157
+    /*
+     * TODO wait 500ms, close cache before close client, or will throw exception Because of asynchronous processing, may cause client to close first and cache has not yet closed the end. Wait for new
+     * version of Curator to fix this. BUG address: https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {

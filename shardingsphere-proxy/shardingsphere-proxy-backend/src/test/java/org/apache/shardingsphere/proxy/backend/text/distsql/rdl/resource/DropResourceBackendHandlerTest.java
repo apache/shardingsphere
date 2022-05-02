@@ -86,7 +86,7 @@ public final class DropResourceBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
         when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaData.getResource()).thenReturn(resource);
@@ -113,7 +113,7 @@ public final class DropResourceBackendHandlerTest {
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [test0] do not exist in schema test."));
+            assertThat(ex.getMessage(), is("Resources [test0] do not exist in database test."));
         }
     }
     

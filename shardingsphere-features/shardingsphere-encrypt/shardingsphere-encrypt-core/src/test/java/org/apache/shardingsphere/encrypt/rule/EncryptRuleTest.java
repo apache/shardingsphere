@@ -31,15 +31,17 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -92,8 +94,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getEncryptValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", 
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -121,8 +123,8 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", 
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -156,19 +158,33 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertGetRuleType() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getType(), is(EncryptRule.class.getSimpleName()));
+    public void assertGetTableWithLowercase() {
+        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables(), is(Collections.singleton("t_encrypt")));
+    }
+    
+    @Test
+    public void assertTheSameLogicTable() {
+        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getTables();
+        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables();
+        assertTrue(logicTables.equals(theSameLogicTables));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertSetUpEncryptorSchema() {
         EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap());
-        encryptRule.setUpEncryptorSchema(mock(ShardingSphereSchema.class));
+        Map<String, ShardingSphereSchema> schemas = mockSchemaMap();
+        encryptRule.setUpEncryptorSchema(schemas, "test");
         Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(CustomizedEncryptAlgorithm.class));
-        assertNotNull(((CustomizedEncryptAlgorithm) actual.get()).getSchema());
+        assertFalse(((CustomizedEncryptAlgorithm) actual.get()).getSchemas().isEmpty());
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemaMap() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
+        result.put("test", mock(ShardingSphereSchema.class));
+        return result;
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -178,6 +194,16 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptor = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration customizedEncryptor = new ShardingSphereAlgorithmConfiguration("CUSTOMIZED", new Properties());
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
     }
 }

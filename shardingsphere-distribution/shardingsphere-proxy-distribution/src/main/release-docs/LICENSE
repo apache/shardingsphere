@@ -224,7 +224,7 @@ The text of each license is the standard Apache 2.0 license.
     calcite-core 1.27.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.27.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
-    commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
+    commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.4: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
@@ -238,6 +238,7 @@ The text of each license is the standard Apache 2.0 license.
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
+    freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.1: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Cluster persist repository.
@@ -61,26 +62,46 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watch(String key, DataChangedEventListener listener);
     
     /**
-     * Try to get lock under the lock key.
-     *
-     * @param key lock key
-     * @param time time to wait
-     * @param unit time unit
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(String key, long time, TimeUnit unit);
-    
-    /**
-     * Release lock.
-     *
-     * @param key lock key
-     */
-    void releaseLock(String key);
-    
-    /**
      * Watch session connection.
      *
      * @param instanceContext instance context
      */
     void watchSessionConnection(InstanceContext instanceContext);
+    
+    /**
+     * Get global lock.
+     *
+     * @param lockName lock name
+     * @return internal lock
+     */
+    Lock getGlobalLock(String lockName);
+    
+    /**
+     * Get standard lock.
+     *
+     * @param lockName lock name
+     * @return internal lock
+     */
+    Lock getStandardLock(String lockName);
+    
+    /**
+     * Try to get lock under the lock key.
+     *
+     * @param key lock key
+     * @param time time to wait
+     * @param timeUnit time unit
+     * @return true if get the lock, false if not
+     * @deprecated TODO remove after refactoring lock is complete
+     */
+    @Deprecated
+    boolean tryLock(String key, long time, TimeUnit timeUnit);
+    
+    /**
+     * Release lock.
+     *
+     * @param key lock key
+     * @deprecated TODO remove after refactoring lock is complete
+     */
+    @Deprecated
+    void releaseLock(String key);
 }

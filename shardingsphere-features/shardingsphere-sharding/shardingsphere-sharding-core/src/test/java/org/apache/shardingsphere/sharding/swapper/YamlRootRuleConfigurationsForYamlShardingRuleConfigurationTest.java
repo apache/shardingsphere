@@ -69,8 +69,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertYamlShardingConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
-            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(optional -> (YamlShardingRuleConfiguration) optional);
         assertTrue(shardingRuleConfig.isPresent());
         assertThat(shardingRuleConfig.get().getTables().size(), is(4));
         assertTUser(shardingRuleConfig.get());

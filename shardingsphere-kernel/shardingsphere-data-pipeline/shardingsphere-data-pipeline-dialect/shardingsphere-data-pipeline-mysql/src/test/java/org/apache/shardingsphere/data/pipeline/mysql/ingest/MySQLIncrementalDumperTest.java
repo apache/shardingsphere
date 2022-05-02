@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
@@ -44,9 +47,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -72,17 +74,17 @@ public final class MySQLIncrementalDumperTest {
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        Map<String, String> tableNameMap = new HashMap<>(1, 1);
-        tableNameMap.put("t_order", "t_order");
-        result.setTableNameMap(tableNameMap);
+        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         return result;
     }
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
         DataSource dataSource = new PipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
@@ -97,7 +99,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertWriteRowsEvent() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
@@ -112,7 +114,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertUpdateRowsEvent() {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> beforeRows = new ArrayList<>(1);
         beforeRows.add(new String[]{"1", "order_old"});
@@ -130,7 +132,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertDeleteRowsEvent() {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
-        rowsEvent.setSchemaName("");
+        rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
@@ -153,7 +155,7 @@ public final class MySQLIncrementalDumperTest {
     @Test
     public void assertRowsEventFiltered() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setSchemaName("unknown_schema");
+        rowsEvent.setDatabaseName("unknown_database");
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));

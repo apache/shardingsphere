@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
-
+    
     private List<String> dataSourceNames = new ArrayList<>();
     
     private String discoveryHeartbeatName;

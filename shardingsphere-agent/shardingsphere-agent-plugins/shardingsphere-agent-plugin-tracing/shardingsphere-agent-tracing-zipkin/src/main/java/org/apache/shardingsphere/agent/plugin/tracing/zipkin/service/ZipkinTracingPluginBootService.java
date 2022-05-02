@@ -64,7 +64,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
             zipkinSpanHandler.close();
         }
         if (null != sender) {
-            sender.close(); 
+            sender.close();
         }
     }
     
@@ -73,15 +73,15 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
         return "Zipkin";
     }
     
-    private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
-        String host = pluginConfiguration.getHost();
-        int port = pluginConfiguration.getPort();
+    private boolean checkConfig(final PluginConfiguration pluginConfig) {
+        String host = pluginConfig.getHost();
+        int port = pluginConfig.getPort();
         return null != host && !"".equalsIgnoreCase(host) && port > 0;
     }
     
-    private Sampler createSampler(final PluginConfiguration pluginConfiguration) {
-        String samplerType = Optional.ofNullable(pluginConfiguration.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
-        String samplerParam = Optional.ofNullable(pluginConfiguration.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
+    private Sampler createSampler(final PluginConfiguration pluginConfig) {
+        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
+        String samplerParam = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
         switch (samplerType) {
             case "const":
                 if ("0".equals(samplerParam)) {

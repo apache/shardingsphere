@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
@@ -35,7 +36,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -86,13 +86,11 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
         assertTrue(actual.findDataSourceRule("ds_0").isPresent());
-        Properties props = actual.findDataSourceRule("ds_0").get().getReadwriteSplittingType().getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("read-data-source-names"), is("ds_0_read_0, ds_0_read_1"));
+        StaticReadwriteSplittingStrategy readwriteSplittingType = (StaticReadwriteSplittingStrategy) actual.findDataSourceRule("ds_0").get().getReadwriteSplittingStrategy();
+        assertThat(readwriteSplittingType.getReadDataSources(), is(Arrays.asList("ds_0_read_0", "ds_0_read_1")));
         assertTrue(actual.findDataSourceRule("ds_1").isPresent());
-        props = actual.findDataSourceRule("ds_1").get().getReadwriteSplittingType().getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("read-data-source-names"), is("ds_1_read_0, ds_1_read_1"));
+        readwriteSplittingType = (StaticReadwriteSplittingStrategy) actual.findDataSourceRule("ds_1").get().getReadwriteSplittingStrategy();
+        assertThat(readwriteSplittingType.getReadDataSources(), is(Arrays.asList("ds_1_read_0", "ds_1_read_1")));
     }
     
     private void assertEncryptRule(final EncryptRule actual) {

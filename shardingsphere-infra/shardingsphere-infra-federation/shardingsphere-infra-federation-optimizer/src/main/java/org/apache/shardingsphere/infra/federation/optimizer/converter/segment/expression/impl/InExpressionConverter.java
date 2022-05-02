@@ -54,12 +54,11 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
         expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(sqlNode -> {
-            if (sqlNode instanceof SqlBasicCall) {
-                SqlNodeList sqlNodeList = new SqlNodeList(Arrays.asList(((SqlBasicCall) sqlNode).getOperands().clone()), SqlParserPos.ZERO);
-                sqlNodes.add(sqlNodeList);
+        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(optional -> {
+            if (optional instanceof SqlBasicCall) {
+                sqlNodes.add(new SqlNodeList(Arrays.asList(((SqlBasicCall) optional).getOperands().clone()), SqlParserPos.ZERO));
             } else {
-                sqlNodes.add(sqlNode);
+                sqlNodes.add(optional);
             }
         });
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
@@ -74,7 +73,7 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         ExpressionConverter expressionConverter = new ExpressionConverter();
         ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
         ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new InExpression(getStartIndex(sqlBasicCall), 
+        return Optional.of(new InExpression(getStartIndex(sqlBasicCall),
                 sqlBasicCall.getOperandList().get(1) instanceof SqlSelect ? getStopIndex(sqlBasicCall) + 1 : getStopIndex(sqlBasicCall), left, right, not));
     }
 }

@@ -73,5 +73,9 @@ execute
     | dropTrigger
     | alterView
     | alterTrigger
+    | createEdition
+    | alterDatabaseLink
+    | alterDatabaseDictionary
+    | createSynonym
     ) SEMI_?
     ;

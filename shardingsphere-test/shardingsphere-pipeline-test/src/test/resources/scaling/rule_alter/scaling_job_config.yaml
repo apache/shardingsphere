@@ -22,5 +22,5 @@ jobParameter: |
     jobShardingDataNodes:
     - t_order:ds_0.t_order_0,ds_0.t_order_1
   workflowConfig:
-    schemaName: logic_db
+    databaseName: logic_db
 shardingTotalCount: 1

@@ -51,7 +51,6 @@ public final class CreateTrafficRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertNotNull(actual);
             assertTrafficRuleSegments(assertContext, actual.getSegments(), expected.getRules());
         }
     }
@@ -60,7 +59,6 @@ public final class CreateTrafficRuleStatementAssert {
         Map<String, TrafficRuleSegment> actualMap = actual.stream().collect(Collectors.toMap(TrafficRuleSegment::getName, each -> each));
         expected.forEach(each -> {
             TrafficRuleSegment actualRule = actualMap.get(each.getName());
-            assertNotNull(actualRule);
             assertThat(actualRule.getName(), is(each.getName()));
             assertThat(actualRule.getLabels(), is(each.getLabels()));
             AlgorithmAssert.assertIs(assertContext, actualRule.getAlgorithm(), each.getTrafficAlgorithm());

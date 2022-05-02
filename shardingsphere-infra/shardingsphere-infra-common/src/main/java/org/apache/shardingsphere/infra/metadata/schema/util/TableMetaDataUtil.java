@@ -19,8 +19,11 @@ package org.apache.shardingsphere.infra.metadata.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderMaterial;
 
@@ -49,17 +52,35 @@ public class TableMetaDataUtil {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
+            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(materials.getDatabaseType(), dataNodes, each);
             if (checkMetaDataEnable) {
                 addAllActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             } else {
                 addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey()))).collect(Collectors.toList());
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey().contains(".")
+                ? entry.getKey().split("\\.")[0]
+                : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
+    }
+    
+    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {
+        for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
+            if (databaseType.getName() != null && !databaseType.getName().equals("MySQL") && dataNode.getDataSourceName().contains(".")) {
+                throw new ShardingSphereException("Unsupported jdbc: '%s', actualDataNode:'%s', database type is not mysql, but actual data is three-tier structure",
+                        databaseType.getJdbcUrlPrefixes(), dataNode.getDataSourceName());
+            }
+            if (dataNode.getDataSourceName().contains(".")) {
+                String database = dataNode.getDataSourceName().split("\\.")[1];
+                GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().put(dataNode.getTableName(), database);
+            }
+        }
     }
     
     private static void addOneActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
-        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().filter(dataNode -> materials.getDataSourceMap().containsKey(dataNode.getDataSourceName())).findFirst();
+        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().filter(each -> materials.getDataSourceMap().containsKey(each.getDataSourceName().contains(".")
+                ? each.getDataSourceName().split("\\.")[0]
+                : each.getDataSourceName())).findFirst();
         String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
         String tableName = optional.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
@@ -70,7 +91,7 @@ public class TableMetaDataUtil {
         if (tableDataNodes.isEmpty()) {
             addDataSourceTableGroups(materials.getDataSourceMap().keySet().iterator().next(), table, dataSourceTableGroups);
         } else {
-            tableDataNodes.forEach(dataNode -> addDataSourceTableGroups(dataNode.getDataSourceName(), dataNode.getTableName(), dataSourceTableGroups));
+            tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), each.getTableName(), dataSourceTableGroups));
         }
     }
     

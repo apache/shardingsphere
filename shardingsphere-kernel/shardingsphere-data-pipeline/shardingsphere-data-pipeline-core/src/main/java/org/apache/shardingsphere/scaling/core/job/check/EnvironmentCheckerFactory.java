@@ -18,27 +18,16 @@
 package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckerImpl;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
+
+import java.util.Optional;
 
 /**
  * Environment checker factory.
  */
 public final class EnvironmentCheckerFactory {
-    
-    /**
-     * Create data consistency checker instance.
-     *
-     * @param jobConfig job configuration
-     * @return data consistency checker
-     */
-    public static DataConsistencyChecker newInstance(final JobConfiguration jobConfig) {
-        return new DataConsistencyCheckerImpl(jobConfig);
-    }
     
     /**
      * Create data source preparer instance.
@@ -47,9 +36,9 @@ public final class EnvironmentCheckerFactory {
      * @return data source preparer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static DataSourcePreparer getDataSourcePreparer(final String databaseType) {
+    public static Optional<DataSourcePreparer> getDataSourcePreparer(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Class<? extends DataSourcePreparer> preparerClass = scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourcePreparerClass();
-        return null == preparerClass ? null : preparerClass.getConstructor().newInstance();
+        return null == preparerClass ? Optional.empty() : Optional.of(preparerClass.getConstructor().newInstance());
     }
 }

@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -76,7 +77,7 @@ public final class ShardingConditionsTest {
     }
     
     private ShardingConditions createSingleShardingConditions() {
-        LinkedList<ShardingCondition> result = new LinkedList<>();
+        List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(1L));
         AlwaysFalseShardingCondition shardingCondition = new AlwaysFalseShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
@@ -86,7 +87,7 @@ public final class ShardingConditionsTest {
     }
     
     private ShardingConditions createMultipleShardingConditions() {
-        LinkedList<ShardingCondition> result = new LinkedList<>();
+        List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", "t_order", Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();

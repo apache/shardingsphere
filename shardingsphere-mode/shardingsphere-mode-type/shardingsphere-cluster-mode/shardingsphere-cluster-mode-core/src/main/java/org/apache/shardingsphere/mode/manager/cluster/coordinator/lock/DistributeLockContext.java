@@ -18,174 +18,89 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.ShardingSphereLockManagerFactory;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Distribute lock context.
  */
-@RequiredArgsConstructor
 public final class DistributeLockContext implements LockContext {
     
-    private final Map<String, ShardingSphereGlobalLock> globalLocks = new ConcurrentHashMap<>();
+    private final Map<LockType, ShardingSphereLockManager> lockManagers = new EnumMap<>(LockType.class);
     
-    private final LockRegistryService lockRegistryService;
+    private final ClusterPersistRepository repository;
     
-    private volatile ComputeNodeInstance currentInstance;
+    private final ComputeNodeInstance currentInstance;
     
-    private volatile Collection<ComputeNodeInstance> computeNodeInstances;
+    public DistributeLockContext(final ClusterPersistRepository repository, final ComputeNodeInstance currentInstance) {
+        this.repository = repository;
+        this.currentInstance = currentInstance;
+        loadLockManager();
+    }
+    
+    private void loadLockManager() {
+        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.newInstances()) {
+            if (lockManagers.containsKey(each.getLockType())) {
+                continue;
+            }
+            lockManagers.put(each.getLockType(), each);
+        }
+    }
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        register(instanceContext);
-        synchronizeGlobalLock();
-    }
-    
-    private void register(final InstanceContext instanceContext) {
-        currentInstance = instanceContext.getInstance();
-        computeNodeInstances = instanceContext.getComputeNodeInstances();
-        ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = lockRegistryService.getAllGlobalSchemaLocks();
-        if (allGlobalLock.isEmpty()) {
-            lockRegistryService.initGlobalLockRoot();
-            return;
-        }
-        for (String each : allGlobalLock) {
-            Optional<String> schemaLock = LockNode.parseGlobalSchemaLocksNodePath(each);
-            if (schemaLock.isPresent()) {
-                String[] schemaInstanceId = LockNodeUtil.parseSchemaLockName(schemaLock.get());
-                globalLocks.put(schemaInstanceId[0], crateGlobalLock(schemaInstanceId[1]));
-            }
+        Collection<ComputeNodeInstance> computeNodeInstances = instanceContext.getComputeNodeInstances();
+        for (ShardingSphereLockManager each : lockManagers.values()) {
+            each.initLocksState(repository, currentInstance, computeNodeInstances);
         }
     }
     
     @Override
-    public synchronized ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
-        ShardingSphereGlobalLock result = globalLocks.get(schemaName);
-        if (null != result) {
-            return result;
-        }
-        result = crateGlobalLock(getCurrentInstanceId());
-        globalLocks.put(schemaName, result);
-        return result;
-    }
-    
-    private ShardingSphereGlobalLock crateGlobalLock(final String ownerInstanceId) {
-        return new ShardingSphereDistributeGlobalLock(lockRegistryService, currentInstance, computeNodeInstances, ownerInstanceId);
-    }
-    
-    private String getCurrentInstanceId() {
-        return currentInstance.getInstanceDefinition().getInstanceId().getId();
+    public synchronized boolean tryLockWriteDatabase(final String databaseName, final long timeoutMillis) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
+        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
+        return lock.tryLock(databaseName, timeoutMillis);
     }
     
     @Override
-    public ShardingSphereLock getSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get schema lock args schema name can not be null.");
-        return globalLocks.get(schemaName);
+    public void releaseLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
+        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
+        lock.releaseLock(databaseName);
     }
     
     @Override
-    public boolean isLockedSchema(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
-        if (globalLocks.isEmpty()) {
-            return false;
-        }
-        ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schemaName);
-        if (null != shardingSphereGlobalLock) {
-            return shardingSphereGlobalLock.isLocked(schemaName);
-        }
-        return false;
+    public boolean isLockedDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
+        return lockManagers.get(LockType.DATABASE).isLocked(databaseName);
     }
     
-    private Optional<ShardingSphereGlobalLock> getGlobalLock(final String schemaName) {
-        return Optional.ofNullable(globalLocks.get(schemaName));
+    @Override
+    public synchronized ShardingSphereLock getOrCreateGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
     }
     
-    private boolean isSameInstanceId(final String instanceId) {
-        return getCurrentInstanceId().equals(instanceId);
+    @Override
+    public synchronized ShardingSphereLock getOrCreateStandardLock(final String lockName) {
+        return lockManagers.get(LockType.STANDARD).getOrCreateLock(lockName);
     }
     
-    /**
-     * Locked event.
-     *
-     * @param event locked event
-     */
-    @Subscribe
-    public synchronized void renew(final LockedEvent event) {
-        String schema = event.getSchema();
-        String ownerInstanceId = event.getOwnerInstanceId();
-        if (isSameInstanceId(ownerInstanceId)) {
-            return;
-        }
-        ShardingSphereGlobalLock globalLock = globalLocks.get(schema);
-        if (null == globalLock) {
-            globalLock = crateGlobalLock(ownerInstanceId);
-            globalLocks.put(schema, globalLock);
-        }
-        globalLock.ackLock(schema, getCurrentInstanceId());
-    }
-    
-    /**
-     * Lock released event.
-     *
-     * @param event lock released event
-     */
-    @Subscribe
-    public synchronized void renew(final LockReleasedEvent event) {
-        String schema = event.getSchema();
-        String ownerInstanceId = event.getOwnerInstanceId();
-        if (isSameInstanceId(ownerInstanceId)) {
-            ShardingSphereGlobalLock shardingSphereGlobalLock = globalLocks.get(schema);
-            if (null == shardingSphereGlobalLock) {
-                return;
-            }
-            shardingSphereGlobalLock.releaseLockedState(schema);
-            return;
-        }
-        getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> {
-            shardingSphereGlobalLock.releaseAckLock(schema, getCurrentInstanceId());
-        });
-    }
-    
-    /**
-     * Ack locked event.
-     *
-     * @param event ack locked event
-     */
-    @Subscribe
-    public synchronized void renew(final AckLockedEvent event) {
-        getGlobalLock(event.getSchema()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(event.getLockedInstance()));
-    }
-    
-    /**
-     * Ack lock released event.
-     *
-     * @param event ack lock released event.
-     */
-    @Subscribe
-    public synchronized void renew(final AckLockReleasedEvent event) {
-        getGlobalLock(event.getSchema()).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.removeLockedInstance(event.getLockedInstance()));
+    @Override
+    public ShardingSphereLock getGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
+        return lockManagers.get(LockType.GENERAL).getLock(lockName);
     }
 }

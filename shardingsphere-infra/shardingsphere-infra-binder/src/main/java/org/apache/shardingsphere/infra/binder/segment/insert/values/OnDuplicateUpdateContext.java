@@ -41,7 +41,7 @@ public final class OnDuplicateUpdateContext {
     private final int parameterCount;
     
     private final List<ExpressionSegment> valueExpressions;
-
+    
     private final List<ParameterMarkerExpressionSegment> parameterMarkerExpressions;
     
     private final List<Object> parameters;
@@ -54,7 +54,7 @@ public final class OnDuplicateUpdateContext {
         parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
         this.parameters = getParameters(parameters, parametersOffset);
-        columns = assignments.stream().map(assignment -> assignment.getColumns().get(0)).collect(Collectors.toList());
+        columns = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
     }
     
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {

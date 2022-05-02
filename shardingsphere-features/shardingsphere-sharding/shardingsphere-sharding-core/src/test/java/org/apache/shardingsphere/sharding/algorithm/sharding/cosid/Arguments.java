@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Arguments {
     
     @SafeVarargs

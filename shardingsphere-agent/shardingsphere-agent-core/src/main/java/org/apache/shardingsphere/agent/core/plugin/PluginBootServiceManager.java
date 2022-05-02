@@ -44,14 +44,14 @@ public final class PluginBootServiceManager {
      */
     public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
         Set<String> ignoredPluginNames = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
-        for (Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
+        for (Entry<String, PluginConfiguration> entry : pluginConfigurationMap.entrySet()) {
             if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(entry.getKey())) {
                 continue;
             }
-            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
+            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
                 try {
-                    log.info("Start plugin: {}", pluginBootService.getType());
-                    pluginBootService.start(entry.getValue());
+                    log.info("Start plugin: {}", optional.getType());
+                    optional.start(entry.getValue());
                     // CHECKSTYLE:OFF
                 } catch (final Throwable ex) {
                     // CHECKSTYLE:ON

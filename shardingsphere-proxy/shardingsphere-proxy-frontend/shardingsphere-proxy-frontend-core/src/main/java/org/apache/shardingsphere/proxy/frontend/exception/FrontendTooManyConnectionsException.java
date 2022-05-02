@@ -21,6 +21,6 @@ package org.apache.shardingsphere.proxy.frontend.exception;
  * Frontend too many connections exception.
  */
 public final class FrontendTooManyConnectionsException extends FrontendException {
-
+    
     private static final long serialVersionUID = -4397915988239251541L;
 }

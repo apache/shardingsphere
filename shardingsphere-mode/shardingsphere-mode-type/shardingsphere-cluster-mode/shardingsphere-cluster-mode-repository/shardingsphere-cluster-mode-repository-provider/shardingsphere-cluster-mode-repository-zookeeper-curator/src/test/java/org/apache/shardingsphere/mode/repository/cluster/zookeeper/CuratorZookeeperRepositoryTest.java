@@ -38,6 +38,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -61,7 +62,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -120,10 +120,10 @@ public final class CuratorZookeeperRepositoryTest {
     @SneakyThrows
     public void init() {
         mockClient();
-        mockField();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.init(config);
+        mockInternalLockHolder();
     }
     
     @SneakyThrows
@@ -143,10 +143,14 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @SneakyThrows
-    private void mockField() {
-        Field locksFiled = CuratorZookeeperRepository.class.getDeclaredField("locks");
+    private void mockInternalLockHolder() {
+        Field internalLockHolderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockHolder");
+        internalLockHolderFiled.setAccessible(true);
+        ZookeeperInternalLockHolder holder = new ZookeeperInternalLockHolder(client);
+        Field locksFiled = ZookeeperInternalLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(REPOSITORY, Collections.singletonMap("/locks/glock", interProcessLock));
+        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLockHolder.ZookeeperInternalLock(interProcessLock)));
+        internalLockHolderFiled.set(REPOSITORY, holder);
     }
     
     private void mockBuilder() {
@@ -212,7 +216,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
@@ -227,7 +230,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
@@ -242,7 +244,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_added/4", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));
         assertThat(dataChangedEvent.getValue(), is("value4"));

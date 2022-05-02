@@ -60,7 +60,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return text protocol backend handler
      */
     public <T extends DatabaseCommunicationEngine> T newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection<?> backendConnection) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
         T result;
         if (backendConnection instanceof JDBCBackendConnection) {
@@ -84,9 +84,9 @@ public final class DatabaseCommunicationEngineFactory {
      * @param backendConnection backend connection
      * @return binary protocol backend handler
      */
-    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, 
+    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql,
                                                                                final List<Object> parameters, final BackendConnection<?> backendConnection) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         T result;
         if (backendConnection instanceof JDBCBackendConnection) {

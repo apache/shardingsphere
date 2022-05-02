@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
@@ -123,11 +123,10 @@ public class SpringBootStarterTest {
         assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
         ReadwriteSplittingDataSourceRule dataSourceRule = actual.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("readwrite_ds"));
-        StaticReadwriteSplittingType staticReadwriteSplittingType = (StaticReadwriteSplittingType) dataSourceRule.getReadwriteSplittingType();
+        StaticReadwriteSplittingStrategy staticReadwriteSplittingType = (StaticReadwriteSplittingStrategy) dataSourceRule.getReadwriteSplittingStrategy();
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
         assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
-        assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
     }
     
     private void assertEncryptRule(final EncryptRule actual) {
@@ -136,7 +135,7 @@ public class SpringBootStarterTest {
         assertThat(actual.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(actual.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(actual.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
-        assertThat(actual.getEncryptValues("foo_db", "t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
+        assertThat(actual.getEncryptValues("foo_db", "foo_db", "t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
     }
     
     private void assertEncryptTable(final EncryptTable actual) {
@@ -173,7 +172,7 @@ public class SpringBootStarterTest {
         assertThat(actual.get("t_user").getTableName(), is("t_user"));
         assertThat(actual.get("t_user").getShadowDataSources().size(), is(1));
         assertThat(actual.get("t_user").getHintShadowAlgorithmNames().size(), is(1));
-        assertThat(actual.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
+        assertTrue(actual.get("t_user").getColumnShadowAlgorithmNames().isEmpty());
     }
     
     private void assertSQLParserRule(final SQLParserRule actual) {

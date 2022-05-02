@@ -126,8 +126,7 @@ public final class OnDuplicateUpdateContextTest {
         List<AssignmentSegment> assignments = Arrays.asList(
                 createAssignmentSegment(createBinaryOperationExpression()),
                 createAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),
-                createAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object()))
-        );
+                createAssignmentSegment(new LiteralExpressionSegment(0, 10, new Object())));
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Arrays.asList("1", "2"), 0);
         assertThat(onDuplicateUpdateContext.getParameterCount(), is(2));
     }

@@ -51,7 +51,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final ShardingSphereSchema schema;
     
-    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, 
+    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier,
                       final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final ShardingSphereSchema schema) {
         super(startIndex);
         this.stopIndex = stopIndex;

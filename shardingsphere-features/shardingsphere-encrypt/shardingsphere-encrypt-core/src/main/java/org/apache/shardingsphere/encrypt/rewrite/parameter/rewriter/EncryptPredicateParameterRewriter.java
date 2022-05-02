@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
@@ -38,13 +38,13 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext<?>>, EncryptRuleAware, EncryptConditionsAware, SchemaNameAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext<?>>, EncryptRuleAware, EncryptConditionsAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
     private Collection<EncryptCondition> encryptConditions;
     
-    private String schemaName;
+    private String databaseName;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
@@ -53,6 +53,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName));
         for (EncryptCondition each : encryptConditions) {
             boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName());
             if (queryWithCipherColumn) {
@@ -65,8 +66,8 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
         return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
-                ? encryptRule.getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues) 
-                        : encryptRule.getEncryptValues(schemaName, tableName, columnName, originalValues);
+                ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
+                : encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

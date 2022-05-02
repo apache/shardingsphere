@@ -12,8 +12,8 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 |:---------------------------------------------------- |:----------------------------------------------------------------------------------------------------------- |:---------------------------------------------- |
 | SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set readwrite splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write    |
 | SET SHARDING HINT DATABASE_VALUE = yy                | For current connection, set sharding value for database sharding only, yy: sharding value                   | SET SHARDING HINT DATABASE_VALUE = 100         |
-| ADD SHARDING HINT DATABASE_VALUE tableName= yy              | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | ADD SHARDING HINT DATABASE_VALUE t_order = 100 |
-| ADD SHARDING HINT TABLE_VALUE tableName = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | ADD SHARDING HINT TABLE_VALUE t_order = 100    |
+| ADD SHARDING HINT DATABASE_VALUE xx = yy              | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | ADD SHARDING HINT DATABASE_VALUE t_order = 100 |
+| ADD SHARDING HINT TABLE_VALUE xx = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | ADD SHARDING HINT TABLE_VALUE t_order = 100    |
 | CLEAR HINT SETTINGS                                            | For current connection, clear all hint settings                                                             | CLEAR HINT                                     |
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or readwrite splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or readwrite splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
@@ -23,7 +23,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | Statement                                            | Function                                                          | Example                                  |
 |:---------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------- |
 | SHOW SCALING LIST                                    | Query running list                                                | SHOW SCALING LIST                        |
-| SHOW SCALING STATUS jobId                               | Query scaling status, xx: jobId                                   | SHOW SCALING LIST 1234                 |
+| SHOW SCALING STATUS jobId                               | Query scaling status, xx: jobId                                   | SHOW SCALING STATUS 1234                 |
 | START SCALING jobId                                     | Start scaling, xx: jobId                                          | START SCALING 1234                       |
 | STOP SCALING jobId                                      | Stop scaling, xx: jobId                                           | STOP SCALING 1234                        |
 | DROP SCALING jobId                                      | Drop scaling, xx: jobId                                           | DROP SCALING 1234                        |
@@ -70,7 +70,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | REFRESH TABLE METADATA                                                      | Refresh the metadata of all tables                                                 | REFRESH TABLE METADATA                    |
 | REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | Refresh the metadata of a table                                                    | REFRESH TABLE METADATA t_order FROM resource ds_1  |
 | SHOW TABLE METADATA tableName [, tableName] ...                             | Query table metadata                                                               | SHOW TABLE METADATA t_order                        |
-| EXPORT SCHEMA CONFIG [FROM schema_name] [, file="file_path"]                | Query / export resources and rule configuration in schema                          | EXPORT SCHEMA CONFIG FROM readwrite_splitting_db   |
+| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]            | Query / export resources and rule configuration in database                    | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
 | SHOW RULES USED RESOURCE resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | SHOW RULES USED RESOURCE ds_0 FROM schemaName  |
 
 ## Notice

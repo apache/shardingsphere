@@ -55,8 +55,8 @@ public final class MySQLBinlogTableMapEventPacketTest {
         when(payload.readInt6()).thenReturn(1L);
         when(payload.readInt2()).thenReturn(0, 255);
         when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR.getValue(),
-                                            MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2.getValue(), 11,
-                                            0x0e);
+                MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2.getValue(), 11,
+                0x0e);
         when(payload.readStringFix(4)).thenReturn("test");
         when(payload.readIntLenenc()).thenReturn(4L);
         when(payload.getByteBuf()).thenReturn(byteBuf);

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
-import java.util.Collection;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,16 +24,8 @@ import static org.junit.Assert.assertThat;
 
 public final class JaegerPluginDefinitionServiceTest {
     
-    private final JaegerPluginDefinitionService jaegerPluginDefinitionService = new JaegerPluginDefinitionService();
-    
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = jaegerPluginDefinitionService.install();
-        assertThat(interceptorPointList.size(), is(3));
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(jaegerPluginDefinitionService.getType(), is("Jaeger"));
+        assertThat(new JaegerPluginDefinitionService().install().size(), is(3));
     }
 }

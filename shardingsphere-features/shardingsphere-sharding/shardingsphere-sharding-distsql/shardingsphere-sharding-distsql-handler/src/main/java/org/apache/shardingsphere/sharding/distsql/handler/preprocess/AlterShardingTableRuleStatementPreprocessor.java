@@ -29,16 +29,16 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
     @Override
     public ShardingRuleConfiguration preprocess(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
-        result.setAutoTables(currentRuleConfig.getAutoTables());
+        result.setShardingAlgorithms(toBeAlteredRuleConfig.getShardingAlgorithms());
+        result.setAutoTables(toBeAlteredRuleConfig.getAutoTables());
         result.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
         result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
         result.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
         result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        result.setTables(currentRuleConfig.getTables());
+        result.setTables(toBeAlteredRuleConfig.getTables());
         result.setBroadcastTables(currentRuleConfig.getBroadcastTables());
         result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
-        result.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        result.setKeyGenerators(toBeAlteredRuleConfig.getKeyGenerators());
         result.setScalingName(currentRuleConfig.getScalingName());
         result.setScaling(currentRuleConfig.getScaling());
         return result;

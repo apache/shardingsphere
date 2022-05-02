@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.environment;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
@@ -36,8 +36,6 @@ import java.util.Collection;
 @Slf4j
 public final class ScalingEnvironmentManager {
     
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
-    
     /**
      * Cleanup target tables.
      *
@@ -45,14 +43,15 @@ public final class ScalingEnvironmentManager {
      * @throws SQLException SQL exception
      */
     // TODO seems it should be removed, dangerous to use
-    public void cleanupTargetTables(final JobConfiguration jobConfig) throws SQLException {
-        Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
+    public void cleanupTargetTables(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
+        Collection<String> tables = jobConfig.splitLogicTableNames();
         log.info("cleanupTargetTables, tables={}", tables);
-        YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
-        try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
-             Connection connection = dataSource.getConnection()) {
+        YamlPipelineDataSourceConfiguration target = jobConfig.getTarget();
+        try (
+                PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
+                Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
+                String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getTargetDatabaseType()).buildTruncateSQL(each);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }

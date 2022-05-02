@@ -20,8 +20,6 @@ package org.apache.shardingsphere.spring.namespace.factorybean;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.Properties;
@@ -30,23 +28,14 @@ import java.util.Properties;
  * ShardingSphere algorithm factory bean.
  */
 @RequiredArgsConstructor
+@Getter
 public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSphereAlgorithm> implements FactoryBean<T> {
-    
-    @Getter
-    private final Class<T> objectType;
     
     private final String type;
     
     private final Properties props;
     
-    @Override
-    public final T getObject() {
-        T result = TypedSPIRegistry.getRegisteredService(objectType, type, props);
-        if (result instanceof ShardingSphereAlgorithmPostProcessor) {
-            ((ShardingSphereAlgorithmPostProcessor) result).init();
-        }
-        return result;
-    }
+    private final Class<T> objectType;
     
     @Override
     public final boolean isSingleton() {

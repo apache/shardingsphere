@@ -26,14 +26,20 @@ public final class LockNodeUtilTest {
     
     @Test
     public void assertGenerateLockName() {
-        assertThat(LockNodeUtil.generateSchemaLockName("schema", "127.0.0.1@3307"), is("schema-127.0.0.1@3307"));
+        assertThat(LockNodeUtil.generateAckLockedName("database", "127.0.0.1@3307"), is("database#@#127.0.0.1@3307"));
     }
     
     @Test
     public void assertParseLockName() {
-        String[] lockName = LockNodeUtil.parseSchemaLockName("schema-127.0.0.1@3307");
+        String[] lockName = LockNodeUtil.parseDatabaseLockName("database#@#127.0.0.1@3307");
         assertThat(lockName.length, is(2));
-        assertThat(lockName[0], is("schema"));
+        assertThat(lockName[0], is("database"));
         assertThat(lockName[1], is("127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertGenerateGlobalLockReleasedNodePath() {
+        String nodePath = "/lock/global/database/sharding_db";
+        assertThat(LockNodeUtil.generateGlobalLockReleasedNodePath(nodePath), is("/lock/global/database/sharding_db/leases"));
     }
 }

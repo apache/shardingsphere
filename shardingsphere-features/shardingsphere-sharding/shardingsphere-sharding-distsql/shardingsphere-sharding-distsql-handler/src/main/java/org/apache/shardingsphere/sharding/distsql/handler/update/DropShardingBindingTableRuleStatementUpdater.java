@@ -46,26 +46,26 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
+        String databaseName = shardingSphereMetaData.getDatabaseName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         bindingTableRules = buildBindingTableRule(currentRuleConfig);
-        checkBindingTableRuleExist(schemaName, sqlStatement, bindingTableRules);
+        checkBindingTableRuleExist(databaseName, sqlStatement, bindingTableRules);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", schemaName));
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName));
     }
     
-    private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration configuration) {
+    private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
         Map<String, String> result = new LinkedHashMap<>();
-        configuration.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
+        config.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
         return result;
     }
     
-    private void checkBindingTableRuleExist(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement,
+    private void checkBindingTableRuleExist(final String databaseName, final DropShardingBindingTableRulesStatement sqlStatement,
                                             final Map<String, String> bindingRelationship) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
@@ -76,7 +76,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
                 notExistBindingGroups.add(each.getTableGroups());
             }
         }
-        DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroups));
+        DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName, notExistBindingGroups));
     }
     
     private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {

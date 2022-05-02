@@ -58,8 +58,8 @@ public final class ShowAuthorityRuleHandlerTest {
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(root),
-                new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
-        return new ShardingSphereRuleMetaData(Collections.singleton(authorityRuleConfiguration), Collections.emptyList());
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
+                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+        return new ShardingSphereRuleMetaData(Collections.singleton(ruleConfig), Collections.emptyList());
     }
 }

@@ -67,8 +67,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdRepositoryTest {
     
-    private static final String CENTER_TYPE = "etcd";
-    
     @Mock
     private Client client;
     
@@ -118,7 +116,7 @@ public final class EtcdRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
+        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProps"), new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -151,11 +149,11 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertGetChildrenKeys() {
         io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-            .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
-            .setValue(ByteString.copyFromUtf8("value1")).build();
+                .setKey(ByteString.copyFromUtf8("/key/key1/key1-1"))
+                .setValue(ByteString.copyFromUtf8("value1")).build();
         io.etcd.jetcd.api.KeyValue keyValue2 = io.etcd.jetcd.api.KeyValue.newBuilder()
-            .setKey(ByteString.copyFromUtf8("/key/key2"))
-            .setValue(ByteString.copyFromUtf8("value3")).build();
+                .setKey(ByteString.copyFromUtf8("/key/key2"))
+                .setValue(ByteString.copyFromUtf8("value3")).build();
         List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1, ByteSequence.EMPTY), new KeyValue(keyValue2, ByteSequence.EMPTY),
                 new KeyValue(keyValue1, ByteSequence.EMPTY));
         when(getResponse.getKvs()).thenReturn(keyValues);
@@ -182,7 +180,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -194,7 +192,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -206,7 +204,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -227,11 +225,6 @@ public final class EtcdRepositoryTest {
     public void assertClose() {
         repository.close();
         verify(client).close();
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(repository.getType(), is(CENTER_TYPE));
     }
     
     @Test

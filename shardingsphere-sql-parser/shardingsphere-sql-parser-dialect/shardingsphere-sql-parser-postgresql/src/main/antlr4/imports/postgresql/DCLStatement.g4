@@ -152,40 +152,14 @@ alterRole
     : ALTER ROLE alterUserClauses
     ;
 
-alterSchema
-    : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
-    ;
-
 createGroup
     : CREATE GROUP roleSpec WITH? createOptRoleElem*
-    ;
-
-createSchema
-    : CREATE SCHEMA notExistClause? createSchemaClauses
-    ;
-
-createSchemaClauses
-    : colId? AUTHORIZATION roleSpec schemaEltList
-    | colId schemaEltList
-    ;
-
-schemaEltList
-    : schemaStmt*
-    ;
-
-schemaStmt
-    : createTable | createIndex | createSequence | createTrigger | grant | createView
     ;
 
 dropDroup
     : DROP GROUP existClause? roleList
     ;
 
-dropSchema
-    : DROP SCHEMA existClause? nameList dropBehavior?
-    ;
-
 reassignOwned
     : REASSIGN OWNED BY roleList TO roleSpec
     ;
-

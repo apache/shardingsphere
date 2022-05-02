@@ -8,7 +8,7 @@ weight = 4
 
 Consider about these challenges of ShardingSphere-Scaling, the solution is: Use two database clusters temporarily, and switch after the scaling is completed.
 
-![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/scaling-principle-overview.en.png)
+![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
 
 Advantages:
 

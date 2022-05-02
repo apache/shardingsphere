@@ -118,7 +118,7 @@ public final class ResultSetUtil {
         }
         throw new ShardingSphereException("Unsupported data type: BigDecimal for value %s", value);
     }
-  
+    
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
         if (needScale) {
             try {
@@ -244,7 +244,7 @@ public final class ResultSetUtil {
                 return value;
         }
     }
-
+    
     private static Object convertBooleanValue(final Object value) {
         if (value instanceof Boolean) {
             return value;
@@ -257,7 +257,7 @@ public final class ResultSetUtil {
             return false;
         }
     }
-
+    
     private static Boolean longToBoolean(final long longVal) {
         return -1 == longVal || longVal > 0;
     }

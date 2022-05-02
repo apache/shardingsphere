@@ -115,7 +115,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         }
         return Optional.empty();
     }
-
+    
     private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractor tableExtractor) {
         Optional<OwnerSegment> ownerSegment = old.getColumn().getOwner();
         if (!ownerSegment.isPresent()) {

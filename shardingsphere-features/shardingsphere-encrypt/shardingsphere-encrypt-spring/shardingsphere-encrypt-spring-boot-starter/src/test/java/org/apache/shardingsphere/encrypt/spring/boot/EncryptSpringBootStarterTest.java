@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,7 +50,7 @@ public class EncryptSpringBootStarterTest {
     private AESEncryptAlgorithm aesEncryptor;
     
     @Resource
-    private AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration;
+    private AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig;
     
     @Test
     public void assertAesEncryptor() {
@@ -58,12 +59,12 @@ public class EncryptSpringBootStarterTest {
     
     @Test
     public void assertEncryptRuleConfiguration() {
-        assertEncryptors(encryptRuleConfiguration.getEncryptors());
-        assertThat(encryptRuleConfiguration.getTables().size(), is(1));
-        assertEncryptTable(encryptRuleConfiguration.getTables().iterator().next());
+        assertEncryptors(encryptRuleConfig.getEncryptors());
+        assertThat(encryptRuleConfig.getTables().size(), is(1));
+        assertEncryptTable(encryptRuleConfig.getTables().iterator().next());
     }
     
-    private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
+    private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {
         assertThat(encryptors.size(), is(2));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
@@ -73,7 +74,7 @@ public class EncryptSpringBootStarterTest {
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
         assertThat(tableRuleConfig.getColumns().size(), is(2));
-        assertThat(tableRuleConfig.getQueryWithCipherColumn(), is(false));
+        assertFalse(tableRuleConfig.getQueryWithCipherColumn());
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn2(columnRuleConfigs.next());
         assertEncryptColumn1(columnRuleConfigs.next());

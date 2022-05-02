@@ -48,8 +48,7 @@ public final class TransactionContextsTest {
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
         assertThat(engines, is(actualEngines));
-        ShardingSphereTransactionManagerEngine defaultEngine = transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME);
-        assertNotNull(defaultEngine);
+        assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));
     }
     
     @Test

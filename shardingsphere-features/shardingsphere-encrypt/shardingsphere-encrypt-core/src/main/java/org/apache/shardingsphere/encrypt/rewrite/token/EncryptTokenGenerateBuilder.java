@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjecti
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
@@ -55,7 +54,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final String schemaName;
+    private final String databaseName;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -76,8 +75,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (!((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintEncryptRewriteNeeded() 
-                && toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
             setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
             sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
         }
@@ -90,8 +88,8 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
         }
-        if (toBeAddedSQLTokenGenerator instanceof SchemaNameAware) {
-            ((SchemaNameAware) toBeAddedSQLTokenGenerator).setSchemaName(schemaName);
+        if (toBeAddedSQLTokenGenerator instanceof DatabaseNameAware) {
+            ((DatabaseNameAware) toBeAddedSQLTokenGenerator).setDatabaseName(databaseName);
         }
     }
 }

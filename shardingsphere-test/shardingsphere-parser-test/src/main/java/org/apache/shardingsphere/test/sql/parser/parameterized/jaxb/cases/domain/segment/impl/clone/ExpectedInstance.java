@@ -30,16 +30,16 @@ public final class ExpectedInstance extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "username")
     private String username;
-
+    
     @XmlAttribute(name = "hostname")
     private String hostname;
-
+    
     @XmlAttribute(name = "port")
     private Integer port;
-
+    
     @XmlAttribute(name = "password")
     private String password;
-
+    
     @XmlAttribute(name = "require-ssl")
     private boolean sslRequired;
 }

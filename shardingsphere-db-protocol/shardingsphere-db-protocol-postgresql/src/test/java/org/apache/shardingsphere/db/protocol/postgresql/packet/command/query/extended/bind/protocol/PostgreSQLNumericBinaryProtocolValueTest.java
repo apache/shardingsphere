@@ -24,15 +24,14 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -42,16 +41,15 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
     
     private final byte[] expected;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Iterable<Object[]> textValues() {
         return Arrays.asList(
-                new Object[]{new BigDecimal("0"), new byte[] {0, 0, -1, -1, 0, 0, 0, 0}},
-                new Object[]{new BigDecimal("0.00"), new byte[] {0, 0, -1, -1, 0, 0, 0, 2}},
-                new Object[]{new BigDecimal("0.0001"), new byte[] {0, 1, -1, -1, 0, 0, 0, 4, 0, 1}},
-                new Object[]{new BigDecimal("9999"), new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 39, 15}},
-                new Object[]{new BigDecimal("9999.0"), new byte[] {0, 1, 0, 0, 0, 0, 0, 1, 39, 15}},
-                new Object[]{new BigDecimal("9999.9999"), new byte[] {0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}}
-        );
+                new Object[]{new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}},
+                new Object[]{new BigDecimal("0.00"), new byte[]{0, 0, -1, -1, 0, 0, 0, 2}},
+                new Object[]{new BigDecimal("0.0001"), new byte[]{0, 1, -1, -1, 0, 0, 0, 4, 0, 1}},
+                new Object[]{new BigDecimal("9999"), new byte[]{0, 1, 0, 0, 0, 0, 0, 0, 39, 15}},
+                new Object[]{new BigDecimal("9999.0"), new byte[]{0, 1, 0, 0, 0, 0, 0, 1, 39, 15}},
+                new Object[]{new BigDecimal("9999.9999"), new byte[]{0, 2, 0, 0, 0, 0, 0, 4, 39, 15, 39, 15}});
     }
     
     @Test
@@ -68,8 +66,6 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         byteBuf.writeBytes(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = binaryProtocolValue.read(payload, expectedLength);
-        assertNotNull(result);
-        assertTrue(result instanceof BigDecimal);
         assertThat(result, is(bigDecimal));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }

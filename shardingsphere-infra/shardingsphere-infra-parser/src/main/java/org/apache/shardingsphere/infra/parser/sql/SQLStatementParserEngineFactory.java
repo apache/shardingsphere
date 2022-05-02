@@ -41,7 +41,7 @@ public final class SQLStatementParserEngineFactory {
      * @param isParseComment is parse comment
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, 
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType,
                                                                        final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         SQLStatementParserEngine result = ENGINES.get(databaseType);
         if (null == result) {

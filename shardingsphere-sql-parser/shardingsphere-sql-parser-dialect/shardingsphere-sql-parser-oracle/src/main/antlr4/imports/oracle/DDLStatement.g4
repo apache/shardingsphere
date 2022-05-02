@@ -23,6 +23,10 @@ createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
     ;
 
+createEdition
+    : CREATE EDITION editionName (AS CHILD OF editionName)?
+    ;
+
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
@@ -505,6 +509,10 @@ dropReuseClause
 
 collationClause
     : DEFAULT COLLATION collationName
+    ;
+
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
     ;
 
 commitClause
@@ -1283,6 +1291,14 @@ defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
 
+alterDatabaseDictionary
+    : ALTER DATABASE DICTIONARY (
+    | ENCRYPT CREDENTIALS
+    | REKEY CREDENTIALS
+    | DELETE CREDENTIALS KEY
+    )
+    ;
+    
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses
@@ -2051,6 +2067,13 @@ createDatabaseLink
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
     
+alterDatabaseLink
+    : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
+    | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
+    | dbLinkAuthentication
+    )
+    ;
+
 dropDatabaseLink
     : DROP PUBLIC? DATABASE LINK dbLink 
     ;

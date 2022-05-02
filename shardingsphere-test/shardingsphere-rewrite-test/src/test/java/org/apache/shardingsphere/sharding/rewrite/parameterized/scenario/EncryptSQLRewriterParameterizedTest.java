@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -54,7 +53,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     
     private static final String CASE_PATH = "scenario/encrypt/case";
     
-    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
                                                final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
@@ -72,14 +71,14 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas() {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String databaseName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("ORDER_ID", "USER_ID", "CONTENT"));
         when(result.get("t_order")).thenReturn(new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
+        return Collections.singletonMap(databaseName, result);
     }
     
     @Override

@@ -72,7 +72,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (segment instanceof LiteralExpressionSegment) {
             return new LiteralExpressionConverter().convertToSQLNode((LiteralExpressionSegment) segment);
         } else if (segment instanceof CommonExpressionSegment) {
-            // TODO 
+            // TODO
             throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
         } else if (segment instanceof ListExpression) {
             return new ListExpressionConverter().convertToSQLNode((ListExpression) segment).map(optional -> optional);

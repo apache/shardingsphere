@@ -30,40 +30,40 @@ import java.util.Set;
  * Example configuration validator.
  */
 public final class YamlExampleConfigurationValidator {
-
+    
     /**
      * Verify the entrance.
      *
-     * @param configuration configuration
+     * @param config Yaml example configuration
      */
-    public static void validate(final YamlExampleConfiguration configuration) {
+    public static void validate(final YamlExampleConfiguration config) {
         Map<String, List<String>> configurationMap = Maps.newHashMap();
-        configurationMap.put("products", configuration.getProducts());
-        configurationMap.put("modes", configuration.getModes());
-        configurationMap.put("transactions", configuration.getTransactions());
-        configurationMap.put("features", configuration.getFeatures());
-        configurationMap.put("frameworks", configuration.getFrameworks());
+        configurationMap.put("products", config.getProducts());
+        configurationMap.put("modes", config.getModes());
+        configurationMap.put("transactions", config.getTransactions());
+        configurationMap.put("features", config.getFeatures());
+        configurationMap.put("frameworks", config.getFrameworks());
         validateConfigurationValues(configurationMap);
-        validateAccountConfigProps(configuration.getProps());
+        validateAccountConfigProps(config.getProps());
     }
-
-    private static void validateConfigurationValues(final Map<String, List<String>> configurationMap) {
-        configurationMap.forEach((configItem, configValues) -> {
+    
+    private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
+        configMap.forEach((configItem, configValues) -> {
             YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
             configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
         });
     }
-
+    
     private static void validateAccountConfigProps(final Properties props) {
         List<String> accountConfigItemList = Lists.newArrayList("host", "port", "username", "password");
-        accountConfigItemList.forEach(item -> Preconditions.checkArgument(props.get(item) != null, getConfigItemErrorMessage(item)));
+        accountConfigItemList.forEach(each -> Preconditions.checkArgument(props.get(each) != null, getConfigItemErrorMessage(each)));
     }
-
+    
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",it only supports:" + supportedValues.toString() + ",the currently configured value:" + errorValue;
     }
-
+    
     private static String getConfigItemErrorMessage(final String configItem) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",the configuration item missed or its value is null";
     }

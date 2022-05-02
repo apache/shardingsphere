@@ -24,10 +24,14 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
+import java.util.Map;
+
 @Setter
 public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String>, SchemaMetaDataAware {
     
-    private ShardingSphereSchema schema;
+    private Map<String, ShardingSphereSchema> schemas;
+    
+    private String databaseName;
     
     @Override
     public void init() {
@@ -35,13 +39,13 @@ public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorith
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schema.get(encryptContext.getTableName());
+        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
         return "encrypt_" + plainValue + "_" + tableMetaData.getName();
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schema.get(encryptContext.getTableName());
+        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
         return cipherValue.replaceAll("encrypt_", "").replaceAll("_" + tableMetaData.getName(), "");
     }
     

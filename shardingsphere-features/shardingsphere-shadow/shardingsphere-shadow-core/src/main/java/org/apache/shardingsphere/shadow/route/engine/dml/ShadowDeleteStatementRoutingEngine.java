@@ -79,7 +79,7 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
         
         private final Iterator<ExpressionSegment> iterator;
-    
+        
         private final List<Object> parameters;
         
         ShadowColumnConditionIterator(final Collection<ExpressionSegment> predicates, final List<Object> parameters) {
@@ -95,8 +95,8 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
         @Override
         public Optional<ShadowColumnCondition> next() {
             ExpressionSegment expressionSegment = iterator.next();
-            return ShadowExtractor.extractColumn(expressionSegment).flatMap(segment -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                    .map(values -> new ShadowColumnCondition(getSingleTableName(), segment.getIdentifier().getValue(), values)));
+            return ShadowExtractor.extractColumn(expressionSegment).flatMap(optional -> ShadowExtractor.extractValues(expressionSegment, parameters)
+                    .map(values -> new ShadowColumnCondition(getSingleTableName(), optional.getIdentifier().getValue(), values)));
         }
     }
 }

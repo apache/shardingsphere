@@ -57,8 +57,8 @@ execute
     | dropTrafficRule
     | createTrafficRule
     | alterTrafficRule
-    | exportSchemaConfiguration
+    | exportDatabaseConfiguration
     | showRulesUsedResource
-    | importSchemaConfiguration
+    | importDatabaseConfiguration
     ) SEMI?
     ;

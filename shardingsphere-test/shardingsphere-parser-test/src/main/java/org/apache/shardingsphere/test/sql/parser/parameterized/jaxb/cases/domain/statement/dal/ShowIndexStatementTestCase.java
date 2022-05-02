@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowIndexStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement
     private ExpectedSimpleTable table;
     

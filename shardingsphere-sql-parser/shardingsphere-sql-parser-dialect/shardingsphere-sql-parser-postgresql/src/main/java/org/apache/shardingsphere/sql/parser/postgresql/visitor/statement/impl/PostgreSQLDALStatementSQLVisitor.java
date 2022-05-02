@@ -164,7 +164,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         } else if (null != ctx.delete()) {
             return visit(ctx.delete());
         } else if (null != ctx.declare()) {
-            // TODO visit declare statement 
+            // TODO visit declare statement
             return visit(ctx.declare());
         } else if (null != ctx.executeStmt()) {
             return visit(ctx.executeStmt());

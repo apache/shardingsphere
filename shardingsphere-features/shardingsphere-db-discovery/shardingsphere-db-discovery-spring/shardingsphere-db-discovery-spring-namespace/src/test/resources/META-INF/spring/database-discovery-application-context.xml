@@ -26,7 +26,7 @@
                            ">
     
     <database-discovery:rule id="mgrDatabaseDiscoveryRule">
-        <database-discovery:data-source-rule id="readwrite_ds" data-source-names="ds_0,ds_1,ds_2" discovery-heartbeat-name="mgr-heartbeat" discovery-type-name="mgr"/>
+        <database-discovery:data-source-rule id="readwrite_ds" data-source-names="ds_0,ds_1,ds_2" discovery-heartbeat-name="mgr-heartbeat" discovery-type-name="mgr" />
         <database-discovery:discovery-heartbeat id="mgr-heartbeat">
             <props>
                 <prop key="keep-alive-cron" > 0/5 * * * * ? </prop>
@@ -34,7 +34,7 @@
         </database-discovery:discovery-heartbeat>
     </database-discovery:rule>
 
-    <database-discovery:discovery-type id="mgr" type="MGR" >
+    <database-discovery:discovery-type id="mgr" type="MySQL.MGR">
         <props>
             <prop key="group-name">92504d5b-6dec-11e8-91ea-246e9612aaf1</prop>
         </props>

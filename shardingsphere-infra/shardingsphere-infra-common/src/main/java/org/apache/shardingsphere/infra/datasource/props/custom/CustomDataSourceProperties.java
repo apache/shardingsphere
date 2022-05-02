@@ -35,7 +35,7 @@ public final class CustomDataSourceProperties {
     
     private final Map<String, Object> properties;
     
-    public CustomDataSourceProperties(final Map<String, Object> props, 
+    public CustomDataSourceProperties(final Map<String, Object> props,
                                       final Collection<String> standardPropertyKeys, final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms) {
         properties = getProperties(props);
         standardPropertyKeys.forEach(properties::remove);

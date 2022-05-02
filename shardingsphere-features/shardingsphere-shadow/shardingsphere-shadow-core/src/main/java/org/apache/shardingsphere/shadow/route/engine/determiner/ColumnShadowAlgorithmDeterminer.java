@@ -54,7 +54,7 @@ public final class ColumnShadowAlgorithmDeterminer {
     }
     
     private static Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
-                                                                                         final ShadowOperationType operationType) {
+                                                                                                final ShadowOperationType operationType) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
         for (Comparable<?> each : columnValues) {
             result.add(new PreciseColumnShadowValue<>(tableName, operationType, columnName, each));

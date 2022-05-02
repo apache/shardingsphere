@@ -31,12 +31,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 @Getter
 @Setter
 public final class CloneActionSegment implements SQLSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private String cloneDir;
-
+    
     private CloneInstanceSegment cloneInstance;
 }

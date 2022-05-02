@@ -69,7 +69,7 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
         }
         return result;
     }
-
+    
     @Override
     public Collection<ConstraintSegment> getConstraints() {
         Collection<ConstraintSegment> result = new LinkedList<>();

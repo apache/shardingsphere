@@ -51,7 +51,8 @@ public abstract class SingleITCase extends BaseITCase {
         sqlExecuteType = parameterizedArray.getSqlExecuteType();
         assertion = parameterizedArray.getAssertion();
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
-                ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
+                ? null
+                : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
     }
     
     protected final String getSQL() throws ParseException {

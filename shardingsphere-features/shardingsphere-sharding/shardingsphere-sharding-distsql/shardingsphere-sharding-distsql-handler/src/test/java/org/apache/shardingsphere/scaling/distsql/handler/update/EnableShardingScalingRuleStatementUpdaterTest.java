@@ -44,7 +44,7 @@ public final class EnableShardingScalingRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getName()).thenReturn("test");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -84,8 +84,8 @@ public final class EnableShardingScalingRuleStatementUpdaterTest {
         String scalingName = "new_scaling";
         currentRuleConfig.getScaling().put("default_scaling", null);
         currentRuleConfig.getScaling().put(scalingName, null);
-        ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(createSQLStatement(scalingName));
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeAlteredRuleConfiguration(createSQLStatement(scalingName));
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getScalingName(), is("new_scaling"));
     }
     

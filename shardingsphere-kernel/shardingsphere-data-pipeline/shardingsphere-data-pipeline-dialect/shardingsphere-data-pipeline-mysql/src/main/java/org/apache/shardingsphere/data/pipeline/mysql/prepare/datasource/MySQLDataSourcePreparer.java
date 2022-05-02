@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
@@ -44,10 +44,11 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
-        PipelineConfiguration pipelineConfig = parameter.getPipelineConfiguration();
+        RuleAlteredJobConfiguration jobConfig = parameter.getJobConfig();
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        try (Connection sourceConnection = getSourceCachedDataSource(pipelineConfig, dataSourceManager).getConnection();
-             Connection targetConnection = getTargetCachedDataSource(pipelineConfig, dataSourceManager).getConnection()) {
+        try (
+                Connection sourceConnection = getSourceCachedDataSource(jobConfig, dataSourceManager).getConnection();
+                Connection targetConnection = getTargetCachedDataSource(jobConfig, dataSourceManager).getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);

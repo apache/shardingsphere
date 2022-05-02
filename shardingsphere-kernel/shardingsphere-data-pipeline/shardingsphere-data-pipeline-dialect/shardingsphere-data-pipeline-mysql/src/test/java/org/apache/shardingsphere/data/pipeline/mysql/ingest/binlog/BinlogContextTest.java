@@ -61,9 +61,9 @@ public final class BinlogContextTest {
     }
     
     @Test
-    public void assertGetSchemaName() {
+    public void assertGetDatabaseName() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
-        assertThat(binlogContext.getSchemaName(TEST_TABLE_ID), is(TEST_SCHEMA));
+        assertThat(binlogContext.getDatabaseName(TEST_TABLE_ID), is(TEST_SCHEMA));
     }
     
     @Test

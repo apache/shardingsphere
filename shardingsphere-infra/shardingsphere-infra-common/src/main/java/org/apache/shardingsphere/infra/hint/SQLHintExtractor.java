@@ -28,11 +28,11 @@ import java.util.Properties;
 /**
  * SQL hint extractor.
  */
+@Getter
 public final class SQLHintExtractor {
     
     private static final SQLHintProperties DEFAULT_SQL_HINT_PROPERTIES = new SQLHintProperties(new Properties());
     
-    @Getter
     private final SQLHintProperties sqlHintProperties;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
@@ -41,11 +41,11 @@ public final class SQLHintExtractor {
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
-        Properties properties = new Properties();
+        Properties props = new Properties();
         for (CommentSegment each : statement.getCommentSegments()) {
-            properties.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
+            props.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
         }
-        return new SQLHintProperties(properties);
+        return new SQLHintProperties(props);
     }
     
     /**
@@ -68,11 +68,11 @@ public final class SQLHintExtractor {
     }
     
     /**
-     * Judge whether is hint indicated encrypt rewrite needed or skip.
+     * Judge whether hint skip encrypt rewrite or not.
      *
-     * @return whether is hint indicated encrypt rewrite needed or skip
+     * @return whether hint skip encrypt rewrite or not
      */
-    public boolean isHintEncryptRewriteNeeded() {
+    public boolean isHintSkipEncryptRewrite() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
     }
 }

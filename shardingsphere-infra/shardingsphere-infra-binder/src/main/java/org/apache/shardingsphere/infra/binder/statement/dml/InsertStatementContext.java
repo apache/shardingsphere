@@ -102,7 +102,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         if (null == metaData) {
             throw new SchemaNotExistedException(databaseName);
         }
-        return metaData.getDefaultSchema();
+        String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -121,7 +122,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return result;
     }
     
-    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                                                  final AtomicInteger parametersOffset, final String defaultDatabaseName) {
         if (!getSqlStatement().getInsertSelect().isPresent()) {
             return Optional.empty();
@@ -216,7 +217,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
-        
+    
     /**
      * Get insert column names.
      *
@@ -246,7 +247,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.map(each -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(each))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
+        return setAssignment
+                .map(optional -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(optional))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
     }
     
     private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {

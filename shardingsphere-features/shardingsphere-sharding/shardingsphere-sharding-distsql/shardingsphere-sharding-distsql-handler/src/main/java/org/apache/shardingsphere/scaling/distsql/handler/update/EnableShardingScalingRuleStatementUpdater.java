@@ -33,27 +33,27 @@ public final class EnableShardingScalingRuleStatementUpdater implements RuleDefi
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final EnableShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkExist(schemaName, sqlStatement, currentRuleConfig);
-        checkEnabled(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkExist(databaseName, sqlStatement, currentRuleConfig);
+        checkEnabled(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", databaseName);
         }
     }
     
-    private void checkExist(final String schemaName, final EnableShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkExist(final String databaseName, final EnableShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new RequiredRuleMissedException("Scaling", schemaName, sqlStatement.getScalingName());
+            throw new RequiredRuleMissedException("Scaling", databaseName, sqlStatement.getScalingName());
         }
     }
     
-    private void checkEnabled(final String schemaName, final EnableShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkEnabled(final String databaseName, final EnableShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null != currentRuleConfig.getScalingName() && currentRuleConfig.getScalingName().equals(sqlStatement.getScalingName())) {
-            throw new RuleEnabledException("Scaling", schemaName, sqlStatement.getScalingName());
+            throw new RuleEnabledException("Scaling", databaseName, sqlStatement.getScalingName());
         }
     }
     

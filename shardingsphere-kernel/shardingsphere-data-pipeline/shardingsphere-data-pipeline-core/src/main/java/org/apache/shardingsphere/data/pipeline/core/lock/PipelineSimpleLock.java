@@ -21,12 +21,9 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Pipeline simple lock.
@@ -37,17 +34,13 @@ public final class PipelineSimpleLock {
     
     private static volatile PipelineSimpleLock instance;
     
-    private final LockRegistryService lockRegistryService;
+    private final LockContext lockContext;
     
     private final Map<String, Boolean> lockNameLockedMap;
     
     private PipelineSimpleLock() {
-        Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        persistServiceOptional.orElseThrow(() -> new RuntimeException("Could not get metadata persist service"));
-        // TODO Use PersistRepository later
-        ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
-        lockRegistryService = new LockRegistryService(repository);
         lockNameLockedMap = Maps.newConcurrentMap();
+        lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
     }
     
     /**
@@ -74,7 +67,7 @@ public final class PipelineSimpleLock {
      * @return true if lock got, else false
      */
     public boolean tryLock(final String lockName, final long timeoutMills) {
-        boolean result = lockRegistryService.tryLock(decorateLockName(lockName), timeoutMills);
+        boolean result = lockContext.getOrCreateStandardLock(decorateLockName(lockName)).tryLock(decorateLockName(lockName), timeoutMills);
         if (result) {
             lockNameLockedMap.put(lockName, true);
         }
@@ -91,7 +84,7 @@ public final class PipelineSimpleLock {
         log.info("releaseLock, lockName={}", lockName);
         if (lockNameLockedMap.getOrDefault(lockName, false)) {
             lockNameLockedMap.remove(lockName);
-            lockRegistryService.releaseLock(decorateLockName(lockName));
+            lockContext.getOrCreateStandardLock(decorateLockName(lockName)).releaseLock(lockName);
         }
     }
     

@@ -29,23 +29,24 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere schema refresher.
+ * Meta data refresher.
  *
  * @param <T> type of SQL statement
  */
 public interface MetaDataRefresher<T extends SQLStatement> extends StatelessTypedSPI {
     
     /**
-     * Refresh ShardingSphere schema.
+     * Refresh schema.
      *
-     * @param schemaMetaData schema meta data
+     * @param metaData meta data
      * @param database federation database meta data                      
      * @param optimizerPlanners optimizer planners
      * @param logicDataSourceNames route data source names
+     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereMetaData schemaMetaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners, 
-                 Collection<String> logicDataSourceNames, T sqlStatement, ConfigurationProperties props) throws SQLException;
+    void refresh(ShardingSphereMetaData metaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
+                 Collection<String> logicDataSourceNames, String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

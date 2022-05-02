@@ -29,7 +29,7 @@ import java.sql.Connection;
 public final class CircuitBreakDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
+    public Connection getConnection(final String databaseName, final ContextManager contextManager) {
         return new CircuitBreakerDataSource().getConnection();
     }
     

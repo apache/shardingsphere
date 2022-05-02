@@ -42,7 +42,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     private final Map<Integer, Collection<Object>> addedIndexAndParameters = new TreeMap<>();
     
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
-
+    
     private final List<Integer> removeIndexAndParameters = new ArrayList<>();
     
     /**
@@ -64,7 +64,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     public void addReplacedParameters(final int index, final Object parameter) {
         replacedIndexAndParameters.put(index, parameter);
     }
-
+    
     /**
      * Add removed parameter.
      *

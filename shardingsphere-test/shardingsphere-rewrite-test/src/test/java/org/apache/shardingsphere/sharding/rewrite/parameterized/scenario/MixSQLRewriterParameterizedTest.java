@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -51,7 +50,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private static final String CASE_PATH = "scenario/mix/case";
     
-    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
                                            final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
@@ -69,7 +68,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas() {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String databaseName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
@@ -86,7 +85,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
+        return Collections.singletonMap(databaseName, result);
     }
     
     @Override
@@ -96,7 +95,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     @Override
     protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
-
+    
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
         result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));

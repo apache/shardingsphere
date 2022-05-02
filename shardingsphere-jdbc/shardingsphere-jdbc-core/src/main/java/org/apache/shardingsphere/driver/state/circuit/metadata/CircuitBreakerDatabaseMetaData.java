@@ -693,7 +693,7 @@ public final class CircuitBreakerDatabaseMetaData implements DatabaseMetaData {
     }
     
     @Override
-    public ResultSet getCrossReference(final String parentCatalog, final String parentSchema, final String parentTable, final String foreignCatalog, 
+    public ResultSet getCrossReference(final String parentCatalog, final String parentSchema, final String parentTable, final String foreignCatalog,
                                        final String foreignSchema, final String foreignTable) {
         return null;
     }

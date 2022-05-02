@@ -59,9 +59,7 @@ public final class TypedSPIRegistryTest {
     
     @Test
     public void assertGetStatefulRegisteredService() {
-        StatefulTypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
-        assertNotNull(actual);
-        assertProperties(actual);
+        assertProperties(TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties()));
     }
     
     private Properties createProperties() {

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines", 
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines",
             "parameters", "routines", "schemata", "tables", "views")),
     
     MYSQL_MYSQL("MySQL", "mysql", Sets.newHashSet("db")),
@@ -43,7 +44,31 @@ public enum SystemSchemaBuilderRule {
     
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger"));
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger")),
+    
+    OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
+    
+    OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", Collections.emptySet()),
+    
+    OPEN_GAUSS_BLOCKCHAIN("openGauss", "blockchain", Collections.emptySet()),
+    
+    OPEN_GAUSS_CSTORE("openGauss", "cstore", Collections.emptySet()),
+    
+    OPEN_GAUSS_DB4AI("openGauss", "db4ai", Collections.emptySet()),
+    
+    OPEN_GAUSS_DBE_PERF("openGauss", "dbe_perf", Collections.emptySet()),
+    
+    OPEN_GAUSS_DBE_PLDEBUGGER("openGauss", "dbe_pldebugger", Collections.emptySet()),
+    
+    OPEN_GAUSS_GAUSSDB("openGauss", "gaussdb", Collections.emptySet()),
+    
+    OPEN_GAUSS_ORACLE("openGauss", "oracle", Collections.emptySet()),
+    
+    OPEN_GAUSS_PKG_SERVICE("openGauss", "pkg_service", Collections.emptySet()),
+    
+    OPEN_GAUSS_SNAPSHOT("openGauss", "snapshot", Collections.emptySet()),
+    
+    OPEN_GAUSS_SQLADVISOR("openGauss", "sqladvisor", Collections.emptySet());
     
     private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>(values().length, 1);
     
@@ -58,7 +83,7 @@ public enum SystemSchemaBuilderRule {
             SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getDatabaseType() + "." + each.getSchema(), each);
         }
     }
-
+    
     /**
      * Value of builder rule.
      * 

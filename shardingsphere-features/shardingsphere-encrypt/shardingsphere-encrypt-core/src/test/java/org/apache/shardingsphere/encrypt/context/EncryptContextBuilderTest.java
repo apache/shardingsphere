@@ -40,8 +40,8 @@ public final class EncryptContextBuilderTest {
     
     @Test
     public void assertBuildWhenConfigDateType() {
-        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "test", "cipher", mockEncryptRule());
-        assertThat(actual.getSchemaName(), is("encrypt_db"));
+        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "encrypt_db", "test", "cipher", mockEncryptRule());
+        assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getTableName(), is("test"));
         assertThat(actual.getColumnName(), is("cipher"));
         assertTrue(actual.getLogicDataType().isPresent());
@@ -60,8 +60,8 @@ public final class EncryptContextBuilderTest {
     
     @Test
     public void assertBuildWhenNotConfigDateType() {
-        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "test", "cipher", mock(EncryptRule.class));
-        assertThat(actual.getSchemaName(), is("encrypt_db"));
+        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "encrypt_db", "test", "cipher", mock(EncryptRule.class));
+        assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getTableName(), is("test"));
         assertThat(actual.getColumnName(), is("cipher"));
         assertFalse(actual.getLogicDataType().isPresent());

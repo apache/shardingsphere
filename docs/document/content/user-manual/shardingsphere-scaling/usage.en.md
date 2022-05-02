@@ -29,10 +29,10 @@ If the backend database is in following table, please download JDBC driver jar a
 Supported features:
 
 | Feature                                  | MySQL         | PostgreSQL    | openGauss     |
-| ---------------------------------------- | ------------- | ------------- | ------------- |
+| ---------------------------------------- | ------------- |---------------| ------------- |
 | Inventory migration                      | Supported     | Supported     | Supported     |
 | Incremental migration                    | Supported     | Supported     | Supported     |
-| Create table automatically               | Supported     | Unsupported   | Supported     |
+| Create table automatically               | Supported     | Supported     | Supported     |
 | DATA_MATCH data consistency check        | Supported     | Supported     | Supported     |
 | CRC32_MATCH data consistency check       | Supported     | Unsupported   | Unsupported   |
 
@@ -77,7 +77,7 @@ As shown below, it means binlog has been turned on:
 
 Execute the following SQL to confirm whether the user has migration permission or not:
 ```sql
-SHOW GRANTS 'user';
+SHOW GRANTS FOR 'user';
 ```
 
 Result Example:
@@ -283,11 +283,9 @@ mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 #### Other DistSQL
 Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-### DistSQL API for manual mode
-
-Data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
-
 ### DistSQL manual mode whole process example
+
+On manual mode, data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
 This example show how to migrate data from MySQL to proxy.
 

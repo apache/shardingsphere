@@ -38,22 +38,22 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropDefaultShadowAlgorithmStatement sqlStatement,
                                   final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = metaData.getName();
+        String databaseName = metaData.getDatabaseName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExist(schemaName, currentRuleConfig);
-        checkAlgorithm(schemaName, sqlStatement, currentRuleConfig);
+        checkConfigurationExist(databaseName, currentRuleConfig);
+        checkAlgorithm(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
+    private void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
-    private void checkAlgorithm(final String schemaName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkAlgorithm(final String databaseName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!sqlStatement.isContainsExistClause()) {
-            DistSQLException.predictionThrow(null != currentRuleConfig.getDefaultShadowAlgorithmName(),
-                () -> new RequiredAlgorithmMissedException(SHADOW, schemaName, Collections.singleton("default")));
+            DistSQLException.predictionThrow(null != currentRuleConfig.getDefaultShadowAlgorithmName(), () -> new RequiredAlgorithmMissedException(
+                    SHADOW, databaseName, Collections.singleton("default")));
         }
     }
     

@@ -68,7 +68,7 @@ public final class ProjectionEngine {
     
     /**
      * Create projection.
-     * 
+     *
      * @param table table segment
      * @param projectionSegment projection segment
      * @return projection
@@ -98,7 +98,7 @@ public final class ProjectionEngine {
         // TODO subquery
         return Optional.empty();
     }
-
+    
     private ParameterMarkerProjection createProjection(final ParameterMarkerExpressionSegment projectionSegment) {
         return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
     }
@@ -108,7 +108,7 @@ public final class ProjectionEngine {
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
+        String owner = projectionSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
         Collection<ColumnProjection> columnProjections = new LinkedHashSet<>();
         columnProjections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
         columnProjections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
@@ -154,9 +154,9 @@ public final class ProjectionEngine {
         String tableAlias = table.getAlias().orElse(tableName);
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(tableAlias, columnName, null)).forEach(result::add);
+            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).forEach(result::add);
+            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
         }
         return result;
     }
@@ -166,8 +166,8 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
-        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each 
-            -> createProjection(subSelectStatement.getFrom(), each).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
+        Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
+                .filter(Objects::nonNull).collect(Collectors.toList());
         return getColumnProjections(projections);
     }
     

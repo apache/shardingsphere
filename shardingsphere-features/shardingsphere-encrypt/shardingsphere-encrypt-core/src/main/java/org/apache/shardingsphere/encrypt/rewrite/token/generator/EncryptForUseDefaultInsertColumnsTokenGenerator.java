@@ -102,11 +102,11 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     }
     
     private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findPlainColumn(columnName).ifPresent(plainColumn -> columnNames.add(columnIndex + 1, plainColumn));
+        encryptTable.findPlainColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
     }
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findAssistedQueryColumn(columnName).ifPresent(assistedQueryColumn -> columnNames.add(columnIndex + 1, assistedQueryColumn));
+        encryptTable.findAssistedQueryColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
     }
     
     private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

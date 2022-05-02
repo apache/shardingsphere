@@ -113,8 +113,8 @@ public final class FilterableTableScanExecutor {
     
     private final FilterableTableScanExecutorContext executorContext;
     
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                                        final OptimizerContext optimizerContext, final FilterableTableScanExecutorContext executorContext) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
@@ -147,7 +147,7 @@ public final class FilterableTableScanExecutor {
         return execute(schemaName, databaseType, logicSQL, metaData, context);
     }
     
-    private AbstractEnumerable<Object[]> execute(final String schemaName, final DatabaseType databaseType, final LogicSQL logicSQL, 
+    private AbstractEnumerable<Object[]> execute(final String schemaName, final DatabaseType databaseType, final LogicSQL logicSQL,
                                                  final ShardingSphereMetaData metaData, final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
@@ -155,7 +155,7 @@ public final class FilterableTableScanExecutor {
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps());
             List<QueryResult> queryResults = execute(executionGroupContext);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, metaData.getDefaultSchema(), executorContext.getProps(), metaData.getRuleMetaData().getRules());
+            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, metaData, executorContext.getProps(), metaData.getRuleMetaData().getRules());
             MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
             return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
@@ -170,8 +170,9 @@ public final class FilterableTableScanExecutor {
         Collection<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         List<QueryResult> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
-            QueryResult queryResult = each instanceof JDBCStreamQueryResult 
-                    ? new JDBCMemoryQueryResult(((JDBCStreamQueryResult) each).getResultSet()) : each;
+            QueryResult queryResult = each instanceof JDBCStreamQueryResult
+                    ? new JDBCMemoryQueryResult(((JDBCStreamQueryResult) each).getResultSet())
+                    : each;
             result.add(queryResult);
         }
         return result;
@@ -255,8 +256,8 @@ public final class FilterableTableScanExecutor {
     
     private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), 
-                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(), 
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(),
+                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, executorContext.getDatabaseName());

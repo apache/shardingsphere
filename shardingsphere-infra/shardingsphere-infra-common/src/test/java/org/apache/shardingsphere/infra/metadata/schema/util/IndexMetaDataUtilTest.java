@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.infra.metadata.schema.util;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -33,6 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class IndexMetaDataUtilTest {
     
@@ -74,14 +81,15 @@ public final class IndexMetaDataUtilTest {
     
     @Test
     public void assertGetTableNamesFromMetaData() {
-        IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue(INDEX_NAME));
-        assertThat(IndexMetaDataUtil.getTableNamesFromMetaData(buildSchema(), Lists.newArrayList(indexSegment)), is(Collections.singletonList(TABLE_NAME)));
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
+        assertThat(IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Lists.newArrayList(indexSegment), new MySQLDatabaseType()), is(Collections.singletonList(TABLE_NAME)));
     }
     
-    private ShardingSphereSchema buildSchema() {
+    private ShardingSphereMetaData buildMetaData() {
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singletonList(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
         tables.put(TABLE_NAME, tableMetaData);
-        return new ShardingSphereSchema(tables);
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereSchema(tables));
+        return new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
 }

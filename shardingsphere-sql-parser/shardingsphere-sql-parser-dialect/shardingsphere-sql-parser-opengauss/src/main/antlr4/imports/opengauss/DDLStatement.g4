@@ -1853,3 +1853,28 @@ securityLabelClausces
 unlisten
     : UNLISTEN (colId | ASTERISK_)
     ;
+
+createSchema
+    : CREATE SCHEMA notExistClause? createSchemaClauses
+    ;
+
+createSchemaClauses
+    : colId? AUTHORIZATION roleSpec schemaEltList
+    | colId schemaEltList
+    ;
+
+schemaEltList
+    : schemaStmt*
+    ;
+
+schemaStmt
+    : createTable | createIndex | createSequence | createTrigger | grant | createView
+    ;    
+
+alterSchema
+    : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
+    ;
+
+dropSchema
+    : DROP SCHEMA existClause? nameList dropBehavior?
+    ;

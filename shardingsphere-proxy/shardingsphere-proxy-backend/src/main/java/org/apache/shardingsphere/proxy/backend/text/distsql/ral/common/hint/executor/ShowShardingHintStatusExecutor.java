@@ -60,11 +60,12 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     @Override
     protected MergedResult createMergedResult() {
         Map<String, ShowShardingHintStatusResult> results = new HashMap<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
-        Collection<String> tableNames = metaData.getDefaultSchema().getAllTableNames();
+        String schemaName = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
+        Collection<String> tableNames = metaData.getSchemaByName(schemaName).getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());

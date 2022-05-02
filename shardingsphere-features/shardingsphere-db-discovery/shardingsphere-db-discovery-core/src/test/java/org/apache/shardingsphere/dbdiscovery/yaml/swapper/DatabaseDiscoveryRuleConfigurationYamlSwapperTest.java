@@ -42,7 +42,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
-                Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
+                Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
@@ -84,17 +84,10 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
-    @Test
-    public void assertGetTypeClass() {
-        DatabaseDiscoveryRuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
-        Class<DatabaseDiscoveryRuleConfiguration> actual = swapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(DatabaseDiscoveryRuleConfiguration.class));
-    }
-    
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
         Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
-                .filter(swapper -> swapper instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
-                .map(swapper -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) swapper)
+                .filter(each -> each instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
+                .map(each -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) each)
                 .findFirst();
         assertTrue(optional.isPresent());
         return optional.get();
