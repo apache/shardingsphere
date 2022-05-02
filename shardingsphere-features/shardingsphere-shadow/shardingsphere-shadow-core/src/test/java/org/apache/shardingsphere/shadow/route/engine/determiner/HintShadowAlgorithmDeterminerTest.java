@@ -47,9 +47,9 @@ public final class HintShadowAlgorithmDeterminerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
         HintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("foo", "bar");
-        result.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("foo", "bar");
+        result.setProps(props);
         result.init();
         return result;
     }
