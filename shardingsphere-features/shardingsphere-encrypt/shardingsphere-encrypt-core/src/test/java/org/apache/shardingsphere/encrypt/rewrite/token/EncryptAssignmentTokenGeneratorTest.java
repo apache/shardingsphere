@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAssignmentTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -32,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -48,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 public final class EncryptAssignmentTokenGeneratorTest {
     
-    private EncryptAssignmentTokenGenerator tokenGenerator;
+    private final EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator();
     
     private UpdateStatementContext updateStatement;
     
@@ -71,7 +69,6 @@ public final class EncryptAssignmentTokenGeneratorTest {
         setAssignmentSegment = mock(SetAssignmentSegment.class, RETURNS_DEEP_STUBS);
         literalExpression = mock(LiteralExpressionSegment.class, RETURNS_DEEP_STUBS);
         parameterMarkerExpression = mock(ParameterMarkerExpressionSegment.class, RETURNS_DEEP_STUBS);
-        tokenGenerator = new EncryptAssignmentTokenGenerator();
         tokenGenerator.setEncryptRule(encryptRule);
         when(updateStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
@@ -94,15 +91,13 @@ public final class EncryptAssignmentTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(parameterMarkerExpression);
-        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(updateStatement);
-        assertThat(sqlTokens.size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
     }
     
     @Test
     public void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(literalExpression);
-        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(updateStatement);
-        assertThat(sqlTokens.size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
     }
     
     @Test
@@ -116,7 +111,6 @@ public final class EncryptAssignmentTokenGeneratorTest {
         MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class);
         insertStatementHandlerMockedStatic.when(() -> InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(literalExpression);
-        Collection<EncryptAssignmentToken> sqlTokens = tokenGenerator.generateSQLTokens(insertStatement);
-        assertThat(sqlTokens.size(), is(1));
+        assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));
     }
 }
