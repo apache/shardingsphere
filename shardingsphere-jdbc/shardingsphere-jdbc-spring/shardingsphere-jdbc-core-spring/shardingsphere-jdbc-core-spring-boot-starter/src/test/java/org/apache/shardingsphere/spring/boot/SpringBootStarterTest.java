@@ -172,7 +172,7 @@ public class SpringBootStarterTest {
         assertThat(actual.get("t_user").getTableName(), is("t_user"));
         assertThat(actual.get("t_user").getShadowDataSources().size(), is(1));
         assertThat(actual.get("t_user").getHintShadowAlgorithmNames().size(), is(1));
-        assertThat(actual.get("t_user").getColumnShadowAlgorithmNames().size(), is(0));
+        assertTrue(actual.get("t_user").getColumnShadowAlgorithmNames().isEmpty());
     }
     
     private void assertSQLParserRule(final SQLParserRule actual) {
