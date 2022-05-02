@@ -24,7 +24,9 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
@@ -33,35 +35,22 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     @Before
     public void init() {
         shadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("column", SHADOW_COLUMN);
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        shadowAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("column", SHADOW_COLUMN);
+        props.setProperty("operation", "insert");
+        props.setProperty("regex", "[1]");
+        shadowAlgorithm.setProps(props);
         shadowAlgorithm.init();
     }
     
     @Test
     public void assertIsShadow() {
-        assertTrueCase();
-        assertFalseCase();
-    }
-    
-    private void assertFalseCase() {
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
-    }
-    
-    private void assertTrueCase() {
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(true)));
+        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(shadowAlgorithm.getType(), is("REGEX_MATCH"));
     }
 }

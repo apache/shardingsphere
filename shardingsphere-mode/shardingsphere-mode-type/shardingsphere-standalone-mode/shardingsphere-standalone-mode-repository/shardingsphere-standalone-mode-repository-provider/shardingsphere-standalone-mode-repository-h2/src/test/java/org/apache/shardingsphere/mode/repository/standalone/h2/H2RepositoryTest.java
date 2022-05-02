@@ -44,11 +44,6 @@ public final class H2RepositoryTest {
     }
     
     @Test
-    public void assertType() {
-        assertThat(h2Repository.getType(), is("H2"));
-    }
-    
-    @Test
     public void assertPersistAndGet() {
         h2Repository.persist("/testPath/test1", "test1_content");
         assertThat(h2Repository.get("/testPath/test1"), is("test1_content"));

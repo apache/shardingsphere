@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.junit.Test;
@@ -31,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -43,49 +41,28 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlDatabaseDiscoveryRuleConfiguration actual = createYamlHARuleConfiguration();
-        assertNotNull(actual);
-        assertNotNull(actual.getDataSources());
+        YamlDatabaseDiscoveryRuleConfiguration actual = createYamlRuleConfiguration();
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertNotNull(actual.getDiscoveryHeartbeats());
         assertThat(actual.getDiscoveryHeartbeats().keySet(), is(Collections.singleton("mgr_heartbeat")));
     }
     
     @Test
     public void assertSwapToObject() {
-        AlgorithmProvidedDatabaseDiscoveryRuleConfiguration actual = swapper.swapToObject(createYamlHARuleConfiguration());
+        AlgorithmProvidedDatabaseDiscoveryRuleConfiguration actual = swapper.swapToObject(createYamlRuleConfiguration());
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
-        assertNotNull(ruleConfig);
         assertThat(ruleConfig.getGroupName(), is("name"));
-        assertNotNull(actual.getDiscoveryHeartbeats());
         assertThat(actual.getDiscoveryHeartbeats().keySet(), is(Collections.singleton("mgr_heartbeat")));
     }
     
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(swapper.getTypeClass(), equalTo(AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class));
-    }
-    
-    @Test
-    public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("DB_DISCOVERY"));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER));
-    }
-    
-    private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {
+    private YamlDatabaseDiscoveryRuleConfiguration createYamlRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name",
                 Collections.singletonList("dataSourceNames"), "mgr_heartbeat", "discoveryTypeName");
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig = new LinkedHashMap<>();
         heartBeatConfig.put("mgr_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
-        return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig), heartBeatConfig,
-                        ImmutableMap.of("mgr", new MGRMySQLDatabaseDiscoveryProviderAlgorithm())));
+        return swapper.swapToYamlConfiguration(new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
+                Collections.singletonList(ruleConfig), heartBeatConfig, ImmutableMap.of("mgr", new MGRMySQLDatabaseDiscoveryProviderAlgorithm())));
     }
 }

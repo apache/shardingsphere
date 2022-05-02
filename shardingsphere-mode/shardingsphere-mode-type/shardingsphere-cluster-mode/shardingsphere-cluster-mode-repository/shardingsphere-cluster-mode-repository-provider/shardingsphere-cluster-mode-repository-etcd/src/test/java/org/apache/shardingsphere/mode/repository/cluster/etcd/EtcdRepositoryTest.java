@@ -67,8 +67,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdRepositoryTest {
     
-    private static final String CENTER_TYPE = "etcd";
-    
     @Mock
     private Client client;
     
@@ -227,11 +225,6 @@ public final class EtcdRepositoryTest {
     public void assertClose() {
         repository.close();
         verify(client).close();
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(repository.getType(), is(CENTER_TYPE));
     }
     
     @Test
