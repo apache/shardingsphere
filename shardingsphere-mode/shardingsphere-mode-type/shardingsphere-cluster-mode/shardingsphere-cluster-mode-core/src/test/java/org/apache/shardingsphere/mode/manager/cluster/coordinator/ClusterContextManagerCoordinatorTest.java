@@ -61,8 +61,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
@@ -94,6 +97,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -345,6 +350,38 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
         assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition1));
+    }
+    
+    @Test
+    public void assertCompleteUnitShowProcessList() {
+        String showProcessListId = "foo_process_id";
+        ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
+        ShowProcessListManager.getInstance().getLocks().put(showProcessListId, simpleLock);
+        long startTime = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(() -> {
+            try {
+                Thread.sleep(50L);
+            } catch (final InterruptedException ignored) {
+            }
+            ShowProcessListUnitCompleteEvent showProcessListUnitCompleteEvent = new ShowProcessListUnitCompleteEvent(showProcessListId);
+            coordinator.completeUnitShowProcessList(showProcessListUnitCompleteEvent);
+        });
+        simpleLockAwaitDefaultTime(simpleLock);
+        
+        long currentTime = System.currentTimeMillis();
+        assertTrue(currentTime > startTime + 50L);
+        assertTrue(currentTime < startTime + 5000L);
+        ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
+    }
+    
+    private void simpleLockAwaitDefaultTime(final ShowProcessListSimpleLock simpleLock) {
+        simpleLock.lock();
+        try {
+            simpleLock.awaitDefaultTime();
+        } finally {
+            simpleLock.unlock();
+        }
     }
     
     private Map<String, DataSource> initContextManager() {
