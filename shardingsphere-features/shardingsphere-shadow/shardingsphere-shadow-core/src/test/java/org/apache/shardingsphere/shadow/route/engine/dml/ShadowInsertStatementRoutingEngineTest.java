@@ -65,7 +65,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         when(result.getInsertColumnNames()).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
-        List<ExpressionSegment> valueExpressions = Arrays.asList(new LiteralExpressionSegment(0, 10, "1"), 
+        List<ExpressionSegment> valueExpressions = Arrays.asList(new LiteralExpressionSegment(0, 10, "1"),
                 new LiteralExpressionSegment(11, 20, "orderCode"), new LiteralExpressionSegment(21, 30, "orderName"));
         when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(valueExpressions, Collections.emptyList(), 0)));
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
