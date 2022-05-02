@@ -95,13 +95,13 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
         return result;
     }
     
-    private String getShardingAlgorithmName(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfig) {
-        return null == sqlStatement.getShardingAlgorithmName() ? createDefaultAlgorithm(sqlStatement, shardingRuleConfig) : sqlStatement.getShardingAlgorithmName();
+    private String getShardingAlgorithmName(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration ruleConfig) {
+        return null == sqlStatement.getShardingAlgorithmName() ? createDefaultAlgorithm(sqlStatement, ruleConfig) : sqlStatement.getShardingAlgorithmName();
     }
     
-    private String createDefaultAlgorithm(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfiguration) {
+    private String createDefaultAlgorithm(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration ruleConfig) {
         String result = getDefaultShardingAlgorithmName(sqlStatement.getDefaultType(), sqlStatement.getAlgorithmSegment().getName());
-        shardingRuleConfiguration.getShardingAlgorithms().put(result, createAlgorithmConfiguration(sqlStatement.getAlgorithmSegment()));
+        ruleConfig.getShardingAlgorithms().put(result, createAlgorithmConfiguration(sqlStatement.getAlgorithmSegment()));
         return result;
     }
     
