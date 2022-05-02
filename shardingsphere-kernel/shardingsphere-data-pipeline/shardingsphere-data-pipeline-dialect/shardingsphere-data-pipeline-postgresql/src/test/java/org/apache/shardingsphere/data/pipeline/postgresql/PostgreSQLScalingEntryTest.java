@@ -24,19 +24,18 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("PostgreSQL");
-        assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
-        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(PostgreSQLEnvironmentChecker.class));
-        assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
-        assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
-        assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(PostgreSQLWalDumper.class));
+        assertThat(scalingEntry, instanceOf(PostgreSQLScalingEntry.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass(), instanceOf(PostgreSQLEnvironmentChecker.class));
+        assertThat(scalingEntry.getImporterClass(), instanceOf(PostgreSQLImporter.class));
+        assertThat(scalingEntry.getInventoryDumperClass(), instanceOf(PostgreSQLInventoryDumper.class));
+        assertThat(scalingEntry.getIncrementalDumperClass(), instanceOf(PostgreSQLWalDumper.class));
     }
 }

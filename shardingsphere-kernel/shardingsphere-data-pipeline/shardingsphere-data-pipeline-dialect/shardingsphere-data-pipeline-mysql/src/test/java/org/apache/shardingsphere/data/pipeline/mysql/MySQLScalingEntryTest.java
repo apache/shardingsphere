@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -34,9 +34,9 @@ public final class MySQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("MySQL");
         assertTrue(scalingEntry instanceof MySQLScalingEntry);
-        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(MySQLEnvironmentChecker.class));
-        assertThat(scalingEntry.getImporterClass(), equalTo(MySQLImporter.class));
-        assertThat(scalingEntry.getInventoryDumperClass(), equalTo(MySQLInventoryDumper.class));
-        assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(MySQLIncrementalDumper.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass(), instanceOf(MySQLEnvironmentChecker.class));
+        assertThat(scalingEntry.getImporterClass(), instanceOf(MySQLImporter.class));
+        assertThat(scalingEntry.getInventoryDumperClass(), instanceOf(MySQLInventoryDumper.class));
+        assertThat(scalingEntry.getIncrementalDumperClass(), instanceOf(MySQLIncrementalDumper.class));
     }
 }
