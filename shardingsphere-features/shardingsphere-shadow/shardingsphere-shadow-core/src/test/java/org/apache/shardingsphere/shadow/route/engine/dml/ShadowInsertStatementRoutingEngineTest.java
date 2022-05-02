@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -79,9 +78,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
         shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
