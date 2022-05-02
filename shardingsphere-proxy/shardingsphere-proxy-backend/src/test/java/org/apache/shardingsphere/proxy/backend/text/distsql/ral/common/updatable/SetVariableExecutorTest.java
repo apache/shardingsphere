@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -72,7 +71,6 @@ public final class SetVariableExecutorTest {
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         Object actualValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
-        assertNotNull(actualValue);
         assertThat(actualValue.toString(), is("1024"));
     }
     

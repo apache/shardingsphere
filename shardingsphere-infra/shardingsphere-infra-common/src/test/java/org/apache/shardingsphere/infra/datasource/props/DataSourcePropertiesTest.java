@@ -33,7 +33,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +67,6 @@ public final class DataSourcePropertiesTest {
     public void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
         Map<String, Object> actualAllProps = originalDataSourceProps.getAllLocalProperties();
-        assertNotNull(actualAllProps);
         assertThat(actualAllProps.size(), is(7));
         assertTrue(actualAllProps.containsKey("driverClassName"));
         assertTrue(actualAllProps.containsValue(MockedDataSource.class.getName()));

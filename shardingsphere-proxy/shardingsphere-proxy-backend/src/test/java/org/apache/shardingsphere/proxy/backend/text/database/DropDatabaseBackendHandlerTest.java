@@ -35,8 +35,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -87,8 +87,7 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -97,8 +96,7 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -107,7 +105,6 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
 }

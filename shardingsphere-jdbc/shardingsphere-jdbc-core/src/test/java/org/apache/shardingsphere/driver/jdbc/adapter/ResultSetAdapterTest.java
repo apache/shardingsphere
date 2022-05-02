@@ -82,9 +82,7 @@ public final class ResultSetAdapterTest {
     
     @Test
     public void assertGetStatement() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
-        assertNotNull(actual.getStatement());
+        assertNotNull(mockShardingSphereResultSet(mock(ResultSet.class)).getStatement());
     }
     
     @Test
@@ -97,9 +95,7 @@ public final class ResultSetAdapterTest {
     
     @Test
     public void assertGetMetaData() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
-        assertThat(actual.getMetaData().getColumnLabel(1), is("col"));
+        assertThat(mockShardingSphereResultSet(mock(ResultSet.class)).getMetaData().getColumnLabel(1), is("col"));
     }
     
     @Test
