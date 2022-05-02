@@ -106,12 +106,12 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final List<String> readDataSourceList, final String loadBalancerTypeName,
-                                                                              final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSourceList, loadBalancerTypeName, properties);
+                                                                              final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSourceList, loadBalancerTypeName, props);
     }
     
-    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, properties);
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
     }
     
     private Collection<String> convertToList(final String readDataSourceNames) {

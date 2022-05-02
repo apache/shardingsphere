@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -69,17 +70,17 @@ public final class CosIdIntervalShardingAlgorithmTest {
                 "table_202110", "table_202111", "table_202112", "table_202201");
     }
     
-    static CosIdIntervalShardingAlgorithm createShardingAlg() {
-        Properties properties = new Properties();
-        properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
-        properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        properties.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
+    static CosIdIntervalShardingAlgorithm createShardingAlgorithm() {
+        Properties props = new Properties();
+        props.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
+        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        props.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
+        props.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
+        props.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
-        result.setProps(properties);
+        result.setProps(props);
         result.init();
         return result;
     }
@@ -175,7 +176,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -185,7 +186,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), dateTime);
+            PreciseShardingValue<Comparable<?>> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), dateTime);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
@@ -207,7 +208,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -239,7 +240,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -271,7 +272,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -303,7 +304,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -335,7 +336,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -367,7 +368,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
         @Parameterized.Parameters
@@ -399,10 +400,10 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return rangeArgsProviderAsTimestamp();
         }
