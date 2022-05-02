@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -26,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -55,7 +55,7 @@ public final class MySQLManualScalingCase extends BaseMySQLITCase {
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         for (String version : ENV.getMysqlVersionList()) {
-            if (StringUtils.isBlank(version)) {
+            if (Strings.isNullOrEmpty(version)) {
                 continue;
             }
             result.add(new ScalingParameterized(DATABASE, version, "env/scenario/manual/mysql"));
@@ -71,7 +71,7 @@ public final class MySQLManualScalingCase extends BaseMySQLITCase {
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
         List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
+        Set<Object> originalSourceList = previewResList.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");

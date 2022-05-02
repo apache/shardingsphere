@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -71,11 +70,6 @@ public final class PostgreSQLAdminExecutorFactoryTest {
     @Test
     public void assertNewInstanceWithUnknownStatement() {
         assertFalse(postgreSQLAdminExecutorFactory.newInstance(mock(SQLStatementContext.class), null, null).isPresent());
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(postgreSQLAdminExecutorFactory.getType(), is("PostgreSQL"));
     }
     
     @Test
@@ -114,8 +108,8 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         variableSegment.setVariable(configurationParameter);
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
         variableAssignSegment.setVariable(variableSegment);
-        SetStatement setStatement = new PostgreSQLSetStatement();
-        setStatement.getVariableAssigns().add(variableAssignSegment);
-        return setStatement;
+        SetStatement result = new PostgreSQLSetStatement();
+        result.getVariableAssigns().add(variableAssignSegment);
+        return result;
     }
 }

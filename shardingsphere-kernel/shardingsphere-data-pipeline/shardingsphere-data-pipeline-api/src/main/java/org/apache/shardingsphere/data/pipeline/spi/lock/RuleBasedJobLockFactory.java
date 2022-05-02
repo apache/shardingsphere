@@ -17,10 +17,27 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.lock;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Row based job lock algorithm, SPI.
+ * Rule based job lock factory.
  */
-public interface RowBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RuleBasedJobLockFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleBasedJobLock.class);
+    }
+    
+    /**
+     * Create new instance of rule based job lock.
+     * 
+     * @return new instance of rule based job lock
+     */
+    public static RuleBasedJobLock newInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
+    }
 }

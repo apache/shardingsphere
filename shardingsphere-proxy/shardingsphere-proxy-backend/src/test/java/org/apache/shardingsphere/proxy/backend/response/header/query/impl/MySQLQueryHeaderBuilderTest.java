@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -132,7 +133,10 @@ public final class MySQLQueryHeaderBuilderTest {
             
             @Override
             protected DataNodeContainedRule initialize() {
-                return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule).get();
+                Optional<DataNodeContainedRule> result = metaData.getRuleMetaData().getRules().stream()
+                        .filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
+                Preconditions.checkState(result.isPresent());
+                return result.get();
             }
         };
     }

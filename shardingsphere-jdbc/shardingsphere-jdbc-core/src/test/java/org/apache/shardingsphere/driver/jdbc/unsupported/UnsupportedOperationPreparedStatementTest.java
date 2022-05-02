@@ -49,8 +49,8 @@ public final class UnsupportedOperationPreparedStatementTest {
     @Before
     public void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        when(connection.getSchema()).thenReturn(DefaultSchema.LOGIC_NAME);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connection.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(connection.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
         when(connection.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");

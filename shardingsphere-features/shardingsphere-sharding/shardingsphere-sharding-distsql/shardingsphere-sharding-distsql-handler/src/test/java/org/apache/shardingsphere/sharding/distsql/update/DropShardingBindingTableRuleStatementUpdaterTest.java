@@ -62,9 +62,9 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), null);
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfiguration);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
     }
     
     @Test(expected = RequiredRuleMissedException.class)

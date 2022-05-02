@@ -36,7 +36,7 @@ public final class YamlExecuteProcessContext {
     
     private String executionID;
     
-    private String schemaName;
+    private String databaseName;
     
     private String username;
     
@@ -50,7 +50,7 @@ public final class YamlExecuteProcessContext {
     
     public YamlExecuteProcessContext(final ExecuteProcessContext executeProcessContext) {
         executionID = executeProcessContext.getExecutionID();
-        schemaName = executeProcessContext.getSchemaName();
+        databaseName = executeProcessContext.getDatabaseName();
         username = executeProcessContext.getUsername();
         hostname = executeProcessContext.getHostname();
         sql = executeProcessContext.getSql();

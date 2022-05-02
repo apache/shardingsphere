@@ -32,11 +32,11 @@ public final class DriverStateContext {
     /**
      * Get connection.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param contextManager context manager
      * @return connection
      */
-    public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return DriverStateFactory.newInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(schemaName, contextManager);
+    public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
+        return DriverStateFactory.newInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
     }
 }

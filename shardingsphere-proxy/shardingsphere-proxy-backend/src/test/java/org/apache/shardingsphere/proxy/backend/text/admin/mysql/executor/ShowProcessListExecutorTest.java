@@ -50,7 +50,7 @@ public final class ShowProcessListExecutorTest {
                 + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
                 + "  startTimeMillis: 1617939785160\n"
-                + "  schemaName: sharding_db\n"
+                + "  databaseName: sharding_db\n"
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
                 + "  unitStatuses:\n"

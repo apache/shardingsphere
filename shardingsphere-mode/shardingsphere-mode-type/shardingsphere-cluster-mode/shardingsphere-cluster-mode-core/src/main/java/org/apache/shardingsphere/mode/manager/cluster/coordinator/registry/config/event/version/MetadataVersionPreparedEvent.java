@@ -22,14 +22,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Schema version prepared event.
+ * Metadata version prepared event.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SchemaVersionPreparedEvent {
+public final class MetadataVersionPreparedEvent {
     
     private final String version;
     
-    private final String schemaName;
+    private final String databaseName;
 }

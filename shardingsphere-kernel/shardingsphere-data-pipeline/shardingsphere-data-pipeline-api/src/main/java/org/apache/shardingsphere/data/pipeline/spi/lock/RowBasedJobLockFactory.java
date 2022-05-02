@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.config;
+package org.apache.shardingsphere.data.pipeline.spi.lock;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class YamlShadowRuleConfigurationTest {
+/**
+ * Row based job lock factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RowBasedJobLockFactory {
     
-    @Test
-    public void assertGetRuleConfigurationType() {
-        assertThat(new YamlShadowRuleConfiguration().getRuleConfigurationType() == ShadowRuleConfiguration.class, is(true));
+    static {
+        ShardingSphereServiceLoader.register(RowBasedJobLock.class);
+    }
+    
+    /**
+     * Create new instance of row based job lock.
+     * 
+     * @return new instance of row based job lock
+     */
+    public static RowBasedJobLock newInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
     }
 }

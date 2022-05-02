@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 
 /**
- * Default metadata checkout lock algorithm.
+ * Default metadata checkout lock.
  */
-@ToString
-public final class DefaultMetadataCheckoutLockAlgorithm implements RuleBasedJobLockAlgorithm {
+public final class DefaultMetadataCheckoutLock implements RuleBasedJobLock {
     
-    // TODO impl default checkoutLockAlgorithm
+    // TODO to be finished
     @Override
     public void lock(final String databaseName, final String jobId) {
     }

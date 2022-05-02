@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
@@ -40,9 +39,7 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +53,6 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
         ReflectionUtil.setFieldValue(detectAlgorithm, "props", propsMock);
     }
     
@@ -85,11 +81,6 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
         when(propsMock.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn(true);
         when(propsMock.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn("4");
         detectAlgorithm.init();
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(detectAlgorithm.getType(), is("IDLE"));
     }
     
     @Test

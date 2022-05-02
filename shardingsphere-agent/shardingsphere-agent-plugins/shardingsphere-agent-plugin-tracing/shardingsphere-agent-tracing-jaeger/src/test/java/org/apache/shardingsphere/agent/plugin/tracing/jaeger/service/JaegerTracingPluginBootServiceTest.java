@@ -27,8 +27,6 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class JaegerTracingPluginBootServiceTest {
@@ -42,14 +40,8 @@ public final class JaegerTracingPluginBootServiceTest {
         props.setProperty("JAEGER_SAMPLER_PARAM", "1");
         props.setProperty("JAEGER_REPORTER_LOG_SPANS", "true");
         props.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
-        PluginConfiguration configuration = new PluginConfiguration("localhost", 5775, "", props);
-        jaegerTracingPluginBootService.start(configuration);
+        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", props));
         assertTrue(GlobalTracer.isRegistered());
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(jaegerTracingPluginBootService.getType(), is("Jaeger"));
     }
     
     @SneakyThrows

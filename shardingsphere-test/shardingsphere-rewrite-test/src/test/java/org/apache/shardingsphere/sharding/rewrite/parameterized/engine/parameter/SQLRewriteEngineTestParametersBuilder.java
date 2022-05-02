@@ -115,9 +115,9 @@ public final class SQLRewriteEngineTestParametersBuilder {
         if (null == inputParameters) {
             return Collections.emptyList();
         } else {
-            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(input -> {
-                Object result = Ints.tryParse(input);
-                return result == null ? input : result;
+            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
+                Object result = Ints.tryParse(each);
+                return result == null ? each : result;
             }).collect(Collectors.toList());
         }
     }

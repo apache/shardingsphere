@@ -35,22 +35,21 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class HintShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertThat(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
         HintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("foo", "bar");
-        result.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("foo", "bar");
+        result.setProps(props);
         result.init();
         return result;
     }

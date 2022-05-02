@@ -123,8 +123,7 @@ public final class ShowVariableBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
         props.put("sql-show", "true");
-        ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
-        when(metaDataContexts.getProps()).thenReturn(configurationProperties);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -56,13 +57,13 @@ public class PropertiesShadowSpringBootStarterTest {
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm userIdMatchAlgorithm = shadowAlgorithms.get("user-id-match-algorithm");
-        assertThat(userIdMatchAlgorithm instanceof ColumnRegexMatchShadowAlgorithm, is(true));
+        assertThat(userIdMatchAlgorithm, instanceOf(ColumnRegexMatchShadowAlgorithm.class));
         assertThat(userIdMatchAlgorithm.getType(), is("REGEX_MATCH"));
         assertThat(userIdMatchAlgorithm.getProps().get("operation"), is("insert"));
         assertThat(userIdMatchAlgorithm.getProps().get("column"), is("user_id"));
         assertThat(userIdMatchAlgorithm.getProps().get("regex"), is("[1]"));
         ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
-        assertThat(simpleHintAlgorithm instanceof SimpleHintShadowAlgorithm, is(true));
+        assertThat(simpleHintAlgorithm, instanceOf(SimpleHintShadowAlgorithm.class));
         assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
         assertThat(simpleHintAlgorithm.getProps().get("shadow"), is("true"));
         assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));

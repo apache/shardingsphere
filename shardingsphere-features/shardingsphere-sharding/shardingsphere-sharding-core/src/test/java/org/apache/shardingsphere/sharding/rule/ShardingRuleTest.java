@@ -650,12 +650,11 @@ public final class ShardingRuleTest {
     public void assertIsAllTablesInSameDataSource() {
         Collection<String> logicTableNames = new LinkedHashSet<>();
         logicTableNames.add("logic_Table");
-        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         Collection<String> dataSourceNames = new LinkedHashSet<>();
         dataSourceNames.add("resource0");
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}");
-        config.getTables().add(shardingTableRuleConfiguration);
-        ShardingRule shardingRule = new ShardingRule(config, dataSourceNames);
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}"));
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, dataSourceNames);
         assertTrue(shardingRule.isAllTablesInSameDataSource(logicTableNames));
     }
     
@@ -729,16 +728,16 @@ public final class ShardingRuleTest {
     public void assertGetDatabaseShardingStrategyConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
         TableRule logicTable = actual.getTableRule("Logic_Table");
-        ShardingStrategyConfiguration databaseShardingStrategyConfiguration = actual.getDatabaseShardingStrategyConfiguration(logicTable);
-        assertThat(databaseShardingStrategyConfiguration.getShardingAlgorithmName(), is("database_inline"));
+        ShardingStrategyConfiguration databaseShardingStrategyConfig = actual.getDatabaseShardingStrategyConfiguration(logicTable);
+        assertThat(databaseShardingStrategyConfig.getShardingAlgorithmName(), is("database_inline"));
     }
     
     @Test
     public void assertGetTableShardingStrategyConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
         TableRule logicTable = actual.getTableRule("Logic_Table");
-        ShardingStrategyConfiguration tableShardingStrategyConfiguration = actual.getTableShardingStrategyConfiguration(logicTable);
-        assertThat(tableShardingStrategyConfiguration.getShardingAlgorithmName(), is("table_inline"));
+        ShardingStrategyConfiguration tableShardingStrategyConfig = actual.getTableShardingStrategyConfiguration(logicTable);
+        assertThat(tableShardingStrategyConfig.getShardingAlgorithmName(), is("table_inline"));
     }
     
     @Test
@@ -777,11 +776,9 @@ public final class ShardingRuleTest {
     private void assertGetDataNodes(final Collection<DataNode> dataNodes, final String tableNamePrefix) {
         int dataSourceNameSuffix = 0;
         int tableNameSuffix = 0;
-        Iterator<DataNode> dataNodeIterator = dataNodes.iterator();
-        while (dataNodeIterator.hasNext()) {
-            DataNode dataNode = dataNodeIterator.next();
-            assertThat(dataNode.getDataSourceName(), is("ds_" + dataSourceNameSuffix));
-            assertThat(dataNode.getTableName(), is(tableNamePrefix + tableNameSuffix));
+        for (final DataNode each : dataNodes) {
+            assertThat(each.getDataSourceName(), is("ds_" + dataSourceNameSuffix));
+            assertThat(each.getTableName(), is(tableNamePrefix + tableNameSuffix));
             if (++tableNameSuffix == (dataNodes.size() / 2)) {
                 tableNameSuffix = 0;
                 dataSourceNameSuffix++;

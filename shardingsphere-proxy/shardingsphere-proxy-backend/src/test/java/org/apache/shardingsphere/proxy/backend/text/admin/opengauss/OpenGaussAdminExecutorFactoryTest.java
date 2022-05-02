@@ -61,6 +61,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
         when(postgreSQLAdminExecutorFactory.newInstance(sqlStatementContext)).thenReturn(Optional.of(expected));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext);
+        assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
     }
     
@@ -69,6 +70,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
+        assertTrue(actual.isPresent());
         assertTrue(actual.get() instanceof OpenGaussSelectDatabaseExecutor);
     }
     
@@ -79,11 +81,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
         when(postgreSQLAdminExecutorFactory.newInstance(sqlStatementContext, "", "")).thenReturn(Optional.of(expected));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext, "", "");
+        assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(openGaussAdminExecutorFactory.getType(), is("openGauss"));
     }
 }

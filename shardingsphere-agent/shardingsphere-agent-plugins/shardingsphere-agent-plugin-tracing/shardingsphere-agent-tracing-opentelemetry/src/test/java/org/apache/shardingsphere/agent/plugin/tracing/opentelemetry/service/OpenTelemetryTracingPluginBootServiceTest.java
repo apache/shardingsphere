@@ -25,32 +25,22 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 public final class OpenTelemetryTracingPluginBootServiceTest {
-    
-    private final OpenTelemetryTracingPluginBootService openTelemetryTracingPluginBootService = new OpenTelemetryTracingPluginBootService();
     
     @Test
     public void assertStart() {
         Properties props = new Properties();
         props.setProperty("otel.resource.attributes", "service.name=shardingsphere-agent");
         props.setProperty("otel.traces.exporter", "zipkin");
-        PluginConfiguration configuration = new PluginConfiguration(null, 0, null, props);
-        openTelemetryTracingPluginBootService.start(configuration);
+        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, props));
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());
         assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
     }
     
-    @Test
-    public void assertType() {
-        assertThat(openTelemetryTracingPluginBootService.getType(), is("OpenTelemetry"));
-    }
-    
     @After
     public void close() {
-        openTelemetryTracingPluginBootService.close();
+        new OpenTelemetryTracingPluginBootService().close();
         GlobalOpenTelemetry.resetForTest();
     }
 }

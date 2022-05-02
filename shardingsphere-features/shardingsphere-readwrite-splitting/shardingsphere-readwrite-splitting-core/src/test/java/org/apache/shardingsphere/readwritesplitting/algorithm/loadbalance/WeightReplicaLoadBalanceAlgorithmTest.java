@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,18 +34,18 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetOneReadDataSource() {
-        Properties properties = new Properties();
-        properties.setProperty("test_read_ds_1", "5");
-        weightReplicaLoadBalanceAlgorithm.setProps(properties);
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1")), is("test_read_ds_1"));
+        Properties props = new Properties();
+        props.setProperty("test_read_ds_1", "5");
+        weightReplicaLoadBalanceAlgorithm.setProps(props);
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
     }
     
     @Test
     public void assertGetDataSource() {
-        final Properties properties = new Properties();
-        properties.setProperty("test_read_ds_1", "5");
-        properties.setProperty("test_read_ds_2", "5");
-        weightReplicaLoadBalanceAlgorithm.setProps(properties);
+        final Properties props = new Properties();
+        props.setProperty("test_read_ds_1", "5");
+        props.setProperty("test_read_ds_2", "5");
+        weightReplicaLoadBalanceAlgorithm.setProps(props);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";

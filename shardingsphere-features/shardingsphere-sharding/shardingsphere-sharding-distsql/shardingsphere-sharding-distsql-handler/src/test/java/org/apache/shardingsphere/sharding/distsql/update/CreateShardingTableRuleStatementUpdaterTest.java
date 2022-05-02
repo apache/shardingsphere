@@ -67,7 +67,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     @Mock
     private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
     
-    private final ShardingRuleConfiguration currentRuleConfiguration = createCurrentShardingRuleConfiguration();
+    private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
     private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource(), null, null, null);
     
@@ -87,11 +87,11 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(rules);
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfiguration);
-        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfiguration, toBeAlteredRuleConfiguration);
-        assertThat(currentRuleConfiguration.getTables().size(), is(2));
-        Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfiguration.getTables().iterator();
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        assertThat(currentRuleConfig.getTables().size(), is(2));
+        Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();
         assertTrue(tableRule.getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
         assertThat(tableRule.getLogicTable(), is("t_order"));
@@ -106,8 +106,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
         assertTrue(tableRule.getDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_input_database_inline"));
-        assertThat(currentRuleConfiguration.getTables().size(), is(2));
-        Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = currentRuleConfiguration.getAutoTables().iterator();
+        assertThat(currentRuleConfig.getTables().size(), is(2));
+        Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = currentRuleConfig.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
         assertThat(autoTableRule.getActualDataSources(), is("ds_0"));

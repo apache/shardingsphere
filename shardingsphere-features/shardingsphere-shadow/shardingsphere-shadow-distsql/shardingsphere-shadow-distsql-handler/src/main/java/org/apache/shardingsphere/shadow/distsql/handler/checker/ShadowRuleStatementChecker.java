@@ -42,11 +42,11 @@ public class ShadowRuleStatementChecker {
      * Check if the configuration exists.
      *
      * @param databaseName database name
-     * @param configuration configuration
+     * @param config configuration
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration configuration) throws DistSQLException {
-        DistSQLException.predictionThrow(null != configuration, () -> new RequiredRuleMissedException(SHADOW, databaseName));
+    public static void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration config) throws DistSQLException {
+        DistSQLException.predictionThrow(null != config, () -> new RequiredRuleMissedException(SHADOW, databaseName));
     }
     
     /**

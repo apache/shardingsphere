@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.infra.metadata.ddlgenerator.spi;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * Dialect DDL SQL generator.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+public interface DialectDDLSQLGenerator extends StatelessTypedSPI {
+    
+    /**
+    * Generate DDL SQL.
+    * 
+    * @param tableName table name
+    * @param schemaName schema name
+    * @param dataSource dataSource
+    * @return sql
+    * @throws SQLException sql exception
+    */
+    String generateDDLSQL(String tableName, String schemaName, DataSource dataSource) throws SQLException;
 }

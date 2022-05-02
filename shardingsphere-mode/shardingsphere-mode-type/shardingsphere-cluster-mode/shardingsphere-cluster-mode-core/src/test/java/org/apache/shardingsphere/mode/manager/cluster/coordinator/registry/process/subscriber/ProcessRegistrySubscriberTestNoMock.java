@@ -60,7 +60,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new LinkedList<>();
         inputGroups.add(new ExecutionGroup<>(Collections.singletonList(new JDBCExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY, null))));
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(inputGroups);
-        executionGroupContext.setSchemaName("sharding_db");
+        executionGroupContext.setDatabaseName("sharding_db");
         executionGroupContext.setGrantee(new Grantee("sharding", "127.0.0.1"));
         return new ExecuteProcessContext("sql1", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
     }
@@ -95,7 +95,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
         assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
-        assertThat(yamlExecuteProcessContext.getSchemaName(), is("sharding_db"));
+        assertThat(yamlExecuteProcessContext.getDatabaseName(), is("sharding_db"));
         assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
         assertThat(yamlExecuteProcessContext.getHostname(), is("127.0.0.1"));
         assertThat(yamlExecuteProcessContext.getSql(), is("sql1"));

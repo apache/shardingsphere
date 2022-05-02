@@ -40,7 +40,7 @@ public final class ExecutionGroupContext<T> {
     
     private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
     
-    private volatile String schemaName;
+    private volatile String databaseName;
     
     private volatile Grantee grantee;
 }

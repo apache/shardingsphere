@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import java.util.Properties;
 
 /**
- * Properties tool class.
+ * Properties Utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtil {
@@ -32,13 +32,13 @@ public final class PropertiesUtil {
     /**
      * Get the value according to the key and verify whether the value exists. If it does not exist, an {@link IllegalArgumentException} will be thrown.
      *
-     * @param properties The Properties
-     * @param key key of properties
-     * @return value of key
+     * @param props Properties
+     * @param key key of property
+     * @return value of property
      * @throws IllegalArgumentException throw an exception when the key does not exist
      */
-    public static String getRequiredValue(final Properties properties, final String key) {
-        Preconditions.checkArgument(properties.containsKey(key), "%s can not be null.", key);
-        return properties.get(key).toString();
+    public static String getRequiredValue(final Properties props, final String key) {
+        Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
+        return props.get(key).toString();
     }
 }

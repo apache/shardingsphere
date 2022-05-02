@@ -56,8 +56,8 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         Preconditions.checkState(!shadowAlgorithms.isEmpty(), "No available shadow algorithms in shadow configuration.");
     }
     
-    protected void shadowAlgorithmConfigurationsSizeCheck(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
-        Preconditions.checkState(!shadowAlgorithmConfigurations.isEmpty(), "No available shadow data algorithms in shadow configuration.");
+    protected void shadowAlgorithmConfigurationsSizeCheck(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
+        Preconditions.checkState(!shadowAlgorithmConfigs.isEmpty(), "No available shadow data algorithms in shadow configuration.");
     }
     
     protected void shadowTableDataSourcesAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
@@ -76,10 +76,10 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         });
     }
     
-    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations) {
+    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
         if (null != defaultShadowAlgorithmName) {
-            ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = shadowAlgorithmConfigurations.get(defaultShadowAlgorithmName);
-            boolean state = null != shardingSphereAlgorithmConfiguration && "SIMPLE_HINT".equals(shardingSphereAlgorithmConfiguration.getType());
+            ShardingSphereAlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
+            boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
             Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }
     }

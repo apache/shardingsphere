@@ -91,6 +91,6 @@ public final class ExecutionContextBuilder {
         if (null != sqlStatementContext) {
             tablesContext = sqlStatementContext.getTablesContext();
         }
-        return null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames().stream().map(tableName -> new RouteMapper(tableName, tableName)).collect(Collectors.toList());
+        return null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames().stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toList());
     }
 }

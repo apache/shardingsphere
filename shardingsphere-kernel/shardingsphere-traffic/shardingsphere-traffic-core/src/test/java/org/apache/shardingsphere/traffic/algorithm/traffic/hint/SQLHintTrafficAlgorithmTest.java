@@ -24,9 +24,7 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class SQLHintTrafficAlgorithmTest {
@@ -51,10 +49,5 @@ public final class SQLHintTrafficAlgorithmTest {
         Properties props = new Properties();
         props.put("useTraffic", "false");
         assertFalse(sqlHintAlgorithm.match(new HintTrafficValue(new SQLHintProperties(props))));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(sqlHintAlgorithm.getType(), is("SQL_HINT"));
     }
 }

@@ -43,7 +43,7 @@ public final class YamlUsersConfigurationConverter {
      */
     public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
         Collection<String> result = new LinkedList<>();
-        users.stream().map(USER_YAML_SWAPPER::swapToYamlConfiguration).forEach(user -> result.add(user.toString()));
+        users.stream().map(USER_YAML_SWAPPER::swapToYamlConfiguration).forEach(each -> result.add(each.toString()));
         return result;
     }
     

@@ -18,34 +18,19 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public final class FirstSQLTrafficAlgorithmTest {
     
-    private FirstSQLTrafficAlgorithm firstSQLTrafficAlgorithm;
-    
-    @Before
-    public void setUp() {
-        firstSQLTrafficAlgorithm = new FirstSQLTrafficAlgorithm();
-    }
-    
     @Test
     public void assertMatchWhenInTransaction() {
-        assertFalse(firstSQLTrafficAlgorithm.match(new TransactionTrafficValue(true)));
+        assertFalse(new FirstSQLTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
     public void assertMatchWhenNotInTransaction() {
-        assertFalse(firstSQLTrafficAlgorithm.match(new TransactionTrafficValue(false)));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(firstSQLTrafficAlgorithm.getType(), is("FIRST_SQL"));
+        assertFalse(new FirstSQLTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

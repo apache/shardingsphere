@@ -30,9 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
@@ -66,28 +64,13 @@ public final class PipelineTableMetaDataLoaderTest {
     private Connection connection;
     
     @Mock
-    private Statement statement;
-    
-    @Mock
     private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet tableResultSet;
     
     @Mock
     private ResultSet primaryKeyResultSet;
     
     @Mock
     private ResultSet columnMetaDataResultSet;
-    
-    @Mock
-    private ResultSet indexMetaDataResultSet;
-    
-    @Mock
-    private ResultSet caseSensitivesResultSet;
-    
-    @Mock
-    private ResultSetMetaData resultSetMetaData;
     
     @Before
     public void setUp() throws SQLException {
@@ -109,8 +92,8 @@ public final class PipelineTableMetaDataLoaderTest {
     public void assertGetTableMetaData() {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
-        assertColumnMetaData(metaDataLoader.getTableMetaData(TEST_TABLE));
-        assertPrimaryKeys(metaDataLoader.getTableMetaData(TEST_TABLE).getPrimaryKeyColumns());
+        assertColumnMetaData(metaDataLoader.getTableMetaData(null, TEST_TABLE));
+        assertPrimaryKeys(metaDataLoader.getTableMetaData(null, TEST_TABLE).getPrimaryKeyColumns());
     }
     
     private void assertPrimaryKeys(final List<String> actual) {
@@ -133,6 +116,6 @@ public final class PipelineTableMetaDataLoaderTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new PipelineTableMetaDataLoader(dataSource).getTableMetaData(TEST_TABLE);
+        new PipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
     }
 }

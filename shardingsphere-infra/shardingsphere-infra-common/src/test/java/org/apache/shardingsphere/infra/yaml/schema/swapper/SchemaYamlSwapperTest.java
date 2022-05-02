@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -59,16 +60,16 @@ public final class SchemaYamlSwapperTest {
         assertThat(columns.size(), is(2));
         YamlColumnMetaData idColumn = columns.get("id");
         assertThat(idColumn.getName(), is("id"));
-        assertThat(idColumn.isCaseSensitive(), is(false));
+        assertFalse(idColumn.isCaseSensitive());
         assertThat(idColumn.getDataType(), is(0));
-        assertThat(idColumn.isGenerated(), is(false));
-        assertThat(idColumn.isPrimaryKey(), is(true));
+        assertFalse(idColumn.isGenerated());
+        assertTrue(idColumn.isPrimaryKey());
         YamlColumnMetaData nameColumn = columns.get("name");
         assertThat(nameColumn.getName(), is("name"));
-        assertThat(nameColumn.isCaseSensitive(), is(true));
+        assertTrue(nameColumn.isCaseSensitive());
         assertThat(nameColumn.getDataType(), is(10));
-        assertThat(nameColumn.isGenerated(), is(true));
-        assertThat(nameColumn.isPrimaryKey(), is(false));
+        assertTrue(nameColumn.isGenerated());
+        assertFalse(nameColumn.isPrimaryKey());
     }
     
     @Test

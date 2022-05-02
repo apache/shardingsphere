@@ -132,8 +132,8 @@ public final class SafeNumberOperationUtil {
         if (!clazz.isPresent()) {
             return sources.equals(targetCollection);
         }
-        List<Comparable<?>> sourceClazzCollection = sources.stream().map(number -> parseNumberByClazz(number.toString(), clazz.get())).collect(Collectors.toList());
-        List<Comparable<?>> targetClazzCollection = targetCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz.get())).collect(Collectors.toList());
+        List<Comparable<?>> sourceClazzCollection = sources.stream().map(each -> parseNumberByClazz(each.toString(), clazz.get())).collect(Collectors.toList());
+        List<Comparable<?>> targetClazzCollection = targetCollection.stream().map(each -> parseNumberByClazz(each.toString(), clazz.get())).collect(Collectors.toList());
         return sourceClazzCollection.equals(targetClazzCollection);
     }
     

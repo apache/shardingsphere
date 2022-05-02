@@ -26,7 +26,7 @@ public final class DuplicateAlgorithmException extends RuleDefinitionViolationEx
     
     private static final long serialVersionUID = 4382238091103015055L;
     
-    public DuplicateAlgorithmException(final String ruleType, final String schemaName, final Collection<String> algorithmNames) {
-        super(1122, String.format("Duplicate %s algorithm names `%s` in schema `%s`", ruleType, algorithmNames, schemaName));
+    public DuplicateAlgorithmException(final String ruleType, final String databaseName, final Collection<String> algorithmNames) {
+        super(1122, String.format("Duplicate %s algorithm names `%s` in database `%s`", ruleType, algorithmNames, databaseName));
     }
 }

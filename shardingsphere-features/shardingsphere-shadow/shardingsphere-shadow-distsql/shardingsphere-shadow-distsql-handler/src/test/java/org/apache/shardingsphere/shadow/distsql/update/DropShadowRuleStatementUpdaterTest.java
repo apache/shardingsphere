@@ -45,13 +45,13 @@ public final class DropShadowRuleStatementUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(currentConfiguration.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", null));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -70,16 +70,16 @@ public final class DropShadowRuleStatementUpdaterTest {
     public void assertUpdate() throws DistSQLException {
         DropShadowRuleStatement sqlStatement = createSQLStatement("ds_0");
         sqlStatement.setContainsExistClause(true);
-        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration();
-        configuration.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, configuration);
-        updater.updateCurrentRuleConfiguration(sqlStatement, configuration);
-        assertFalse(configuration.getTables().containsKey("ds_0"));
+        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, ruleConfig);
+        updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
+        assertFalse(ruleConfig.getTables().containsKey("ds_0"));
     }
     
     @Test
     public void assertExecuteSuccess() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("initRuleName"), currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("initRuleName"), currentConfig);
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {

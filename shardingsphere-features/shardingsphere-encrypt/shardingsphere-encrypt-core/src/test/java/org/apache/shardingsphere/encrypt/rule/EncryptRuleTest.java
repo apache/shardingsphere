@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -157,6 +158,18 @@ public final class EncryptRuleTest {
     }
     
     @Test
+    public void assertGetTableWithLowercase() {
+        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables(), is(Collections.singleton("t_encrypt")));
+    }
+    
+    @Test
+    public void assertTheSameLogicTable() {
+        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getTables();
+        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables();
+        assertTrue(logicTables.equals(theSameLogicTables));
+    }
+    
+    @Test
     public void assertGetRuleType() {
         assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getType(), is(EncryptRule.class.getSimpleName()));
     }
@@ -186,6 +199,16 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptor = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration customizedEncryptor = new ShardingSphereAlgorithmConfiguration("CUSTOMIZED", new Properties());
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
     }
 }

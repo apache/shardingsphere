@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionPreparedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -150,7 +150,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             }
             metaDataPersistService.get().getDatabaseRulePersistService().persist(shardingSphereMetaData.getDatabaseName(), newVersion.get(),
                     buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement, updater, currentRuleConfig, preprocessor));
-            ShardingSphereEventBus.getInstance().post(new SchemaVersionPreparedEvent(newVersion.get(), shardingSphereMetaData.getDatabaseName()));
+            ShardingSphereEventBus.getInstance().post(new MetadataVersionPreparedEvent(newVersion.get(), shardingSphereMetaData.getDatabaseName()));
         }
     }
     
