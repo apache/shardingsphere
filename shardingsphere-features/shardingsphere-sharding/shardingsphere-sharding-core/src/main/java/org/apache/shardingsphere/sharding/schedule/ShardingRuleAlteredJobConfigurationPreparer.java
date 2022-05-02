@@ -214,7 +214,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
         result.setTableNameMap(tableNameMap);
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(metaData));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas())));
         return result;
     }
     

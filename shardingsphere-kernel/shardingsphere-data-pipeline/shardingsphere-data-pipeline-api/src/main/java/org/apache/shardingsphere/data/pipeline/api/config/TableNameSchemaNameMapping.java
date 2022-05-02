@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,20 +28,27 @@ import java.util.Map;
 /**
  * Table name and schema name mapping.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class TableNameSchemaNameMapping {
     
     private final Map<LogicTableName, String> mapping;
     
-    public TableNameSchemaNameMapping(final ShardingSphereMetaData metaData) {
-        Map<LogicTableName, String> mapping = new HashMap<>();
-        metaData.getSchemas().forEach((schemaName, schema) -> {
+    /**
+     * Convert table name and schema name mapping from schemas.
+     *
+     * @param schemas logic table name and schema map
+     * @return logic table name and schema name map
+     */
+    public static Map<LogicTableName, String> convert(final Map<String, ShardingSphereSchema> schemas) {
+        Map<LogicTableName, String> result = new HashMap<>();
+        schemas.forEach((schemaName, schema) -> {
             for (String each : schema.getAllTableNames()) {
-                mapping.put(new LogicTableName(each), schemaName);
+                result.put(new LogicTableName(each), schemaName);
             }
         });
-        this.mapping = mapping;
-        log.info("mapping={}", mapping);
+        log.info("mapping={}", result);
+        return result;
     }
     
     /**
