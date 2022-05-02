@@ -72,12 +72,12 @@ public final class ShardingScalingRulesQueryResultSetTest {
     }
     
     private OnRuleAlteredActionConfiguration buildCompleteConfiguration() {
-        InputConfiguration inputConfiguration = createInputConfiguration("QPS", newProperties("qps", "50"));
-        OutputConfiguration outputConfiguration = createOutputConfiguration("TPS", newProperties("tps", "2000"));
+        InputConfiguration inputConfig = createInputConfiguration("QPS", newProperties("qps", "50"));
+        OutputConfiguration outputConfig = createOutputConfiguration("TPS", newProperties("tps", "2000"));
         ShardingSphereAlgorithmConfiguration streamChannel = createAlgorithm("MEMORY", newProperties("block-queue-size", "10000"));
         ShardingSphereAlgorithmConfiguration completionDetector = createAlgorithm("IDLE", newProperties("incremental-task-idle-minute-threshold", "30"));
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = createAlgorithm("DATA_MATCH", newProperties("chunk-size", "1000"));
-        return new OnRuleAlteredActionConfiguration(inputConfiguration, outputConfiguration, streamChannel, completionDetector, dataConsistencyChecker);
+        return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
     private InputConfiguration createInputConfiguration(final String type, final Properties props) {

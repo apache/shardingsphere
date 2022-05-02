@@ -46,7 +46,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final AlterShadowAlgorithmStatementUpdater updater = new AlterShadowAlgorithmStatementUpdater();
     
@@ -56,7 +56,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         prop.setProperty("type", "value");
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
                 new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -71,9 +71,9 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmNotInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm1", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     private AlterShadowAlgorithmStatement createSQLStatement(final ShadowAlgorithmSegment... ruleSegments) {

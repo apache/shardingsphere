@@ -135,12 +135,12 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     }
     
     private ShardingRule createShardingRule(final boolean isContainBroadcastTable) {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
         if (isContainBroadcastTable) {
-            shardingRuleConfiguration.getBroadcastTables().add("t_order");
+            ruleConfig.getBroadcastTables().add("t_order");
         }
-        return new ShardingRule(shardingRuleConfiguration, Arrays.asList("ds_0", "ds_1"));
+        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final Collection<String> tableNames) {

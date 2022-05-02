@@ -72,9 +72,9 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     }
     
     private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryConstructionSegment segment) {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
-        ruleConfig.getDataSources().add(dataSourceRuleConfiguration);
+        ruleConfig.getDataSources().add(dataSourceRuleConfig);
     }
     
     private static String getName(final String ruleName, final String type) {

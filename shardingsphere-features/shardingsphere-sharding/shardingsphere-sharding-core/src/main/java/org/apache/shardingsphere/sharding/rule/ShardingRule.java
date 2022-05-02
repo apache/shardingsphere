@@ -716,14 +716,14 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             if (!leftTableRule.isPresent() || !rightTableRule.isPresent()) {
                 continue;
             }
-            ShardingStrategyConfiguration leftConfiguration = isDatabaseJoinCondition
+            ShardingStrategyConfiguration leftConfig = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(leftTableRule.get())
                     : getTableShardingStrategyConfiguration(leftTableRule.get());
-            ShardingStrategyConfiguration rightConfiguration = isDatabaseJoinCondition
+            ShardingStrategyConfiguration rightConfig = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(rightTableRule.get())
                     : getTableShardingStrategyConfiguration(rightTableRule.get());
-            if (findShardingColumn(leftConfiguration, leftColumn.getIdentifier().getValue()).isPresent()
-                    && findShardingColumn(rightConfiguration, rightColumn.getIdentifier().getValue()).isPresent()) {
+            if (findShardingColumn(leftConfig, leftColumn.getIdentifier().getValue()).isPresent()
+                    && findShardingColumn(rightConfig, rightColumn.getIdentifier().getValue()).isPresent()) {
                 result.add(columnExpressionTableNames.get(leftColumn.getExpression()));
                 result.add(columnExpressionTableNames.get(rightColumn.getExpression()));
             }

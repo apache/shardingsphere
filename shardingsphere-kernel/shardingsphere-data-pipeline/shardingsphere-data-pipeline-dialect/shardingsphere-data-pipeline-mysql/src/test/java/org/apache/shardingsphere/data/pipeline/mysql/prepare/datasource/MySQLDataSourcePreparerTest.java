@@ -53,10 +53,10 @@ public final class MySQLDataSourcePreparerTest {
     private RuleAlteredJobConfiguration jobConfig;
     
     @Mock
-    private YamlPipelineDataSourceConfiguration sourceYamlPipelineDataSourceConfiguration;
+    private YamlPipelineDataSourceConfiguration sourceYamlPipelineDataSourceConfig;
     
     @Mock
-    private YamlPipelineDataSourceConfiguration targetYamlPipelineDataSourceConfiguration;
+    private YamlPipelineDataSourceConfiguration targetYamlPipelineDataSourceConfig;
     
     @Mock
     private ShardingSpherePipelineDataSourceConfiguration sourceScalingDataSourceConfig;
@@ -76,10 +76,10 @@ public final class MySQLDataSourcePreparerTest {
         when(mockPipelineDataSourceManager.getDataSource(same(sourceScalingDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
         when(mockPipelineDataSourceManager.getDataSource(same(targetScalingDataSourceConfig))).thenReturn(targetDataSourceWrapper);
         when(prepareTargetTablesParameter.getDataSourceManager()).thenReturn(mockPipelineDataSourceManager);
-        when(jobConfig.getSource()).thenReturn(sourceYamlPipelineDataSourceConfiguration);
+        when(jobConfig.getSource()).thenReturn(sourceYamlPipelineDataSourceConfig);
         when(jobConfig.getSource().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getSource().getParameter()).thenReturn("source");
-        when(jobConfig.getTarget()).thenReturn(targetYamlPipelineDataSourceConfiguration);
+        when(jobConfig.getTarget()).thenReturn(targetYamlPipelineDataSourceConfig);
         when(jobConfig.getTarget().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getTarget().getParameter()).thenReturn("target");
         when(prepareTargetTablesParameter.getJobConfig()).thenReturn(jobConfig);
@@ -88,7 +88,7 @@ public final class MySQLDataSourcePreparerTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class);) {
+        try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class)) {
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("source")))
                     .thenReturn(sourceScalingDataSourceConfig);
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))

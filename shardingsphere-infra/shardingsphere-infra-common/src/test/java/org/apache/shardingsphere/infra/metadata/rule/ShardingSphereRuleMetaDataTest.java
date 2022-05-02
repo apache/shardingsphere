@@ -17,49 +17,25 @@
 
 package org.apache.shardingsphere.infra.metadata.rule;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereRuleMetaDataTest {
     
-    private Collection<RuleConfiguration> configurations;
-    
-    private Collection<ShardingSphereRule> rules;
-    
-    private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
-    
-    @Before
-    public void init() {
-        rules = Arrays.asList(new ShardingSphereRuleFixture());
-        shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(configurations, rules);
-    }
+    private final ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new ShardingSphereRuleFixture()));
     
     @Test
     public void assertFilterRulesReturnOneItem() {
-        Collection<ShardingSphereRuleFixture> clazzList = shardingSphereRuleMetaData.findRules(ShardingSphereRuleFixture.class);
-        assertThat(1, equalTo(clazzList.size()));
+        assertThat(shardingSphereRuleMetaData.findRules(ShardingSphereRuleFixture.class).size(), is(1));
     }
     
     @Test
     public void assertFindSingleRuleReturnsIsPresent() {
-        Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);
-        assertTrue(clazzOptional.isPresent());
-    }
-    
-    @Test
-    public void assertFindSingleRuleHasValue() {
-        Optional<ShardingSphereRuleFixture> clazzOptional = shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class);
-        assertTrue(clazzOptional.isPresent());
-        assertThat("ShardingSphereRuleFixture", equalTo(clazzOptional.get().getType()));
+        assertTrue(shardingSphereRuleMetaData.findSingleRule(ShardingSphereRuleFixture.class).isPresent());
     }
 }

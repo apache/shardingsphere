@@ -130,8 +130,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return Collections.emptyMap();
     }
     
-    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations) {
-        for (EncryptTableRuleConfiguration each : tableRuleConfigurations) {
+    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+        for (EncryptTableRuleConfiguration each : tableRuleConfigs) {
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
                     return true;

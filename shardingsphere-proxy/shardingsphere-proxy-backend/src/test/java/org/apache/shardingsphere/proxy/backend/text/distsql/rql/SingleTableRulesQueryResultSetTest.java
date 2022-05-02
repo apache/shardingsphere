@@ -46,9 +46,7 @@ public final class SingleTableRulesQueryResultSetTest {
     
     @Before
     public void before() {
-        SingleTableRuleConfiguration configuration = new SingleTableRuleConfiguration();
-        configuration.setDefaultDataSource("ds_0");
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(configuration));
+        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(new SingleTableRuleConfiguration("ds_0")));
     }
     
     @Test

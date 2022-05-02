@@ -49,7 +49,7 @@ public class EncryptSpringBootStarterTest {
     private AESEncryptAlgorithm aesEncryptor;
     
     @Resource
-    private AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration;
+    private AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig;
     
     @Test
     public void assertAesEncryptor() {
@@ -58,9 +58,9 @@ public class EncryptSpringBootStarterTest {
     
     @Test
     public void assertEncryptRuleConfiguration() {
-        assertEncryptors(encryptRuleConfiguration.getEncryptors());
-        assertThat(encryptRuleConfiguration.getTables().size(), is(1));
-        assertEncryptTable(encryptRuleConfiguration.getTables().iterator().next());
+        assertEncryptors(encryptRuleConfig.getEncryptors());
+        assertThat(encryptRuleConfig.getTables().size(), is(1));
+        assertEncryptTable(encryptRuleConfig.getTables().iterator().next());
     }
     
     private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {

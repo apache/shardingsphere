@@ -53,11 +53,11 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
+        PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
         String modeType = instanceContext.getModeConfiguration().getType();
-        String repositoryType = null == repositoryConfiguration ? "" : repositoryConfiguration.getType();
-        String props = null == repositoryConfiguration || null == repositoryConfiguration.getProps() ? "" : new Gson().toJson(repositoryConfiguration.getProps());
+        String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
+        String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
         String overwrite = String.valueOf(instanceContext.getModeConfiguration().isOverwrite());
         return Collections.singleton(Arrays.asList(instanceId, modeType, repositoryType, props, overwrite));
     }

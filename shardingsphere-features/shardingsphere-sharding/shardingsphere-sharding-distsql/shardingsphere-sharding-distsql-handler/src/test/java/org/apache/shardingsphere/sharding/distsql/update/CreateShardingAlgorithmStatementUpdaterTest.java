@@ -44,7 +44,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    private CreateShardingAlgorithmStatementUpdater updater = new CreateShardingAlgorithmStatementUpdater();
+    private final CreateShardingAlgorithmStatementUpdater updater = new CreateShardingAlgorithmStatementUpdater();
     
     @Before
     public void before() {
@@ -64,9 +64,9 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -74,8 +74,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = null;
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -83,9 +82,9 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     private CreateShardingAlgorithmStatement createSQLStatement(final ShardingAlgorithmSegment... ruleSegments) {

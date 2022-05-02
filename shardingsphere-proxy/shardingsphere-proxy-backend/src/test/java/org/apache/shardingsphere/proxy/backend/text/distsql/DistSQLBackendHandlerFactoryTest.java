@@ -291,9 +291,9 @@ public final class DistSQLBackendHandlerFactoryTest {
     }
     
     private void mockScalingContext() {
-        ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
-        when(modeConfiguration.getType()).thenReturn("Cluster");
-        PipelineContext.initModeConfig(modeConfiguration);
+        ModeConfiguration modeConfig = mock(ModeConfiguration.class);
+        when(modeConfig.getType()).thenReturn("Cluster");
+        PipelineContext.initModeConfig(modeConfig);
     }
     
     @After
