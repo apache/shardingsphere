@@ -65,9 +65,9 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("notExistAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -75,9 +75,9 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
         Properties properties = new Properties();
         properties.put("inputKey", "inputValue");
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     private AlterShardingKeyGeneratorStatement createSQLStatement(final ShardingKeyGeneratorSegment... ruleSegments) {

@@ -82,9 +82,9 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "readwrite_ds_mgr", "readwrite_ds_heartbeat");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
+        DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)), databaseDiscoveryRuleConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -92,18 +92,18 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
         DatabaseDiscoveryDefinitionSegment segment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
+        DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), databaseDiscoveryRuleConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryTypeName() throws DistSQLException {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "not_exist_discovery_type_name", "");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
+        DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), databaseDiscoveryRuleConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
@@ -111,9 +111,9 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment(
                 "readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
+        DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), databaseDiscoveryRuleConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
     @Test

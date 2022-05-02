@@ -59,11 +59,10 @@ public final class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each);
         assertTrue(shardingRuleConfig.isPresent());
         assertShardingRuleConfiguration(shardingRuleConfig.get());
-        assertFalse(actual.getRules().stream()
-                .filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
+        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
     }
     
     private void assertShardingRuleConfiguration(final YamlShardingRuleConfiguration actual) {
@@ -82,12 +81,10 @@ public final class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("write_ds"), "jdbc:mysql://127.0.0.1:3306/write_ds");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
-        assertFalse(actual.getRules().stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
-        assertFalse(actual.getRules().stream()
-                .filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
+        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each).isPresent());
+        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
         Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(configuration -> (YamlReadwriteSplittingRuleConfiguration) configuration);
+                .filter(each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(each -> (YamlReadwriteSplittingRuleConfiguration) each);
         assertTrue(ruleConfig.isPresent());
         for (YamlReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
             assertReadwriteSplittingRuleConfiguration(each);
@@ -105,9 +102,9 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getDataSources().size(), is(1));
         assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each).isPresent());
         Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration);
+                .filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each);
         assertTrue(encryptRuleConfig.isPresent());
         assertEncryptRuleConfiguration(encryptRuleConfig.get());
     }

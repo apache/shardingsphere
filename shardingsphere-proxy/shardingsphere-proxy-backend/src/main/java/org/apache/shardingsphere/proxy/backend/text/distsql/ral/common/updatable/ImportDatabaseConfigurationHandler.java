@@ -114,26 +114,26 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigurations) {
             if (each instanceof YamlShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(shardingRuleConfiguration);
+                ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
+                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfig);
+                toBeUpdatedRuleConfigs.add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = new ReadwriteSplittingRuleConfigurationYamlSwapper()
+                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfigurationYamlSwapper()
                         .swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfiguration);
+                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfig);
+                toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
-                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfiguration);
+                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
+                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfig);
+                toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
+                EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
                 // TODO check
-                toBeUpdatedRuleConfigs.add(encryptRuleConfiguration);
+                toBeUpdatedRuleConfigs.add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
-                ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfigurationYamlSwapper().swapToObject((YamlShadowRuleConfiguration) each);
+                ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfigurationYamlSwapper().swapToObject((YamlShadowRuleConfiguration) each);
                 // TODO check
-                toBeUpdatedRuleConfigs.add(shadowRuleConfiguration);
+                toBeUpdatedRuleConfigs.add(shadowRuleConfig);
             }
         }
         shardingSphereMetaData.getRuleMetaData().getConfigurations().clear();

@@ -47,21 +47,21 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration expectedConfiguration = buildAlgorithmProvidedShadowRuleConfiguration();
-        YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
+        AlgorithmProvidedShadowRuleConfiguration expected = buildAlgorithmProvidedShadowRuleConfiguration();
+        YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expected);
         actualConfiguration.getDataSources().forEach((key, value) -> {
-            ShadowDataSourceConfiguration dataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
-            assertNotNull(dataSourceConfiguration);
-            assertThat(value.getShadowDataSourceName(), is(dataSourceConfiguration.getShadowDataSourceName()));
-            assertThat(value.getSourceDataSourceName(), is(dataSourceConfiguration.getSourceDataSourceName()));
+            ShadowDataSourceConfiguration dataSourceConfig = expected.getDataSources().get(key);
+            assertNotNull(dataSourceConfig);
+            assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
+            assertThat(value.getSourceDataSourceName(), is(dataSourceConfig.getSourceDataSourceName()));
         });
         actualConfiguration.getTables().forEach((key, value) -> {
-            ShadowTableConfiguration shadowTableConfiguration = expectedConfiguration.getTables().get(key);
-            assertNotNull(shadowTableConfiguration);
-            assertThat(value.getShadowAlgorithmNames(), is(shadowTableConfiguration.getShadowAlgorithmNames()));
+            ShadowTableConfiguration shadowTableConfig = expected.getTables().get(key);
+            assertNotNull(shadowTableConfig);
+            assertThat(value.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
         });
         actualConfiguration.getShadowAlgorithms().forEach((key, value) -> {
-            ShadowAlgorithm shadowAlgorithm = expectedConfiguration.getShadowAlgorithms().get(key);
+            ShadowAlgorithm shadowAlgorithm = expected.getShadowAlgorithms().get(key);
             assertNotNull(shadowAlgorithm);
             assertThat(value.getType(), is(shadowAlgorithm.getType()));
         });
@@ -77,15 +77,15 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlShadowRuleConfiguration expectedConfiguration = buildYamlShadowRuleConfiguration();
-        AlgorithmProvidedShadowRuleConfiguration actual = swapper.swapToObject(expectedConfiguration);
+        YamlShadowRuleConfiguration expected = buildYamlShadowRuleConfiguration();
+        AlgorithmProvidedShadowRuleConfiguration actual = swapper.swapToObject(expected);
         actual.getDataSources().forEach((key, value) -> {
-            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = expectedConfiguration.getDataSources().get(key);
+            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = expected.getDataSources().get(key);
             assertThat(value.getShadowDataSourceName(), is(yamlShadowDataSourceConfig.getShadowDataSourceName()));
             assertThat(value.getSourceDataSourceName(), is(yamlShadowDataSourceConfig.getSourceDataSourceName()));
         });
-        actual.getTables().forEach((key, value) -> assertThat(value.getShadowAlgorithmNames(), is(expectedConfiguration.getTables().get(key).getShadowAlgorithmNames())));
-        actual.getShadowAlgorithms().forEach((key, value) -> assertThat(value.getType(), is(expectedConfiguration.getShadowAlgorithms().get(key).getType())));
+        actual.getTables().forEach((key, value) -> assertThat(value.getShadowAlgorithmNames(), is(expected.getTables().get(key).getShadowAlgorithmNames())));
+        actual.getShadowAlgorithms().forEach((key, value) -> assertThat(value.getType(), is(expected.getShadowAlgorithms().get(key).getType())));
     }
     
     private YamlShadowRuleConfiguration buildYamlShadowRuleConfiguration() {

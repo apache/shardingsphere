@@ -208,10 +208,10 @@ public final class ShardingInsertStatementValidatorTest {
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);
-        StandardShardingStrategyConfiguration databaseStrategyConfiguration = mock(StandardShardingStrategyConfiguration.class);
-        when(databaseStrategyConfiguration.getShardingColumn()).thenReturn("id");
-        when(databaseStrategyConfiguration.getShardingAlgorithmName()).thenReturn("database_inline");
-        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfiguration);
+        StandardShardingStrategyConfiguration databaseStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
+        when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
+        when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
+        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
         when(shardingRule.getShardingAlgorithms()).thenReturn(createShardingAlgorithmMap());
     }
     

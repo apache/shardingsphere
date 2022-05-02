@@ -35,14 +35,14 @@ public final class EncryptRuleStatementConverterTest {
     
     @Test
     public void assertCovert() {
-        EncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
-        assertNotNull(encryptRuleConfiguration);
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getName(), is("t_encrypt"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
+        EncryptRuleConfiguration ruleConfig = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
+        assertNotNull(ruleConfig);
+        assertThat(ruleConfig.getTables().iterator().next().getName(), is("t_encrypt"));
+        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
+        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
+        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
+        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
+        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
     private Collection<EncryptColumnSegment> buildColumns() {

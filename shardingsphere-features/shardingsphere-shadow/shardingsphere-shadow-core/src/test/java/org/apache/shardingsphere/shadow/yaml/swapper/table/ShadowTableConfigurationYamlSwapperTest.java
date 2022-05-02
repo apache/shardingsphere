@@ -31,11 +31,10 @@ public final class ShadowTableConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowTableConfiguration shadowTableConfiguration = new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("t_order", "t_user"));
-        ShadowTableConfigurationYamlSwapper swapper = new ShadowTableConfigurationYamlSwapper();
-        YamlShadowTableConfiguration yamlShadowTableConfiguration = swapper.swapToYamlConfiguration(shadowTableConfiguration);
-        assertThat(yamlShadowTableConfiguration.getShadowAlgorithmNames(), is(shadowTableConfiguration.getShadowAlgorithmNames()));
-        assertThat(yamlShadowTableConfiguration.getDataSourceNames(), is(shadowTableConfiguration.getDataSourceNames()));
+        ShadowTableConfiguration shadowTableConfig = new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("t_order", "t_user"));
+        YamlShadowTableConfiguration yamlShadowTableConfiguration = new ShadowTableConfigurationYamlSwapper().swapToYamlConfiguration(shadowTableConfig);
+        assertThat(yamlShadowTableConfiguration.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
+        assertThat(yamlShadowTableConfiguration.getDataSourceNames(), is(shadowTableConfig.getDataSourceNames()));
     }
     
     @Test
@@ -43,9 +42,8 @@ public final class ShadowTableConfigurationYamlSwapperTest {
         YamlShadowTableConfiguration yamlConfig = new YamlShadowTableConfiguration();
         yamlConfig.setDataSourceNames(Collections.singletonList("shadow-data-source"));
         yamlConfig.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
-        ShadowTableConfigurationYamlSwapper swapper = new ShadowTableConfigurationYamlSwapper();
-        ShadowTableConfiguration shadowTableConfiguration = swapper.swapToObject(yamlConfig);
-        assertThat(shadowTableConfiguration.getDataSourceNames(), is(yamlConfig.getDataSourceNames()));
-        assertThat(shadowTableConfiguration.getShadowAlgorithmNames(), is(yamlConfig.getShadowAlgorithmNames()));
+        ShadowTableConfiguration shadowTableConfig = new ShadowTableConfigurationYamlSwapper().swapToObject(yamlConfig);
+        assertThat(shadowTableConfig.getDataSourceNames(), is(yamlConfig.getDataSourceNames()));
+        assertThat(shadowTableConfig.getShadowAlgorithmNames(), is(yamlConfig.getShadowAlgorithmNames()));
     }
 }
