@@ -71,7 +71,7 @@ public final class CosIdModShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Number[] argsProvider() {
             return Arguments.of(1L, 2L, 3L, 4L, 5L, 6L);
         }
@@ -86,18 +86,14 @@ public final class CosIdModShardingAlgorithmTest {
     }
     
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class RangeValueDoShardingTest {
-        
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         private final Range<Long> rangeValue;
         
         private final Collection<String> expected;
         
-        public RangeValueDoShardingTest(final Range<Long> rangeValue, final Collection<String> expected) {
-            this.rangeValue = rangeValue;
-            this.expected = expected;
-        }
+        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         @Before
         public void init() {
