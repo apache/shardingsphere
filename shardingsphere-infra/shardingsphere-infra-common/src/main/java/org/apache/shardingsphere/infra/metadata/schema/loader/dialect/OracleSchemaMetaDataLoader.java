@@ -88,15 +88,6 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
     }
     
-    private Collection[] splitTables(final List<String> tables, final int size) {
-        Collection[] result = new Collection[(tables.size() / size) + 1];
-        for (int index = 0; index < result.length; index++) {
-            int count = index + 1;
-            result[index] = tables.subList(Math.max((count - 1) * size, 0), Math.min(count * size, tables.size()));
-        }
-        return result;
-    }
-    
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
