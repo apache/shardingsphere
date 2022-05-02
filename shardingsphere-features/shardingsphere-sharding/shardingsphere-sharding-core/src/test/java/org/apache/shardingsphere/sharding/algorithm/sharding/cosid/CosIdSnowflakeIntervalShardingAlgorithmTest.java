@@ -39,25 +39,25 @@ import static org.junit.Assert.assertThat;
 public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     
     static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlg() {
-        Properties properties = new Properties();
-        properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
+        Properties props = new Properties();
+        props.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
+        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
+        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
                 CosIdIntervalShardingAlgorithmTest.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
+        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
                 CosIdIntervalShardingAlgorithmTest.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
-        properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        properties.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
+        props.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
+        props.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
+        props.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         CosIdSnowflakeIntervalShardingAlgorithm result = new CosIdSnowflakeIntervalShardingAlgorithm();
-        result.setProps(properties);
+        result.setProps(props);
         result.init();
         return result;
     }
     
     static long convertToSnowflakeId(final LocalDateTime dateTime) {
-        long epochMilli = dateTime.toInstant(CosIdIntervalShardingAlgorithmTest.ZONE_OFFSET_SHANGHAI).toEpochMilli();
-        long timeDiff = epochMilli - CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
+        long epochMilliseconds = dateTime.toInstant(CosIdIntervalShardingAlgorithmTest.ZONE_OFFSET_SHANGHAI).toEpochMilli();
+        long timeDiff = epochMilliseconds - CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
         return timeDiff << (MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT + MillisecondSnowflakeId.DEFAULT_MACHINE_BIT);
     }
     

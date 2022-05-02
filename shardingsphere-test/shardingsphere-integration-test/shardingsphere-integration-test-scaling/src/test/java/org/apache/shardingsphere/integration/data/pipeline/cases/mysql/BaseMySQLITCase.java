@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 public abstract class BaseMySQLITCase extends BaseITCase {
@@ -47,15 +48,15 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     
     public BaseMySQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml"), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
         initTableAndData();
     }
     
     @SneakyThrows({SQLException.class, InterruptedException.class})
     protected void initTableAndData() {
-        Properties queryProperties = createQueryProperties();
+        Properties queryProps = createQueryProperties();
         // TODO if use jdbcurl like "jdbc:mysql:localhost:3307/sharding_db", will throw exception show "Datasource or ShardingSphere rule does not exist"
-        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProperties), "root", "root")) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
             connection.createStatement().execute("USE sharding_db");
             addResource(connection);
         }

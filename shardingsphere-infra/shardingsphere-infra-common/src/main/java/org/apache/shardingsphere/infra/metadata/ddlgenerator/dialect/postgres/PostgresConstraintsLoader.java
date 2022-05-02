@@ -71,9 +71,9 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
-        Collection<Map<String, Object>> constraintsProperties = fetchConstraintsProperties(context, type);
-        fetchConstraintsColumns(constraintsProperties);
-        context.put(name, constraintsProperties.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
+        Collection<Map<String, Object>> constraintsProps = fetchConstraintsProperties(context, type);
+        fetchConstraintsColumns(constraintsProps);
+        context.put(name, constraintsProps.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
     }
     
     private void fetchConstraintsColumns(final Collection<Map<String, Object>> constraintsProperties) {
