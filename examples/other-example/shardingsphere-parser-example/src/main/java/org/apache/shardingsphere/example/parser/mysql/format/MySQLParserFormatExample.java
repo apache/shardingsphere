@@ -54,7 +54,7 @@ public final class MySQLParserFormatExample {
     public static void main(String[] args) {
         MYSQL_FORMAT_SQL_LIST.forEach(each -> {
             Properties props = new Properties();
-            props.setProperty("parameterized", "false");
+            props.setProperty("parameterized", Boolean.FALSE.toString());
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(each, false);
