@@ -81,8 +81,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
+        Collection<RouteUnit> routeUnits = Collections.singletonList(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList()));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
@@ -114,8 +113,8 @@ public final class ShadowSelectStatementRoutingEngineTest {
     
     @Test
     public void assertGetAllTables() {
-        Collection<SimpleTableSegment> allTables = shadowRouteEngine.getAllTables();
-        assertThat(allTables.size(), is(1));
-        assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
+        Collection<SimpleTableSegment> actual = shadowRouteEngine.getAllTables();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
 }
