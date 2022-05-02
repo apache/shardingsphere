@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -73,12 +74,12 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size());
-        Collection[] splitTables = splitTables(new ArrayList(tables), BATCH_SIZE);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 0.75f);
+        List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
         try (Connection connection = dataSource.getConnection()) {
-            for (Collection<String> subTables : splitTables) {
-                columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, subTables));
-            } 
+            for (List<String> each : splitTables) {
+                columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
+            }
         }
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
