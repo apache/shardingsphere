@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
@@ -692,6 +693,11 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
+            Collection<CommonTableExpressionSegment> commonTableExpressions = getCommonTableExpressionSegmentUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
+            WithSegment withSegment = new WithSegment(ctx.selectWithClause().getStart().getStartIndex(), ctx.selectWithClause().getStop().getStopIndex(), commonTableExpressions);
+            result.setWithSegment(withSegment);
+        }
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -710,6 +716,22 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         if (null != ctx.orderByClause()) {
             result = visitOrderBy(result, ctx.orderByClause());
+        }
+        return result;
+    }
+    
+    private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentUsingCteClauseSet(final CteClauseSetContext ctx) {
+        Collection<CommonTableExpressionSegment> result = new LinkedList<>();
+        for (CteClauseContext each : ctx.cteClause()) {
+            SubquerySegment subquery = new SubquerySegment(each.subquery().start.getStartIndex(), each.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+            IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+            if (null != each.columnNames()) {
+                ColumnNamesContext columnNames = each.columnNames();
+                CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
+                commonTableExpression.getColumns().addAll(columns.getValue());
+            }
+            result.add(commonTableExpression);
         }
         return result;
     }
@@ -927,19 +949,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitWithClause(final WithClauseContext ctx) {
-        List<CteClauseContext> cteClauses = ctx.cteClause();
-        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
-        for (CteClauseContext cte : cteClauses) {
-            SubquerySegment subquery = new SubquerySegment(cte.subquery().start.getStartIndex(), cte.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
-            IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
-            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);
-            if (null != cte.columnNames()) {
-                ColumnNamesContext columnNames = cte.columnNames();
-                CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
-                commonTableExpression.getColumns().addAll(columns.getValue());
-            }
-            commonTableExpressions.add(commonTableExpression);
-        }
+        Collection<CommonTableExpressionSegment> commonTableExpressions = getCommonTableExpressionSegmentUsingCteClauseSet(ctx.cteClauseSet());
         return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
     }
     

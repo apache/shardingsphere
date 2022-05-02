@@ -123,6 +123,9 @@ public final class SelectStatementHandler implements SQLStatementHandler {
         if (selectStatement instanceof OracleStatement) {
             return selectStatement.getWithSegment();
         }
+        if (selectStatement instanceof SQLServerStatement) {
+            return ((SQLServerSelectStatement) selectStatement).getWithSegment();
+        }
         return Optional.empty();
     }
     
