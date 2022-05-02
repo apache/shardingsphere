@@ -43,7 +43,7 @@ public final class StandardJdbcUrlParserTest {
         assertThat(actual.getDatabase(), is("demo_ds"));
         assertThat(actual.getQueryProperties().size(), is(2));
         assertThat(actual.getQueryProperties().get("serverTimezone"), is("UTC"));
-        assertThat(actual.getQueryProperties().get("useSSL"), is("false"));
+        assertThat(actual.getQueryProperties().get("useSSL"), is(Boolean.FALSE.toString()));
     }
     
     @Test

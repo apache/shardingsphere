@@ -60,7 +60,7 @@ public final class SetVariableExecutorTest {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        assertThat(actualValue, is("false"));
+        assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
     
     @Test
