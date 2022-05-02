@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
+import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
@@ -179,7 +180,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return preciseArgsProviderAsLocalDateTime();
         }
@@ -211,7 +212,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return rangeArgsProviderAsLocalDateTime();
         }
@@ -243,7 +244,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return preciseArgsProviderAsString();
         }
@@ -275,7 +276,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return rangeArgsProviderAsString();
         }
@@ -307,7 +308,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return preciseArgsProviderAsDate();
         }
@@ -321,25 +322,21 @@ public final class CosIdIntervalShardingAlgorithmTest {
     }
     
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class DateRangeValueDoShardingTest {
-        
-        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         private final Range<Date> rangeValue;
         
         private final Collection<String> expected;
         
-        public DateRangeValueDoShardingTest(final Range<Date> rangeValue, final Collection<String> expected) {
-            this.rangeValue = rangeValue;
-            this.expected = expected;
-        }
+        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         @Before
         public void init() {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return rangeArgsProviderAsDate();
         }
@@ -347,31 +344,26 @@ public final class CosIdIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
-            Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
-            assertThat(actual, is(expected));
+            assertThat(shardingAlgorithm.doSharding(ALL_NODES, shardingValue), is(expected));
         }
     }
     
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class TimestampPreciseValueDoShardingTest {
-        
-        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         private final Long value;
         
         private final String expected;
         
-        public TimestampPreciseValueDoShardingTest(final Long value, final String expected) {
-            this.value = value;
-            this.expected = expected;
-        }
+        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         @Before
         public void init() {
             shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return preciseArgsProviderAsTimestamp();
         }
@@ -379,24 +371,19 @@ public final class CosIdIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), value);
-            String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
-            assertThat(actual, is(expected));
+            assertThat(shardingAlgorithm.doSharding(ALL_NODES, shardingValue), is(expected));
         }
     }
     
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class TimestampRangeValueDoShardingTest {
-        
-        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         private final Range<Long> rangeValue;
         
         private final Collection<String> expected;
         
-        public TimestampRangeValueDoShardingTest(final Range<Long> rangeValue, final Collection<String> expected) {
-            this.rangeValue = rangeValue;
-            this.expected = expected;
-        }
+        private CosIdIntervalShardingAlgorithm shardingAlgorithm;
         
         @Before
         public void init() {
