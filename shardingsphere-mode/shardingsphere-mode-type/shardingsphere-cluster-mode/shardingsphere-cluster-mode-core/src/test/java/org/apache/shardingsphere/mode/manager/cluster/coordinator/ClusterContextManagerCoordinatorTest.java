@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -30,6 +31,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -48,6 +52,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -61,17 +66,22 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.util.ReflectionUtil;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -137,7 +147,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData,
                 mock(ExecutorEngine.class), createOptimizerContext(), new ConfigurationProperties(new Properties())));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
-        coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, mock(RegistryCenter.class));
+        coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, new RegistryCenter(mock(ClusterPersistRepository.class)));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -358,6 +368,26 @@ public final class ClusterContextManagerCoordinatorTest {
         assertTrue(currentTime > startTime + 50L);
         assertTrue(currentTime < startTime + 5000L);
         ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertTriggerShowProcessList() {
+        InstanceDefinition instanceDefinition = contextManager.getInstanceContext().getInstance().getInstanceDefinition();
+        String showProcessListId = "foo_process_id";
+        ShowProcessListTriggerEvent showProcessListTriggerEvent = new ShowProcessListTriggerEvent(instanceDefinition, showProcessListId);
+        ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
+        coordinator.triggerShowProcessList(showProcessListTriggerEvent);
+        RegistryCenter registryCenter = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class);
+        ClusterPersistRepository repository = registryCenter.getRepository();
+        Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
+        if (!processContexts.isEmpty()) {
+            verify(repository).persist(ProcessNode.getShowProcessListInstancePath(showProcessListId,
+                    instanceDefinition.getInstanceType().name().toLowerCase() + "_" + instanceDefinition.getInstanceId().getId()),
+                    YamlEngine.marshal(new BatchYamlExecuteProcessContext(new LinkedList<>(processContexts))));
+        }
+        verify(repository).delete(ComputeNode
+                .getProcessTriggerInstanceIdNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType(), showProcessListId));
     }
     
     private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
