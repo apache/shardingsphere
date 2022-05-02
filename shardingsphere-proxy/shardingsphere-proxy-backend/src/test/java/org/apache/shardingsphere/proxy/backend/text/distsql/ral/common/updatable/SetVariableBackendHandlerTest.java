@@ -142,7 +142,7 @@ public final class SetVariableBackendHandlerTest {
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), null));
+        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
