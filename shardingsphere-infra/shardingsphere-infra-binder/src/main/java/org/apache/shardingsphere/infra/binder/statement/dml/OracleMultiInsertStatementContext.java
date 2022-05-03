@@ -118,7 +118,8 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
         if (null == metaData) {
             throw new SchemaNotExistedException(databaseName);
         }
-        return metaData.getDefaultSchema();
+        String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
