@@ -44,8 +44,6 @@ public final class PipelineSQLBuilderTest {
     public void assertBuildInsertSQL() {
         String actual = pipelineSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
         assertThat(actual, is("INSERT INTO `t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
-        actual = pipelineSQLBuilder.buildInsertSQL("schema1", mockDataRecord("t2"), shardingColumnsMap);
-        assertThat(actual, is("INSERT INTO `schema1`.`t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
     }
     
     @Test
