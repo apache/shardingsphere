@@ -57,8 +57,8 @@ public final class YamlExampleConfigurationValidator {
     }
     
     private static void validateAccountConfigProperties(final Properties props) {
-        Collection<String> accountConfigItemList = Arrays.asList("host", "port", "username", "password");
-        accountConfigItemList.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
+        Collection<String> accountConfigItems = Arrays.asList("host", "port", "username", "password");
+        accountConfigItems.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
     }
     
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {
