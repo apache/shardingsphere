@@ -50,9 +50,4 @@ public final class BoundaryRangeShardingAlgorithmFixture implements StandardShar
     public int getAutoTablesAmount() {
         return 4;
     }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return null;
-    }
 }
