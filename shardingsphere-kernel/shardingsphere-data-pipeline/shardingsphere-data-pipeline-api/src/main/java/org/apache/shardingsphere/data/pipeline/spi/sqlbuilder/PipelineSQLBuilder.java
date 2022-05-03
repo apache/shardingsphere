@@ -56,12 +56,13 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build update SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildUpdateSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Extract updated columns.

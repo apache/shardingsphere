@@ -50,14 +50,14 @@ public final class PipelineSQLBuilderTest {
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildUpdateSQL(mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")), shardingColumnsMap);
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")), shardingColumnsMap);
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = pipelineSQLBuilder.buildUpdateSQL(dataRecord, mockConditionColumns(dataRecord), shardingColumnsMap);
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord), shardingColumnsMap);
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
     }
     

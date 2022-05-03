@@ -182,7 +182,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         }
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record, importerConfig.getShardingColumnsMap());
-        String updateSql = pipelineSqlBuilder.buildUpdateSQL(record, conditionColumns, importerConfig.getShardingColumnsMap());
+        String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns, importerConfig.getShardingColumnsMap());
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < updatedColumns.size(); i++) {
                 ps.setObject(i + 1, updatedColumns.get(i).getValue());

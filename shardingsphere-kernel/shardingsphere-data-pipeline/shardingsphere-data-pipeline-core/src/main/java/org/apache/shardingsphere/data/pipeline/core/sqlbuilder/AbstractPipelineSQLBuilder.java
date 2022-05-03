@@ -115,10 +115,10 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord, shardingColumnsMap)) {
@@ -128,8 +128,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
-    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("UPDATE %s SET %%s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     @Override
