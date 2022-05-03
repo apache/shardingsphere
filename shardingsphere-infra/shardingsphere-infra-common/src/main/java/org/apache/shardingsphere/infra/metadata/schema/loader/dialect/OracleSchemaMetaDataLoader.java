@@ -74,7 +74,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 0.75f);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1.0f);
         List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
         try (Connection connection = dataSource.getConnection()) {
             for (List<String> each : splitTables) {
