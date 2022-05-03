@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.util;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -59,9 +60,7 @@ public final class ReflectionUtil {
     public static <T> T getFieldValue(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
         Field field = getField(target.getClass(), fieldName, true);
         Object value = field.get(target);
-        if (null == value) {
-            return null;
-        }
+        Preconditions.checkNotNull(value);
         if (valueClass.isAssignableFrom(value.getClass())) {
             return (T) value;
         }
@@ -83,9 +82,7 @@ public final class ReflectionUtil {
     public static <T> T getStaticFieldValue(final Class<?> targetClass, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
         Field field = getField(targetClass, fieldName, true);
         Object value = field.get(null);
-        if (null == value) {
-            return null;
-        }
+        Preconditions.checkNotNull(value);
         if (valueClass.isAssignableFrom(value.getClass())) {
             return (T) value;
         }
