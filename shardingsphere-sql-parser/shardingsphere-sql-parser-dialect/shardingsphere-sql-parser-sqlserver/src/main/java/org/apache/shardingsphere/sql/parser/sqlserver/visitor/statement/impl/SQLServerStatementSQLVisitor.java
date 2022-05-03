@@ -929,12 +929,13 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     public ASTNode visitWithClause(final WithClauseContext ctx) {
         List<CteClauseContext> cteClauses = ctx.cteClause();
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
-        for (CteClauseContext cte : cteClauses) {
-            SubquerySegment subquery = new SubquerySegment(cte.subquery().start.getStartIndex(), cte.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
-            IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
-            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);
-            if (null != cte.columnNames()) {
-                ColumnNamesContext columnNames = cte.columnNames();
+        for (CteClauseContext each : cteClauses) {
+            SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+            IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+            if (null != each.columnNames()) {
+                ColumnNamesContext columnNames = each.columnNames();
                 CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
                 commonTableExpression.getColumns().addAll(columns.getValue());
             }
