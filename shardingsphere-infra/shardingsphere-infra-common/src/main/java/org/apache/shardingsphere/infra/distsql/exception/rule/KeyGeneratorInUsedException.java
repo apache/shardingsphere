@@ -26,7 +26,7 @@ public final class KeyGeneratorInUsedException extends RuleDefinitionViolationEx
     
     private static final long serialVersionUID = 477511600241124319L;
     
-    public KeyGeneratorInUsedException(final String ruleType, final String schemaName, final Collection<String> keyGeneratorNames) {
-        super(1121, String.format("%s key generator `%s` in schema `%s` are still in used.", ruleType, keyGeneratorNames, schemaName));
+    public KeyGeneratorInUsedException(final String ruleType, final String databaseName, final Collection<String> keyGeneratorNames) {
+        super(1121, String.format("%s key generator `%s` in database `%s` are still in used.", ruleType, keyGeneratorNames, databaseName));
     }
 }

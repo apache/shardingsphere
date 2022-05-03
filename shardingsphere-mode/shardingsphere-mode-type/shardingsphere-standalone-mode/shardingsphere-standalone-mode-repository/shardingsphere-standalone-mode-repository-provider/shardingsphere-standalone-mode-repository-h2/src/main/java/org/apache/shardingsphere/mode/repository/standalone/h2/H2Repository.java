@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.Connection;
@@ -61,13 +60,10 @@ public final class H2Repository implements StandalonePersistRepository {
     
     @Override
     public void setProps(final Properties props) {
-        H2RepositoryProperties localRepositoryProperties = new H2RepositoryProperties(props);
-        jdbcUrl = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
-        user = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
-        password = Optional.ofNullable(
-                Strings.emptyToNull(localRepositoryProperties.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
+        H2RepositoryProperties localRepositoryProps = new H2RepositoryProperties(props);
+        jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
+        user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
+        password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
         init();
     }
     
@@ -86,8 +82,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 PreparedStatement statement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = '" + key + "'");
                 ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
-                return Optional.ofNullable(
-                        Strings.emptyToNull(resultSet.getString("value"))).map(each -> each.replace("\"", "'")).orElse("");
+                return Optional.ofNullable(Strings.emptyToNull(resultSet.getString("value"))).map(each -> each.replace("\"", "'")).orElse("");
             }
         } catch (final SQLException ex) {
             log.error("Get h2 data by key: {} failed", key, ex);
@@ -121,7 +116,7 @@ public final class H2Repository implements StandalonePersistRepository {
         // Single quotation marks are the keywords executed by H2. Replace with double quotation marks.
         String insensitiveValue = value.replace("'", "\"");
         String[] paths = Lists.newArrayList(key.split(SEPARATOR))
-                .stream().filter(each -> StringUtils.isNotBlank(each)).toArray(String[]::new);
+                .stream().filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
         String tempPrefix = "";
         String parent = SEPARATOR;
         try {
@@ -129,7 +124,7 @@ public final class H2Repository implements StandalonePersistRepository {
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
                 String tempKeyVal = get(tempKey);
-                if (StringUtils.isBlank(tempKeyVal)) {
+                if (Strings.isNullOrEmpty(tempKeyVal)) {
                     if (i != 0) {
                         parent = tempPrefix;
                     }
@@ -139,7 +134,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 parent = tempKey;
             }
             String keyValue = get(key);
-            if (StringUtils.isBlank(keyValue)) {
+            if (Strings.isNullOrEmpty(keyValue)) {
                 insert(key, insensitiveValue, parent);
             } else {
                 update(key, insensitiveValue);

@@ -32,7 +32,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/database-discovery-application-context.xml")
@@ -52,14 +51,12 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     private void assertDiscoveryTypes(final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes) {
         assertThat(discoveryTypes.size(), is(1));
         assertThat(discoveryTypes.get("mgr"), instanceOf(MGRMySQLDatabaseDiscoveryProviderAlgorithm.class));
-        assertNotNull(discoveryTypes.get("mgr").getProps());
         assertThat(discoveryTypes.get("mgr").getProps().get("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     private void assertHeartbeats(final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeats) {
         assertThat(heartbeats.size(), is(1));
         assertThat(heartbeats.get("mgr-heartbeat"), instanceOf(DatabaseDiscoveryHeartBeatConfiguration.class));
-        assertNotNull(heartbeats.get("mgr-heartbeat").getProps());
         assertThat(heartbeats.get("mgr-heartbeat").getProps().get("keep-alive-cron"), is("0/5 * * * * ?"));
     }
     

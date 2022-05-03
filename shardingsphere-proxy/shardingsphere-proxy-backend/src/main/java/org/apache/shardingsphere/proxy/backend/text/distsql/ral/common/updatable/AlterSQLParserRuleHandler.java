@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -39,44 +38,38 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     @Override
     protected void update(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {
-        updateSQLParserRule();
+        Optional<SQLParserRuleConfiguration> currentConfig = findCurrentConfiguration();
+        SQLParserRuleConfiguration toBeAlteredRuleConfig = createSQLParserRuleConfiguration(currentConfig.orElseGet(() -> new DefaultSQLParserRuleConfigurationBuilder().build()));
+        Collection<RuleConfiguration> globalRuleConfigs = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
+        globalRuleConfigs.removeIf(each -> each instanceof SQLParserRuleConfiguration);
+        globalRuleConfigs.add(toBeAlteredRuleConfig);
+        persistNewRuleConfigurations(globalRuleConfigs);
     }
     
-    private void updateSQLParserRule() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Collection<RuleConfiguration> globalRuleConfigurations = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findFirst().orElse(null);
-        SQLParserRuleConfiguration toBeAlteredRuleConfiguration = getToBeAlteredRuleConfig(currentRuleConfiguration);
-        globalRuleConfigurations.removeIf(configuration -> configuration instanceof SQLParserRuleConfiguration);
-        globalRuleConfigurations.add(toBeAlteredRuleConfiguration);
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
-            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);
-        }
+    private Optional<SQLParserRuleConfiguration> findCurrentConfiguration() {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class).stream().findAny();
     }
     
-    private SQLParserRuleConfiguration getToBeAlteredRuleConfig(final RuleConfiguration currentRuleConfiguration) {
-        if (null == currentRuleConfiguration) {
-            return buildWithCurrentRuleConfiguration(new DefaultSQLParserRuleConfigurationBuilder().build());
-        }
-        return buildWithCurrentRuleConfiguration((SQLParserRuleConfiguration) currentRuleConfiguration);
-    }
-    
-    private SQLParserRuleConfiguration buildWithCurrentRuleConfiguration(final SQLParserRuleConfiguration ruleConfiguration) {
+    private SQLParserRuleConfiguration createSQLParserRuleConfiguration(final SQLParserRuleConfiguration currentConfig) {
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
-        result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled()
-                : sqlStatement.getSqlCommentParseEnable());
-        result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? ruleConfiguration.getParseTreeCache()
-                : buildCacheOption(ruleConfiguration.getParseTreeCache(), sqlStatement.getParseTreeCache()));
-        result.setSqlStatementCache(null == sqlStatement.getSqlStatementCache() ? ruleConfiguration.getSqlStatementCache()
-                : buildCacheOption(ruleConfiguration.getSqlStatementCache(), sqlStatement.getSqlStatementCache()));
+        result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? currentConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnable());
+        result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), sqlStatement.getParseTreeCache()));
+        result.setSqlStatementCache(null == sqlStatement.getSqlStatementCache() ? currentConfig.getSqlStatementCache()
+                : createCacheOption(currentConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache()));
         return result;
     }
     
-    private CacheOption buildCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
+    private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
         int concurrencyLevel = null == segment.getConcurrencyLevel() ? cacheOption.getConcurrencyLevel() : segment.getConcurrencyLevel();
         return new CacheOption(initialCapacity, maximumSize, concurrencyLevel);
+    }
+    
+    private void persistNewRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
+            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigs, true);
+        }
     }
 }

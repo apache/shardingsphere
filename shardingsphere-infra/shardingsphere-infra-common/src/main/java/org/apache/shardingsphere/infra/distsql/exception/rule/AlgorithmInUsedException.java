@@ -26,7 +26,7 @@ public final class AlgorithmInUsedException extends RuleDefinitionViolationExcep
     
     private static final long serialVersionUID = -5748228542420285726L;
     
-    public AlgorithmInUsedException(final String schemaName, final Collection<String> algorithmNames) {
-        super(1116, String.format("Sharding algorithms `%s` in schema `%s` are still in used.", algorithmNames, schemaName));
+    public AlgorithmInUsedException(final String databaseName, final Collection<String> algorithmNames) {
+        super(1116, String.format("Sharding algorithms `%s` in database `%s` are still in used.", algorithmNames, databaseName));
     }
 }

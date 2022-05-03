@@ -59,8 +59,8 @@ public final class SchemaBuilderTest {
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
-        Collection<String> tableNames = rules.stream().filter(rule -> rule instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+        Collection<String> tableNames = rules.stream().filter(each -> each instanceof TableContainedRule)
+                .flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
         Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(tableNames,
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "sharding_db"));
         assertThat(actual.size(), is(1));
@@ -70,7 +70,7 @@ public final class SchemaBuilderTest {
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
-        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, value -> value));
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
         assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));

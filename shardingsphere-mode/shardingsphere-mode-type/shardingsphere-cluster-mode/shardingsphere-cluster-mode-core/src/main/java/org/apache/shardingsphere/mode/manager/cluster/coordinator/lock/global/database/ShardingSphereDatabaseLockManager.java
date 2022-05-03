@@ -76,7 +76,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
         }
         for (String each : allGlobalLock) {
             Optional<String> databaseLock = lockNodeService.parseLocksNodePath(each);
-            databaseLock.ifPresent(database -> locks.put(database, crateDatabaseLock()));
+            databaseLock.ifPresent(optional -> locks.put(optional, crateDatabaseLock()));
         }
     }
     
@@ -136,7 +136,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     @Subscribe
     public synchronized void lockReleased(final DatabaseLockReleasedEvent event) {
         String database = event.getDatabase();
-        getOptionalLock(database).ifPresent(lock -> lock.releaseAckLock(database, getCurrentInstanceId()));
+        getOptionalLock(database).ifPresent(optional -> optional.releaseAckLock(database, getCurrentInstanceId()));
     }
     
     /**
@@ -146,7 +146,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLocked(final DatabaseAckLockedEvent event) {
-        getOptionalLock(event.getDatabase()).ifPresent(lock -> lock.addLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getDatabase()).ifPresent(optional -> optional.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -156,7 +156,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLockReleased(final DatabaseAckLockReleasedEvent event) {
-        getOptionalLock(event.getDatabase()).ifPresent(lock -> lock.removeLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getDatabase()).ifPresent(optional -> optional.removeLockedInstance(event.getLockedInstance()));
     }
     
     private String getCurrentInstanceId() {

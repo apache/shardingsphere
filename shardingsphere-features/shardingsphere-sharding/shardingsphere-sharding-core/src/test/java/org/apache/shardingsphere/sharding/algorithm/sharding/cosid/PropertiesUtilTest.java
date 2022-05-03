@@ -28,23 +28,20 @@ public final class PropertiesUtilTest {
     
     @Test
     public void assertGetRequiredValue() {
-        Properties properties = new Properties();
-        properties.setProperty("sql-show", "true");
-        String actual = PropertiesUtil.getRequiredValue(properties, "sql-show");
-        assertThat(actual, is("true"));
+        Properties props = new Properties();
+        props.setProperty("sql-show", Boolean.TRUE.toString());
+        assertThat(PropertiesUtil.getRequiredValue(props, "sql-show"), is(Boolean.TRUE.toString()));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGetInvalidRequiredValue() {
-        Properties properties = new Properties();
-        PropertiesUtil.getRequiredValue(properties, "sql-show");
+        PropertiesUtil.getRequiredValue(new Properties(), "sql-show");
     }
     
     @Test
     public void assertGetRequiredValueWhenValueIsInt() {
-        Properties properties = new Properties();
-        properties.put("key", 1);
-        String actual = PropertiesUtil.getRequiredValue(properties, "key");
-        assertThat(actual, is("1"));
+        Properties props = new Properties();
+        props.put("key", 1);
+        assertThat(PropertiesUtil.getRequiredValue(props, "key"), is("1"));
     }
 }

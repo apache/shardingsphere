@@ -511,6 +511,10 @@ collationClause
     : DEFAULT COLLATION collationName
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
+    ;
+
 commitClause
     : (ON COMMIT (DROP | PRESERVE) ROWS)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
@@ -958,6 +962,10 @@ clusteringJoin
 
 clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
+    ;
+
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
     ;
 
 clusteringColumns

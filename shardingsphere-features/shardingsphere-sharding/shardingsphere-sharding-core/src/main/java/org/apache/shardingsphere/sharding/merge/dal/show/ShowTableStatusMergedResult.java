@@ -52,7 +52,7 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-                tableRule.ifPresent(rule -> memoryResultSetRow.setCell(1, rule.getLogicTable()));
+                tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 String tableName = memoryResultSetRow.getCell(1).toString();
                 if (memoryQueryResultRowMap.containsKey(tableName)) {
                     merge(memoryQueryResultRowMap.get(tableName), memoryResultSetRow);

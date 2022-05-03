@@ -17,30 +17,19 @@
 
 package org.apache.shardingsphere.sharding.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingRuleConfigurationConverterTest {
-    
-    @Mock
-    private YamlShardingRuleConfiguration yamlShardingRuleConfiguration;
     
     @Test
     public void assertFindAndConvertShardingRuleConfiguration() {
-        Collection<YamlRuleConfiguration> yamlShardingRuleConfigurations = Collections.singletonList(yamlShardingRuleConfiguration);
-        ShardingRuleConfiguration resultShardingRuleConfiguration = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlShardingRuleConfigurations);
-        assertNotNull(resultShardingRuleConfiguration);
+        assertNotNull(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.singletonList(mock(YamlShardingRuleConfiguration.class))));
     }
 }

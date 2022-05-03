@@ -136,8 +136,8 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
         statement.setConfigurationSegment(createCompleteConfiguration());
-        ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getScalingName(), is("default_scaling"));
         assertThat(currentRuleConfig.getScaling().size(), is(1));
         String key = currentRuleConfig.getScaling().keySet().iterator().next();

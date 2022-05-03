@@ -30,7 +30,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -52,7 +51,6 @@ public final class DecoratedEncryptColumnsMergedResultTest {
         when(mergedResult.wasNull()).thenReturn(false);
         when(mergedResult.getValue(1, getClass())).thenReturn("test");
         DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult, testStatementContext, mock(EncryptRule.class));
-        assertNotNull(actual);
         assertTrue(actual.nextValue());
         assertFalse(actual.wasNull());
         assertThat(actual.getOriginalValue(1, getClass()), is("test"));

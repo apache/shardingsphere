@@ -86,12 +86,11 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     private void dropRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig =
-                currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
-        dataSourceRuleConfig.ifPresent(op -> {
-            currentRuleConfig.getDataSources().remove(op);
-            if (isLoadBalancerNotInUse(currentRuleConfig, op.getLoadBalancerName())) {
-                currentRuleConfig.getLoadBalancers().remove(op.getLoadBalancerName());
+        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
+        dataSourceRuleConfig.ifPresent(optional -> {
+            currentRuleConfig.getDataSources().remove(optional);
+            if (isLoadBalancerNotInUse(currentRuleConfig, optional.getLoadBalancerName())) {
+                currentRuleConfig.getLoadBalancers().remove(optional.getLoadBalancerName());
             }
         });
     }
@@ -103,8 +102,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig
-                && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet()), sqlStatement.getRuleNames()).isEmpty();
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getDataSources().stream()
+                .map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getRuleNames()).isEmpty();
     }
     
     @Override

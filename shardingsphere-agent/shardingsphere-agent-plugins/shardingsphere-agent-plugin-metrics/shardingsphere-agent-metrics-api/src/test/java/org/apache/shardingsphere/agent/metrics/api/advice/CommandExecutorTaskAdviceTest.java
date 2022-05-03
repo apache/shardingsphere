@@ -21,7 +21,6 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -50,14 +50,14 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         commandExecutorTaskAdvice.beforeMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.sleep(500L);
+        } catch (final InterruptedException ex) {
+            ex.printStackTrace();
         }
         commandExecutorTaskAdvice.afterMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
-        assertThat(requestWrapper.getFixtureValue(), Matchers.greaterThan(0.0));
+        assertThat(requestWrapper.getFixtureValue(), greaterThan(0.0));
     }
     
     @Test
@@ -67,6 +67,6 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
         commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).isPresent());
-        assertThat(requestWrapper.getFixtureValue(), Matchers.greaterThan(0.0));
+        assertThat(requestWrapper.getFixtureValue(), greaterThan(0.0));
     }
 }

@@ -18,35 +18,20 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ProxyTrafficAlgorithmTest {
     
-    private ProxyTrafficAlgorithm proxyTrafficAlgorithm;
-    
-    @Before
-    public void setUp() {
-        proxyTrafficAlgorithm = new ProxyTrafficAlgorithm();
-    }
-    
     @Test
     public void assertMatchWhenInTransaction() {
-        assertTrue(proxyTrafficAlgorithm.match(new TransactionTrafficValue(true)));
+        assertTrue(new ProxyTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
     public void assertMatchWhenNotInTransaction() {
-        assertFalse(proxyTrafficAlgorithm.match(new TransactionTrafficValue(false)));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(proxyTrafficAlgorithm.getType(), is("PROXY"));
+        assertFalse(new ProxyTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

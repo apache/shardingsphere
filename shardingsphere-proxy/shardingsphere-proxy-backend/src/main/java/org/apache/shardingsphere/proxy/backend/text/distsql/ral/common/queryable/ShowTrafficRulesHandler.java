@@ -59,14 +59,14 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+        Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         Collection<List<Object>> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(sqlStatement.getRuleName());
-        configuration.ifPresent(op -> {
-            Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = op.getTrafficAlgorithms();
-            Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = op.getLoadBalancers();
-            op.getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
+        config.ifPresent(optional -> {
+            Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = optional.getTrafficAlgorithms();
+            Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = optional.getLoadBalancers();
+            optional.getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
                     .forEach(each -> result.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
         });
         return result;

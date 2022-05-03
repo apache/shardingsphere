@@ -71,7 +71,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         }
         for (String each : allGlobalLock) {
             Optional<String> generalLock = lockNodeService.parseLocksNodePath(each);
-            generalLock.ifPresent(lockName -> locks.put(lockName, createGeneralLock()));
+            generalLock.ifPresent(optional -> locks.put(optional, createGeneralLock()));
         }
     }
     

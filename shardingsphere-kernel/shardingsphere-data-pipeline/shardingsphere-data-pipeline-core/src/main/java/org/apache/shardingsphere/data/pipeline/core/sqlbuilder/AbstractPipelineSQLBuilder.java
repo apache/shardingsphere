@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,17 +44,6 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
     private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final Map<String, Set<String>> shardingColumnsMap;
-    
-    public AbstractPipelineSQLBuilder() {
-        shardingColumnsMap = Collections.emptyMap();
-    }
-    
-    public AbstractPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        this.shardingColumnsMap = shardingColumnsMap;
-    }
     
     /**
      * Get left identifier quote string.
@@ -83,7 +70,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord) {
+    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord.getTableName(), dataRecord.getColumns()));
@@ -104,18 +91,19 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     // TODO seems sharding column could be updated for insert statement on conflict by kernel now
-    protected final boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName) && shardingColumnsMap.get(tableName).contains(columnName);
+    protected final boolean isShardingColumn(final Map<LogicTableName, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
+        Set<String> shardingColumns = shardingColumnsMap.get(new LogicTableName(tableName));
+        return null != shardingColumns && shardingColumns.contains(columnName);
     }
     
     @Override
-    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
-        for (Column each : extractUpdatedColumns(dataRecord.getColumns(), dataRecord)) {
+        for (Column each : extractUpdatedColumns(dataRecord, shardingColumnsMap)) {
             updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
@@ -127,7 +115,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
+    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
     }
     

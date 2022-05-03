@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.ShardingSphereLockManagerFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -35,10 +35,6 @@ import java.util.Map;
  * Distribute lock context.
  */
 public final class DistributeLockContext implements LockContext {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
-    }
     
     private final Map<LockType, ShardingSphereLockManager> lockManagers = new EnumMap<>(LockType.class);
     
@@ -53,7 +49,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void loadLockManager() {
-        for (ShardingSphereLockManager each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereLockManager.class)) {
+        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.newInstances()) {
             if (lockManagers.containsKey(each.getLockType())) {
                 continue;
             }

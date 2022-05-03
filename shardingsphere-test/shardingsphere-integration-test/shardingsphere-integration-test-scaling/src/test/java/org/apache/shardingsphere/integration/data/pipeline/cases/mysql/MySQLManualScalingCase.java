@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.data.pipeline.cases.IncrementTaskRunnable;
-import org.junit.After;
+import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,31 +42,41 @@ import static org.junit.Assert.assertThat;
  * MySQL manual scaling test case.
  */
 @Slf4j
-public final class MySQLManualScalingCase extends BaseMySQLScalingIT {
+@RunWith(Parameterized.class)
+public final class MySQLManualScalingCase extends BaseMySQLITCase {
     
-    private Thread increaseTaskThread;
+    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    
+    public MySQLManualScalingCase(final ScalingParameterized parameterized) {
+        super(parameterized);
+    }
+    
+    @Parameters(name = "{0}")
+    public static Collection<ScalingParameterized> getParameters() {
+        Collection<ScalingParameterized> result = new LinkedList<>();
+        for (String version : ENV.getMysqlVersionList()) {
+            if (Strings.isNullOrEmpty(version)) {
+                continue;
+            }
+            result.add(new ScalingParameterized(DATABASE, version, "env/scenario/manual/mysql"));
+        }
+        return result;
+    }
     
     @Before
     public void initEnv() {
-        super.initTableAndData();
-        increaseTaskThread = new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand()));
-        increaseTaskThread.start();
+        getIncreaseTaskThread().start();
     }
     
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList(getCommonSQLCommand().getPreviewSelectOrder());
-        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
+        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> originalSourceList = previewResList.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap(getCommonSQLCommand().getShowScalingList());
+        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = showScalingResMap.get("id").toString();
-        increaseTaskThread.join(60 * 1000);
+        getIncreaseTaskThread().join(60 * 1000);
         checkMatchConsistency(getJdbcTemplate(), jobId);
-    }
-    
-    @After
-    public void stop() {
-        super.stopContainer();
     }
 }

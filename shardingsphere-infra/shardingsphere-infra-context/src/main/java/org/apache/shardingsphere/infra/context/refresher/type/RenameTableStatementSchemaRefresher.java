@@ -79,9 +79,9 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
-        actualTableMetaData.ifPresent(tableMetaData -> {
-            metaData.getSchemaByName(schemaName).put(tableName, tableMetaData);
-            database.put(schemaName, tableMetaData);
+        actualTableMetaData.ifPresent(optional -> {
+            metaData.getSchemaByName(schemaName).put(tableName, optional);
+            database.put(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }

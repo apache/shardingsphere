@@ -51,7 +51,7 @@ public final class InlineShardingAlgorithmTest {
     private void initInlineShardingAlgorithm() {
         inlineShardingAlgorithm = new InlineShardingAlgorithm();
         inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
-        inlineShardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
+        inlineShardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
         inlineShardingAlgorithm.init();
     }
     

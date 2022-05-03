@@ -37,7 +37,7 @@ public final class RuleBasedSchemaMetaDataBuilderFactory {
     /**
      * Create new instance of rule based schema meta data builder.
      * 
-     * @param rules ShardingSphere rules
+     * @param rules rules
      * @return new instance of rule based schema meta data builder
      */
     @SuppressWarnings("rawtypes")

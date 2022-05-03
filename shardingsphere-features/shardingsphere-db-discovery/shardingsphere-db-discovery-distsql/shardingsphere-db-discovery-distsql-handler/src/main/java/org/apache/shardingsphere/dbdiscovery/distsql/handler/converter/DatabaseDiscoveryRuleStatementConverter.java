@@ -53,28 +53,28 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = ruleSegments.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
         DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList())
-                .forEach(each -> addConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
+                .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
         segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList())
-                .forEach(each -> addConfiguration(result, (DatabaseDiscoveryConstructionSegment) each));
+                .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryConstructionSegment) each));
         return result;
     }
     
-    private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration config, final DatabaseDiscoveryDefinitionSegment segment) {
+    private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryDefinitionSegment segment) {
         String discoveryTypeName = getName(segment.getName(), segment.getDiscoveryType().getName());
         ShardingSphereAlgorithmConfiguration discoveryType = new ShardingSphereAlgorithmConfiguration(segment.getDiscoveryType().getName(), segment.getDiscoveryType().getProps());
         String heartbeatName = getName(segment.getName(), "heartbeat");
-        DatabaseDiscoveryHeartBeatConfiguration heartbeatConfiguration = new DatabaseDiscoveryHeartBeatConfiguration(segment.getDiscoveryHeartbeat());
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+        DatabaseDiscoveryHeartBeatConfiguration heartbeatConfig = new DatabaseDiscoveryHeartBeatConfiguration(segment.getDiscoveryHeartbeat());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
-        config.getDataSources().add(dataSourceRuleConfiguration);
-        config.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
-        config.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfiguration);
+        ruleConfig.getDataSources().add(dataSourceRuleConfig);
+        ruleConfig.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
+        ruleConfig.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfig);
     }
     
-    private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration configuration, final DatabaseDiscoveryConstructionSegment segment) {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration =
+    private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryConstructionSegment segment) {
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
-        configuration.getDataSources().add(dataSourceRuleConfiguration);
+        ruleConfig.getDataSources().add(dataSourceRuleConfig);
     }
     
     private static String getName(final String ruleName, final String type) {

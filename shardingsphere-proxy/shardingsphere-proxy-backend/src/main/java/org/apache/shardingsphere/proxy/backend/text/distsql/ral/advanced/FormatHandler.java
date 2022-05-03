@@ -55,7 +55,7 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
             throw new SQLParsingException("You have a syntax error in your formatted statement");
         }
         Properties props = new Properties();
-        props.setProperty("parameterized", "false");
+        props.setProperty("parameterized", Boolean.FALSE.toString());
         SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
         return Collections.singleton(Collections.singletonList(visitorEngine.visit(parseASTNode)));
     }

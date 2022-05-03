@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -52,10 +50,6 @@ import java.util.concurrent.TimeoutException;
 public final class StoragePrivilegeBuilder {
     
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
-    
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
     
     /**
      * Build privileges.
@@ -84,7 +78,7 @@ public final class StoragePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
         DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeHandler> handler = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName());
+        Optional<StoragePrivilegeHandler> handler = StoragePrivilegeHandlerFactory.newInstance(databaseType.getName());
         if (!handler.isPresent()) {
             return buildPrivilegesInCache(users);
         }

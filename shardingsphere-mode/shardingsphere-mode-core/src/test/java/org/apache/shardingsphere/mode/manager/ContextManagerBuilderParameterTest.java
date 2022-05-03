@@ -20,11 +20,8 @@ package org.apache.shardingsphere.mode.manager;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,13 +30,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, true);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
@@ -59,16 +55,11 @@ public final class ContextManagerBuilderParameterTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenAllFieldIsNotEmpty() {
-        Properties mockProperties = mock(Properties.class);
-        when(mockProperties.isEmpty()).thenReturn(false);
-        Collection<RuleConfiguration> mockGlobalRuleConfigs = mock(Collection.class);
-        lenient().when(mockGlobalRuleConfigs.isEmpty()).thenReturn(false);
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(false, false);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, false);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(mockGlobalRuleConfigs)
-                .props(mockProperties)
+                .globalRuleConfigs(Collections.emptyList())
+                .props(new Properties())
                 .databaseConfigs(mockDatabaseConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
@@ -76,23 +67,20 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenPropsIsNotEmpty() {
-        Properties mockProperties = mock(Properties.class);
-        when(mockProperties.isEmpty()).thenReturn(false);
+        Properties props = new Properties();
+        props.setProperty("foo", "foo_value");
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
-                .props(mockProperties)
+                .props(props)
                 .databaseConfigs(Collections.emptyMap())
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenGlobalRuleConfigsIsNotEmpty() {
-        Collection<RuleConfiguration> mockGlobalRuleConfigs = mock(Collection.class);
-        when(mockGlobalRuleConfigs.isEmpty()).thenReturn(false);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(mockGlobalRuleConfigs)
+                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
                 .props(new Properties())
                 .databaseConfigs(Collections.emptyMap())
                 .build();
@@ -101,7 +89,7 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenSchemaConfigsIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(false, false);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, false);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
@@ -112,7 +100,7 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenDataSourcesIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(false, true);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, true);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
@@ -123,23 +111,20 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenRuleConfigurationsIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, false);
+        Map<String, DatabaseConfiguration> databaseConfigs = mockSchemaConfigurations(true, false);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
+                .databaseConfigs(databaseConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenOnlyPropsIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, true);
-        Collection<RuleConfiguration> mockGlobalRuleConfigs = mock(Collection.class);
-        lenient().when(mockGlobalRuleConfigs.isEmpty()).thenReturn(false);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(mockGlobalRuleConfigs)
+                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
                 .props(new Properties())
                 .databaseConfigs(mockDatabaseConfigs)
                 .build();
@@ -148,38 +133,33 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenOnlyGlobalRuleConfigsIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = getMockSchemaConfiguration(true, true);
-        Properties mockProperties = mock(Properties.class);
-        lenient().when(mockProperties.isEmpty()).thenReturn(false);
+        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
+        Properties props = new Properties();
+        props.setProperty("foo", "foo_value");
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
-                .props(mockProperties)
+                .props(props)
                 .databaseConfigs(mockDatabaseConfigs)
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenOnlySchemaConfigsIsEmpty() {
-        Properties mockProperties = mock(Properties.class);
-        Collection<RuleConfiguration> mockGlobalRuleConfigs = mock(Collection.class);
-        lenient().when(mockGlobalRuleConfigs.isEmpty()).thenReturn(false);
-        lenient().when(mockProperties.isEmpty()).thenReturn(false);
+        Properties props = new Properties();
+        props.setProperty("foo", "foo_value");
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(mockGlobalRuleConfigs)
-                .props(mockProperties)
+                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
+                .props(props)
                 .databaseConfigs(Collections.emptyMap())
                 .build();
         assertFalse(contextManagerBuilderParameter.isEmpty());
     }
     
-    private Map<String, DatabaseConfiguration> getMockSchemaConfiguration(final boolean dataSourcesIsEmpty, final boolean ruleConfigurationsIsEmpty) {
-        DatabaseConfiguration mockSchemaConfiguration = Mockito.mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        lenient().when(mockSchemaConfiguration.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);
-        lenient().when(mockSchemaConfiguration.getRuleConfigurations().isEmpty()).thenReturn(ruleConfigurationsIsEmpty);
-        Map<String, DatabaseConfiguration> result = new HashMap<>();
-        result.put("logic", mockSchemaConfiguration);
-        return result;
+    private Map<String, DatabaseConfiguration> mockSchemaConfigurations(final boolean dataSourcesIsEmpty, final boolean ruleConfigurationsIsEmpty) {
+        DatabaseConfiguration result = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
+        lenient().when(result.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);
+        lenient().when(result.getRuleConfigurations().isEmpty()).thenReturn(ruleConfigurationsIsEmpty);
+        return Collections.singletonMap("logic", result);
     }
 }

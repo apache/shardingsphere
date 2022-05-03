@@ -75,11 +75,11 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private final Random random = new SecureRandom();
     
-    public ConnectionManager(final String schema, final ContextManager contextManager) {
-        dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
-        dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
-        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(schema));
-        connectionTransaction = createConnectionTransaction(schema, contextManager);
+    public ConnectionManager(final String databaseName, final ContextManager contextManager) {
+        dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
+        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        connectionTransaction = createConnectionTransaction(databaseName, contextManager);
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
@@ -122,14 +122,14 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceId.getIp(), instanceId.getUniqueSign(), schema, jdbcUrlSuffix);
     }
     
-    private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
+    private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
         TransactionType type = TransactionTypeHolder.get();
         if (null == type) {
             Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-            return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
-                    .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+            return transactionRule.map(optional -> new ConnectionTransaction(databaseName, optional, contextManager.getTransactionContexts()))
+                    .orElseGet(() -> new ConnectionTransaction(databaseName, contextManager.getTransactionContexts()));
         }
-        return new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
+        return new ConnectionTransaction(databaseName, type, contextManager.getTransactionContexts());
     }
     
     /**

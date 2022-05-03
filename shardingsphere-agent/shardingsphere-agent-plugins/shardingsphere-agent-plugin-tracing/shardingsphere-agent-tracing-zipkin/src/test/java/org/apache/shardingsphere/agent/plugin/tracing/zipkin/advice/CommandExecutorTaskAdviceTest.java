@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
@@ -50,7 +49,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         Span span = COLLECTOR.pop();
-        assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
@@ -64,7 +62,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         Span span = COLLECTOR.pop();
-        assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));

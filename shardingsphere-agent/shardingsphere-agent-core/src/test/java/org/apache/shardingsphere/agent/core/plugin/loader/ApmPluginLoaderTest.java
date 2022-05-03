@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
-import lombok.SneakyThrows;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
@@ -51,9 +50,8 @@ public final class ApmPluginLoaderTest {
     private static final TypeDescription MATERIAL = POOL.describe("org.apache.shardingsphere.agent.core.mock.material.Material").resolve();
     
     @BeforeClass
-    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static void setup() {
+    public static void setup() throws NoSuchFieldException {
         FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());

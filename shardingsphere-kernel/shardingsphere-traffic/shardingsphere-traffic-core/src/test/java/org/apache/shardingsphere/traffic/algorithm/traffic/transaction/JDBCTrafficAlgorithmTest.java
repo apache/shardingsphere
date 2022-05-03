@@ -18,35 +18,20 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class JDBCTrafficAlgorithmTest {
     
-    private JDBCTrafficAlgorithm jdbcTrafficAlgorithm;
-    
-    @Before
-    public void setUp() {
-        jdbcTrafficAlgorithm = new JDBCTrafficAlgorithm();
-    }
-    
     @Test
     public void assertMatchWhenInTransaction() {
-        assertTrue(jdbcTrafficAlgorithm.match(new TransactionTrafficValue(true)));
+        assertTrue(new JDBCTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
     public void assertMatchWhenNotInTransaction() {
-        assertFalse(jdbcTrafficAlgorithm.match(new TransactionTrafficValue(false)));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(jdbcTrafficAlgorithm.getType(), is("JDBC"));
+        assertFalse(new JDBCTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

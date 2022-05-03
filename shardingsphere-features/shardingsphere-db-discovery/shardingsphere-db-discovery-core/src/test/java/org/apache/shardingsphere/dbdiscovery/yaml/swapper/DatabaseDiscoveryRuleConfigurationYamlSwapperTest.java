@@ -84,17 +84,10 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
-    @Test
-    public void assertGetTypeClass() {
-        DatabaseDiscoveryRuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
-        Class<DatabaseDiscoveryRuleConfiguration> actual = swapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(DatabaseDiscoveryRuleConfiguration.class));
-    }
-    
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
         Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
-                .filter(swapper -> swapper instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
-                .map(swapper -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) swapper)
+                .filter(each -> each instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
+                .map(each -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) each)
                 .findFirst();
         assertTrue(optional.isPresent());
         return optional.get();

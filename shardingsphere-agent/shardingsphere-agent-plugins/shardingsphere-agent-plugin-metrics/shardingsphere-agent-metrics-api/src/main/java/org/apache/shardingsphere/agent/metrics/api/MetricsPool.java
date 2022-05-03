@@ -45,7 +45,7 @@ public final class MetricsPool {
      */
     public static void create(final String id) {
         Optional<MetricsWrapper> wrapper = wrapperFactory.create(id);
-        wrapper.ifPresent(w -> METRICS_POOL.put(id, w));
+        wrapper.ifPresent(optional -> METRICS_POOL.put(id, optional));
     }
     
     /**

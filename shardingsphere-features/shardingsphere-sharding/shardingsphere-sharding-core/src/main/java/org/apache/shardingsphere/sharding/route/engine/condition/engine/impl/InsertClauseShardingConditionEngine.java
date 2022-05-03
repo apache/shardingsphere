@@ -138,7 +138,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private Collection<Comparable<?>> generateKeys(final String tableName, final int valueListCount) {
-        return IntStream.range(0, valueListCount).mapToObj(i -> shardingRule.generateKey(tableName)).collect(Collectors.toList());
+        return IntStream.range(0, valueListCount).mapToObj(each -> shardingRule.generateKey(tableName)).collect(Collectors.toList());
     }
     
     private void appendGeneratedKeyCondition(final GeneratedKeyContext generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {

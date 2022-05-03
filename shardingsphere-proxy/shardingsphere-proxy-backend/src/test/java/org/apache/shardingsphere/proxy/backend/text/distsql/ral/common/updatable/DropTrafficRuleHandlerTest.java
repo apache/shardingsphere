@@ -77,15 +77,14 @@ public final class DropTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
-        Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        assertTrue(ruleConfiguration.isPresent());
-        TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertThat(configuration.getTrafficStrategies().size(), is(1));
-        assertThat(configuration.getLoadBalancers().size(), is(1));
-        assertThat(configuration.getTrafficAlgorithms().size(), is(1));
-        assertThat(new ArrayList<>(configuration.getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
-        assertNotNull(configuration.getTrafficAlgorithms().get("algorithm_2"));
-        assertNotNull(configuration.getLoadBalancers().get("load_balancer_2"));
+        Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        assertTrue(ruleConfig.isPresent());
+        assertThat(ruleConfig.get().getTrafficStrategies().size(), is(1));
+        assertThat(ruleConfig.get().getLoadBalancers().size(), is(1));
+        assertThat(ruleConfig.get().getTrafficAlgorithms().size(), is(1));
+        assertThat(new ArrayList<>(ruleConfig.get().getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
+        assertNotNull(ruleConfig.get().getTrafficAlgorithms().get("algorithm_2"));
+        assertNotNull(ruleConfig.get().getLoadBalancers().get("load_balancer_2"));
     }
     
     @Test
@@ -94,15 +93,14 @@ public final class DropTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
-        Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        assertTrue(ruleConfiguration.isPresent());
-        TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertThat(configuration.getTrafficStrategies().size(), is(1));
-        assertThat(configuration.getLoadBalancers().size(), is(1));
-        assertThat(configuration.getTrafficAlgorithms().size(), is(1));
-        assertThat(new ArrayList<>(configuration.getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
-        assertNotNull(configuration.getTrafficAlgorithms().get("algorithm_2"));
-        assertNotNull(configuration.getLoadBalancers().get("load_balancer_2"));
+        Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        assertTrue(ruleConfig.isPresent());
+        assertThat(ruleConfig.get().getTrafficStrategies().size(), is(1));
+        assertThat(ruleConfig.get().getLoadBalancers().size(), is(1));
+        assertThat(ruleConfig.get().getTrafficAlgorithms().size(), is(1));
+        assertThat(new ArrayList<>(ruleConfig.get().getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
+        assertNotNull(ruleConfig.get().getTrafficAlgorithms().get("algorithm_2"));
+        assertNotNull(ruleConfig.get().getLoadBalancers().get("load_balancer_2"));
     }
     
     @Test
@@ -111,25 +109,24 @@ public final class DropTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_3"), true)).execute();
-        Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        assertTrue(ruleConfiguration.isPresent());
-        TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertThat(configuration.getTrafficStrategies().size(), is(2));
-        assertThat(configuration.getLoadBalancers().size(), is(2));
-        assertThat(configuration.getTrafficAlgorithms().size(), is(2));
+        Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        assertTrue(ruleConfig.isPresent());
+        assertThat(ruleConfig.get().getTrafficStrategies().size(), is(2));
+        assertThat(ruleConfig.get().getLoadBalancers().size(), is(2));
+        assertThat(ruleConfig.get().getTrafficAlgorithms().size(), is(2));
     }
     
     private Collection<RuleConfiguration> createTrafficRule() {
-        TrafficRuleConfiguration trafficRuleConfiguration = new TrafficRuleConfiguration();
-        trafficRuleConfiguration.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
-        trafficRuleConfiguration.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("sql", "select * from t_order");
-        trafficRuleConfiguration.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", algorithmProperties));
-        trafficRuleConfiguration.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
-        trafficRuleConfiguration.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
-        trafficRuleConfiguration.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
-        return Collections.singletonList(trafficRuleConfiguration);
+        TrafficRuleConfiguration trafficRuleConfig = new TrafficRuleConfiguration();
+        trafficRuleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
+        trafficRuleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
+        Properties props = new Properties();
+        props.put("sql", "select * from t_order");
+        trafficRuleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", props));
+        trafficRuleConfig.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
+        trafficRuleConfig.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
+        trafficRuleConfig.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
+        return Collections.singletonList(trafficRuleConfig);
     }
     
     private DropTrafficRuleStatement getSQLStatement(final Collection<String> ruleNames, final boolean containsIfExistClause) {

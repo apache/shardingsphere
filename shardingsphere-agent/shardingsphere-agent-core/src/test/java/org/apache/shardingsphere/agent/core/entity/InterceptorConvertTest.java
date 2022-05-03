@@ -20,8 +20,7 @@ package org.apache.shardingsphere.agent.core.entity;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public final class InterceptorConvertTest {
     
@@ -29,7 +28,6 @@ public final class InterceptorConvertTest {
     public void assertConvert() {
         Yaml yaml = new Yaml();
         Interceptors interceptors = yaml.loadAs(this.getClass().getResourceAsStream("/interceptors.yaml"), Interceptors.class);
-        assertNotNull(interceptors);
-        assertTrue(interceptors.getInterceptors().size() > 0);
+        assertFalse(interceptors.getInterceptors().isEmpty());
     }
 }

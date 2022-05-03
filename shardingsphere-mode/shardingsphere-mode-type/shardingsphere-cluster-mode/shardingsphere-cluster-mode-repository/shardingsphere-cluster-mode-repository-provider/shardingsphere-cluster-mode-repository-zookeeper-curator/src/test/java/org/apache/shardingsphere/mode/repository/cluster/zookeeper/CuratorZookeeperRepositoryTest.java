@@ -62,7 +62,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -217,7 +216,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
@@ -232,7 +230,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
@@ -247,7 +244,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_added/4", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));
         assertThat(dataChangedEvent.getValue(), is("value4"));

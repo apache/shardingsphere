@@ -136,9 +136,9 @@ public final class RulesUsedResourceQueryResultSetTest {
         assertThat(rowData.next(), is("shadow_source"));
     }
     
-    private void init(final RuleConfiguration ruleConfiguration) {
+    private void init(final RuleConfiguration ruleConfig) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfiguration));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfig));
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData.getResource()).thenReturn(createResource());
     }

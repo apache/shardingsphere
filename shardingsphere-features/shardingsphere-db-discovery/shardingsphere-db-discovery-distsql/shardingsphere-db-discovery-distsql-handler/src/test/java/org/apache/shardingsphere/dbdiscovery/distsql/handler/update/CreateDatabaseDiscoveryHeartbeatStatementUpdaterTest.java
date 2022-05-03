@@ -56,20 +56,20 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithExistDiscoveryHeartbeatName() throws DistSQLException {
         DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
-        DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat", null), Collections.emptyMap());
-        updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), configuration);
+        DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat", null), Collections.emptyMap());
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), ruleConfig);
     }
     
     @Test
     public void assertUpdate() {
         DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_1", createProperties("key_1", "value_1"));
         DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_2", createProperties("key_2", "value_2"));
-        DatabaseDiscoveryRuleConfiguration ruleConfiguration = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)));
-        DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
-        updater.updateCurrentRuleConfiguration(currentConfiguration, ruleConfiguration);
-        assertThat(currentConfiguration.getDiscoveryHeartbeats().size(), is(2));
-        assertThat(currentConfiguration.getDiscoveryHeartbeats().get("heartbeat_1").getProps(), is(createProperties("key_1", "value_1")));
-        assertThat(currentConfiguration.getDiscoveryHeartbeats().get("heartbeat_2").getProps(), is(createProperties("key_2", "value_2")));
+        DatabaseDiscoveryRuleConfiguration ruleConfig = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)));
+        DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        updater.updateCurrentRuleConfiguration(currentConfig, ruleConfig);
+        assertThat(currentConfig.getDiscoveryHeartbeats().size(), is(2));
+        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_1").getProps(), is(createProperties("key_1", "value_1")));
+        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_2").getProps(), is(createProperties("key_2", "value_2")));
     }
     
     private Properties createProperties(final String key, final String value) {

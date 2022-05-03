@@ -22,13 +22,12 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecoratorFactory;
 import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,10 +38,6 @@ import java.util.Map.Entry;
  * SQL rewrite entry.
  */
 public final class SQLRewriteEntry {
-    
-    static {
-        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
-    }
     
     private final String databaseName;
     
@@ -57,7 +52,7 @@ public final class SQLRewriteEntry {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, rules);
+        decorators = SQLRewriteContextDecoratorFactory.newInstance(rules);
     }
     
     /**
