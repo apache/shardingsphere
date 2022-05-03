@@ -42,11 +42,11 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-lower", "2020-01-01 00:00:00");
         props.setProperty("datetime-upper", "2020-01-01 00:00:16");
         props.setProperty("sharding-seconds", "4");
+        shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.init(props);
     }
     
@@ -108,22 +108,22 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-lower", "2020-01-01 00:00:00");
         props.setProperty("datetime-upper", "2021-01-01 00:00:00");
         props.setProperty("sharding-seconds", "86400");
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
     }
     
     @Test
     public void assertRangeDoShardingWithGreaterTenTables() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-lower", "2020-01-01 00:00:00");
         props.setProperty("datetime-upper", "2020-01-01 00:00:30");
         props.setProperty("sharding-seconds", "1");
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.init(props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
@@ -136,11 +136,11 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingInValueWithMilliseconds() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-lower", "2020-01-01 00:00:00");
         props.setProperty("datetime-upper", "2020-01-01 00:00:30");
         props.setProperty("sharding-seconds", "1");
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.init(props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {

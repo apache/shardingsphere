@@ -52,7 +52,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
         if (props.containsKey(EPOCH_KEY)) {
             epoch = Long.parseLong(props.getProperty(EPOCH_KEY));
         }
-        snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(epoch, 
+        snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(epoch,
                 MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
     }
     

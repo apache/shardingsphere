@@ -123,11 +123,11 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("range-lower", "10");
         props.setProperty("range-upper", "45");
         props.setProperty("sharding-volume", "10");
+        VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
         shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }

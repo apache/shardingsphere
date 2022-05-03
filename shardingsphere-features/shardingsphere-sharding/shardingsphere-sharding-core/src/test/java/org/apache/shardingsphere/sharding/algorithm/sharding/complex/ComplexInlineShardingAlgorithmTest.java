@@ -45,19 +45,19 @@ public final class ComplexInlineShardingAlgorithmTest {
     }
     
     private void initComplexInlineShardingAlgorithm() {
-        complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
         props.setProperty("sharding-columns", "type,order_id");
+        complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
         complexInlineShardingAlgorithm.init(props);
     }
     
     private void initComplexInlineShardingAlgorithmAllowRangeQuery() {
-        complexInlineShardingAlgorithmAllowRangeQuery = new ComplexInlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
         props.setProperty("sharding-columns", "type,order_id");
         props.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
+        complexInlineShardingAlgorithmAllowRangeQuery = new ComplexInlineShardingAlgorithm();
         complexInlineShardingAlgorithmAllowRangeQuery.init(props);
     }
     

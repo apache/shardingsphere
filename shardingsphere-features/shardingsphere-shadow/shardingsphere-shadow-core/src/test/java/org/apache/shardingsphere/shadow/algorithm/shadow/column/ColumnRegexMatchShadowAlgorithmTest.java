@@ -32,11 +32,11 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Before
     public void init() {
-        shadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("column", SHADOW_COLUMN);
         props.setProperty("operation", "insert");
         props.setProperty("regex", "[1]");
+        shadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
         shadowAlgorithm.init(props);
         shadowAlgorithm.setProps(props);
     }
