@@ -155,6 +155,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * DML Statement SQL visitor for Oracle.
@@ -807,11 +808,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegments = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegments.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegments);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasCo
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValuesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DuplicateSpecificationContext;
@@ -100,6 +99,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * DML Statement SQL visitor for SQL92.
@@ -451,11 +451,7 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegments = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegments.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegments);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }

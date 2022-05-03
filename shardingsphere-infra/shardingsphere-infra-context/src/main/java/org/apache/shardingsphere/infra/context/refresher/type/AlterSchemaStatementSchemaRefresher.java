@@ -55,14 +55,14 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         // TODO Maybe need to refresh tables for SingleTableRule
     }
     
-    private void removeSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, 
+    private void removeSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                       final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName) {
         metaData.getSchemas().remove(schemaName);
         database.remove(schemaName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
-    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, 
+    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                    final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String renameSchemaName) {
         metaData.getSchemas().put(renameSchemaName, metaData.getSchemaByName(schemaName));
         database.getSchemaMetadata(schemaName).ifPresent(optional -> database.put(renameSchemaName, optional));
