@@ -264,60 +264,60 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) {
-        setObject(parameterIndex,x,targetSqlType,-1);
+        setObject(parameterIndex, x, targetSqlType, -1);
     }
     
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) {
-        if (x == null){
-            setNull(parameterIndex,targetSqlType);
+        if (x == null) {
+            setNull(parameterIndex, targetSqlType);
             return;
         }
         try {
             switch (targetSqlType) {
                 case Types.NULL:
-                    setNull(parameterIndex,targetSqlType);
+                    setNull(parameterIndex, targetSqlType);
                     break;
                 case Types.INTEGER:
                     setInt(parameterIndex, castToInt(x));
                     break;
                 case Types.BIGINT:
-                    setLong(parameterIndex,castToLong(x));
+                    setLong(parameterIndex, castToLong(x));
                     break;
                 case Types.SMALLINT:
                 case Types.TINYINT:
-                    setShort(parameterIndex,castToShort(x));
+                    setShort(parameterIndex, castToShort(x));
                     break;
                 case Types.LONGVARCHAR:
                 case Types.VARCHAR:
                 case Types.CHAR:
-                    setString(parameterIndex,x instanceof Clob?clobToString((Clob) x):x.toString());
+                    setString(parameterIndex, x instanceof Clob ? clobToString((Clob) x) : x.toString());
                     break;
                 case Types.DOUBLE:
                 case Types.FLOAT:
-                    setDouble(parameterIndex,castToDouble(x));
+                    setDouble(parameterIndex, castToDouble(x));
                     break;
                 case Types.DECIMAL:
                 case Types.NUMERIC:
-                    setBigDecimal(parameterIndex,castToBigDecimal(x,scaleOrLength));
+                    setBigDecimal(parameterIndex, castToBigDecimal(x, scaleOrLength));
                     break;
                 case Types.DATE:
-                    setDate(parameterIndex,castToDate(x));
+                    setDate(parameterIndex, castToDate(x));
                     break;
                 case Types.TIME:
-                    setTime(parameterIndex,castToTime(x));
+                    setTime(parameterIndex, castToTime(x));
                     break;
                 case Types.TIMESTAMP:
-                    setTimestamp(parameterIndex,castToTimestamp(x));
+                    setTimestamp(parameterIndex, castToTimestamp(x));
                     break;
                 case Types.BIT:
                 case Types.BOOLEAN:
-                    setBoolean(parameterIndex,castToBoolean(x));
+                    setBoolean(parameterIndex, castToBoolean(x));
                     break;
                 default:
                     setParameter(parameterIndex, x);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             setParameter(parameterIndex, x);
         }
     }
@@ -349,7 +349,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
     
-    private int castToInt(Object obj) throws Exception{
+    private int castToInt(Object obj) throws Exception {
         if (obj instanceof String) {
             return Integer.parseInt((String) obj);
         } else if (obj instanceof Number) {
@@ -359,14 +359,14 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } else if (obj instanceof java.util.Date) {
             return (int) ((java.util.Date) obj).getTime();
         } else if (obj instanceof Clob) {
-            return Integer.parseInt(clobToString((Clob)obj));
-        }else if (obj instanceof Character){
+            return Integer.parseInt(clobToString((Clob) obj));
+        }else if (obj instanceof Character) {
             return Integer.parseInt(obj.toString());
         }
         throw new ClassCastException();
     }
 
-    private long castToLong(Object obj) throws Exception{
+    private long castToLong(Object obj) throws Exception {
         if (obj instanceof String) {
             return Long.parseLong((String) obj);
         } else if (obj instanceof Number) {
@@ -376,19 +376,19 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } else if (obj instanceof java.util.Date) {
             return ((java.util.Date) obj).getTime();
         } else if (obj instanceof Clob) {
-            return Long.parseLong(clobToString((Clob)obj));
-        }else if (obj instanceof Character){
+            return Long.parseLong(clobToString((Clob) obj));
+        } else if (obj instanceof Character) {
             return Long.parseLong(obj.toString());
         }
         throw new ClassCastException();
     }
 
-    private double castToDouble(Object obj) throws Exception{
+    private double castToDouble(Object obj) throws Exception {
         if (obj instanceof String) {
             return Double.parseDouble((String) obj);
         } else if (obj instanceof Number) {
-            if (obj instanceof Float){
-                return Double.parseDouble(Float.toString((float)obj));
+            if (obj instanceof Float) {
+                return Double.parseDouble(Float.toString((float) obj));
             }
             return ((Number) obj).doubleValue();
         } else if (obj instanceof Boolean) {
@@ -396,14 +396,14 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } else if (obj instanceof java.util.Date) {
             return ((java.util.Date) obj).getTime();
         } else if (obj instanceof Clob) {
-            return Double.parseDouble(clobToString((Clob)obj));
-        }else if (obj instanceof Character){
+            return Double.parseDouble(clobToString((Clob) obj));
+        } else if (obj instanceof Character) {
             return Double.parseDouble(obj.toString());
         }
         throw new ClassCastException();
     }
 
-    private short castToShort(Object obj) throws Exception{
+    private short castToShort(Object obj) throws Exception {
         if (obj instanceof String) {
             return Short.parseShort((String) obj);
         } else if (obj instanceof Number) {
@@ -413,162 +413,159 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } else if (obj instanceof java.util.Date) {
             return (short) ((java.util.Date) obj).getTime();
         } else if (obj instanceof Clob) {
-            return Short.parseShort(clobToString((Clob)obj));
-        }else if (obj instanceof Character){
+            return Short.parseShort(clobToString((Clob) obj));
+        } else if (obj instanceof Character) {
             return Short.parseShort(obj.toString());
         }
         throw new ClassCastException();
     }
 
-    private BigDecimal castToBigDecimal(Object obj,int scale) throws Exception{
+    private BigDecimal castToBigDecimal(Object obj,int scale) throws Exception {
         BigDecimal result = null;
         if (obj instanceof String) {
             result = new BigDecimal((String) obj);
-        }else if(obj instanceof BigInteger){
-            result = new BigDecimal((BigInteger)obj);
+        } else if (obj instanceof BigInteger) {
+            result = new BigDecimal((BigInteger) obj);
         } else if (obj instanceof Long || obj instanceof Integer || obj instanceof Short) {
             result = BigDecimal.valueOf(((Number) obj).longValue());
-        }else if (obj instanceof Double || obj instanceof Float){
-            if(obj instanceof Float){
-                result = BigDecimal.valueOf(Double.parseDouble(Float.toString((float)obj)));
-            }else{
+        } else if (obj instanceof Double || obj instanceof Float) {
+            if (obj instanceof Float) {
+                result = BigDecimal.valueOf(Double.parseDouble(Float.toString((float) obj)));
+            } else {
                 result = BigDecimal.valueOf(((Number) obj).doubleValue());
             }
-        }else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             result = (Boolean) obj ? BigDecimal.ONE : BigDecimal.ZERO;
         } else if (obj instanceof java.util.Date) {
             result = BigDecimal.valueOf(((java.util.Date) obj).getTime());
         } else if (obj instanceof Clob) {
-            result = new BigDecimal(clobToString((Clob)obj));
-        }else if (obj instanceof Character){
+            result = new BigDecimal(clobToString((Clob) obj));
+        } else if (obj instanceof Character) {
             result = new BigDecimal(obj.toString());
         }
-        if(result != null){
-            if(scale>0){
-                result = result.setScale(scale,1);
+        if (result != null) {
+            if (scale>0) {
+                result = result.setScale(scale, 1);
             }
             return result;
         }
         throw new ClassCastException();
     }
 
-    private long getTimeOfDateObject(Object obj){
+    private long getTimeOfDateObject(Object obj) {
         try {
             return castToLong(obj);
-        }catch (Exception ex){
-
-            if(obj instanceof java.sql.Date){
-                return ((Date)obj).getTime();
-            }else if(obj instanceof Time){
-                return ((Time)obj).getTime();
-            }else if(obj instanceof Timestamp){
-                return ((Timestamp)obj).getTime();
-            }else if(obj instanceof java.util.Date){
-                return ((java.util.Date)obj).getTime();
-            }else if(obj instanceof LocalDate){
-                return LocalDateTime.of((LocalDate)obj,LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            }else if(obj instanceof LocalTime){
-                return LocalDateTime.of(LocalDate.now(),(LocalTime)obj).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            }else if(obj instanceof LocalDateTime){
-                return ((LocalDateTime)obj).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            }else if(obj instanceof OffsetDateTime){
-                return ((OffsetDateTime)obj).toInstant().toEpochMilli();
-            }else if(obj instanceof OffsetTime){
-                return ((OffsetTime)obj).atDate(LocalDate.now()).toInstant().toEpochMilli();
-            }else if(obj instanceof Calendar){
-                return ((Calendar)obj).getTimeInMillis();
-            }else if(obj instanceof ZonedDateTime){
-                return ((ZonedDateTime)obj).toInstant().toEpochMilli();
+        } catch (Exception ex) {
+            if (obj instanceof java.sql.Date) {
+                return ((Date) obj).getTime();
+            } else if (obj instanceof Time) {
+                return ((Time) obj).getTime();
+            } else if (obj instanceof Timestamp) {
+                return ((Timestamp) obj).getTime();
+            } else if (obj instanceof java.util.Date) {
+                return ((java.util.Date) obj).getTime();
+            } else if (obj instanceof LocalDate) {
+                return LocalDateTime.of((LocalDate) obj, LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            } else if (obj instanceof LocalTime) {
+                return LocalDateTime.of(LocalDate.now(), (LocalTime) obj).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            } else if (obj instanceof LocalDateTime) {
+                return ((LocalDateTime) obj).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            } else if (obj instanceof OffsetDateTime) {
+                return ((OffsetDateTime) obj).toInstant().toEpochMilli();
+            } else if (obj instanceof OffsetTime) {
+                return ((OffsetTime) obj).atDate(LocalDate.now()).toInstant().toEpochMilli();
+            } else if (obj instanceof Calendar) {
+                return ((Calendar) obj).getTimeInMillis();
+            } else if (obj instanceof ZonedDateTime) {
+                return ((ZonedDateTime) obj).toInstant().toEpochMilli();
             }
             throw new ClassCastException();
         }
     }
 
-    private Date castToDate(Object obj){
+    private Date castToDate(Object obj) {
         try {
             return new Date(getTimeOfDateObject(obj));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new ClassCastException();
         }
     }
 
-    public Time castToTime(Object obj){
+    public Time castToTime(Object obj) {
         try {
             return new Time(getTimeOfDateObject(obj));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new ClassCastException();
         }
     }
 
-    public Timestamp castToTimestamp(Object obj){
+    public Timestamp castToTimestamp(Object obj) {
         try {
             return new Timestamp(getTimeOfDateObject(obj));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new ClassCastException();
         }
     }
 
-    private boolean castToBoolean(Object obj){
+    private boolean castToBoolean(Object obj) {
         Boolean result = null;
-        if(obj instanceof Boolean){
-            result = (Boolean)obj;
-        }else if(obj instanceof Number){
-            result = castBooleanFromNumber((Number)obj);
-        }else if(obj instanceof String){
-            result = castBooleanFromString((String)obj);
-        }else if(obj instanceof Character){
-            result = castBooleanFromChar((Character)obj);
+        if (obj instanceof Boolean) {
+            result = (Boolean) obj;
+        } else if (obj instanceof Number) {
+            result = castBooleanFromNumber((Number) obj);
+        } else if (obj instanceof String) {
+            result = castBooleanFromString((String) obj);
+        } else if (obj instanceof Character) {
+            result = castBooleanFromChar((Character) obj);
         }
-        if(result==null){
+        if (result==null) {
             throw new ClassCastException();
         }
         return result;
     }
 
-    private boolean castBooleanFromString(String str){
-
+    private boolean castBooleanFromString(String str) {
         str = str.trim();
-        if("yes".equalsIgnoreCase(str)
+        if ("yes".equalsIgnoreCase(str)
                 || "y".equalsIgnoreCase(str)
                 || "true".equalsIgnoreCase(str)
                 || "t".equalsIgnoreCase(str)
-                || "1".equalsIgnoreCase(str)){
+                || "1".equalsIgnoreCase(str)) {
             return true;
-        }else if("no".equalsIgnoreCase(str)
+        } else if ("no".equalsIgnoreCase(str)
                 || "n".equalsIgnoreCase(str)
                 || "false".equalsIgnoreCase(str)
                 || "f".equalsIgnoreCase(str)
-                || "0".equalsIgnoreCase(str)){
+                || "0".equalsIgnoreCase(str)) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private boolean castBooleanFromChar(Character ch){
-        if('Y'== ch || 'y' == ch || 't' == ch || 'T' == ch || '1' == ch) {
+    private boolean castBooleanFromChar(Character ch) {
+        if ('Y'== ch || 'y' == ch || 't' == ch || 'T' == ch || '1' == ch) {
             return true;
-        }else if('N'== ch || 'n' == ch || 'f' == ch || 'F' == ch || '0' == ch){
+        } else if ('N'== ch || 'n' == ch || 'f' == ch || 'F' == ch || '0' == ch) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private boolean castBooleanFromNumber(Number num){
+    private boolean castBooleanFromNumber(Number num) {
         int val = num.intValue();
-        if(val == 1){
+        if (val == 1) {
             return true;
-        }else if(val == 0){
+        } else if(val == 0) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private String clobToString(Clob clob) throws Exception{
-
+    private String clobToString(Clob clob) throws Exception {
         long length = clob.length();
-        if(length>0){
-            return clob.getSubString(1,(int)length);
-        }else {
+        if (length>0) {
+            return clob.getSubString(1, (int) length);
+        } else {
             return "";
         }
     }
