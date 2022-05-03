@@ -22,28 +22,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Reflection utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
-    
-    /**
-     * Set value into target object field.
-     *
-     * @param target target object
-     * @param fieldName field name
-     * @param value new value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static void setFieldValue(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(target.getClass(), fieldName, true);
-        field.set(target, value);
-    }
     
     /**
      * Get field value from instance target object.
@@ -60,28 +44,6 @@ public final class ReflectionUtil {
     public static <T> T getFieldValue(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
         Field field = getField(target.getClass(), fieldName, true);
         Object value = field.get(target);
-        Preconditions.checkNotNull(value);
-        if (valueClass.isAssignableFrom(value.getClass())) {
-            return (T) value;
-        }
-        throw new ClassCastException("field " + fieldName + " is " + value.getClass().getName() + " can cast to " + valueClass.getName());
-    }
-    
-    /**
-     * Get static field value.
-     *
-     * @param targetClass target class
-     * @param fieldName field name
-     * @param valueClass expected value class
-     * @param <T> expected value class
-     * @return target filed value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getStaticFieldValue(final Class<?> targetClass, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(targetClass, fieldName, true);
-        Object value = field.get(null);
         Preconditions.checkNotNull(value);
         if (valueClass.isAssignableFrom(value.getClass())) {
             return (T) value;
@@ -109,22 +71,4 @@ public final class ReflectionUtil {
         return result;
     }
     
-    /**
-     * Invoke method.
-     *
-     * @param target target object
-     * @param methodName method name
-     * @param parameterTypes parameter types
-     * @param parameterValues parameter values
-     * @return invoke method result.
-     * @throws NoSuchMethodException no such field exception
-     * @throws InvocationTargetException invocation target exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes,
-                                      final Object[] parameterValues) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
-        method.setAccessible(true);
-        return method.invoke(target, parameterValues);
-    }
 }
