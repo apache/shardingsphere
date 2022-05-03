@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -122,10 +121,5 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String getType() {
         return "AUTO_INTERVAL";
-    }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return Arrays.asList(DATE_TIME_LOWER_KEY, DATE_TIME_UPPER_KEY, SHARDING_SECONDS_KEY);
     }
 }

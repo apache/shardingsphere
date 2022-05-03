@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sharding.api.sharding;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPropertiesAware;
-
 /**
  * Sharding auto table algorithm.
  */
-public interface ShardingAutoTableAlgorithm extends ShardingSphereAlgorithmPropertiesAware {
+public interface ShardingAutoTableAlgorithm {
     
     /**
      * Get auto tables amount.
