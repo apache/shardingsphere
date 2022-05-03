@@ -45,10 +45,6 @@ public final class SPIBasedOrderStandardShardingAlgorithmFixture implements Stan
     }
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "T_ORDER_SPI_BASED";
     }

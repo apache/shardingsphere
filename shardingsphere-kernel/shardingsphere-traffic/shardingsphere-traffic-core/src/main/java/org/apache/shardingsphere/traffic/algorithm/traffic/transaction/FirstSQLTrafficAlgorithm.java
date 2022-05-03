@@ -27,10 +27,6 @@ import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTraf
 public final class FirstSQLTrafficAlgorithm implements TransactionTrafficAlgorithm, SimplifiedTrafficAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public boolean match(final TransactionTrafficValue transactionTrafficValue) {
         return false;
     }

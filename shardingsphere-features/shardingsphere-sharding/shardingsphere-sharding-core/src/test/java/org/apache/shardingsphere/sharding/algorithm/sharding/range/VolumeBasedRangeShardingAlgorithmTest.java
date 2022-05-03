@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,10 +42,11 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().put("range-lower", 10);
-        shardingAlgorithm.getProps().put("range-upper", 45);
-        shardingAlgorithm.getProps().put("sharding-volume", 10);
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.put("range-lower", 10);
+        props.put("range-upper", 45);
+        props.put("sharding-volume", 10);
+        shardingAlgorithm.init(props);
     }
     
     @Test
@@ -122,10 +124,11 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range-lower", "10");
-        shardingAlgorithm.getProps().setProperty("range-upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("range-lower", "10");
+        props.setProperty("range-upper", "45");
+        props.setProperty("sharding-volume", "10");
+        shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }
 }

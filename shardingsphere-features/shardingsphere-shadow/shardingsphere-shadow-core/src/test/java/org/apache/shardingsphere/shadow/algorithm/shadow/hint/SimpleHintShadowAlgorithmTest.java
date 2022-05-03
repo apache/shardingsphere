@@ -37,8 +37,8 @@ public final class SimpleHintShadowAlgorithmTest {
         shadowAlgorithm = new SimpleHintShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("shadow", Boolean.TRUE.toString());
+        shadowAlgorithm.init(props);
         shadowAlgorithm.setProps(props);
-        shadowAlgorithm.init();
     }
     
     @Test

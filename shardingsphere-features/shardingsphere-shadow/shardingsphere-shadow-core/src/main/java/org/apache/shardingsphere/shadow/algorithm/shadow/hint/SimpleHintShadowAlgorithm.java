@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
@@ -31,15 +29,15 @@ import java.util.Properties;
 /**
  * Simple hint shadow algorithm.
  */
-@Getter
-@Setter
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
-    private Properties props = new Properties();
+    // TODO convert to static key, or use HashMap
+    private Properties props;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
         checkPropsSize();
+        this.props = props;
     }
     
     private void checkPropsSize() {

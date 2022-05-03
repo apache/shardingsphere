@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,8 +42,9 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-ranges", "1,5,10");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("sharding-ranges", "1,5,10");
+        shardingAlgorithm.init(props);
     }
     
     @Test
@@ -82,8 +84,9 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-ranges", "1,5,10");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("sharding-ranges", "1,5,10");
+        shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }
 }

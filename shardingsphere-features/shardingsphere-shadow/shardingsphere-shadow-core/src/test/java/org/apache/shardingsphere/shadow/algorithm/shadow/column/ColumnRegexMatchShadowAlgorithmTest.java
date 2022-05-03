@@ -37,8 +37,8 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
         props.setProperty("column", SHADOW_COLUMN);
         props.setProperty("operation", "insert");
         props.setProperty("regex", "[1]");
+        shadowAlgorithm.init(props);
         shadowAlgorithm.setProps(props);
-        shadowAlgorithm.init();
     }
     
     @Test

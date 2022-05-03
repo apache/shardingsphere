@@ -17,24 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
-import java.util.Properties;
-
-@Getter
-@Setter
 public final class TestTrafficAlgorithm implements TrafficAlgorithm {
-    
-    private Properties props = new Properties();
     
     @Override
     public String getType() {
         return "TEST";
-    }
-    
-    @Override
-    public void init() {
     }
 }

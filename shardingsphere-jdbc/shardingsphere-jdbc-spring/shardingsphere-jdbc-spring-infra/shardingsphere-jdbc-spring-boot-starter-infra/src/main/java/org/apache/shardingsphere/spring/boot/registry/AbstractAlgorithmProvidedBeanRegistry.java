@@ -20,7 +20,6 @@ package org.apache.shardingsphere.spring.boot.registry;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -74,10 +73,10 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
                 shardingAlgorithmMap.put(each, config);
             });
             ShardingSphereServiceLoader.register(algorithmClass);
-            shardingAlgorithmMap.forEach((key, algorithmConfig) -> {
-                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfig.getType(), algorithmConfig.getProps());
+            shardingAlgorithmMap.forEach((key, value) -> {
+                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, value.getType(), value.getProps());
                 BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
-                builder.addPropertyValue(PROPS, algorithmConfig.getProps());
+                builder.addPropertyValue(PROPS, value.getProps());
                 registry.registerBeanDefinition(key, builder.getBeanDefinition());
             });
         }
@@ -94,9 +93,6 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     @Override
     public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
-        if (bean instanceof ShardingSphereAlgorithmPostProcessor) {
-            ((ShardingSphereAlgorithmPostProcessor) bean).init();
-        }
         return bean;
     }
 }

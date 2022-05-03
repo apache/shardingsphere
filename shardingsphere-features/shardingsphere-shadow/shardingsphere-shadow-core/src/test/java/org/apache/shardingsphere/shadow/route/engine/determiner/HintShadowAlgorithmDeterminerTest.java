@@ -49,8 +49,8 @@ public final class HintShadowAlgorithmDeterminerTest {
         HintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("foo", "bar");
+        result.init(props);
         result.setProps(props);
-        result.init();
         return result;
     }
     

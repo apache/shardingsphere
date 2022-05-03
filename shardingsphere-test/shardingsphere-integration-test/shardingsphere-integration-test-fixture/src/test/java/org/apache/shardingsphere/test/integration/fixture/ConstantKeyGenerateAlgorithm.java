@@ -22,10 +22,6 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Comparable<?> generateKey() {
         return 1;
     }

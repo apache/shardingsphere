@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,10 +43,11 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Before
     public void setup() {
         shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:16");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "4");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        props.setProperty("datetime-upper", "2020-01-01 00:00:16");
+        props.setProperty("sharding-seconds", "4");
+        shardingAlgorithm.init(props);
     }
     
     @Test
@@ -107,20 +109,22 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2021-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "86400");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        props.setProperty("datetime-upper", "2021-01-01 00:00:00");
+        props.setProperty("sharding-seconds", "86400");
+        shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
     }
     
     @Test
     public void assertRangeDoShardingWithGreaterTenTables() {
         AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        props.setProperty("datetime-upper", "2020-01-01 00:00:30");
+        props.setProperty("sharding-seconds", "1");
+        shardingAlgorithm.init(props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
@@ -133,10 +137,11 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingInValueWithMilliseconds() {
         AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        props.setProperty("datetime-upper", "2020-01-01 00:00:30");
+        props.setProperty("sharding-seconds", "1");
+        shardingAlgorithm.init(props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);

@@ -35,7 +35,7 @@ public final class SQLMatchTrafficAlgorithmTest {
     public void setUp() {
         sqlMatchAlgorithm = new SQLMatchTrafficAlgorithm();
         sqlMatchAlgorithm.getProps().put("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;");
-        sqlMatchAlgorithm.init();
+        sqlMatchAlgorithm.init(sqlMatchAlgorithm.getProps());
     }
     
     @Test

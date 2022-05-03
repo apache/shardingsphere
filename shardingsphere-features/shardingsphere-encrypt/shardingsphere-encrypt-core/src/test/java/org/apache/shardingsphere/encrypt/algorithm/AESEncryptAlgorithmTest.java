@@ -51,8 +51,8 @@ public final class AESEncryptAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertEncryptWithoutKey() {
         Properties props = new Properties();
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
@@ -72,8 +72,8 @@ public final class AESEncryptAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertDecryptWithoutKey() {
         Properties props = new Properties();
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
         assertThat(actual.toString(), is("test"));
     }

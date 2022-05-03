@@ -48,7 +48,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     private Properties props = new Properties();
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
         algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());

@@ -22,10 +22,6 @@ import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlg
 public final class FixtureJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<Object> {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public boolean isAlmostCompleted(final Object parameter) {
         return true;
     }

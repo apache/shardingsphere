@@ -42,8 +42,9 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     
     static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlgorithm() {
         CosIdSnowflakeIntervalShardingAlgorithm result = new CosIdSnowflakeIntervalShardingAlgorithm();
-        result.setProps(createAlgorithmProperties());
-        result.init();
+        Properties props = createAlgorithmProperties();
+        result.setProps(props);
+        result.init(props);
         return result;
     }
     

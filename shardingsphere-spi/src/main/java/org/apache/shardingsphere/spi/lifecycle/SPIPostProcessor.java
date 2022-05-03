@@ -15,15 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.spi.lifecycle;
+
+import java.util.Properties;
 
 /**
- * ShardingSphere algorithm post processor.
+ * SPI post processor.
  */
-public interface ShardingSphereAlgorithmPostProcessor {
+public interface SPIPostProcessor {
     
     /**
-     * Initialize algorithm.
+     * Initialize SPI.
+     * 
+     * @param props properties to be initialized
      */
-    void init();
+    default void init(Properties props) {
+    }
+    
+    /**
+     * Get properties.
+     * 
+     * @return properties
+     */
+    // TODO consider about to remove it, for spring algorithm only for now
+    default Properties getProps() {
+        return new Properties();
+    }
+    
+    /**
+     * Set properties.
+     *
+     * @param props properties
+     */
+    // TODO consider about to remove it, for spring algorithm only for now
+    default void setProps(Properties props) {
+    }
 }

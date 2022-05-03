@@ -56,8 +56,8 @@ public final class SM4EncryptAlgorithmCBCTest {
         props.setProperty("sm4-mode", "CBC");
         props.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
         props.setProperty("sm4-padding", "PKCS7Padding");
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
@@ -77,8 +77,8 @@ public final class SM4EncryptAlgorithmCBCTest {
         props.setProperty("sm4-mode", "CBC");
         props.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
         props.setProperty("sm4-padding", "PKCS7Padding");
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     

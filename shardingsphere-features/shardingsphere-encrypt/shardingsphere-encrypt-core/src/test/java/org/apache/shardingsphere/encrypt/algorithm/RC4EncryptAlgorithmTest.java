@@ -61,8 +61,8 @@ public final class RC4EncryptAlgorithmTest {
             keyBuffer.append("test");
         }
         props.setProperty("rc4-key-value", keyBuffer.toString());
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
     }
     
     @Test

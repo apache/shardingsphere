@@ -47,7 +47,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
         complexInlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
         complexInlineShardingAlgorithm.getProps().setProperty("sharding-columns", "type,order_id");
-        complexInlineShardingAlgorithm.init();
+        complexInlineShardingAlgorithm.init(complexInlineShardingAlgorithm.getProps());
     }
     
     private void initComplexInlineShardingAlgorithmAllowRangeQuery() {
@@ -55,7 +55,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
         complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("sharding-columns", "type,order_id");
         complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        complexInlineShardingAlgorithmAllowRangeQuery.init();
+        complexInlineShardingAlgorithmAllowRangeQuery.init(complexInlineShardingAlgorithmAllowRangeQuery.getProps());
     }
     
     @Test

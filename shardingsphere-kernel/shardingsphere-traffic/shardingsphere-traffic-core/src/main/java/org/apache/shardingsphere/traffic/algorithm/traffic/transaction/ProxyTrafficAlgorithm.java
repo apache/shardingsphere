@@ -26,10 +26,6 @@ import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTraf
 public final class ProxyTrafficAlgorithm implements TransactionTrafficAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public boolean match(final TransactionTrafficValue transactionTrafficValue) {
         return transactionTrafficValue.isInTransaction();
     }

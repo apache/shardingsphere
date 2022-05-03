@@ -35,7 +35,7 @@ public final class SQLRegexTrafficAlgorithmTest {
     public void setUp() {
         sqlRegexAlgorithm = new SQLRegexTrafficAlgorithm();
         sqlRegexAlgorithm.getProps().put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
-        sqlRegexAlgorithm.init();
+        sqlRegexAlgorithm.init(sqlRegexAlgorithm.getProps());
     }
     
     @Test

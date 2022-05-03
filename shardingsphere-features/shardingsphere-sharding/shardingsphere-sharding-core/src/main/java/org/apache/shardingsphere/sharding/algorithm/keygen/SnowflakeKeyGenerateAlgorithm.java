@@ -65,12 +65,12 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long DEFAULT_WORKER_ID = 0;
     
-    @Setter
-    private static TimeService timeService = new TimeService();
-    
     @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
+    
+    @Setter
+    private static TimeService timeService = new TimeService();
     
     private int maxVibrationOffset;
     
@@ -95,18 +95,18 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public void init() {
-        maxVibrationOffset = getMaxVibrationOffset();
-        maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds();
+    public void init(final Properties props) {
+        maxVibrationOffset = getMaxVibrationOffset(props);
+        maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
     }
     
-    private int getMaxVibrationOffset() {
+    private int getMaxVibrationOffset(final Properties props) {
         int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset.");
         return result;
     }
     
-    private int getMaxTolerateTimeDifferenceMilliseconds() {
+    private int getMaxTolerateTimeDifferenceMilliseconds(final Properties props) {
         return Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
     }
     

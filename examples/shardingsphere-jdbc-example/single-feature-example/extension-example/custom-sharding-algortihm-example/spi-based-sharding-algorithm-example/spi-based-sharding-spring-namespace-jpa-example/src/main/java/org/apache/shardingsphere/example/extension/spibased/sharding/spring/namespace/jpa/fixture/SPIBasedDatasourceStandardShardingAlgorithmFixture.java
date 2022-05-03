@@ -45,10 +45,6 @@ public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements
     }
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "DATASOURCE_SPI_BASED";
     }

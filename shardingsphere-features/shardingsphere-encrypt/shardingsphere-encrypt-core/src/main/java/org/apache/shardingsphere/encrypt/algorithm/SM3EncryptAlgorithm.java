@@ -33,8 +33,6 @@ import java.util.Properties;
 /**
  * SM3 encrypt algorithm.
  */
-@Getter
-@Setter
 public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     static {
@@ -45,16 +43,18 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final int SALT_LENGTH = 8;
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private byte[] sm3Salt;
     
     @Override
-    public void init() {
-        sm3Salt = createSm3Salt();
+    public void init(final Properties props) {
+        sm3Salt = createSm3Salt(props);
     }
     
-    private byte[] createSm3Salt() {
+    private byte[] createSm3Salt(final Properties props) {
         String salt = null == props.getProperty(SM3_SALT) ? "" : String.valueOf(props.getProperty(SM3_SALT));
         Preconditions.checkState(0 == salt.length() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
         return 0 == salt.length() ? new byte[0] : salt.getBytes(StandardCharsets.UTF_8);

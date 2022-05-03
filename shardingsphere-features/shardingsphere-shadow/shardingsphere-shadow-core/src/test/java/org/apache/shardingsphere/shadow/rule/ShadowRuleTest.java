@@ -66,8 +66,9 @@ public final class ShadowRuleTest {
     
     private ShadowAlgorithm createHintShadowAlgorithm() {
         SimpleHintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
-        result.setProps(createHintProperties());
-        result.init();
+        Properties props = createHintProperties();
+        result.init(props);
+        result.setProps(props);
         return result;
     }
     
@@ -79,8 +80,9 @@ public final class ShadowRuleTest {
     
     private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
         ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(createColumnProperties(column, operation));
-        result.init();
+        Properties props = createColumnProperties(column, operation);
+        result.init(props);
+        result.setProps(props);
         return result;
     }
     

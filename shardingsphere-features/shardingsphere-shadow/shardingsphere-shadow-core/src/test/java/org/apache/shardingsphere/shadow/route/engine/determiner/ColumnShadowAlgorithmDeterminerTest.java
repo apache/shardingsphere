@@ -42,8 +42,8 @@ public final class ColumnShadowAlgorithmDeterminerTest {
         props.setProperty("column", "user_id");
         props.setProperty("operation", "insert");
         props.setProperty("regex", "[1]");
+        result.init(props);
         result.setProps(props);
-        result.init();
         return result;
     }
     

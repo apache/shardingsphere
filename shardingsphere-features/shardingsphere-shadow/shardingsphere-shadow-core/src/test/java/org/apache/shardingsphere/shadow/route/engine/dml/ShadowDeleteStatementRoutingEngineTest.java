@@ -115,8 +115,8 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         props.setProperty("operation", "delete");
         props.setProperty("regex", "[1]");
         ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
+        columnRegexMatchShadowAlgorithm.init(props);
         columnRegexMatchShadowAlgorithm.setProps(props);
-        columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
     }
     

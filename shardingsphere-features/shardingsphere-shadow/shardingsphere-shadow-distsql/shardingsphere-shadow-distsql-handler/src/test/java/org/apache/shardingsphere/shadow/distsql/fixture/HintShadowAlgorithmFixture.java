@@ -22,10 +22,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 public final class HintShadowAlgorithmFixture implements ShadowAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "HINT_TEST";
     }

@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,37 +52,40 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertInitWithNullStrategy() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("strategy", null);
-        shardingAlgorithm.init();
+        shardingAlgorithm.init(shardingAlgorithm.getProps());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitWithWrongStrategy() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "wrong");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "wrong");
+        shardingAlgorithm.init(props);
     }
     
     @Test(expected = NullPointerException.class)
     public void assertInitWithNullClass() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("strategy", "standard");
-        shardingAlgorithm.init();
+        shardingAlgorithm.init(shardingAlgorithm.getProps());
     }
     
     @Test(expected = ClassNotFoundException.class)
     public void assertInitWithUndefinedClass() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "standard");
-        shardingAlgorithm.getProps().setProperty("algorithmClassName", "org.apache.shardingsphere.sharding.UndefinedClass");
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "standard");
+        props.setProperty("algorithmClassName", "org.apache.shardingsphere.sharding.UndefinedClass");
+        shardingAlgorithm.init(props);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertInitWithMismatchStrategy() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "standard");
-        shardingAlgorithm.getProps().setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
-        shardingAlgorithm.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "standard");
+        props.setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
+        shardingAlgorithm.init(props);
     }
     
     @Test
@@ -119,25 +123,28 @@ public final class ClassBasedShardingAlgorithmTest {
     
     private ClassBasedShardingAlgorithm getStandardShardingAlgorithm() {
         ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
-        result.getProps().setProperty("strategy", "standard");
-        result.getProps().setProperty("algorithmClassName", ClassBasedStandardShardingAlgorithmFixture.class.getName());
-        result.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "standard");
+        props.setProperty("algorithmClassName", ClassBasedStandardShardingAlgorithmFixture.class.getName());
+        result.init(props);
         return result;
     }
     
     private ClassBasedShardingAlgorithm getComplexKeysShardingAlgorithm() {
         ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
-        result.getProps().setProperty("strategy", "complex");
-        result.getProps().setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
-        result.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "complex");
+        props.setProperty("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName());
+        result.init(props);
         return result;
     }
     
     private ClassBasedShardingAlgorithm getHintShardingAlgorithm() {
         ClassBasedShardingAlgorithm result = new ClassBasedShardingAlgorithm();
-        result.getProps().setProperty("strategy", "hint");
-        result.getProps().setProperty("algorithmClassName", ClassBasedHintShardingAlgorithmFixture.class.getName());
-        result.init();
+        Properties props = new Properties();
+        props.setProperty("strategy", "hint");
+        props.setProperty("algorithmClassName", ClassBasedHintShardingAlgorithmFixture.class.getName());
+        result.init(props);
         return result;
     }
 }

@@ -27,15 +27,11 @@ import java.util.Properties;
 /**
  * Empty encrypt algorithm.
  */
-@Getter
-@Setter
 public final class EmptyEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
-    private Properties props = new Properties();
-    
-    @Override
-    public void init() {
-    }
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
