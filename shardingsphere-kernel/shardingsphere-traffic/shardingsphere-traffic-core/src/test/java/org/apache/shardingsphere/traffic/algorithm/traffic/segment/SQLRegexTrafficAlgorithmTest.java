@@ -23,6 +23,8 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -34,8 +36,9 @@ public final class SQLRegexTrafficAlgorithmTest {
     @Before
     public void setUp() {
         sqlRegexAlgorithm = new SQLRegexTrafficAlgorithm();
-        sqlRegexAlgorithm.getProps().put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
-        sqlRegexAlgorithm.init(sqlRegexAlgorithm.getProps());
+        Properties props = new Properties();
+        props.put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
+        sqlRegexAlgorithm.init(props);
     }
     
     @Test

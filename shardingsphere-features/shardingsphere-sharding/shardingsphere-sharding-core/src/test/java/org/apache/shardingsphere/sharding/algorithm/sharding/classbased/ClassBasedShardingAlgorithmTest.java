@@ -51,8 +51,9 @@ public final class ClassBasedShardingAlgorithmTest {
     @Test(expected = NullPointerException.class)
     public void assertInitWithNullStrategy() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", null);
-        shardingAlgorithm.init(shardingAlgorithm.getProps());
+        Properties props = new Properties();
+        props.setProperty("strategy", null);
+        shardingAlgorithm.init(props);
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -66,8 +67,9 @@ public final class ClassBasedShardingAlgorithmTest {
     @Test(expected = NullPointerException.class)
     public void assertInitWithNullClass() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("strategy", "standard");
-        shardingAlgorithm.init(shardingAlgorithm.getProps());
+        Properties props = new Properties();
+        props.setProperty("strategy", "standard");
+        shardingAlgorithm.init(props);
     }
     
     @Test(expected = ClassNotFoundException.class)
