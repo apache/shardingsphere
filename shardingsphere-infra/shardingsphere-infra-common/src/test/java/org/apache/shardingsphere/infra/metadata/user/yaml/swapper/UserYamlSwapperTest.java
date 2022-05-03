@@ -29,12 +29,17 @@ import static org.junit.Assert.assertThat;
 public final class UserYamlSwapperTest {
     
     @Test
-    public void assertSwapToYaml() {
+    public void assertSwapToYamlConfiguration() {
         YamlUserConfiguration actual = new UserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("foo_user", "foo_pwd", "127.0.0.1"));
         assertNotNull(actual);
         assertThat(actual.getUsername(), is("foo_user"));
         assertThat(actual.getPassword(), is("foo_pwd"));
         assertThat(actual.getHostname(), is("127.0.0.1"));
+    }
+    
+    @Test
+    public void assertSwapToNullYamlConfiguration() {
+        assertNull(new UserYamlSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
@@ -53,10 +58,5 @@ public final class UserYamlSwapperTest {
     @Test
     public void assertSwapToNullObject() {
         assertNull(new UserYamlSwapper().swapToObject(null));
-    }
-    
-    @Test
-    public void assertSwapToNullYamlConfiguration() {
-        assertNull(new UserYamlSwapper().swapToYamlConfiguration(null));
     }
 }
