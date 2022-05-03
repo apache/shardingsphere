@@ -48,12 +48,12 @@ public class ZookeeperInternalLockHolder {
      * @return global lock
      */
     public Lock getGlobalLock(final String lockName) {
-        ZookeeperInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
-            locks.put(lockName, lock);
+        ZookeeperInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     /**
@@ -63,12 +63,12 @@ public class ZookeeperInternalLockHolder {
      * @return standard lock
      */
     public Lock getStandardLock(final String lockName) {
-        ZookeeperInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));
-            locks.put(lockName, lock);
+        ZookeeperInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     /**
