@@ -68,18 +68,6 @@ public final class ShardingSphereServiceLoader {
     }
     
     /**
-     * Get singleton service instances.
-     *
-     * @param serviceInterface service interface
-     * @param <T> type of service
-     * @return service instances
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
-        return (Collection<T>) SERVICES.getOrDefault(serviceInterface, Collections.emptyList());
-    }
-    
-    /**
      * New service instances.
      *
      * @param serviceInterface service interface
@@ -108,5 +96,17 @@ public final class ShardingSphereServiceLoader {
         } catch (final ReflectiveOperationException ex) {
             throw new ServiceLoaderInstantiationException(clazz, ex);
         }
+    }
+    
+    /**
+     * Get singleton service instances.
+     *
+     * @param serviceInterface service interface
+     * @param <T> type of service
+     * @return service instances
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
+        return (Collection<T>) SERVICES.getOrDefault(serviceInterface, Collections.emptyList());
     }
 }
