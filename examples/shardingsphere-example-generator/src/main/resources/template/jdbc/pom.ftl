@@ -102,7 +102,7 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>2.2.0.RELEASE</version>
         </dependency>
-    <#elseif framework=="spring-boot-starter-mybaits">
+    <#elseif framework=="spring-boot-starter-mybatis">
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
