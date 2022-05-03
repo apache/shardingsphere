@@ -73,7 +73,9 @@ public final class TypedSPIRegistry {
     
     private static <T extends StatefulTypedSPI> void init(final T statefulTypedSPI, final Properties props) {
         Properties newProps = new Properties();
-        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+        if (null != props) {
+            props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+        }
         statefulTypedSPI.init(newProps);
         statefulTypedSPI.setProps(newProps);
     }
