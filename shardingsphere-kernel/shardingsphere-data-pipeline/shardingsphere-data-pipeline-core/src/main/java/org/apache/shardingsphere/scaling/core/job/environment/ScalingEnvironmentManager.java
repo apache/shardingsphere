@@ -59,6 +59,7 @@ public final class ScalingEnvironmentManager {
                 Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
                 String sql = pipelineSQLBuilder.buildTruncateSQL(tableNameSchemaNameMapping.getSchemaName(each), each);
+                log.info("cleanupTargetTables, tableName={}, sql={}", each, sql);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }
