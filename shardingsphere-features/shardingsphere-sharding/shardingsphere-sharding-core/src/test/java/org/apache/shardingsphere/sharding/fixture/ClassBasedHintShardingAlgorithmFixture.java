@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorith
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
-import java.util.Properties;
 
 public final class ClassBasedHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
