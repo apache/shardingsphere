@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -56,8 +57,8 @@ public final class YamlExampleConfigurationValidator {
     }
     
     private static void validateAccountConfigProperties(final Properties props) {
-        Collection<String> accountConfigItems = Arrays.asList("host", "port", "username", "password");
-        accountConfigItems.forEach(each -> null != Preconditions.checkArgument(props.get(each), getConfigItemErrorMessage(each)));
+        Collection<String> accountConfigItemList = Arrays.asList("host", "port", "username", "password");
+        accountConfigItemList.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
     }
     
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {
