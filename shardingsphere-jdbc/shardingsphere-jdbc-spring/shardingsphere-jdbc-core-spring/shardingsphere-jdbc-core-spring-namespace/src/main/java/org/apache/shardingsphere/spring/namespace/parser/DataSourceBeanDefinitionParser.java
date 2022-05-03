@@ -101,9 +101,9 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Collection<RuntimeBeanReference> parseRuleConfigurations(final Element element) {
-        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.RULE_REFS_ATTRIBUTE));
-        Collection<RuntimeBeanReference> result = new ManagedList<>(ruleIdList.size());
-        for (String each : ruleIdList) {
+        List<String> ruleIds = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.RULE_REFS_ATTRIBUTE));
+        Collection<RuntimeBeanReference> result = new ManagedList<>(ruleIds.size());
+        for (String each : ruleIds) {
             result.add(new RuntimeBeanReference(each));
         }
         return result;

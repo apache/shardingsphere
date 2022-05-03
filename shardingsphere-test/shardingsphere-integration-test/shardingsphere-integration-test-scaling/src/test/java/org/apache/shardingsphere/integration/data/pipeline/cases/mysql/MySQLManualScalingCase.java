@@ -54,7 +54,7 @@ public final class MySQLManualScalingCase extends BaseMySQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String version : ENV.getMysqlVersionList()) {
+        for (String version : ENV.getMysqlVersions()) {
             if (Strings.isNullOrEmpty(version)) {
                 continue;
             }
@@ -71,8 +71,8 @@ public final class MySQLManualScalingCase extends BaseMySQLITCase {
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
         List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
+        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = showScalingResMap.get("id").toString();

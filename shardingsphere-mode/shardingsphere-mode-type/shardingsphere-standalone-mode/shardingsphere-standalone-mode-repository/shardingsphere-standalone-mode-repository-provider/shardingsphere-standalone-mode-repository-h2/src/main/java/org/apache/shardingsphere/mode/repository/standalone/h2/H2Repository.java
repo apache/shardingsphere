@@ -95,16 +95,16 @@ public final class H2Repository implements StandalonePersistRepository {
         try (
                 PreparedStatement statement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = '" + key + "'");
                 ResultSet resultSet = statement.executeQuery()) {
-            List<String> resultChildrenList = new ArrayList<>(10);
+            List<String> resultChildren = new ArrayList<>(10);
             while (resultSet.next()) {
                 String childrenKey = resultSet.getString("key");
                 if (Strings.isNullOrEmpty(childrenKey)) {
                     continue;
                 }
                 int lastIndexOf = childrenKey.lastIndexOf(SEPARATOR);
-                resultChildrenList.add(childrenKey.substring(lastIndexOf + 1));
+                resultChildren.add(childrenKey.substring(lastIndexOf + 1));
             }
-            return resultChildrenList;
+            return resultChildren;
         } catch (final SQLException ex) {
             log.error("Get children h2 data by key: {} failed", key, ex);
         }

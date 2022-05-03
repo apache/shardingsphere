@@ -451,11 +451,11 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegmentList = new LinkedList<>();
+            List<ColumnSegment> columnSegments = new LinkedList<>();
             for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
+                columnSegments.add((ColumnSegment) visit(cname));
             }
-            joinTableSource.setUsing(columnSegmentList);
+            joinTableSource.setUsing(columnSegments);
         }
         return joinTableSource;
     }

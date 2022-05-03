@@ -48,7 +48,7 @@ public final class PostgreSQLManualScalingCase extends BasePostgreSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getPostgresVersionList()) {
+        for (String dockerImageName : ENV.getPostgresVersions()) {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
