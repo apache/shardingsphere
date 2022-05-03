@@ -50,9 +50,4 @@ public final class ModShardingAlgorithmFixture implements StandardShardingAlgori
     public int getAutoTablesAmount() {
         return 2;
     }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return null;
-    }
 }
