@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -41,9 +40,9 @@ public final class DataSourcesMetaDataTest {
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3307/db_1"));
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(2));
-        assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
+        assertTrue(allInstanceDataSourceNames.contains("ds_0"));
+        assertTrue(allInstanceDataSourceNames.contains("ds_1"));
     }
     
     @Test
@@ -53,7 +52,6 @@ public final class DataSourcesMetaDataTest {
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3306/db_1"));
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(1));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
     }

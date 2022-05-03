@@ -35,7 +35,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleTest {
     
@@ -68,7 +67,6 @@ public final class ReadwriteSplittingRuleTest {
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
         assertThat(actual.getName(), is("test_pr"));
-        assertNotNull(actual.getReadwriteSplittingStrategy().getWriteDataSource());
         assertThat(actual.getReadwriteSplittingStrategy().getWriteDataSource(), is("write_ds"));
         assertThat(actual.getReadwriteSplittingStrategy().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));

@@ -31,7 +31,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
@@ -52,7 +51,6 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         Span span = COLLECTOR.pop();
-        assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
         assertFalse(tags == null || tags.isEmpty());
@@ -70,10 +68,8 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         Span span = COLLECTOR.pop();
-        assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
-        assertNotNull(tags);
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));

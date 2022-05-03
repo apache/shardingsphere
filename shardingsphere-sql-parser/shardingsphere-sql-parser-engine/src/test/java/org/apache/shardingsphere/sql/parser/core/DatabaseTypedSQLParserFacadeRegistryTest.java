@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core;
 
 import org.apache.shardingsphere.sql.parser.core.database.parser.DatabaseTypedSQLParserFacadeRegistry;
-import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.DatabaseTypedSQLParserFacadeFixture;
+import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 import org.junit.Test;
@@ -34,8 +34,8 @@ public final class DatabaseTypedSQLParserFacadeRegistryTest {
     public void assertGetFacade() {
         DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("Fixture");
         assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("Fixture"));
         assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(LexerFixture.class));
         assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(ParserFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("Fixture"));
     }
 }

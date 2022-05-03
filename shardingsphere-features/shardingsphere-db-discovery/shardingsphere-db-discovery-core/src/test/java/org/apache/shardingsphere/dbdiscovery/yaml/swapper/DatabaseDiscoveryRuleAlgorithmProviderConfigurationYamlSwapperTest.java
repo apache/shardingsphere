@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -49,8 +48,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     @Test
     public void assertSwapToObject() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration actual = swapper.swapToObject(createYamlRuleConfiguration());
-        assertNotNull(actual);
-        assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertThat(ruleConfig.getGroupName(), is("name"));

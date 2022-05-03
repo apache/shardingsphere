@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
@@ -53,7 +52,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
@@ -67,7 +65,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));

@@ -15,26 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule.builder;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TrafficRuleBuilderTest {
-    
-    private final TrafficRuleBuilder builder = new TrafficRuleBuilder();
-    
-    @Test
-    public void getOrderTest() {
-        assertThat(builder.getOrder(), is(800));
-    }
-    
-    @Test
-    public void getTypeClassTest() {
-        assertThat(TrafficRuleConfiguration.class, equalTo(builder.getTypeClass()));
-    }
+/**
+ * Oracle create directory statement.
+ */
+@ToString
+public final class OracleCreateDirectoryStatement extends CreateDirectoryStatement implements OracleStatement {
 }

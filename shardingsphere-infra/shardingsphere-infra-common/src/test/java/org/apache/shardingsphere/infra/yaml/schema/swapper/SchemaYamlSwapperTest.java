@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -49,7 +48,6 @@ public final class SchemaYamlSwapperTest {
     public void assertSwapToYamlSchema() {
         ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlSchema.class));
         YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
-        assertNotNull(yamlSchema);
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
         YamlTableMetaData yamlTableMetaData = yamlSchema.getTables().get("t_order");
         assertThat(yamlTableMetaData.getIndexes().keySet(), is(Collections.singleton("primary")));

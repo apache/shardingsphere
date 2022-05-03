@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.junit.Assert.assertTrue;
-
-public final class MetricsPoolTest {
-    
-    @Test
-    public void assertCreate() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
-        MetricsPool.create("test");
-        assertTrue(MetricsPool.get("test").isPresent());
-    }
+/**
+ * Create directory statement test case.
+ */
+public final class CreateDirectoryStatementTestCase extends SQLParserTestCase {
 }

@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.rule.builder;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class AuthorityRuleBuilderTest {
-    
-    private final AuthorityRuleBuilder ruleBuilder = new AuthorityRuleBuilder();
-    
-    @Test
-    public void getOrderTest() {
-        int order = ruleBuilder.getOrder();
-        assertThat(order, is(500));
-    }
-    
-    @Test
-    public void getTypeClassTest() {
-        assertThat(AuthorityRuleConfiguration.class, equalTo(ruleBuilder.getTypeClass()));
-    }
+/**
+ * Create directory statement.
+ */
+@ToString
+public abstract class CreateDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }
