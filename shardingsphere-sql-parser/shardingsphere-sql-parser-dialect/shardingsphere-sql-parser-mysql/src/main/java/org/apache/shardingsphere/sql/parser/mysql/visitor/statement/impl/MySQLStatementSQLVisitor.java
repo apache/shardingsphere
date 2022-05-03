@@ -1554,11 +1554,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegments = new LinkedList<>();
-            for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                columnSegments.add((ColumnSegment) visit(each));
-            }
-            joinTableSource.setUsing(columnSegments);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }
