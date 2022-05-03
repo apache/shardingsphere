@@ -42,6 +42,11 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
+    protected boolean isSchemaEnabled() {
+        return false;
+    }
+    
+    @Override
     public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildDuplicateUpdateSQL(dataRecord, shardingColumnsMap);
     }

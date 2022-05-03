@@ -70,6 +70,23 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
+        String quotedUniqueKey = quote(uniqueKey).toString();
+        return "SELECT * FROM " + decorateWithSchemaName(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+    }
+    
+    protected String decorateWithSchemaName(final String schemaName, final String tableName) {
+        StringBuilder result = new StringBuilder();
+        if (isSchemaEnabled()) {
+            result.append(quote(schemaName)).append(".");
+        }
+        result.append(quote(tableName));
+        return result.toString();
+    }
+    
+    protected abstract boolean isSchemaEnabled();
+    
+    @Override
     public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {

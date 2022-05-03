@@ -32,6 +32,11 @@ import java.util.Set;
 public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
+    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
+        return "";
+    }
+    
+    @Override
     public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return "";
     }

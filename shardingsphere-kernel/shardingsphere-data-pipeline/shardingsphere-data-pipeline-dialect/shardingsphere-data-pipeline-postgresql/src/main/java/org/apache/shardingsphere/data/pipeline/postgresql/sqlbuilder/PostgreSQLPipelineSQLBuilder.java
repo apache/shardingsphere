@@ -42,6 +42,11 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
+    protected boolean isSchemaEnabled() {
+        return true;
+    }
+    
+    @Override
     public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
     }
