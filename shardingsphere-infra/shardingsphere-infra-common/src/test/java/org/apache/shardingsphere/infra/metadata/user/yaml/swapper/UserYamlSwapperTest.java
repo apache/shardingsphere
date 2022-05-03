@@ -24,8 +24,8 @@ import org.junit.Test;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class UserYamlSwapperTest {
     
@@ -33,7 +33,7 @@ public final class UserYamlSwapperTest {
     public void assertSwapToYaml() {
         ShardingSphereUser shardingSphereUser = new ShardingSphereUser("user1", "pwd1", "127.0.0.1");
         YamlUserConfiguration yamlUser = new UserYamlSwapper().swapToYamlConfiguration(shardingSphereUser);
-        assertThat(yamlUser.getPassword(), is("pwd1"));
+        assertThat(Objects.requireNonNull(yamlUser).getPassword(), is("pwd1"));
         assertThat(yamlUser.getHostname(), is("127.0.0.1"));
         assertThat(yamlUser.getUsername(), is("user1"));
     }
@@ -45,16 +45,18 @@ public final class UserYamlSwapperTest {
         user1.setPassword("pwd1");
         user1.setHostname("127.0.0.1");
         ShardingSphereUser actualUser = new UserYamlSwapper().swapToObject(user1);
-        assertThat(actualUser.getPassword(), is("pwd1"));
+        assertThat(Objects.requireNonNull(actualUser).getPassword(), is("pwd1"));
         assertThat(actualUser.getGrantee().getHostname(), is("127.0.0.1"));
         assertThat(actualUser.getGrantee().getUsername(), is("user1"));
     }
     
     @Test
-    public void assertSwapToObjectForNull() {
-        ShardingSphereUser actual = new UserYamlSwapper().swapToObject(null);
-        assertTrue(Objects.isNull(actual));
-        YamlUserConfiguration actualYamlUser = new UserYamlSwapper().swapToYamlConfiguration(null);
-        assertTrue(Objects.isNull(actualYamlUser));
+    public void assertSwapToNullObject() {
+        assertNull(new UserYamlSwapper().swapToObject(null));
+    }
+    
+    @Test
+    public void assertSwapToNullYamlConfiguration() {
+        assertNull(new UserYamlSwapper().swapToYamlConfiguration(null));
     }
 }
