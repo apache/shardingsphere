@@ -73,8 +73,7 @@ public final class StoragePrivilegeBuilderTest {
     private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
-        Collection<DataSource> dataSourceList = Collections.singletonList(dataSource);
-        when(result.getResource().getAllInstanceDataSources()).thenReturn(dataSourceList);
+        when(result.getResource().getAllInstanceDataSources()).thenReturn(Collections.singleton(dataSource));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return result;
     }
