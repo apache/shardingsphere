@@ -62,7 +62,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCountSQL(final String tableName) {
+    public String buildCountSQL(final String schemaName, final String tableName) {
         return "";
     }
     

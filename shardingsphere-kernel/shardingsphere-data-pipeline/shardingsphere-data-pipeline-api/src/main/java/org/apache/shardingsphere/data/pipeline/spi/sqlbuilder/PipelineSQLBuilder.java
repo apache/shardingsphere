@@ -95,10 +95,11 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build count SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return count SQL
      */
-    String buildCountSQL(String tableName);
+    String buildCountSQL(String schemaName, String tableName);
     
     /**
      * Build query SQL.

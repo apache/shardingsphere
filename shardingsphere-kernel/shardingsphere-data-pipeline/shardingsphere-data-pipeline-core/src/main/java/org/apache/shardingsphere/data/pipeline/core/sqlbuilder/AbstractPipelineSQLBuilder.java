@@ -165,8 +165,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCountSQL(final String tableName) {
-        return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    public String buildCountSQL(final String schemaName, final String tableName) {
+        return String.format("SELECT COUNT(*) FROM %s", decorate(schemaName, tableName));
     }
     
     @Override
