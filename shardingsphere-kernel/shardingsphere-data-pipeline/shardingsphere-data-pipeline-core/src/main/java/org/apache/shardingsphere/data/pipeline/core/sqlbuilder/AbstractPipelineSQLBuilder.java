@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -72,12 +73,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     @Override
     public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
         String quotedUniqueKey = quote(uniqueKey);
-        return "SELECT * FROM " + decorateWithSchemaName(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
     }
     
-    protected String decorateWithSchemaName(final String schemaName, final String tableName) {
+    protected String decorate(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (isSchemaEnabled()) {
+        if (isSchemaEnabled() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
         result.append(quote(tableName));
@@ -87,15 +88,15 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     protected abstract boolean isSchemaEnabled();
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord.getTableName(), dataRecord.getColumns()));
+            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildInsertSQLInternal(final String tableName, final List<Column> columns) {
+    private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (Column each : columns) {
@@ -104,7 +105,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", decorate(schemaName, tableName), columnsLiteral, holder);
     }
     
     // TODO seems sharding column could be updated for insert statement on conflict by kernel now
