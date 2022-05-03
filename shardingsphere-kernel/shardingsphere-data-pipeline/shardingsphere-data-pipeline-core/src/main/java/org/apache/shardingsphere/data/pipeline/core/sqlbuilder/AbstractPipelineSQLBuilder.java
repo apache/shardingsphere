@@ -138,10 +138,10 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), conditionColumns));
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
@@ -151,8 +151,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("TRUNCATE TABLE %s", quote(tableName));
     }
     
-    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("DELETE FROM %s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     private String buildWhereSQL(final Collection<Column> conditionColumns) {

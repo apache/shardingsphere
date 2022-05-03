@@ -63,14 +63,14 @@ public final class PipelineSQLBuilderTest {
     
     @Test
     public void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildDeleteSQL(mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
+        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
         assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
-        String actual = pipelineSQLBuilder.buildDeleteSQL(dataRecord, mockConditionColumns(dataRecord));
+        String actual = pipelineSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ? and `sc` = ?"));
     }
     

@@ -52,7 +52,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         return "";
     }
     

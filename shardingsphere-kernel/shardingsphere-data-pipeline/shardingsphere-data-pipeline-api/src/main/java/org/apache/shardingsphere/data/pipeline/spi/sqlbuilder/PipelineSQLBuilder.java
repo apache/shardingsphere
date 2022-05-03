@@ -76,11 +76,12 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build delete SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @return delete SQL
      */
-    String buildDeleteSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
+    String buildDeleteSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
      * Build truncate SQL.
