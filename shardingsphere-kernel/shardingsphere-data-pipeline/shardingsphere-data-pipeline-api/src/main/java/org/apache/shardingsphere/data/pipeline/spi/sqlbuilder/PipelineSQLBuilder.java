@@ -123,11 +123,12 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build split by primary key range SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param primaryKey primary key
      * @return split SQL
      */
-    String buildSplitByPrimaryKeyRangeSQL(String tableName, String primaryKey);
+    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
     
     /**
      * Build CRC32 SQL.
