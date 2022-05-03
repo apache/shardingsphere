@@ -89,7 +89,7 @@ public final class SelectInformationExecutorTest {
         when(connectionSession.getGrantee()).thenReturn(new Grantee("root", "127.0.0.1"));
     }
     
-    private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
+    private void mockResultSet(final Map<String, String> mockMap) throws SQLException {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         List<String> keys = new ArrayList<>(mockMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
@@ -121,15 +121,13 @@ public final class SelectInformationExecutorTest {
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", dataSource);
-        return dataSourceMap;
+        return Collections.singletonMap("ds_0", dataSource);
     }
     
     private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData meta = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(meta.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return meta;
+        DataSourcesMetaData result = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
+        return result;
     }
     
     @Test
@@ -140,7 +138,7 @@ public final class SelectInformationExecutorTest {
         mockResultSetMap.put("SCHEMA_NAME", "demo_ds_0");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         mockResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        mockResultSet(mockResultSetMap, true, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
         metaDataMap.put("test", getEmptyMetaData("test"));
@@ -167,12 +165,12 @@ public final class SelectInformationExecutorTest {
     public void assertSelectSchemataInSchemaWithoutDataSourceExecute() throws SQLException {
         final String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false);
-        Map<String, String> mockResultSetMap = new HashMap<>();
+        Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
         mockResultSetMap.put("SCHEMA_NAME", "demo_ds_0");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         mockResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         mockResultSetMap.put("DEFAULT_ENCRYPTION", "NO");
-        mockResultSet(mockResultSetMap, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getEmptyMetaData("sharding_db"));
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
@@ -201,7 +199,7 @@ public final class SelectInformationExecutorTest {
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("sn", "demo_ds_0");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
-        mockResultSet(mockResultSetMap, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("demo_ds_0", getMetaData());
         metaDataMap.put("test", getEmptyMetaData("test"));
@@ -214,14 +212,12 @@ public final class SelectInformationExecutorTest {
     @Test
     public void assertDefaultExecute() throws SQLException {
         final String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
-        Map<String, String> mockMap = new HashMap<>();
-        mockMap.put("support_ndb", "0");
-        mockResultSet(mockMap, false);
+        mockResultSet(Collections.singletonMap("support_ndb", "0"));
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
         DefaultDatabaseMetadataExecutor defaultSelectMetaDataExecutor = new DefaultDatabaseMetadataExecutor(sql);
         defaultSelectMetaDataExecutor.execute(connectionSession);
-        assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(mockMap.size()));
+        assertThat(defaultSelectMetaDataExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         while (defaultSelectMetaDataExecutor.getMergedResult().next()) {
             assertThat(defaultSelectMetaDataExecutor.getMergedResult().getValue(1, String.class), is("0"));
         }

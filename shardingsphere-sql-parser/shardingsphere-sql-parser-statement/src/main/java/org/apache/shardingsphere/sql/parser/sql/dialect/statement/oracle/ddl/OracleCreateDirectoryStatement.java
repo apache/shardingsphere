@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-public final class TransparentRuleTest {
-    
-    @Test
-    public void assertGetRuleType() {
-        TransparentRule transparentRule = new TransparentRule();
-        assertThat(transparentRule.getType(), is(TransparentRule.class.getSimpleName()));
-    }
+/**
+ * Oracle create directory statement.
+ */
+@ToString
+public final class OracleCreateDirectoryStatement extends CreateDirectoryStatement implements OracleStatement {
 }

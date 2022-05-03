@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing;
 
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -39,7 +38,6 @@ import org.junit.runners.model.Statement;
 import java.util.Collection;
 import java.util.List;
 
-@Slf4j
 public final class AgentRunner extends BlockJUnit4ClassRunner {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -74,9 +72,9 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
                     return builder;
                 }).installOnByteBuddyAgent();
         // load them into current classloader
-        classes.forEach(className -> {
+        classes.forEach(each -> {
             try {
-                Class<?> klass = Class.forName(className);
+                Class<?> klass = Class.forName(each);
             } catch (final ClassNotFoundException ignored) {
             }
         });
@@ -85,14 +83,10 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected List<TestRule> classRules() {
-        List<TestRule> testRules = super.classRules();
-        collectorRule = testRules.stream()
-                .filter(rule -> rule instanceof CollectorRule)
-                .findFirst()
-                .map(rule -> (CollectorRule) rule)
-                .orElse(() -> {
-                });
-        return testRules;
+        List<TestRule> result = super.classRules();
+        collectorRule = result.stream().filter(each -> each instanceof CollectorRule).findFirst().map(optional -> (CollectorRule) optional).orElse(() -> {
+        });
+        return result;
     }
     
     @Override

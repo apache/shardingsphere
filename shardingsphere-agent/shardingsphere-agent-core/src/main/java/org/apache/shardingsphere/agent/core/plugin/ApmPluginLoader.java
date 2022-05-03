@@ -103,7 +103,7 @@ public final class ApmPluginLoader extends ClassLoader implements Closeable, Plu
      * @throws IOException IO exception
      */
     public void loadAllPlugins() throws IOException {
-        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
+        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
         if (null == jarFiles) {
             return;
         }

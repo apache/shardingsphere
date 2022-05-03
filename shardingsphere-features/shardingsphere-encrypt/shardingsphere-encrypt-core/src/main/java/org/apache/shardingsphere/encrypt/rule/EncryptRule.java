@@ -159,7 +159,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt column
      */
     public Optional<EncryptColumn> findEncryptColumn(final String logicTable, final String columnName) {
-        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        return findEncryptTable(logicTable).flatMap(optional -> optional.findEncryptColumn(columnName));
     }
     
     /**
@@ -336,7 +336,6 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return boolean whether contains config data type or not
      */
     public boolean containsConfigDataType(final String tableName, final String columnName) {
-        return findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName)
-                .filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName).filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
     }
 }

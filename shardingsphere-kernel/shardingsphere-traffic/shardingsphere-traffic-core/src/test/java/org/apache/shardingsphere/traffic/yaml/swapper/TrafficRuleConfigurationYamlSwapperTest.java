@@ -24,26 +24,20 @@ import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class TrafficRuleConfigurationYamlSwapperTest {
-    
-    private final TrafficRuleConfigurationYamlSwapper swapper = new TrafficRuleConfigurationYamlSwapper();
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlTrafficRuleConfiguration actual = swapper.swapToYamlConfiguration(createTrafficRuleConfiguration());
+        YamlTrafficRuleConfiguration actual = new TrafficRuleConfigurationYamlSwapper().swapToYamlConfiguration(createTrafficRuleConfiguration());
         assertThat(actual.getTrafficStrategies().size(), is(1));
         assertTrue(actual.getTrafficStrategies().containsKey("group_by_traffic"));
         assertThat(actual.getTrafficAlgorithms().size(), is(1));
@@ -74,7 +68,7 @@ public final class TrafficRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        TrafficRuleConfiguration actual = swapper.swapToObject(createYamlTrafficRuleConfiguration());
+        TrafficRuleConfiguration actual = new TrafficRuleConfigurationYamlSwapper().swapToObject(createYamlTrafficRuleConfiguration());
         assertThat(actual.getTrafficStrategies().size(), is(1));
         TrafficStrategyConfiguration strategyConfig = actual.getTrafficStrategies().iterator().next();
         assertThat(strategyConfig.getName(), is("group_by_traffic"));
@@ -109,20 +103,5 @@ public final class TrafficRuleConfigurationYamlSwapperTest {
         YamlShardingSphereAlgorithmConfiguration result = mock(YamlShardingSphereAlgorithmConfiguration.class);
         when(result.getType()).thenReturn("RANDOM");
         return result;
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(swapper.getTypeClass(), equalTo(TrafficRuleConfiguration.class));
-    }
-    
-    @Test
-    public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("TRAFFIC"));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(800));
     }
 }

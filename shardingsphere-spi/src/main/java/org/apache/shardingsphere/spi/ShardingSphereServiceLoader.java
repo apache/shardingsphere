@@ -59,39 +59,39 @@ public final class ShardingSphereServiceLoader {
     /**
      * Get service instances.
      * 
-     * @param serviceClass service class
+     * @param serviceInterface service interface
      * @param <T> type of service
      * @return service instances
      */
-    public static <T> Collection<T> getServiceInstances(final Class<T> serviceClass) {
-        return null == serviceClass.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceClass) : getSingletonServiceInstances(serviceClass);
+    public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
+        return null == serviceInterface.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceInterface) : getSingletonServiceInstances(serviceInterface);
     }
     
     /**
      * Get singleton service instances.
      *
-     * @param service service class
+     * @param serviceInterface service interface
      * @param <T> type of service
      * @return service instances
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> service) {
-        return (Collection<T>) SERVICES.getOrDefault(service, Collections.emptyList());
+    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
+        return (Collection<T>) SERVICES.getOrDefault(serviceInterface, Collections.emptyList());
     }
     
     /**
      * New service instances.
      *
-     * @param service service class
+     * @param serviceInterface service interface
      * @param <T> type of service
      * @return service instances
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        if (!SERVICES.containsKey(service)) {
+    public static <T> Collection<T> newServiceInstances(final Class<T> serviceInterface) {
+        if (!SERVICES.containsKey(serviceInterface)) {
             return Collections.emptyList();
         }
-        Collection<Object> services = SERVICES.get(service);
+        Collection<Object> services = SERVICES.get(serviceInterface);
         if (services.isEmpty()) {
             return Collections.emptyList();
         }

@@ -120,9 +120,9 @@ public final class DropTrafficRuleHandlerTest {
         TrafficRuleConfiguration trafficRuleConfig = new TrafficRuleConfiguration();
         trafficRuleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
         trafficRuleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("sql", "select * from t_order");
-        trafficRuleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", algorithmProperties));
+        Properties props = new Properties();
+        props.put("sql", "select * from t_order");
+        trafficRuleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", props));
         trafficRuleConfig.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
         trafficRuleConfig.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
         trafficRuleConfig.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));

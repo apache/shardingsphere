@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,18 +16,7 @@
   ~ limitations under the License.
   -->
 
-<configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
-        <appender-ref ref="console" />
-    </logger>
-    
-    <root>
-        <level value="error" />
-        <appender-ref ref="console" />
-    </root>
-</configuration> 
+<sql-parser-test-cases>
+    <create-directory sql-case-id="create_directory" />
+    <create-directory sql-case-id="create_directory_with_replace" />
+</sql-parser-test-cases>

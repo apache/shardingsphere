@@ -94,9 +94,9 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void createProxyDatabase(final DatabaseType databaseType) {
         JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
-        Properties queryProperties = createQueryProperties();
+        Properties queryProps = createQueryProperties();
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
-        try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProperties), "root", "root")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
             connection.createStatement().execute("CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
@@ -116,12 +116,12 @@ public abstract class BaseITCase {
     }
     
     protected void addResource(final Connection connection) throws SQLException {
-        Properties queryProperties = createQueryProperties();
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProperties)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_1", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProperties)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProperties)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProperties)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProperties)));
+        Properties queryProps = createQueryProperties();
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps)));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_1", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps)));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps)));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps)));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps)));
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -176,16 +176,16 @@ public abstract class BaseITCase {
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));
-        List<Map<String, Object>> checkScalingResList = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
-        for (Map<String, Object> entry : checkScalingResList) {
+        List<Map<String, Object>> checkScalingResults = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
         jdbcTemplate.execute(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
         ThreadUtil.sleep(2000);
-        List<Map<String, Object>> previewResList = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSourceList, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
+        List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSources, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
     }
     
     @After

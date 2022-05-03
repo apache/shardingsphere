@@ -60,7 +60,7 @@ public final class ShadowTableRule {
         shadowAlgorithmNames.forEach(each -> {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-                ShadowOperationType.contains(shadowAlgorithm.getProps().get("operation").toString()).ifPresent(shadowOperationType -> initShadowAlgorithmNames(result, each, shadowOperationType));
+                ShadowOperationType.contains(shadowAlgorithm.getProps().get("operation").toString()).ifPresent(optional -> initShadowAlgorithmNames(result, each, optional));
             }
         });
         return result;

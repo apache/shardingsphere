@@ -69,14 +69,12 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getType(), is("Static"));
-        assertNotNull(actual.getDataSources().get("ds_0").getProps());
         assertThat(actual.getDataSources().get("ds_0").getProps().getProperty("write-data-source-name"), is("write_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getType(), is("Static"));
-        assertNotNull(actual.getDataSources().get("ds_1").getProps());
         assertThat(actual.getDataSources().get("ds_1").getProps().getProperty("write-data-source-name"), is("write_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }

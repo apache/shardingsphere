@@ -65,7 +65,7 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
- - 如无特殊理由，测试需全覆盖。
+ - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
  - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
  - 只有 junit `Assert`，hamcrest `CoreMatchers`，Mockito 相关可以使用 static import。

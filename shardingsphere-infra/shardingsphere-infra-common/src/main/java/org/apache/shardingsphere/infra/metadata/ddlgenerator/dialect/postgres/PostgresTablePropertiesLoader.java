@@ -57,22 +57,22 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     }
     
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("databaseName", getConnection().getCatalog());
-        appendFirstRow(executeByTemplate(param, "table/default/get_database_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("databaseName", getConnection().getCatalog());
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_database_id.ftl"), context);
     }
     
     private void fetchTableId(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("schemaName", schemaName);
-        param.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(param, "table/default/get_table_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("schemaName", schemaName);
+        parameters.put("tableName", tableName);
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_table_id.ftl"), context);
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(param, "table/default/get_schema_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("schemaName", schemaName);
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) {
@@ -84,14 +84,14 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     private void updateAutovacuumProperties(final Map<String, Object> context) {
         if (null == context.get("autovacuum_enabled")) {
             context.put("autovacuum_enabled", "x");
-        } else if ("true".equalsIgnoreCase(context.get("autovacuum_enabled").toString())) {
+        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("autovacuum_enabled").toString())) {
             context.put("autovacuum_enabled", "t");
         } else {
             context.put("autovacuum_enabled", "f");
         }
         if (null == context.get("toast_autovacuum_enabled")) {
             context.put("toast_autovacuum_enabled", "x");
-        } else if ("true".equalsIgnoreCase(context.get("toast_autovacuum_enabled").toString())) {
+        } else if (Boolean.TRUE.toString().equalsIgnoreCase(context.get("toast_autovacuum_enabled").toString())) {
             context.put("toast_autovacuum_enabled", "t");
         } else {
             context.put("toast_autovacuum_enabled", "f");
@@ -120,10 +120,10 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     
     private void checkRlspolicySupport(final Map<String, Object> context) {
         if (context.containsKey("rlspolicy")) {
-            if (context.get("rlspolicy") instanceof String && "true".equals(context.get("rlspolicy"))) {
+            if (context.get("rlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("rlspolicy"))) {
                 context.put("rlspolicy", true);
             }
-            if (context.get("forcerlspolicy") instanceof String && "true".equals(context.get("forcerlspolicy"))) {
+            if (context.get("forcerlspolicy") instanceof String && Boolean.TRUE.toString().equals(context.get("forcerlspolicy"))) {
                 context.put("forcerlspolicy", true);
             }
         }

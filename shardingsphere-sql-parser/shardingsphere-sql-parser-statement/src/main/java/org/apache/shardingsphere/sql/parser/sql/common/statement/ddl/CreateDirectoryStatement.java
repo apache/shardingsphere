@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-public final class TransactionRuleTest {
-    
-    @Test
-    public void assertGetRuleType() {
-        TransactionRule transactionRule = new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
-        assertThat(transactionRule.getType(), is(TransactionRule.class.getSimpleName()));
-    }
+/**
+ * Create directory statement.
+ */
+@ToString
+public abstract class CreateDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }

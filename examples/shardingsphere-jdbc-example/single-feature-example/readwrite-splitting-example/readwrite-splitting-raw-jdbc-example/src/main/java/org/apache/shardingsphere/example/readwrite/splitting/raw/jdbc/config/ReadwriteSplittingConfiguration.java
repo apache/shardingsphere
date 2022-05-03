@@ -43,9 +43,9 @@ public final class ReadwriteSplittingConfiguration implements ExampleConfigurati
         Map<String, ShardingSphereAlgorithmConfiguration> sphereAlgorithmConfigurationMap = new HashMap<>(1);
         sphereAlgorithmConfigurationMap.put("demo_weight_lb", new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProps));
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), sphereAlgorithmConfigurationMap);
-        Properties properties = new Properties();
-        properties.setProperty("sql-show", String.valueOf(true));
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), properties);
+        Properties props = new Properties();
+        props.setProperty("sql-show", Boolean.TRUE.toString());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), props);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

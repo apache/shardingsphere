@@ -55,7 +55,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
                 if (!bindingTableNames.contains(each)) {
                     routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
                 }
-                shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(bindingTableRule.getTableRules().keySet()));
+                shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getTableRules().keySet()));
             }
         }
         if (routeContexts.isEmpty()) {

@@ -56,7 +56,6 @@ public final class AlterShadowAlgorithmStatementAssert {
     }
     
     private static void assertIsAlgorithmsSegment(final SQLCaseAssertContext assertContext, final ShadowAlgorithmSegment actual, final ExpectedShadowAlgorithm expected) {
-        assertNotNull(actual);
         AlgorithmAssert.assertIs(assertContext, actual.getAlgorithmSegment(), expected.getAlgorithmSegment());
     }
 }

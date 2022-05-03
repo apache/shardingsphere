@@ -58,7 +58,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
         Collection<IndexSegment> indexSegments = sqlStatementContext.getSqlStatement().getIndexes();
-        Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(table -> table.getTableName().getIdentifier().getValue());
+        Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(optional -> optional.getTableName().getIdentifier().getValue());
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, logicTableName.get());
         } else {
@@ -67,7 +67,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
                         .map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
                 logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each.getIndexName().getIdentifier().getValue())).findFirst();
-                logicTableName.ifPresent(tableName -> validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, tableName));
+                logicTableName.ifPresent(optional -> validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, optional));
             }
         }
     }

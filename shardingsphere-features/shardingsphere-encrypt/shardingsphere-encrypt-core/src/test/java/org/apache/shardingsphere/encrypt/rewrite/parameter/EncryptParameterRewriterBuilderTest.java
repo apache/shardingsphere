@@ -34,6 +34,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,7 +56,6 @@ public final class EncryptParameterRewriterBuilderTest {
         assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetParameterRewritersWhenPredicateIsNotNeedRewrite() {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
@@ -63,9 +63,7 @@ public final class EncryptParameterRewriterBuilderTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(
-                encryptRule, DefaultSchema.LOGIC_NAME, mockSchemaMap(), sqlStatementContext, Collections.emptyList()).getParameterRewriters();
-        assertThat(actual.size(), is(0));
+        assertTrue(new EncryptParameterRewriterBuilder(encryptRule, DefaultSchema.LOGIC_NAME, mockSchemaMap(), sqlStatementContext, Collections.emptyList()).getParameterRewriters().isEmpty());
     }
     
     private Map<String, ShardingSphereSchema> mockSchemaMap() {

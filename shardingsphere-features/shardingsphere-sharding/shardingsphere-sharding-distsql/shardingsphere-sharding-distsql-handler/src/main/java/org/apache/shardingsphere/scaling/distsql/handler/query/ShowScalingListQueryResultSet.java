@@ -43,14 +43,14 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         data = RULE_ALTERED_JOB_API.list().stream()
                 .map(each -> {
-                    Collection<Object> list = new LinkedList<>();
-                    list.add(each.getJobId());
-                    list.add(each.getTables());
-                    list.add(each.getShardingTotalCount());
-                    list.add(each.isActive() ? "true" : "false");
-                    list.add(each.getCreateTime());
-                    list.add(each.getStopTime());
-                    return list;
+                    Collection<Object> result = new LinkedList<>();
+                    result.add(each.getJobId());
+                    result.add(each.getTables());
+                    result.add(each.getShardingTotalCount());
+                    result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    result.add(each.getCreateTime());
+                    result.add(each.getStopTime());
+                    return result;
                 }).collect(Collectors.toList()).iterator();
     }
     

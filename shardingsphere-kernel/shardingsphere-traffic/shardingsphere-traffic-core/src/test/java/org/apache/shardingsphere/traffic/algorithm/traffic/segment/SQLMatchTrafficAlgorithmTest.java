@@ -23,9 +23,7 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -57,10 +55,5 @@ public final class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(sqlMatchAlgorithm.getType(), is("SQL_MATCH"));
     }
 }

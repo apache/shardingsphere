@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTa
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -84,10 +83,10 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                 // Keep dataSource to reuse
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(sourceDataSourceConfig.getActualDataSourceConfig(dataNode.getDataSourceName()));
                 try (Connection sourceConnection = dataSource.getConnection()) {
+                    String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
                     String actualTableName = dataNode.getTableName();
-                    int oid = queryTableOid(sourceConnection, actualTableName);
-                    String tableDefinition = queryTableDefinition(sourceConnection, oid);
-                    log.info("getActualTableDefinitions, dataNode={}, tableDefinition={}", dataNode, tableDefinition);
+                    String tableDefinition = queryTableDefinition(sourceConnection, schemaName, actualTableName);
+                    log.info("getActualTableDefinitions, schemaName={}, dataNode={}, tableDefinition={}", schemaName, dataNode, tableDefinition);
                     String logicTableName = each.getLogicTableName();
                     result.add(new ActualTableDefinition(logicTableName, actualTableName, tableDefinition));
                 }
@@ -96,21 +95,9 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         return result;
     }
     
-    private int queryTableOid(final Connection sourceConnection, final String actualTableName) throws SQLException {
-        String sql = "SELECT oid FROM pg_class WHERE relname = ?";
-        try (PreparedStatement statement = sourceConnection.prepareStatement(sql)) {
-            statement.setString(1, actualTableName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new PipelineJobPrepareFailedException("select oid has no result, sql: " + sql + ", actualTableName: " + actualTableName);
-                }
-                return resultSet.getInt(1);
-            }
-        }
-    }
-    
-    private String queryTableDefinition(final Connection sourceConnection, final int oid) throws SQLException {
-        String sql = String.format("SELECT * FROM pg_get_tabledef(%d)", oid);
+    private String queryTableDefinition(final Connection sourceConnection, final String schemaName, final String actualTableName) throws SQLException {
+        String sql = String.format("SELECT * FROM pg_get_tabledef('%s.%s'::regclass::oid)", schemaName, actualTableName);
+        log.info("queryTableDefinition, sql={}", sql);
         try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             if (!resultSet.next()) {
                 throw new PipelineJobPrepareFailedException("table definition has no result, sql: " + sql);

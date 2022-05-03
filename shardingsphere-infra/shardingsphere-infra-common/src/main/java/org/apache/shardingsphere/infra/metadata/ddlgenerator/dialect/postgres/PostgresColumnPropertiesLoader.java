@@ -90,18 +90,18 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         Collection<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "table/10_plus/get_inherits.ftl")) {
             if (collInherits.contains((String) each.get("inherits"))) {
-                Map<String, Object> param = new LinkedHashMap<>();
-                param.put("tid", each.get("oid"));
-                result.addAll(executeByTemplate(param, "table/10_plus/get_columns_for_table.ftl"));
+                Map<String, Object> parameters = new LinkedHashMap<>();
+                parameters.put("tid", each.get("oid"));
+                result.addAll(executeByTemplate(parameters, "table/10_plus/get_columns_for_table.ftl"));
             }
         }
         return result;
     }
     
     private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("tid", context.get("typoid"));
-        return executeByTemplate(param, "table/10_plus/get_columns_for_table.ftl");
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("tid", context.get("typoid"));
+        return executeByTemplate(parameters, "table/10_plus/get_columns_for_table.ftl");
     }
     
     @SuppressWarnings("unchecked")
@@ -122,9 +122,9 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     
     private Map<String, Collection<String>> getEditTypes(final Collection<Map<String, Object>> allColumns) throws SQLException {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
-        for (Map<String, Object> each : executeByTemplate(param, "columns/default/edit_mode_types_multi.ftl")) {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
+        for (Map<String, Object> each : executeByTemplate(parameters, "columns/default/edit_mode_types_multi.ftl")) {
             result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
         }
         return result;

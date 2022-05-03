@@ -44,11 +44,6 @@ public final class DatabaseDiscoveryRuleTest {
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", mock(DataSource.class));
     
     @Test
-    public void assertNewWithEmptyDataSourceRule() {
-        new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
-    }
-    
-    @Test
     public void assertFindDataSourceRule() {
         Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("test_pr");
         assertTrue(actual.isPresent());
@@ -71,12 +66,6 @@ public final class DatabaseDiscoveryRuleTest {
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("ds_0", Collections.singletonList("ds_0"), "ds_1", Collections.singletonList("ds_1"));
         assertThat(actual, is(expected));
-    }
-    
-    @Test
-    public void assertGetRuleType() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        assertThat(databaseDiscoveryRule.getType(), is(DatabaseDiscoveryRule.class.getSimpleName()));
     }
     
     @Test

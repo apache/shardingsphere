@@ -44,10 +44,10 @@ public abstract class PostgresAbstractLoader {
     }
     
     @SneakyThrows
-    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> param, final String path) {
+    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> parameters, final String path) {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlFromTemplate(param, path))) {
+                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlFromTemplate(parameters, path))) {
             return getRows(resultSet);
         }
     }

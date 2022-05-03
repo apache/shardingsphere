@@ -68,7 +68,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     @Override
-    public boolean initialise(final String properties) {
+    public boolean initialise(final String props) {
         return true;
     }
     

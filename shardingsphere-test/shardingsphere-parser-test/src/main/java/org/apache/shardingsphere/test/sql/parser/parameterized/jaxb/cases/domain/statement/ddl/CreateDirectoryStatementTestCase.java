@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule.builder;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TrafficRuleBuilderTest {
-    
-    private final TrafficRuleBuilder builder = new TrafficRuleBuilder();
-    
-    @Test
-    public void getOrderTest() {
-        assertThat(builder.getOrder(), is(800));
-    }
-    
-    @Test
-    public void getTypeClassTest() {
-        assertThat(TrafficRuleConfiguration.class, equalTo(builder.getTypeClass()));
-    }
+/**
+ * Create directory statement test case.
+ */
+public final class CreateDirectoryStatementTestCase extends SQLParserTestCase {
 }

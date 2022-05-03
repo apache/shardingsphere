@@ -59,7 +59,7 @@ public final class OpenGaussDCLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitGrant(final GrantContext ctx) {
         OpenGaussGrantStatement result = new OpenGaussGrantStatement();
         Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
+        tableSegmentOptional.ifPresent(optional -> result.getTables().addAll(optional));
         return result;
     }
     
@@ -67,7 +67,7 @@ public final class OpenGaussDCLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitRevoke(final RevokeContext ctx) {
         OpenGaussRevokeStatement result = new OpenGaussRevokeStatement();
         Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
+        tableSegmentOptional.ifPresent(optional -> result.getTables().addAll(optional));
         return result;
     }
     
