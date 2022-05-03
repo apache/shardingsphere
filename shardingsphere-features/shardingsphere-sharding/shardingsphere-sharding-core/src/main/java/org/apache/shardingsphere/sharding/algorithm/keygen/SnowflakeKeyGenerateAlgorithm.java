@@ -65,12 +65,12 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long DEFAULT_WORKER_ID = 0;
     
+    @Setter
+    private static TimeService timeService = new TimeService();
+    
     @Getter
     @Setter
     private Properties props;
-    
-    @Setter
-    private static TimeService timeService = new TimeService();
     
     private int maxVibrationOffset;
     
