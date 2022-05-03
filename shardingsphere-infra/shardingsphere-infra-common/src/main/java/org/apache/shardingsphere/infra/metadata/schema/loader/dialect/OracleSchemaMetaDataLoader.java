@@ -74,14 +74,14 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap;
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new LinkedHashMap<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1.0f);
         List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
         try (Connection connection = dataSource.getConnection()) {
             for (List<String> each : splitTables) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
             }
-            indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
+            indexMetaDataMap.putAll(columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet()));
         }
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
