@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -79,11 +80,20 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     }
     
     @Test
-    public void assertAlterSchemaEvent() {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
+    public void assertAlterSchemaEventWhenContainsTable() {
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new TableMetaData()));
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
         verify(persistService).persistTables("foo_db", "new_foo_schema", schema);
+    }
+    
+    @Test
+    public void assertAlterSchemaEventWhenNotContainsTable() {
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
+        schemaMetaDataRegistrySubscriber.alterSchema(event);
+        verify(persistService).deleteSchema("foo_db", "foo_schema");
+        verify(persistService).persistSchema("foo_db", "new_foo_schema");
     }
 }
