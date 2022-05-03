@@ -1206,11 +1206,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegments = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegments.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegments);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }
