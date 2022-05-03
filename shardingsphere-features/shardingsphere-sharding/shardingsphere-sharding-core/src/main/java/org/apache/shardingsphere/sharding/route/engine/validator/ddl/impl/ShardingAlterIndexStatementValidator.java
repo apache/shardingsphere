@@ -43,7 +43,7 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
         ShardingSphereSchema schema = index.isPresent() ? index.get().getOwner().map(optional -> optional.getIdentifier().getValue())
-                .map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema)) : metaData.getSchemaByName(defaultSchema);
+                .map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema)) : metaData.getSchemaByName(defaultSchema);
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
             throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIndexName().getIdentifier().getValue());
         }

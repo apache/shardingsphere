@@ -38,29 +38,29 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final DropDefaultShadowAlgorithmStatementUpdater updater = new DropDefaultShadowAlgorithmStatementUpdater();
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckWithoutDefaultAlgorithm() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(), currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(), currentConfig);
     }
     
     @Test
     public void assertCheckWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), currentConfig);
         updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), null);
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
-        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration();
-        configuration.setDefaultShadowAlgorithmName("default");
+        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
+        ruleConfig.setDefaultShadowAlgorithmName("default");
         DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement();
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), configuration);
-        assertTrue(updater.hasAnyOneToBeDropped(statement, configuration));
-        updater.updateCurrentRuleConfiguration(statement, configuration);
-        assertNull(configuration.getDefaultShadowAlgorithmName());
+        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
+        assertTrue(updater.hasAnyOneToBeDropped(statement, ruleConfig));
+        updater.updateCurrentRuleConfiguration(statement, ruleConfig);
+        assertNull(ruleConfig.getDefaultShadowAlgorithmName());
     }
 }

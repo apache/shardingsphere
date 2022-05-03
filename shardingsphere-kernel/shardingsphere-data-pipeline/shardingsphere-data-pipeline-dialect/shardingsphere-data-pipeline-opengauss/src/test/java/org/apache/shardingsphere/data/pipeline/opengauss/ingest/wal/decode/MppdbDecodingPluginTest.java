@@ -119,13 +119,13 @@ public final class MppdbDecodingPluginTest {
         tableData.setOpType("INSERT");
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"boolean"});
-        tableData.setColumnsVal(new String[]{"true"});
+        tableData.setColumnsVal(new String[]{Boolean.TRUE.toString()});
         ByteBuffer data = ByteBuffer.wrap(new Gson().toJson(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj.toString(), is("true"));
+        assertThat(byteaObj.toString(), is(Boolean.TRUE.toString()));
     }
     
     @Test

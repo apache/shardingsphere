@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -26,10 +25,11 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -46,12 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@Slf4j
 public final class PipelineContextUtil {
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
     
-    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelFactory();
+    private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = new MemoryPipelineChannelCreator();
     
     private static final ClusterPersistRepositoryConfiguration PERSIST_REPOSITORY_CONFIG;
     
@@ -111,7 +110,7 @@ public final class PipelineContextUtil {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getMetaDataMap().get("logic_db").getDefaultSchema().putAll(tableMetaDataMap);
+        old.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getSchemaByName(DefaultSchema.LOGIC_NAME).putAll(tableMetaDataMap);
         return new MetaDataContexts(metaDataPersistService, old.getMetaDataMap(), old.getGlobalRuleMetaData(), old.getExecutorEngine(), old.getOptimizerContext(), old.getProps());
     }
     
@@ -129,7 +128,7 @@ public final class PipelineContextUtil {
      *
      * @return channel factory
      */
-    public static PipelineChannelFactory getPipelineChannelFactory() {
-        return PIPELINE_CHANNEL_FACTORY;
+    public static PipelineChannelCreator getPipelineChannelCreator() {
+        return PIPELINE_CHANNEL_CREATOR;
     }
 }

@@ -104,7 +104,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Inventory task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getWorkflowConfig().getDatabaseName());
+                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
                 ShardingSphereEventBus.getInstance().post(event);
             }
         };
@@ -138,7 +138,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Incremental task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getWorkflowConfig().getDatabaseName());
+                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
                 ShardingSphereEventBus.getInstance().post(event);
             }
         };

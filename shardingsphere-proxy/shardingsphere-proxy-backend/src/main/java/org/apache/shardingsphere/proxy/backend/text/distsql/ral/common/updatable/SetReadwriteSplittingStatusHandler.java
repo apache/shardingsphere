@@ -122,8 +122,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
         Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
         Map<String, String> result = new HashMap<>();
-        persistService.ifPresent(op -> {
-            Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, op).stream()
+        persistService.ifPresent(optional -> {
+            Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, optional).stream()
                     .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
             result.putAll(disableNodes);
         });
@@ -200,9 +200,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
-                .ifPresent(each -> {
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
+                .ifPresent(optional -> {
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
                 });
         return result;
     }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -84,7 +85,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             
             @Override
             protected PipelineTableMetaData initialize() {
-                return metaDataLoader.getTableMetaData(inventoryDumperConfig.getTableName());
+                String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
+                return metaDataLoader.getTableMetaData(schemaName, inventoryDumperConfig.getActualTableName());
             }
         };
     }
@@ -120,7 +122,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private String getDumpSQL() {
-        String tableName = inventoryDumperConfig.getTableName();
+        String tableName = inventoryDumperConfig.getActualTableName();
         String primaryKey = inventoryDumperConfig.getPrimaryKey();
         return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
     }
@@ -143,10 +145,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Number maxUniqueKeyValue = null;
+                String logicTableName = inventoryDumperConfig.getLogicTableName();
                 while (resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
-                    record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
+                    record.setTableName(logicTableName);
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
                         Object value = readValue(resultSet, i);

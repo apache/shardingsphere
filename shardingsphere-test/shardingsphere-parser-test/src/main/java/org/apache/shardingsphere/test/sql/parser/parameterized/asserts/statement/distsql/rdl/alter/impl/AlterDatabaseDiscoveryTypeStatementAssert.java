@@ -55,7 +55,6 @@ public final class AlterDatabaseDiscoveryTypeStatementAssert {
                     .stream().collect(Collectors.toMap(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName, each -> each));
             expected.getTypes().forEach(each -> {
                 DatabaseDiscoveryProviderAlgorithmSegment actualSegment = actualMap.get(each.getDiscoveryTypeName());
-                assertNotNull(actualSegment);
                 assertThat(actualSegment.getDiscoveryProviderName(), is(each.getDiscoveryTypeName()));
                 AlgorithmAssert.assertIs(assertContext, actualSegment.getAlgorithm(), each.getAlgorithmSegment());
             });

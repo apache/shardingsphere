@@ -72,11 +72,11 @@ public final class CountInstanceRulesTest {
         rules.add(mockSingleTableRule());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.findRules(any())).thenReturn(rules);
-        Collection<RuleConfiguration> ruleConfiguration = new LinkedList<>();
-        ruleConfiguration.add(mockShardingTableRule());
-        ruleConfiguration.add(mockReadwriteSplittingRule());
-        ruleConfiguration.add(mockEncryptRule());
-        when(ruleMetaData.getConfigurations()).thenReturn(ruleConfiguration);
+        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
+        ruleConfigs.add(mockShardingTableRule());
+        ruleConfigs.add(mockReadwriteSplittingRule());
+        ruleConfigs.add(mockEncryptRule());
+        when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
         when(shardingSphereMetaData1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData2.getRuleMetaData()).thenReturn(ruleMetaData);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));

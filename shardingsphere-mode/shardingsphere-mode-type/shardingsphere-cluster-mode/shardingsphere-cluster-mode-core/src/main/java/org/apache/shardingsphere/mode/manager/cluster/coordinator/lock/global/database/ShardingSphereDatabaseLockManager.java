@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -43,15 +43,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereDatabaseLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereDatabaseLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereDatabaseLock> locks;
     
-    private final LockNodeService lockNodeService = new DatabaseLockNodeService();
+    private final LockNodeService lockNodeService;
     
     private ClusterPersistRepository clusterRepository;
     
     private ComputeNodeInstance currentInstance;
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
+    
+    public ShardingSphereDatabaseLockManager() {
+        locks = new ConcurrentHashMap<>();
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance currentInstance, final Collection<ComputeNodeInstance> computeNodeInstances) {
@@ -63,20 +68,20 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getGlobalLocksNodePath());
+        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
-            clusterRepository.persist(lockNodeService.getGlobalLocksNodePath(), "");
-            clusterRepository.persist(lockNodeService.getGlobalLockedAckNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLocksNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLockedAckNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {
-            Optional<String> databaseLock = lockNodeService.parseGlobalLocksNodePath(each);
-            databaseLock.ifPresent(database -> locks.put(database, crateDatabaseLock()));
+            Optional<String> databaseLock = lockNodeService.parseLocksNodePath(each);
+            databaseLock.ifPresent(optional -> locks.put(optional, crateDatabaseLock()));
         }
     }
     
     private ShardingSphereDatabaseLock crateDatabaseLock() {
-        return new ShardingSphereDatabaseLock(clusterRepository, currentInstance, computeNodeInstances);
+        return new ShardingSphereDatabaseLock(clusterRepository, lockNodeService, currentInstance, computeNodeInstances);
     }
     
     @Override
@@ -102,7 +107,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked(lockName);
+            return lock.isLocked();
         }
         return false;
     }
@@ -131,7 +136,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     @Subscribe
     public synchronized void lockReleased(final DatabaseLockReleasedEvent event) {
         String database = event.getDatabase();
-        getOptionalLock(database).ifPresent(lock -> lock.releaseAckLock(database, getCurrentInstanceId()));
+        getOptionalLock(database).ifPresent(optional -> optional.releaseAckLock(database, getCurrentInstanceId()));
     }
     
     /**
@@ -141,7 +146,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLocked(final DatabaseAckLockedEvent event) {
-        getOptionalLock(event.getDatabase()).ifPresent(lock -> lock.addLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getDatabase()).ifPresent(optional -> optional.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -151,7 +156,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLockReleased(final DatabaseAckLockReleasedEvent event) {
-        getOptionalLock(event.getDatabase()).ifPresent(lock -> lock.removeLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getDatabase()).ifPresent(optional -> optional.removeLockedInstance(event.getLockedInstance()));
     }
     
     private String getCurrentInstanceId() {

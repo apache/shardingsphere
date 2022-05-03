@@ -33,10 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,57 +51,39 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     
     private SQLStatementContext<?> createSQLStatementContext() {
         CreateTableStatementContext result = mock(CreateTableStatementContext.class);
-        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.getCommentSegments().add(new CommentSegment("/*shadow:true*/", 0, 20));
-        when(result.getSqlStatement()).thenReturn(createTableStatement);
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.getCommentSegments().add(new CommentSegment("/*shadow:true*/", 0, 20));
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
     
     @Test
     public void assertRoute() {
         shadowRouteEngine.route(createRouteContext(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        // TODO finish assert
     }
     
     private RouteContext createRouteContext() {
         RouteContext result = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        Collection<RouteMapper> tableRouteMappers = new LinkedList<>();
-        tableRouteMappers.add(new RouteMapper("t_order", "t_order"));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds"), tableRouteMappers));
-        when(result.getRouteUnits()).thenReturn(routeUnits);
+        when(result.getRouteUnits()).thenReturn(
+                Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds"), Collections.singleton(new RouteMapper("t_order", "t_order")))));
         return result;
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(createDataSources());
-        result.setTables(createTables());
+        result.setDataSources(Collections.singletonMap("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Collections.singleton("simple-hint-algorithm"))));
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
     
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        return result;
-    }
-    
-    private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        Collection<String> shadowAlgorithmNames = new LinkedList<>();
-        shadowAlgorithmNames.add("simple-hint-algorithm");
-        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), shadowAlgorithmNames));
-        return result;
-    }
-    
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        final Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
         SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        simpleHintShadowAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("shadow", Boolean.TRUE.toString());
+        simpleHintShadowAlgorithm.setProps(props);
         simpleHintShadowAlgorithm.init();
-        result.put("simple-hint-algorithm", simpleHintShadowAlgorithm);
-        return result;
+        return Collections.singletonMap("simple-hint-algorithm", simpleHintShadowAlgorithm);
     }
 }

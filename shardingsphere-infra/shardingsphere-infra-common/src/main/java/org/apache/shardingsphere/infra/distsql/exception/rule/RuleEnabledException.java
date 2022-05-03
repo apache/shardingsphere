@@ -24,7 +24,7 @@ public final class RuleEnabledException extends RuleDefinitionViolationException
     
     private static final long serialVersionUID = 2381983504661441914L;
     
-    public RuleEnabledException(final String ruleType, final String schemaName, final String ruleName) {
-        super(1120, String.format("%s rule `%s` has been enabled in schema `%s`.", ruleType, ruleName, schemaName));
+    public RuleEnabledException(final String ruleType, final String databaseName, final String ruleName) {
+        super(1120, String.format("%s rule `%s` has been enabled in database `%s`.", ruleType, ruleName, databaseName));
     }
 }

@@ -42,7 +42,6 @@ public final class DistributeLockContextTest {
         instanceContext.initLockContext();
         ShardingSphereLock databaseLock = distributeLockContext.getOrCreateGlobalLock("database");
         assertNotNull(databaseLock);
-        assertTrue(distributeLockContext.tryLockWriteDatabase("database", 1000));
     }
     
     @Test

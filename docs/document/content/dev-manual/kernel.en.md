@@ -63,3 +63,13 @@ chapter = true
 | SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata  |
 | OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata     |
 | MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata      |
+
+## DynamicDataSourceStrategy
+
+| *SPI Name*                                 | *Description*                                       |
+| ------------------------------------------ | --------------------------------------------------- |
+| DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                  |
+
+| *Implementation Class*                     | *Description*                                       |
+| ------------------------------------------ | --------------------------------------------------- |
+| DatabaseDiscoveryDynamicDataSourceStrategy | Use database discovery to dynamic fetch data source |

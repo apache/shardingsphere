@@ -33,7 +33,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -67,23 +66,22 @@ public final class DataSourcePropertiesTest {
     @Test
     public void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
-        Map<String, Object> actualAllProperties = originalDataSourceProps.getAllLocalProperties();
-        assertNotNull(actualAllProperties);
-        assertThat(actualAllProperties.size(), is(7));
-        assertTrue(actualAllProperties.containsKey("driverClassName"));
-        assertTrue(actualAllProperties.containsValue(MockedDataSource.class.getName()));
-        assertTrue(actualAllProperties.containsKey("jdbcUrl"));
-        assertTrue(actualAllProperties.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
-        assertTrue(actualAllProperties.containsKey("username"));
-        assertTrue(actualAllProperties.containsValue("root"));
-        assertTrue(actualAllProperties.containsKey("password"));
-        assertTrue(actualAllProperties.containsValue("root"));
-        assertTrue(actualAllProperties.containsKey("loginTimeout"));
-        assertTrue(actualAllProperties.containsValue("5000"));
-        assertTrue(actualAllProperties.containsKey("maximumPoolSize"));
-        assertTrue(actualAllProperties.containsValue("30"));
-        assertTrue(actualAllProperties.containsKey("idleTimeout"));
-        assertTrue(actualAllProperties.containsValue("30000"));
+        Map<String, Object> actualAllProps = originalDataSourceProps.getAllLocalProperties();
+        assertThat(actualAllProps.size(), is(7));
+        assertTrue(actualAllProps.containsKey("driverClassName"));
+        assertTrue(actualAllProps.containsValue(MockedDataSource.class.getName()));
+        assertTrue(actualAllProps.containsKey("jdbcUrl"));
+        assertTrue(actualAllProps.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
+        assertTrue(actualAllProps.containsKey("username"));
+        assertTrue(actualAllProps.containsValue("root"));
+        assertTrue(actualAllProps.containsKey("password"));
+        assertTrue(actualAllProps.containsValue("root"));
+        assertTrue(actualAllProps.containsKey("loginTimeout"));
+        assertTrue(actualAllProps.containsValue("5000"));
+        assertTrue(actualAllProps.containsKey("maximumPoolSize"));
+        assertTrue(actualAllProps.containsValue("30"));
+        assertTrue(actualAllProps.containsKey("idleTimeout"));
+        assertTrue(actualAllProps.containsValue("30000"));
     }
     
     private Map<String, Object> getProperties() {

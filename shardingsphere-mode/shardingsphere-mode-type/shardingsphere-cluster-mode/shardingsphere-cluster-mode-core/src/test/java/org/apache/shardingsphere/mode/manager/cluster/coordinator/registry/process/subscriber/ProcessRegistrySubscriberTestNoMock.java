@@ -39,12 +39,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -57,10 +56,10 @@ public final class ProcessRegistrySubscriberTestNoMock {
     
     private ExecuteProcessContext createExecuteProcessContext() {
         ExecutionUnit executionUnit = createExecuteUnit();
-        Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new ArrayList<>();
+        Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups = new LinkedList<>();
         inputGroups.add(new ExecutionGroup<>(Collections.singletonList(new JDBCExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY, null))));
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(inputGroups);
-        executionGroupContext.setSchemaName("sharding_db");
+        executionGroupContext.setDatabaseName("sharding_db");
         executionGroupContext.setGrantee(new Grantee("sharding", "127.0.0.1"));
         return new ExecuteProcessContext("sql1", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
     }
@@ -91,11 +90,9 @@ public final class ProcessRegistrySubscriberTestNoMock {
         subscriber.reportExecuteProcessSummary(new ExecuteProcessSummaryReportEvent(executeProcessContext));
         String executionID = executeProcessContext.getExecutionID();
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
-        assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
         assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
-        assertThat(yamlExecuteProcessContext.getSchemaName(), is("sharding_db"));
+        assertThat(yamlExecuteProcessContext.getDatabaseName(), is("sharding_db"));
         assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
         assertThat(yamlExecuteProcessContext.getHostname(), is("127.0.0.1"));
         assertThat(yamlExecuteProcessContext.getSql(), is("sql1"));
@@ -109,7 +106,6 @@ public final class ProcessRegistrySubscriberTestNoMock {
         ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(createExecuteUnit(), processConstants));
         subscriber.reportExecuteProcessUnit(event);
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
         assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));
@@ -122,7 +118,6 @@ public final class ProcessRegistrySubscriberTestNoMock {
         if (ExecuteProcessConstants.EXECUTE_STATUS_DONE == processConstants) {
             assertNull(yamlExecuteProcessContext);
         } else {
-            assertNotNull(yamlExecuteProcessContext);
             assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
             YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
             assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));

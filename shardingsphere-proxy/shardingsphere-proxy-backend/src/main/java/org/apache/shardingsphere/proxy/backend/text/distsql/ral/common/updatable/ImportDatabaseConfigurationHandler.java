@@ -97,7 +97,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().keySet());
             Collection<String> toBeDroppedResourceNames = currentResourceNames.stream().filter(each -> !toBeUpdatedResourcePropsMap.containsKey(each)).collect(Collectors.toSet());
             ProxyContext.getInstance().getContextManager().addResource(databaseName, toBeUpdatedResourcePropsMap);
-            if (toBeDroppedResourceNames.size() > 0) {
+            if (!toBeDroppedResourceNames.isEmpty()) {
                 ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
             }
         } catch (final SQLException ex) {
@@ -105,42 +105,42 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
     }
     
-    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigurations) throws DistSQLException {
-        if (null == yamlRuleConfigurations || yamlRuleConfigurations.isEmpty()) {
+    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) throws DistSQLException {
+        if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
-        for (YamlRuleConfiguration each : yamlRuleConfigurations) {
+        for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(shardingRuleConfiguration);
+                ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
+                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfig);
+                toBeUpdatedRuleConfigs.add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = new ReadwriteSplittingRuleConfigurationYamlSwapper()
+                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfigurationYamlSwapper()
                         .swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfiguration);
+                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfig);
+                toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
-                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfiguration);
-                toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfiguration);
+                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
+                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfig);
+                toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
+                EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
                 // TODO check
-                toBeUpdatedRuleConfigs.add(encryptRuleConfiguration);
+                toBeUpdatedRuleConfigs.add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
-                ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfigurationYamlSwapper().swapToObject((YamlShadowRuleConfiguration) each);
+                ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfigurationYamlSwapper().swapToObject((YamlShadowRuleConfiguration) each);
                 // TODO check
-                toBeUpdatedRuleConfigs.add(shadowRuleConfiguration);
+                toBeUpdatedRuleConfigs.add(shadowRuleConfig);
             }
         }
         shardingSphereMetaData.getRuleMetaData().getConfigurations().clear();
         shardingSphereMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> op.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
+        metaDataPersistService.ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
     
     private void checkDatabaseName(final String databaseName) {

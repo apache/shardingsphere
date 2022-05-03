@@ -113,7 +113,7 @@ public final class ReactiveProxySQLExecutor {
         } catch (final SQLException ex) {
             return Future.succeededFuture(getSaneExecuteResults(executionContext, ex));
         }
-        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getDatabaseName());
+        executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         return reactiveExecutor.execute(executionContext.getLogicSQL(), executionGroupContext);
     }

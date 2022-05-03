@@ -25,9 +25,7 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -53,8 +51,8 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
         if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        Optional<Map<String, String>> noteOptional = ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue());
-        return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
+        return ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue())
+                .filter(optional -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), optional.get(String.valueOf(entry.getKey()))))).isPresent();
     }
     
     @Override

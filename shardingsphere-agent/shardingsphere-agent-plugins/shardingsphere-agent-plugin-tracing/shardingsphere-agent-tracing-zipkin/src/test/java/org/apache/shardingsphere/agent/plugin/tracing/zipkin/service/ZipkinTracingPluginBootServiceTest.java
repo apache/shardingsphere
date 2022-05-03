@@ -18,40 +18,32 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
-import java.lang.reflect.Field;
-import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.lang.reflect.Field;
+import java.util.Properties;
+
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 public final class ZipkinTracingPluginBootServiceTest {
     
-    private static ZipkinTracingPluginBootService zipkinTracingPluginBootService = new ZipkinTracingPluginBootService();
+    private final ZipkinTracingPluginBootService zipkinTracingPluginBootService = new ZipkinTracingPluginBootService();
     
     @SneakyThrows
     @Test
     public void assertStart() {
-        PluginConfiguration configuration = new PluginConfiguration("localhost", 9441, "", new Properties());
-        zipkinTracingPluginBootService.start(configuration);
+        zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()));
         Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
         field.setAccessible(true);
         Tracing tracing = (Tracing) field.get(zipkinTracingPluginBootService);
         assertNotNull(tracing.tracer());
     }
     
-    @Test
-    public void assertType() {
-        assertThat(zipkinTracingPluginBootService.getType(), is("Zipkin"));
-    }
-    
-    @AfterClass
-    public static void close() {
+    @After
+    public void close() {
         zipkinTracingPluginBootService.close();
     }
 }

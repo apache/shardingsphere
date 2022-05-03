@@ -51,10 +51,10 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getCachedDatabaseMetaData());
+        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getRuleMetaData().getRules();
-        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getDataSourcesMetaData();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getRuleMetaData().getRules();
+        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getDataSourcesMetaData();
     }
     
     @Override
@@ -219,7 +219,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {

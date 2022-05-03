@@ -61,10 +61,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
-        assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
-        assertNotNull(tags);
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
     }
@@ -76,10 +74,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
-        assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
-        assertNotNull(tags);
         assertThat(tags.get("error"), is("IOException"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));

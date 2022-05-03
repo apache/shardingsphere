@@ -41,11 +41,6 @@ public final class FileRepositoryTest {
     }
     
     @Test
-    public void assertType() {
-        assertThat(fileRepository.getType(), is("File"));
-    }
-    
-    @Test
     public void assertPersistAndGet() {
         fileRepository.persist(getFilePath(), "test1_content");
         assertThat(fileRepository.get(getFilePath()), is("test1_content"));

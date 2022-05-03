@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.schema.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -78,14 +80,17 @@ public class IndexMetaDataUtil {
     /**
      * Get table names from metadata.
      *
-     * @param schema schema
+     * @param metaData meta data
      * @param indexes indexes
+     * @param databaseType database type
      * @return table names
      */
-    public static Collection<String> getTableNamesFromMetaData(final ShardingSphereSchema schema, final Collection<IndexSegment> indexes) {
+    public static Collection<String> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
+        String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
         for (IndexSegment each : indexes) {
-            findLogicTableNameFromMetaData(schema, each.getIndexName().getIdentifier().getValue()).ifPresent(result::add);
+            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName), each.getIndexName().getIdentifier().getValue()).ifPresent(result::add);
         }
         return result;
     }

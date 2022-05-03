@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,13 +44,13 @@ public final class ShadowRouteEngineFactoryTest {
     @Test
     public void assertNewInstance() {
         ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createInsertSqlStatementContext(), "", Lists.newArrayList()));
-        assertThat(shadowInsertRouteEngine instanceof ShadowInsertStatementRoutingEngine, is(true));
+        assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
         ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createUpdateSqlStatementContext(), "", Lists.newArrayList()));
-        assertThat(shadowUpdateRouteEngine instanceof ShadowUpdateStatementRoutingEngine, is(true));
+        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementRoutingEngine.class));
         ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createDeleteSqlStatementContext(), "", Lists.newArrayList()));
-        assertThat(shadowDeleteRouteEngine instanceof ShadowDeleteStatementRoutingEngine, is(true));
+        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementRoutingEngine.class));
         ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSelectSqlStatementContext(), "", Lists.newArrayList()));
-        assertThat(shadowSelectRouteEngine instanceof ShadowSelectStatementRoutingEngine, is(true));
+        assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
     }
     
     private SQLStatementContext<InsertStatement> createInsertSqlStatementContext() {

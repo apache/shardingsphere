@@ -139,7 +139,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         String defaultSchemaName = getDatabaseType().getDefaultSchema(databaseName);
-        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchemaName));
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchemaName));
     }
     
     /**
@@ -213,7 +213,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public boolean isContainsPartialDistinctAggregation() {
         Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
         Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
-        return aggregationProjections.size() > 1 && aggregationDistinctProjections.size() > 0 && aggregationProjections.size() != aggregationDistinctProjections.size();
+        return aggregationProjections.size() > 1 && !aggregationDistinctProjections.isEmpty() && aggregationProjections.size() != aggregationDistinctProjections.size();
     }
     
     /**

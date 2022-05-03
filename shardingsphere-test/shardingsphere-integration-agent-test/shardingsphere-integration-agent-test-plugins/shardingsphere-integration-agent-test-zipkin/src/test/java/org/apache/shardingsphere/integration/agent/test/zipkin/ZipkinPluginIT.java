@@ -21,11 +21,13 @@ import org.apache.shardingsphere.integration.agent.test.common.BasePluginIT;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public final class ZipkinPluginIT extends BasePluginIT {
     
     @Test
     @Ignore
-    public void assertProxyWithAgent() {
+    public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
     }
 }

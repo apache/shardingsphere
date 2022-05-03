@@ -46,10 +46,9 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     
     private void enableRangeQueryForInline(final ShardingRuleConfiguration shardingRuleConfig) {
         for (ShardingSphereAlgorithmConfiguration each : shardingRuleConfig.getShardingAlgorithms().values()) {
-            if (!"INLINE".equalsIgnoreCase(each.getType())) {
-                continue;
+            if ("INLINE".equalsIgnoreCase(each.getType())) {
+                each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
-            each.getProps().put("allow-range-query-with-inline-sharding", "true");
         }
     }
     

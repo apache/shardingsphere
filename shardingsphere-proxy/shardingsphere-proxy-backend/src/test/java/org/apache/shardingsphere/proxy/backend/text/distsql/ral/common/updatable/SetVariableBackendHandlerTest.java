@@ -21,6 +21,7 @@ import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -67,10 +68,10 @@ public final class SetVariableBackendHandlerTest {
     
     @Before
     public void setUp() {
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(properties));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(props));
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.getInstance().init(contextManager);
@@ -85,7 +86,7 @@ public final class SetVariableBackendHandlerTest {
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(metaData.getDefaultSchema()).thenReturn(schema);
+            when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
             result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
@@ -121,14 +122,12 @@ public final class SetVariableBackendHandlerTest {
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XXX"), connectionSession));
-        handler.execute();
+        new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XXX"), connectionSession)).execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement("@@session", "XXX"), connectionSession));
-        handler.execute();
+        new SetVariableHandler().init(getParameter(new SetVariableStatement("@@session", "XXX"), connectionSession)).execute();
     }
     
     @Test
@@ -143,7 +142,7 @@ public final class SetVariableBackendHandlerTest {
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), null));
+        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));

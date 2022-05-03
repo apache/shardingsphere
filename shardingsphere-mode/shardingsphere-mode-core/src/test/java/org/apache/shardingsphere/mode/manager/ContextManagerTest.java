@@ -123,7 +123,7 @@ public final class ContextManagerTest {
     public void assertAlterDatabase() {
         contextManager.alterDatabase("foo_db", Collections.singletonMap("foo_db", new ShardingSphereSchema(Collections.singletonMap("foo_table",
                 new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
-        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getDefaultSchema().containsTable("foo_table"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getSchemaByName("foo_db").containsTable("foo_table"));
         assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
         Map<String, FederationSchemaMetaData> schemas = contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get("foo_db").getSchemas();
         assertTrue(schemas.get("foo_db").getTables().containsKey("foo_table"));
@@ -264,9 +264,8 @@ public final class ContextManagerTest {
         contextManager.reloadMetaData("foo_db");
         verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_db", "foo_table");
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db"));
         contextManager.reloadMetaData("foo_db", "foo_table", "foo_ds");
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getDefaultSchema());
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getSchemaByName("foo_db"));
         assertTrue(contextManager.getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }
     

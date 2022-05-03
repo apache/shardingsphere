@@ -42,6 +42,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
@@ -104,6 +106,26 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DatabaseDeletedEvent event) {
         contextManager.deleteDatabase(event.getDatabaseName());
+    }
+    
+    /**
+     * Renew to added schema.
+     *
+     * @param event schema added event
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaAddedEvent event) {
+        contextManager.addSchema(event.getDatabaseName(), event.getSchemaName());
+    }
+    
+    /**
+     * Renew to delete schema.
+     *
+     * @param event schema delete event
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaDeletedEvent event) {
+        contextManager.dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**

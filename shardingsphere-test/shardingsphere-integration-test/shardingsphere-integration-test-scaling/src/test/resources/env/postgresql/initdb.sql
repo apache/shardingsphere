@@ -14,3 +14,9 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
+
+CREATE DATABASE ds_0;
+CREATE DATABASE ds_1;
+CREATE DATABASE ds_2;
+CREATE DATABASE ds_3;
+CREATE DATABASE ds_4;

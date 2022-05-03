@@ -36,7 +36,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
@@ -68,10 +67,9 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
-        taskConfig.getHandleConfig().setShardingSize(10);
+        taskConfig.getJobConfig().setShardingSize(10);
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
         assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
@@ -79,10 +77,9 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        taskConfig.getHandleConfig().setShardingSize(10);
+        taskConfig.getJobConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
         assertThat(actual.size(), is(10));
         assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
         assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));

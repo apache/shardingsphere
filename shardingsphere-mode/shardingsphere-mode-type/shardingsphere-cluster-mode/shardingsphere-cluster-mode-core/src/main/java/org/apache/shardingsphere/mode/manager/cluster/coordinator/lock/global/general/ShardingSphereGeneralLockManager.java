@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GeneralLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -38,15 +38,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereGeneralLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereGeneralLock> locks;
     
-    private final LockNodeService lockNodeService = new GeneralLockNodeService();
+    private final LockNodeService lockNodeService;
     
     private ClusterPersistRepository clusterRepository;
     
     private ComputeNodeInstance currentInstance;
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
+    
+    public ShardingSphereGeneralLockManager() {
+        locks = new ConcurrentHashMap<>();
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {
@@ -58,20 +63,20 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
     }
     
     private void synchronizeGlobalLock() {
-        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getGlobalLocksNodePath());
+        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
-            clusterRepository.persist(lockNodeService.getGlobalLocksNodePath(), "");
-            clusterRepository.persist(lockNodeService.getGlobalLockedAckNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLocksNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLockedAckNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {
-            Optional<String> generalLock = lockNodeService.parseGlobalLocksNodePath(each);
-            generalLock.ifPresent(lockName -> locks.put(lockName, crateGeneralLock()));
+            Optional<String> generalLock = lockNodeService.parseLocksNodePath(each);
+            generalLock.ifPresent(optional -> locks.put(optional, createGeneralLock()));
         }
     }
     
-    private ShardingSphereGeneralLock crateGeneralLock() {
-        return new ShardingSphereGeneralLock(clusterRepository, currentInstance, computeNodeInstances);
+    private ShardingSphereGeneralLock createGeneralLock() {
+        return new ShardingSphereGeneralLock(clusterRepository, lockNodeService, currentInstance, computeNodeInstances);
     }
     
     @Override
@@ -80,7 +85,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         if (null != result) {
             return result;
         }
-        result = crateGeneralLock();
+        result = createGeneralLock();
         locks.put(lockName, result);
         return result;
     }
@@ -97,7 +102,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked(lockName);
+            return lock.isLocked();
         }
         return false;
     }

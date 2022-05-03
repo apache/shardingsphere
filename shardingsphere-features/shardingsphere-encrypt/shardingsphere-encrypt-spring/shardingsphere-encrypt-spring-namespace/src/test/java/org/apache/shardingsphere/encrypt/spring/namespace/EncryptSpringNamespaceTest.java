@@ -33,6 +33,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
@@ -74,7 +75,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
-        assertThat(tableRuleConfig.getQueryWithCipherColumn(), is(false));
+        assertFalse(tableRuleConfig.getQueryWithCipherColumn());
         assertThat(tableRuleConfig.getColumns().size(), is(2));
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn1(columnRuleConfigs.next());

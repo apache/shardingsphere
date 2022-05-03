@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.watcher;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GeneralLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -36,11 +37,11 @@ import java.util.Optional;
  */
 public final class GeneralLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
-    private final LockNodeService lockNode = new GeneralLockNodeService();
+    private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockType.GENERAL);
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(lockNode.getGlobalLocksNodePath());
+        return Collections.singleton(lockNode.getLocksNodePath());
     }
     
     @Override
@@ -50,7 +51,7 @@ public final class GeneralLocksChangedWatcher implements GovernanceWatcher<Gover
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> lockedName = lockNode.parseGlobalLocksNodePath(event.getKey());
+        Optional<String> lockedName = lockNode.parseLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
             return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
         }

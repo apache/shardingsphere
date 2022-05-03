@@ -24,14 +24,14 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -55,7 +55,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private final ShardingRule shardingRule;
     
-    private final ShardingSphereSchema schema;
+    private final ShardingSphereMetaData metaData;
     
     @Override
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
@@ -99,7 +99,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
-                    datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
+                    datetimeService = DatetimeServiceFactory.newInstance();
                 }
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {
@@ -123,7 +123,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
         SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
-        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, schema).createShardingConditions(selectStatementContext, parameters));
+        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, metaData).createShardingConditions(selectStatementContext, parameters));
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {
@@ -138,7 +138,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private Collection<Comparable<?>> generateKeys(final String tableName, final int valueListCount) {
-        return IntStream.range(0, valueListCount).mapToObj(i -> shardingRule.generateKey(tableName)).collect(Collectors.toList());
+        return IntStream.range(0, valueListCount).mapToObj(each -> shardingRule.generateKey(tableName)).collect(Collectors.toList());
     }
     
     private void appendGeneratedKeyCondition(final GeneratedKeyContext generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {

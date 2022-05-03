@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,7 +51,7 @@ public final class ColumnExtractorParameterizedTest {
     
     private final ExpressionSegment expression;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<ExpressionSegment> getTestParameters() {
         return testUnits;
     }

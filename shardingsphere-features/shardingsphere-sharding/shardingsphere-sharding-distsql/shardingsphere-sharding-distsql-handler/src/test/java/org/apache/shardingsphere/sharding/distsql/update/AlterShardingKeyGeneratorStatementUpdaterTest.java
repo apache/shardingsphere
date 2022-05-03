@@ -54,30 +54,30 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment, keyGeneratorSegment), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertExecuteWithNotExist() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("notExistAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("notExistAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), shardingRuleConfiguration);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", props));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     private AlterShardingKeyGeneratorStatement createSQLStatement(final ShardingKeyGeneratorSegment... ruleSegments) {

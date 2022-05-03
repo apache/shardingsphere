@@ -45,30 +45,30 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class).stream().findAny();
-        shardingRuleConfiguration.ifPresent(op -> data = buildData(op).entrySet().iterator());
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class).stream().findAny();
+        shardingRuleConfig.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
     }
     
-    private Map<String, LinkedList<Object>> buildData(final ShardingRuleConfiguration ruleConfiguration) {
+    private Map<String, LinkedList<Object>> buildData(final ShardingRuleConfiguration ruleConfig) {
         Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2);
-        result.put("TABLE", buildDataItem(ruleConfiguration, ruleConfiguration.getDefaultTableShardingStrategy()));
-        result.put("DATABASE", buildDataItem(ruleConfiguration, ruleConfiguration.getDefaultDatabaseShardingStrategy()));
+        result.put("TABLE", buildDataItem(ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
+        result.put("DATABASE", buildDataItem(ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));
         return result;
     }
     
-    private LinkedList<Object> buildDataItem(final ShardingRuleConfiguration ruleConfiguration, final ShardingStrategyConfiguration strategyConfiguration) {
-        if (null == strategyConfiguration) {
+    private LinkedList<Object> buildDataItem(final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration strategyConfig) {
+        if (null == strategyConfig) {
             return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
         }
-        ShardingStrategyType strategyType = ShardingStrategyType.getValueOf(strategyConfiguration);
+        ShardingStrategyType strategyType = ShardingStrategyType.getValueOf(strategyConfig);
         if (strategyType == ShardingStrategyType.NONE) {
             return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
         }
         LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));
-        result.addAll(strategyType.getConfigurationContents(strategyConfiguration));
-        ShardingSphereAlgorithmConfiguration algorithmConfiguration = ruleConfiguration.getShardingAlgorithms().get(strategyConfiguration.getShardingAlgorithmName());
-        result.add(algorithmConfiguration.getType());
-        result.add(algorithmConfiguration.getProps());
+        result.addAll(strategyType.getConfigurationContents(strategyConfig));
+        ShardingSphereAlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
+        result.add(algorithmConfig.getType());
+        result.add(algorithmConfig.getProps());
         return result;
     }
     

@@ -103,7 +103,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             throw new SchemaNotExistedException(databaseName);
         }
         String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
-        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElse(metaData.getSchemaByName(defaultSchema));
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -247,7 +247,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.map(each -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(each))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
+        return setAssignment
+                .map(optional -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(optional))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
     }
     
     private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {

@@ -63,7 +63,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
         Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
+        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -71,7 +71,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
         Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
+        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -130,8 +130,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return Collections.emptyMap();
     }
     
-    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations) {
-        for (EncryptTableRuleConfiguration each : tableRuleConfigurations) {
+    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+        for (EncryptTableRuleConfiguration each : tableRuleConfigs) {
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
                     return true;
@@ -148,7 +148,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt table
      */
     public Optional<EncryptTable> findEncryptTable(final String logicTable) {
-        return Optional.ofNullable(tables.get(logicTable));
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase()));
     }
     
     /**
@@ -159,7 +159,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt column
      */
     public Optional<EncryptColumn> findEncryptColumn(final String logicTable, final String columnName) {
-        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        return findEncryptTable(logicTable).flatMap(optional -> optional.findEncryptColumn(columnName));
     }
     
     /**
@@ -171,12 +171,13 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
      * get encrypt values.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
@@ -184,9 +185,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt values
      */
     @SuppressWarnings("rawtypes")
-    public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
     }
@@ -209,7 +210,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return cipher column
      */
     public String getCipherColumn(final String logicTable, final String logicColumn) {
-        return tables.get(logicTable).getCipherColumn(logicColumn);
+        return tables.get(logicTable.toLowerCase()).getCipherColumn(logicColumn);
     }
     
     /**
@@ -219,7 +220,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -230,7 +231,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
@@ -240,12 +241,13 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumns() : Collections.emptyList();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getAssistedQueryColumns() : Collections.emptyList();
     }
     
     /**
      * Get encrypt assisted query values.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
@@ -253,9 +255,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query values
      */
     @SuppressWarnings("rawtypes")
-    public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return getEncryptAssistedQueryValues((QueryAssistedEncryptAlgorithm) encryptor.get(), originalValues, encryptContext);
@@ -279,7 +281,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+        return originColumnName.isPresent() && tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
     
     /**
@@ -293,7 +295,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable).getLogicColumns()) {
+        for (String each : tables.get(logicTable.toLowerCase()).getLogicColumns()) {
             if (logicColumn.equalsIgnoreCase(each)) {
                 return Optional.of(each);
             }
@@ -334,7 +336,6 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return boolean whether contains config data type or not
      */
     public boolean containsConfigDataType(final String tableName, final String columnName) {
-        return findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName)
-                .filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName).filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
     }
 }

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -36,11 +37,11 @@ import java.util.Optional;
  */
 public final class DatabaseAckChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
-    private final LockNodeService lockNode = new DatabaseLockNodeService();
+    private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockType.DATABASE);
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singleton(lockNode.getGlobalLockedAckNodePath());
+        return Collections.singleton(lockNode.getLockedAckNodePath());
     }
     
     @Override
@@ -50,7 +51,7 @@ public final class DatabaseAckChangedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        Optional<String> ackLockedName = lockNode.parseGlobalLockedAckNodePath(event.getKey());
+        Optional<String> ackLockedName = lockNode.parseLockedAckNodePath(event.getKey());
         if (ackLockedName.isPresent()) {
             return handleGlobalAckEvent(event.getType(), ackLockedName.get());
         }

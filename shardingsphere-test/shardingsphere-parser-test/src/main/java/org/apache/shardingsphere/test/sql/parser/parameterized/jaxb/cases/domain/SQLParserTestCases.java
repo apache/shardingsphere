@@ -143,6 +143,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DeclareStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DiscardStatementTestCase;
@@ -586,6 +588,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-view")
     private final List<CreateViewStatementTestCase> createViewTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-synonym")
+    private final List<CreateSynonymStatementTestCase> createSynonymTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-directory")
+    private final List<CreateDirectoryStatementTestCase> createDirectoryTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-domain")
     private final List<CreateDomainStatementTestCase> createDomainStatementTestCases = new LinkedList<>();
@@ -1363,6 +1371,8 @@ public final class SQLParserTestCases {
         putAll(alterDatabaseTestCase, result);
         putAll(alterDimensionTestCase, result);
         putAll(createViewTestCase, result);
+        putAll(createSynonymTestCase, result);
+        putAll(createDirectoryTestCase, result);
         putAll(createTriggerTestCase, result);
         putAll(createServerTestCase, result);
         putAll(createProcedureTestCase, result);
