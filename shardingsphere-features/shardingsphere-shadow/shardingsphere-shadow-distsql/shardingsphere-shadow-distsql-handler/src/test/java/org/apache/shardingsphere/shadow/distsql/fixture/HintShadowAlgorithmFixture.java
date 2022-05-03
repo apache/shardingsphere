@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.shadow.distsql.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import java.util.Properties;
+
 public final class HintShadowAlgorithmFixture implements ShadowAlgorithm {
+    
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
     public String getType() {
