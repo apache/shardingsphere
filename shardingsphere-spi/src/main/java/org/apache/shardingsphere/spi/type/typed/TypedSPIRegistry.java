@@ -63,6 +63,8 @@ public final class TypedSPIRegistry {
                 // TODO for contains judge only, should fix here
                 if (null != props && !props.isEmpty()) {
                     init(each, props);
+                } else {
+                    each.setProps(new Properties());
                 }
                 return Optional.of(each);
             }
