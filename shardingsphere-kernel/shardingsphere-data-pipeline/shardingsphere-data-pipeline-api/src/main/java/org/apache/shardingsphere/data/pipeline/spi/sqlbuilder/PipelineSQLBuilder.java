@@ -134,11 +134,12 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build CRC32 SQL.
      *
+     * @param schemaName schema name
      * @param tableName table Name
      * @param column column
      * @return CRC32 SQL
      */
-    default Optional<String> buildCRC32SQL(final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
 }

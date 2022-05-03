@@ -82,7 +82,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public Optional<String> buildCRC32SQL(final String tableName, final String column) {
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
     }
     
