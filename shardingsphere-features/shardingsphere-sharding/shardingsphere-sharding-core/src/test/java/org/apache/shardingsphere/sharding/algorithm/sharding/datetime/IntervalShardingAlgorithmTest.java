@@ -66,7 +66,6 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        shardingAlgorithmByQuarter = new IntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
         props.setProperty("datetime-lower", "2016-01-01 00:00:00");
@@ -74,6 +73,7 @@ public final class IntervalShardingAlgorithmTest {
         props.setProperty("sharding-suffix-pattern", "yyyyQQ");
         props.setProperty("datetime-interval-amount", "3");
         props.setProperty("datetime-interval-unit", "Months");
+        shardingAlgorithmByQuarter = new IntervalShardingAlgorithm();
         shardingAlgorithmByQuarter.init(props);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
@@ -83,7 +83,6 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByMonth() {
-        shardingAlgorithmByMonth = new IntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
         props.setProperty("datetime-lower", "2016-01-01 00:00:00");
@@ -91,6 +90,7 @@ public final class IntervalShardingAlgorithmTest {
         props.setProperty("sharding-suffix-pattern", "yyyyMM");
         props.setProperty("datetime-interval-amount", "1");
         props.setProperty("datetime-interval-unit", "Months");
+        shardingAlgorithmByMonth = new IntervalShardingAlgorithm();
         shardingAlgorithmByMonth.init(props);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
@@ -100,7 +100,6 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardingStrategyByDay() {
-        shardingAlgorithmByDay = new IntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
         props.setProperty("datetime-lower", "2021-06-01 00:00:00");
@@ -108,6 +107,7 @@ public final class IntervalShardingAlgorithmTest {
         props.setProperty("sharding-suffix-pattern", "yyyyMMdd");
         int stepAmount = 2;
         props.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
+        shardingAlgorithmByDay = new IntervalShardingAlgorithm();
         shardingAlgorithmByDay.init(props);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
@@ -117,7 +117,6 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByDayWithMillisecond() {
-        shardingAlgorithmByDayWithMillisecond = new IntervalShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
         props.setProperty("datetime-lower", "2021-06-01 00:00:00.000");
@@ -126,6 +125,7 @@ public final class IntervalShardingAlgorithmTest {
         int stepAmount = 2;
         props.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
         props.setProperty("datetime-interval-unit", "DAYS");
+        shardingAlgorithmByDayWithMillisecond = new IntervalShardingAlgorithm();
         shardingAlgorithmByDayWithMillisecond.init(props);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {

@@ -50,17 +50,17 @@ public final class InlineShardingAlgorithmTest {
     }
     
     private void initInlineShardingAlgorithm() {
-        inlineShardingAlgorithm = new InlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
         props.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
+        inlineShardingAlgorithm = new InlineShardingAlgorithm();
         inlineShardingAlgorithm.init(props);
     }
     
     private void initInlineShardingAlgorithmWithSimplified() {
-        inlineShardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_${order_id % 4}");
+        inlineShardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
         inlineShardingAlgorithmWithSimplified.init(props);
     }
     

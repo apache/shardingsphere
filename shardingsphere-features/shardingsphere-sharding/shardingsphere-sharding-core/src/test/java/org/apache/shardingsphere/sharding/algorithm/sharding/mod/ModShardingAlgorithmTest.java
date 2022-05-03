@@ -40,9 +40,9 @@ public final class ModShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = new ModShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("sharding-count", "16");
+        shardingAlgorithm = new ModShardingAlgorithm();
         shardingAlgorithm.init(props);
     }
     

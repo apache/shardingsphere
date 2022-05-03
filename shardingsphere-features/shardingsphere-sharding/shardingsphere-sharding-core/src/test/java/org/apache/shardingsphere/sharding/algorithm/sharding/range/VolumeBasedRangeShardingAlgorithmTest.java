@@ -41,11 +41,11 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
         Properties props = new Properties();
         props.put("range-lower", 10);
         props.put("range-upper", 45);
         props.put("sharding-volume", 10);
+        shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
         shardingAlgorithm.init(props);
     }
     

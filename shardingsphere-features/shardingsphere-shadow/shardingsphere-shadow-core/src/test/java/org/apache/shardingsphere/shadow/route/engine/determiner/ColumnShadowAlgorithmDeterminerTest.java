@@ -37,11 +37,11 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     }
     
     private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        final ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("column", "user_id");
         props.setProperty("operation", "insert");
         props.setProperty("regex", "[1]");
+        ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
         result.init(props);
         result.setProps(props);
         return result;

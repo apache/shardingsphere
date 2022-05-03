@@ -41,9 +41,9 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("sharding-ranges", "1,5,10");
+        shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
         shardingAlgorithm.init(props);
     }
     
@@ -83,9 +83,9 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("sharding-ranges", "1,5,10");
+        BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
         shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }

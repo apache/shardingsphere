@@ -40,9 +40,9 @@ public final class HashModShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = new HashModShardingAlgorithm();
         Properties props = new Properties();
         props.put("sharding-count", 4);
+        shardingAlgorithm = new HashModShardingAlgorithm();
         shardingAlgorithm.init(props);
     }
     
