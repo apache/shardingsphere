@@ -65,13 +65,13 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @param item to add quote item
      * @return add quote string
      */
-    public StringBuilder quote(final String item) {
-        return new StringBuilder().append(getLeftIdentifierQuoteString()).append(item).append(getRightIdentifierQuoteString());
+    public String quote(final String item) {
+        return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
     }
     
     @Override
     public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        String quotedUniqueKey = quote(uniqueKey).toString();
+        String quotedUniqueKey = quote(uniqueKey);
         return "SELECT * FROM " + decorateWithSchemaName(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
     }
     
@@ -182,7 +182,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
-        String quotedKey = quote(primaryKey).toString();
+        String quotedKey = quote(primaryKey);
         return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, quote(tableName), quotedKey, quotedKey);
     }
 }
