@@ -18,19 +18,22 @@
 package org.apache.shardingsphere.infra.config.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import java.util.Properties;
 
 @Getter
-@Setter
-public final class WithoutInitAlgorithm implements ShardingSphereAlgorithm {
+public final class FixtureShardingSphereAlgorithm implements ShardingSphereAlgorithm {
     
-    private Properties props;
+    private String testValue;
+    
+    @Override
+    public void init(final Properties props) {
+        testValue = props.getProperty("key");
+    }
     
     @Override
     public String getType() {
-        return "WITHOUT_INIT";
+        return "FIXTURE";
     }
 }

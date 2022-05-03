@@ -40,8 +40,6 @@ import java.util.Set;
 /**
  * SM4 encrypt algorithm.
  */
-@Getter
-@Setter
 public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     static {
@@ -66,7 +64,9 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private byte[] sm4Key;
     
@@ -75,22 +75,22 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private String sm4ModePadding;
     
     @Override
-    public void init() {
-        String sm4Mode = createSm4Mode();
-        String sm4Padding = createSm4Padding();
+    public void init(final Properties props) {
+        String sm4Mode = createSm4Mode(props);
+        String sm4Padding = createSm4Padding(props);
         sm4ModePadding = "SM4/" + sm4Mode + "/" + sm4Padding;
-        sm4Key = createSm4Key();
-        sm4Iv = createSm4Iv(sm4Mode);
+        sm4Key = createSm4Key(props);
+        sm4Iv = createSm4Iv(props, sm4Mode);
     }
     
-    private String createSm4Mode() {
+    private String createSm4Mode(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SM4_MODE), "%s can not be null.", SM4_MODE);
         String result = String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
         Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
         return result;
     }
     
-    private byte[] createSm4Key() {
+    private byte[] createSm4Key(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null.", SM4_KEY);
         String sm4KeyValue = String.valueOf(props.getProperty(SM4_KEY));
         byte[] sm4KeyBytes = ByteUtils.fromHexString(sm4KeyValue);
@@ -98,7 +98,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return sm4KeyBytes;
     }
     
-    private byte[] createSm4Iv(final String sm4Mode) {
+    private byte[] createSm4Iv(final Properties props, final String sm4Mode) {
         if ("CBC".equalsIgnoreCase(sm4Mode)) {
             Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
             String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
@@ -109,7 +109,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return null;
     }
     
-    private String createSm4Padding() {
+    private String createSm4Padding(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null.", SM4_PADDING);
         String result = String.valueOf(props.get(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
         Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");

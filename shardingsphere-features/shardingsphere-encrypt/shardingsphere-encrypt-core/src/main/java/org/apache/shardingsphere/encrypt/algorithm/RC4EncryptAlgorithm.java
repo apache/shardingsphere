@@ -39,16 +39,16 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final int KEY_MIN_LENGTH = 5;
     
+    @Getter
+    @Setter
+    private Properties props;
+    
     private byte[] key = new byte[SBOX_LENGTH - 1];
     
     private int[] sBox = new int[SBOX_LENGTH];
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     @Override
-    public void init() {
+    public void init(final Properties props) {
         reset();
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }

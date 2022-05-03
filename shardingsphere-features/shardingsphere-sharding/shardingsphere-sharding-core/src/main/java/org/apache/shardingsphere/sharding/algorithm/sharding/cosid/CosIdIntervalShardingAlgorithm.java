@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
+import lombok.Setter;
 import me.ahoo.cosid.util.LocalDateTimeConvert;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Properties;
 
 /**
  * Interval-based time range sharding algorithm.
@@ -38,18 +41,21 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardi
     
     public static final String TIMESTAMP_UNIT_KEY = "ts-unit";
     
+    @Getter
+    @Setter
+    private Properties props;
+    
     private volatile boolean isSecondTs;
     
     private volatile DateTimeFormatter dateTimeFormatter;
     
     @Override
-    public void init() {
-        super.init();
-        if (getProps().containsKey(TIMESTAMP_UNIT_KEY)
-                && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(getProps().getProperty(TIMESTAMP_UNIT_KEY))) {
+    public void init(final Properties props) {
+        super.init(props);
+        if (props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY))) {
             isSecondTs = true;
         }
-        String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
+        String dateTimePattern = props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }
     

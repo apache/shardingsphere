@@ -101,8 +101,8 @@ public final class ShadowSelectStatementRoutingEngineTest {
         props.setProperty("operation", "select");
         props.setProperty("regex", "[1]");
         ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
+        result.init(props);
         result.setProps(props);
-        result.init();
         return result;
     }
     

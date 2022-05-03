@@ -34,11 +34,11 @@ public final class SimpleHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = new SimpleHintShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("shadow", Boolean.TRUE.toString());
+        shadowAlgorithm = new SimpleHintShadowAlgorithm();
+        shadowAlgorithm.init(props);
         shadowAlgorithm.setProps(props);
-        shadowAlgorithm.init();
     }
     
     @Test

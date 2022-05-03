@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,16 +50,18 @@ public final class InlineShardingAlgorithmTest {
     }
     
     private void initInlineShardingAlgorithm() {
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
+        props.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
         inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
-        inlineShardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        inlineShardingAlgorithm.init();
+        inlineShardingAlgorithm.init(props);
     }
     
     private void initInlineShardingAlgorithmWithSimplified() {
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "t_order_${order_id % 4}");
         inlineShardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
-        inlineShardingAlgorithmWithSimplified.getProps().setProperty("algorithm-expression", "t_order_${order_id % 4}");
-        inlineShardingAlgorithmWithSimplified.init();
+        inlineShardingAlgorithmWithSimplified.init(props);
     }
     
     @Test(expected = ShardingSphereException.class)

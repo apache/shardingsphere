@@ -39,15 +39,15 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
     private volatile ModCycle<T> modCycle;
     
     @Override
-    public void init() {
-        String divisorStr = PropertiesUtil.getRequiredValue(getProps(), MODULO_KEY);
+    public void init(final Properties props) {
+        String divisorStr = PropertiesUtil.getRequiredValue(props, MODULO_KEY);
         int divisor = Integer.parseInt(divisorStr);
-        String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
+        String logicNamePrefix = PropertiesUtil.getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
         modCycle = new ModCycle<>(divisor, logicNamePrefix);
     }
     

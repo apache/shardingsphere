@@ -40,11 +40,11 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
+        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
@@ -54,7 +54,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
@@ -63,7 +63,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
     }
     
@@ -71,12 +71,12 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         DefaultIdGeneratorProvider.INSTANCE.set(idName, MockIdGenerator.INSTANCE);
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         props.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
+        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         Comparable<?> actual = keyGenerateAlgorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith("test_"));

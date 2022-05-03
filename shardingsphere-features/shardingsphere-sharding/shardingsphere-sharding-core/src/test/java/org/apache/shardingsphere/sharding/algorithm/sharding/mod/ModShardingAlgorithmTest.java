@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,9 +40,10 @@ public final class ModShardingAlgorithmTest {
     
     @Before
     public void setup() {
+        Properties props = new Properties();
+        props.setProperty("sharding-count", "16");
         shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "16");
-        shardingAlgorithm.init();
+        shardingAlgorithm.init(props);
     }
     
     @Test

@@ -42,7 +42,7 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetDataSource() {
-        final Properties props = new Properties();
+        Properties props = new Properties();
         props.setProperty("test_read_ds_1", "5");
         props.setProperty("test_read_ds_2", "5");
         weightReplicaLoadBalanceAlgorithm.setProps(props);

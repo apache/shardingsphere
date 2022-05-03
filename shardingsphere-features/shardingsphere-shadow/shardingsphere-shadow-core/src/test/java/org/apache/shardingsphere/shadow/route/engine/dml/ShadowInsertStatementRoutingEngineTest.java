@@ -102,8 +102,8 @@ public final class ShadowInsertStatementRoutingEngineTest {
         props.setProperty("operation", "insert");
         props.setProperty("regex", "[1]");
         ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
+        result.init(props);
         result.setProps(props);
-        result.init();
         return result;
     }
     

@@ -32,22 +32,22 @@ import java.util.Properties;
 /**
  * Modulo sharding algorithm.
  */
-@Getter
-@Setter
 public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private int shardingCount;
     
     @Override
-    public void init() {
-        shardingCount = getShardingCount();
+    public void init(final Properties props) {
+        shardingCount = getShardingCount(props);
     }
     
-    private int getShardingCount() {
+    private int getShardingCount(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
         return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
     }

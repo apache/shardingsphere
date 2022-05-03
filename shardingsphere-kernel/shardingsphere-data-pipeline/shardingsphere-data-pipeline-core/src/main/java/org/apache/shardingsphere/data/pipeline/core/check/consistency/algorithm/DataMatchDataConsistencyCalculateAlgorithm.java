@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -47,8 +46,6 @@ import java.util.Properties;
 /**
  * Data match data consistency calculate algorithm.
  */
-@Getter
-@Setter
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
@@ -60,14 +57,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private int chunkSize;
     
-    private Properties props;
-    
     @Override
-    public void init() {
-        chunkSize = getChunkSize();
+    public void init(final Properties props) {
+        chunkSize = getChunkSize(props);
     }
     
-    private int getChunkSize() {
+    private int getChunkSize(final Properties props) {
         int result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
         if (result <= 0) {
             log.warn("Invalid result={}, use default value", result);

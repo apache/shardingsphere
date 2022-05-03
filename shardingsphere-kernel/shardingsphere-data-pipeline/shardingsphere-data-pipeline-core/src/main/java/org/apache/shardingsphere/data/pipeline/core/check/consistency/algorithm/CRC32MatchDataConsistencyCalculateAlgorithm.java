@@ -42,10 +42,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
         return Collections.unmodifiableList(parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList()));

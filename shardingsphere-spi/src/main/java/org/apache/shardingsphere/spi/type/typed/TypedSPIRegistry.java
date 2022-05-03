@@ -60,7 +60,12 @@ public final class TypedSPIRegistry {
     public static <T extends StatefulTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.newServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                setProperties(each, props);
+                // TODO for contains judge only, should fix here
+                if (null != props && !props.isEmpty()) {
+                    init(each, props);
+                } else {
+                    each.setProps(new Properties());
+                }
                 return Optional.of(each);
             }
         }
@@ -71,12 +76,10 @@ public final class TypedSPIRegistry {
         return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
     }
     
-    private static <T extends StatefulTypedSPI> void setProperties(final T statefulTypedSPI, final Properties props) {
-        if (null == props) {
-            return;
-        }
+    private static <T extends StatefulTypedSPI> void init(final T statefulTypedSPI, final Properties props) {
         Properties newProps = new Properties();
         props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+        statefulTypedSPI.init(newProps);
         statefulTypedSPI.setProps(newProps);
     }
     

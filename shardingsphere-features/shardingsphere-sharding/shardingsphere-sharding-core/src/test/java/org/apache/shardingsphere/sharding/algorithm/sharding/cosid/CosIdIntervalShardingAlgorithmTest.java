@@ -82,7 +82,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         props.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
         result.setProps(props);
-        result.init();
+        result.init(props);
         return result;
     }
     

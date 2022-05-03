@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -27,9 +30,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    @Override
-    public void init() {
-    }
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
     public Comparable<?> generateKey() {

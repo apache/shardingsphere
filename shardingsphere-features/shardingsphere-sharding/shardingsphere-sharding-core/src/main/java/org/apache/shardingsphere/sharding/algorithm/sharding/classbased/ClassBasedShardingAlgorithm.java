@@ -40,6 +40,10 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     
     private static final String ALGORITHM_CLASS_NAME_KEY = "algorithmClassName";
     
+    @Getter
+    @Setter
+    private Properties props;
+    
     private StandardShardingAlgorithm standardShardingAlgorithm;
     
     private ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
@@ -52,21 +56,17 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     @Getter
     private String algorithmClassName;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     @Override
-    public void init() {
+    public void init(final Properties props) {
         String strategyKey = props.getProperty(STRATEGY_KEY);
         Preconditions.checkNotNull(strategyKey, "The props `%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
         strategy = ClassBasedShardingAlgorithmStrategyType.valueOf(strategyKey.toUpperCase().trim());
         algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
         Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
-        createAlgorithmInstance();
+        createAlgorithmInstance(props);
     }
     
-    private void createAlgorithmInstance() {
+    private void createAlgorithmInstance(final Properties props) {
         switch (strategy) {
             case STANDARD:
                 standardShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, StandardShardingAlgorithm.class, props);
