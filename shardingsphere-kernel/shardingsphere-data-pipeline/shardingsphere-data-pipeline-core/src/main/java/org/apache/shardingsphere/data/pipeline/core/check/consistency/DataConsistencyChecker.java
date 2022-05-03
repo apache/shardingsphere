@@ -176,8 +176,8 @@ public final class DataConsistencyChecker {
                 TableMetaData tableMetaData = tableMetaDataMap.get(each);
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
-                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
@@ -237,8 +237,8 @@ public final class DataConsistencyChecker {
         return metaData.getSchemaByName(schema).getTables();
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames,
-                                                             final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final String tableName,
+                                                             final Collection<String> columnNames, final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
+        return new DataConsistencyCalculateParameter(sourceDataSource, tableNameSchemaNameMapping, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

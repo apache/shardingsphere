@@ -104,12 +104,13 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build query SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key, it may be primary key, not null
      * @param startUniqueValue start unique value, not null
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String tableName, String uniqueKey, Number startUniqueValue);
+    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, Number startUniqueValue);
     
     /**
      * Build check empty SQL.
