@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
@@ -32,15 +34,17 @@ import java.util.Properties;
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
     // TODO convert to static key, or use HashMap
+    @Getter
+    @Setter
     private Properties props;
     
     @Override
     public void init(final Properties props) {
-        checkPropsSize();
+        checkPropsSize(props);
         this.props = props;
     }
     
-    private void checkPropsSize() {
+    private void checkPropsSize(final Properties props) {
         Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
     }
     
