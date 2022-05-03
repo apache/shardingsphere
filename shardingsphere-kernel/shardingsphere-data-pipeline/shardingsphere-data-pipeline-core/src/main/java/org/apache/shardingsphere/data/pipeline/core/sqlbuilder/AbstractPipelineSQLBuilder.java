@@ -177,8 +177,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCheckEmptySQL(final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", quote(tableName));
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", decorate(schemaName, tableName));
     }
     
     @Override

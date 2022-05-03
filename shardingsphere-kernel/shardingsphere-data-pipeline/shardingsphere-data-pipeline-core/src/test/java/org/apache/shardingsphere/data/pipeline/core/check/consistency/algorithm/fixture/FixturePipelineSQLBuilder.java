@@ -72,7 +72,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCheckEmptySQL(final String tableName) {
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
         return null;
     }
     

@@ -114,10 +114,11 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build check empty SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return check SQL
      */
-    String buildCheckEmptySQL(String tableName);
+    String buildCheckEmptySQL(String schemaName, String tableName);
     
     /**
      * Build split by primary key range SQL.
