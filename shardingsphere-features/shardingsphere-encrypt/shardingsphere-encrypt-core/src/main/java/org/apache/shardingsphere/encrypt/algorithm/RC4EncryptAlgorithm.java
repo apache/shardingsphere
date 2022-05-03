@@ -35,13 +35,13 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final String RC4_KEY = "rc4-key-value";
     
-    @Getter
-    @Setter
-    private Properties props;
-    
     private static final int SBOX_LENGTH = 256;
     
     private static final int KEY_MIN_LENGTH = 5;
+    
+    @Getter
+    @Setter
+    private Properties props;
     
     private byte[] key = new byte[SBOX_LENGTH - 1];
     
