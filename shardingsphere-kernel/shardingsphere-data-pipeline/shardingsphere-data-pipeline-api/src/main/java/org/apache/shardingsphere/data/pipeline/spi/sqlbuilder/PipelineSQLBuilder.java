@@ -86,10 +86,11 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build truncate SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return truncate SQL
      */
-    String buildTruncateSQL(String tableName);
+    String buildTruncateSQL(String schemaName, String tableName);
     
     /**
      * Build count SQL.
