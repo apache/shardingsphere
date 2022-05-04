@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
- * Interval-based time range sharding algorithm.
+ * Interval range sharding algorithm with CosId.
  */
 public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
     

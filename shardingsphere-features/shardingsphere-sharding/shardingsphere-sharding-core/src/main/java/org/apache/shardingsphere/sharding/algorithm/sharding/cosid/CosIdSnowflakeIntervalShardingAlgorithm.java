@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Properties;
 
 /**
- * The algorithm parses the timestamp from snowflake-id as the sharding value of Interval-based time range sharding algorithm.
+ * Snowflake interval range sharding algorithm with CosId.
  */
 public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
     
@@ -48,12 +48,13 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
     @Override
     public void init(final Properties props) {
         super.init(props);
-        long epoch = CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
-        if (props.containsKey(EPOCH_KEY)) {
-            epoch = Long.parseLong(props.getProperty(EPOCH_KEY));
-        }
-        snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(epoch,
-                MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
+        snowflakeIdStateParser = getSnowflakeIdStateParser(props);
+    }
+    
+    private SnowflakeIdStateParser getSnowflakeIdStateParser(final Properties props) {
+        long epoch = props.containsKey(EPOCH_KEY) ? Long.parseLong(props.getProperty(EPOCH_KEY)) : CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
+        return new MillisecondSnowflakeIdStateParser(
+                epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
     }
     
     @Override

@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Interval-based time range sharding algorithm.
+ * Abstract interval sharding algorithm with CosId.
  */
 public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>> implements StandardShardingAlgorithm<T> {
     
