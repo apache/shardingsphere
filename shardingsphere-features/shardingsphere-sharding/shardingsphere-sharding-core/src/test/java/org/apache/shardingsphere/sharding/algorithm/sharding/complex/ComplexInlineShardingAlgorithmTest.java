@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,25 +42,25 @@ public final class ComplexInlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        initComplexInlineShardingAlgorithm();
-        initComplexInlineShardingAlgorithmAllowRangeQuery();
+        complexInlineShardingAlgorithm = (ComplexInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()));
+        complexInlineShardingAlgorithmAllowRangeQuery = (ComplexInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COMPLEX_INLINE", createAllowRangeQueryProperties()));
     }
     
-    private void initComplexInlineShardingAlgorithm() {
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        props.setProperty("sharding-columns", "type,order_id");
-        complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
-        complexInlineShardingAlgorithm.init(props);
+    private Properties createDisallowRangeQueryProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
+        result.setProperty("sharding-columns", "type,order_id");
+        return result;
     }
     
-    private void initComplexInlineShardingAlgorithmAllowRangeQuery() {
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        props.setProperty("sharding-columns", "type,order_id");
-        props.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        complexInlineShardingAlgorithmAllowRangeQuery = new ComplexInlineShardingAlgorithm();
-        complexInlineShardingAlgorithmAllowRangeQuery.init(props);
+    private Properties createAllowRangeQueryProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
+        result.setProperty("sharding-columns", "type,order_id");
+        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
+        return result;
     }
     
     @Test
