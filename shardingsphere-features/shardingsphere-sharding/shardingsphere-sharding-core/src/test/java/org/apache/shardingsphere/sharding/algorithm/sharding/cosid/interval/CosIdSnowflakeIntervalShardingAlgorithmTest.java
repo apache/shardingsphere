@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.interval;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;

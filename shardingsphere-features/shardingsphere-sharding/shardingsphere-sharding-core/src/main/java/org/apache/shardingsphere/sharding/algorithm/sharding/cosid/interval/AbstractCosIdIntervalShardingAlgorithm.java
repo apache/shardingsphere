@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.interval;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
@@ -37,9 +37,9 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Abstract interval sharding algorithm with CosId.
+ * Abstract interval range sharding algorithm with CosId.
  */
-public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>> implements StandardShardingAlgorithm<T> {
+public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparable<?>> implements StandardShardingAlgorithm<T> {
     
     public static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     

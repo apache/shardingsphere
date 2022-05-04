@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.interval;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -31,7 +31,7 @@ import java.util.Properties;
 /**
  * Interval range sharding algorithm with CosId.
  */
-public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
+public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL";
     

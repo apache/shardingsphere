@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.interval;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -31,9 +31,9 @@ import java.time.LocalDateTime;
 import java.util.Properties;
 
 /**
- * Snowflake interval range sharding algorithm with CosId.
+ * Snowflake interval sharding algorithm with CosId.
  */
-public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
+public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
     
