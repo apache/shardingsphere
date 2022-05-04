@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,14 +79,16 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     protected String decorate(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (isSchemaEnabled() && !Strings.isNullOrEmpty(schemaName)) {
+        if (isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
         result.append(quote(tableName));
         return result.toString();
     }
     
-    protected abstract boolean isSchemaEnabled();
+    private boolean isSchemaAvailable() {
+        return DatabaseTypeRegistry.getActualDatabaseType(getType()).isSchemaAvailable();
+    }
     
     @Override
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
