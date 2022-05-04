@@ -54,12 +54,4 @@ public final class MD5EncryptAlgorithmTest {
     public void assertDecode() {
         assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
     }
-    
-    @Test
-    public void assertProps() {
-        Properties props = new Properties();
-        props.setProperty("key1", "value1");
-        encryptAlgorithm.setProps(props);
-        assertThat(encryptAlgorithm.getProps().getProperty("key1"), is("value1"));
-    }
 }
