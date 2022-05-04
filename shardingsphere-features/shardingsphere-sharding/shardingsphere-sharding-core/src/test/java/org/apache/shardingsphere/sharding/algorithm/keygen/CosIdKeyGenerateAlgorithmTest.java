@@ -44,7 +44,6 @@ public final class CosIdKeyGenerateAlgorithmTest {
         props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         keyGenerateAlgorithm.init(props);
-        keyGenerateAlgorithm.setProps(props);
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
@@ -76,7 +75,6 @@ public final class CosIdKeyGenerateAlgorithmTest {
         props.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         keyGenerateAlgorithm.init(props);
-        keyGenerateAlgorithm.setProps(props);
         Comparable<?> actual = keyGenerateAlgorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith("test_"));

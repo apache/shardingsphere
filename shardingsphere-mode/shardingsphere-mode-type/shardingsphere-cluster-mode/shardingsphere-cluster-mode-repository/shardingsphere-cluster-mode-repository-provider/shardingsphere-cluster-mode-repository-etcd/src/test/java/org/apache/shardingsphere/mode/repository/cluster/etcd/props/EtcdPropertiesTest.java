@@ -28,15 +28,17 @@ public final class EtcdPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
-        EtcdProperties actual = new EtcdProperties(props);
-        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
+        assertThat(new EtcdProperties(createProperties()).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
+        return result;
     }
     
     @Test
     public void assertGetDefaultValue() {
-        EtcdProperties actual = new EtcdProperties(new Properties());
-        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
+        assertThat(new EtcdProperties(new Properties()).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
     }
 }
