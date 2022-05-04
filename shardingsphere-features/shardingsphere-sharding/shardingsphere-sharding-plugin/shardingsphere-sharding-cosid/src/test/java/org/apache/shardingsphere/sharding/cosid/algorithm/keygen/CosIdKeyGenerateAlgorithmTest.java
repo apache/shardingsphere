@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
 import me.ahoo.cosid.provider.DefaultIdGeneratorProvider;
 import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.util.MockIdGenerator;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -44,8 +42,8 @@ public final class CosIdKeyGenerateAlgorithmTest {
         props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         keyGenerateAlgorithm.init(props);
-        assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
+        assertThat(keyGenerateAlgorithm.generateKey(), CoreMatchers.is(1L));
+        assertThat(keyGenerateAlgorithm.generateKey(), CoreMatchers.is(2L));
     }
     
     @Test
@@ -54,8 +52,8 @@ public final class CosIdKeyGenerateAlgorithmTest {
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         keyGenerateAlgorithm.init(new Properties());
-        assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
+        assertThat(keyGenerateAlgorithm.generateKey(), CoreMatchers.is(1L));
+        assertThat(keyGenerateAlgorithm.generateKey(), CoreMatchers.is(2L));
     }
     
     @Test(expected = NotFoundIdGeneratorException.class)
@@ -76,8 +74,8 @@ public final class CosIdKeyGenerateAlgorithmTest {
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
         keyGenerateAlgorithm.init(props);
         Comparable<?> actual = keyGenerateAlgorithm.generateKey();
-        assertThat(actual, instanceOf(String.class));
-        assertThat(actual.toString(), startsWith("test_"));
+        assertThat(actual, CoreMatchers.instanceOf(String.class));
+        assertThat(actual.toString(), CoreMatchers.startsWith("test_"));
         assertTrue(actual.toString().length() <= 16);
     }
 }
