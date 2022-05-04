@@ -172,7 +172,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         private final LocalDateTime dateTime;
         
         private final String expected;
-    
+        
         private CosIdIntervalShardingAlgorithm algorithm;
         
         @Before
