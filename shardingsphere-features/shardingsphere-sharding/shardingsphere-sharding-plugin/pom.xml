@@ -25,8 +25,8 @@
         <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-plugin</artifactId>
-    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
         <module>shardingsphere-sharding-cosid</module>
