@@ -36,6 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,6 +70,9 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private List<ShardingCondition> createShardingConditionsWithInsertValues(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
+        if (isInsertMultiTableElementSegment(sqlStatementContext)) {
+            return new ArrayList<>();
+        }
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
         List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
@@ -75,6 +81,19 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
         return result;
+    }
+    
+    private Collection<InsertStatement> getInsertStatement(final InsertStatementContext sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
+            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().get().getInsertStatements();
+        } 
+        return Collections.singletonList(sqlStatementContext.getSqlStatement());
+    }
+    
+    private boolean isInsertMultiTableElementSegment(final InsertStatementContext sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        return sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent();
     }
     
     private Collection<String> getColumnNames(final InsertStatementContext insertStatementContext) {
@@ -127,6 +146,9 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {
+        if (isInsertMultiTableElementSegment(sqlStatementContext)) {
+            return;
+        }
         Optional<GeneratedKeyContext> generatedKey = sqlStatementContext.getGeneratedKeyContext();
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated() && shardingRule.findTableRule(tableName).isPresent()) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -73,6 +75,33 @@ public final class InsertStatementContextTest {
     @Test
     public void assertOracleInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertOracleMultiInsertStatementContextWithColumnNames() {
+        assertInsertStatementContextWithColumnNames(createOracleMultiInsertStatement());
+    }
+    
+    private OracleInsertStatement createOracleMultiInsertStatement() {
+        InsertStatement insertStatement1 = new OracleInsertStatement();
+        insertStatement1.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        InsertColumnsSegment insertColumnsSegment1 = new InsertColumnsSegment(0, 0, Arrays.asList(
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        insertStatement1.setInsertColumns(insertColumnsSegment1);
+        setUpInsertValues(insertStatement1);
+        
+        InsertStatement insertStatement2 = new OracleInsertStatement();
+        insertStatement2.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        InsertColumnsSegment insertColumnsSegment2 = new InsertColumnsSegment(0, 0, Arrays.asList(
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        insertStatement2.setInsertColumns(insertColumnsSegment2);
+        setUpInsertValues(insertStatement2);
+        
+        OracleInsertStatement oracleInsertStatement = new OracleInsertStatement();
+        InsertMultiTableElementSegment insertMultiTableElementSegment = new InsertMultiTableElementSegment(0, 1);
+        insertMultiTableElementSegment.getInsertStatements().addAll(Lists.newArrayList(insertStatement1, insertStatement2));
+        oracleInsertStatement.setInsertMultiTableElementSegment(insertMultiTableElementSegment);
+        return oracleInsertStatement;
     }
     
     @Test

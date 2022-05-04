@@ -194,8 +194,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      */
     public List<List<Object>> getGroupedParameters() {
         List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : insertValueContexts) {
-            result.add(each.getParameters());
+        if (null != insertValueContexts) {
+            for (InsertValueContext each : insertValueContexts) {
+                result.add(each.getParameters());
+            }
         }
         if (null != insertSelectContext) {
             result.add(insertSelectContext.getParameters());
