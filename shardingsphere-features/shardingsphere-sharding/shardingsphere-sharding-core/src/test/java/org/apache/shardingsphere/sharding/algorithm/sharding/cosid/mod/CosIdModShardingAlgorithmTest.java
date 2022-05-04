@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.mod;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,7 @@ import me.ahoo.cosid.sharding.ExactCollection;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.algorithm.sharding.cosid.Arguments;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
@@ -62,17 +63,17 @@ public final class CosIdModShardingAlgorithmTest {
         return result;
     }
     
-    @RequiredArgsConstructor
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class PreciseValueDoShardingTest {
         
         private final long id;
         
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
+        private CosIdModShardingAlgorithm<Long> algorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlgorithm();
+            algorithm = createShardingAlgorithm();
         }
         
         @Parameters
@@ -83,7 +84,7 @@ public final class CosIdModShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), id);
-            String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
+            String actual = algorithm.doSharding(ALL_NODES, shardingValue);
             String expected = LOGIC_NAME_PREFIX + (id % DIVISOR);
             assertThat(actual, is(expected));
         }
@@ -97,11 +98,11 @@ public final class CosIdModShardingAlgorithmTest {
         
         private final Collection<String> expected;
         
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
+        private CosIdModShardingAlgorithm<Long> algorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlgorithm();
+            algorithm = createShardingAlgorithm();
         }
         
         @Parameters
@@ -153,7 +154,7 @@ public final class CosIdModShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), rangeValue);
-            Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
+            Collection<String> actual = algorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
