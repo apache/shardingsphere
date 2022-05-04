@@ -71,7 +71,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSQLStatement(), mock(ConnectionSession.class)));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -84,12 +84,16 @@ public final class ExportDatabaseConfigurationHandlerTest {
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "ds_${order_id % 2}");
-        result.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", createProperties()));
         String scalingName = "default_scaling";
         result.setScalingName(scalingName);
         result.getScaling().put(scalingName, null);
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "ds_${order_id % 2}");
         return result;
     }
     
@@ -127,12 +131,8 @@ public final class ExportDatabaseConfigurationHandlerTest {
         return result;
     }
     
-    private ExportDatabaseConfigurationStatement createSqlStatement() {
+    private ExportDatabaseConfigurationStatement createSQLStatement() {
         return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
-    }
-    
-    private ConnectionSession mockConnectionSession() {
-        return mock(ConnectionSession.class);
     }
     
     private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {

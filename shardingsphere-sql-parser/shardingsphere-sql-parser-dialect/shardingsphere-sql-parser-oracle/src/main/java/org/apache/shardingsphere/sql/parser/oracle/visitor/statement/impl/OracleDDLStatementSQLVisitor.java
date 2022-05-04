@@ -415,7 +415,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
         return new OracleCreateSynonymStatement();
     }
-
+    
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
         return new OracleDropSynonymStatement();

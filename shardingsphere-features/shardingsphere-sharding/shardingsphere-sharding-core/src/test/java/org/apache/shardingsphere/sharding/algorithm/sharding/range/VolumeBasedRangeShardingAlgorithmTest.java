@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,12 +43,15 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.put("range-lower", 10);
-        props.put("range-upper", 45);
-        props.put("sharding-volume", 10);
-        shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
+        shardingAlgorithm = (VolumeBasedRangeShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("VOLUME_RANGE", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("range-lower", 10);
+        result.put("range-upper", 45);
+        result.put("sharding-volume", 10);
+        return result;
     }
     
     @Test
@@ -123,12 +128,16 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        Properties props = new Properties();
-        props.setProperty("range-lower", "10");
-        props.setProperty("range-upper", "45");
-        props.setProperty("sharding-volume", "10");
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
+        shardingAlgorithm.init(createPropertiesForStringValue());
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
+    }
+    
+    private Properties createPropertiesForStringValue() {
+        Properties result = new Properties();
+        result.setProperty("range-lower", "10");
+        result.setProperty("range-upper", "45");
+        result.setProperty("sharding-volume", "10");
+        return result;
     }
 }

@@ -43,9 +43,13 @@ public final class ShadowRuleStatementConverterTest {
     }
     
     private ShadowRuleSegment createTableRuleSegment() {
-        Properties props = new Properties();
-        props.setProperty("foo", "bar");
         return new ShadowRuleSegment("ruleName", "source", "shadow",
-                Collections.singletonMap("t_order", Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", props)))));
+                Collections.singletonMap("t_order", Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", createProperties())))));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("foo", "bar");
+        return result;
     }
 }

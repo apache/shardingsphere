@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 import java.util.Collection;
@@ -26,11 +26,11 @@ import java.util.Collection;
 /**
  * Drop traffic rule statement.
  */
-@Setter
+@RequiredArgsConstructor
 @Getter
 public final class DropTrafficRuleStatement extends UpdatableRALStatement {
     
-    private boolean containsIfExistClause;
+    private final Collection<String> ruleNames;
     
-    private Collection<String> ruleNames;
+    private final boolean containsIfExistClause;
 }

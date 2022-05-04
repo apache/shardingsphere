@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,10 +43,13 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("sharding-ranges", "1,5,10");
-        shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
+        shardingAlgorithm = (BoundaryBasedRangeShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("BOUNDARY_RANGE", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("sharding-ranges", "1,5,10");
+        return result;
     }
     
     @Test
@@ -83,10 +88,6 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        Properties props = new Properties();
-        props.setProperty("sharding-ranges", "1,5,10");
-        BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }
 }
