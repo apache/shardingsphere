@@ -77,5 +77,7 @@ execute
     | alterDatabaseLink
     | alterDatabaseDictionary
     | createSynonym
+    | createDirectory
+    | dropSynonym
     ) SEMI_?
     ;

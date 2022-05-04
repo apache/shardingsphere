@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * ShardingSphere algorithm post processor.
+ * Drop synonym statement test case.
  */
-public interface ShardingSphereAlgorithmPostProcessor {
-    
-    /**
-     * Initialize algorithm.
-     */
-    void init();
+public final class DropSynonymStatementTestCase extends SQLParserTestCase {
 }

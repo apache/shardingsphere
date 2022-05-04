@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
+import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -46,33 +48,30 @@ public final class CosIdModShardingAlgorithmTest {
     
     static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
     
-    static CosIdModShardingAlgorithm<Long> createShardingAlg() {
-        Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        properties.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
+    static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
+        Properties props = new Properties();
+        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        props.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
         CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
-        result.setProps(properties);
-        result.init();
+        result.setProps(props);
+        result.init(props);
         return result;
     }
     
+    @RequiredArgsConstructor
     @RunWith(Parameterized.class)
     public static class PreciseValueDoShardingTest {
         
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
-        
         private final long id;
         
-        public PreciseValueDoShardingTest(final long id) {
-            this.id = id;
-        }
+        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Number[] argsProvider() {
             return Arguments.of(1L, 2L, 3L, 4L, 5L, 6L);
         }
@@ -87,25 +86,21 @@ public final class CosIdModShardingAlgorithmTest {
     }
     
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class RangeValueDoShardingTest {
-        
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         private final Range<Long> rangeValue;
         
         private final Collection<String> expected;
         
-        public RangeValueDoShardingTest(final Range<Long> rangeValue, final Collection<String> expected) {
-            this.rangeValue = rangeValue;
-            this.expected = expected;
-        }
+        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlg();
+            shardingAlgorithm = createShardingAlgorithm();
         }
         
-        @Parameterized.Parameters
+        @Parameters
         public static Iterable<Object[]> argsProvider() {
             return Arguments.ofArrayElement(Arguments.of(Range.all(), ALL_NODES),
                     Arguments.of(Range.closed(1L, 3L), new ExactCollection<>("t_mod_1", "t_mod_2", "t_mod_3")),

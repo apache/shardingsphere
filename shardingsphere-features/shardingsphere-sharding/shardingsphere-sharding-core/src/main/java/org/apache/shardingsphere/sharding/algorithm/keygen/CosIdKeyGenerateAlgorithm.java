@@ -38,16 +38,16 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
     private volatile LazyIdGenerator lazyIdGenerator;
     
     private volatile boolean asString;
     
     @Override
-    public void init() {
-        lazyIdGenerator = new LazyIdGenerator(getProps().getProperty(CosIdAlgorithmConstants.ID_NAME_KEY, IdGeneratorProvider.SHARE));
-        String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
+    public void init(final Properties props) {
+        lazyIdGenerator = new LazyIdGenerator(props.getProperty(CosIdAlgorithmConstants.ID_NAME_KEY, IdGeneratorProvider.SHARE));
+        String asStringStr = props.getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
         asString = Boolean.parseBoolean(asStringStr);
         lazyIdGenerator.tryGet(false);
     }

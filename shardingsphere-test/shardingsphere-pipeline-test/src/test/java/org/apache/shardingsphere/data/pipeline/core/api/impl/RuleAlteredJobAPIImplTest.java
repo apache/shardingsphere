@@ -122,7 +122,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertIsDataConsistencyCheckNeeded() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        assertThat(ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
+        assertTrue(ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId.get()));
     }
     
     @Test
@@ -159,7 +159,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertAggregateEmptyDataConsistencyCheckResults() {
-        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()), is(false));
+        assertFalse(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()));
     }
     
     @Test

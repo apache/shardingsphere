@@ -48,10 +48,10 @@ public final class PluginBootServiceManager {
             if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(entry.getKey())) {
                 continue;
             }
-            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
+            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
                 try {
-                    log.info("Start plugin: {}", pluginBootService.getType());
-                    pluginBootService.start(entry.getValue());
+                    log.info("Start plugin: {}", optional.getType());
+                    optional.start(entry.getValue());
                     // CHECKSTYLE:OFF
                 } catch (final Throwable ex) {
                     // CHECKSTYLE:ON

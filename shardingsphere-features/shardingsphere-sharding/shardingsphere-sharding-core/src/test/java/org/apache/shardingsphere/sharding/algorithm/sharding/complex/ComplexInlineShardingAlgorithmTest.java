@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
@@ -44,18 +45,20 @@ public final class ComplexInlineShardingAlgorithmTest {
     }
     
     private void initComplexInlineShardingAlgorithm() {
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
+        props.setProperty("sharding-columns", "type,order_id");
         complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
-        complexInlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        complexInlineShardingAlgorithm.getProps().setProperty("sharding-columns", "type,order_id");
-        complexInlineShardingAlgorithm.init();
+        complexInlineShardingAlgorithm.init(props);
     }
     
     private void initComplexInlineShardingAlgorithmAllowRangeQuery() {
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
+        props.setProperty("sharding-columns", "type,order_id");
+        props.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
         complexInlineShardingAlgorithmAllowRangeQuery = new ComplexInlineShardingAlgorithm();
-        complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("sharding-columns", "type,order_id");
-        complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
-        complexInlineShardingAlgorithmAllowRangeQuery.init();
+        complexInlineShardingAlgorithmAllowRangeQuery.init(props);
     }
     
     @Test

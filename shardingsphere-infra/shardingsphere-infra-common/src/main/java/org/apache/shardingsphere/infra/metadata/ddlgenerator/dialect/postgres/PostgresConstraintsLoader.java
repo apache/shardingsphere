@@ -71,13 +71,13 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private void loadPrimaryOrUniqueConstraint(final Map<String, Object> context, final String name, final String type) {
-        Collection<Map<String, Object>> constraintsProperties = fetchConstraintsProperties(context, type);
-        fetchConstraintsColumns(constraintsProperties);
-        context.put(name, constraintsProperties.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
+        Collection<Map<String, Object>> constraintsProps = fetchConstraintsProperties(context, type);
+        fetchConstraintsColumns(constraintsProps);
+        context.put(name, constraintsProps.stream().filter(each -> !isPartitionAndConstraintInherited(each, context)).collect(Collectors.toList()));
     }
     
-    private void fetchConstraintsColumns(final Collection<Map<String, Object>> constraintsProperties) {
-        for (Map<String, Object> each : constraintsProperties) {
+    private void fetchConstraintsColumns(final Collection<Map<String, Object>> constraintsProps) {
+        for (Map<String, Object> each : constraintsProps) {
             Collection<Map<String, Object>> columns = new LinkedList<>();
             for (Map<String, Object> col : fetchConstraintsCols(each)) {
                 Map<String, Object> column = new HashMap<>();
@@ -85,10 +85,10 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
                 columns.add(column);
             }
             each.put("columns", columns);
-            Map<String, Object> param = new LinkedHashMap<>();
-            param.put("cid", each.get("oid"));
+            Map<String, Object> parameters = new LinkedHashMap<>();
+            parameters.put("cid", each.get("oid"));
             Collection<Object> includes = new LinkedList<>();
-            for (Map<String, Object> include : executeByTemplate(param, "index_constraint/11_plus/get_constraint_include.ftl")) {
+            for (Map<String, Object> include : executeByTemplate(parameters, "index_constraint/11_plus/get_constraint_include.ftl")) {
                 includes.add(include.get("colname"));
             }
             each.put("include", includes);
@@ -106,39 +106,39 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
         return result;
     }
     
-    private Collection<Map<String, Object>> fetchConstraintsCols(final Map<String, Object> constraintColProperties) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("cid", constraintColProperties.get("oid"));
-        map.put("colcnt", constraintColProperties.get("col_count"));
-        return executeByTemplate(map, "index_constraint/default/get_costraint_cols.ftl");
+    private Collection<Map<String, Object>> fetchConstraintsCols(final Map<String, Object> constraintColProps) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cid", constraintColProps.get("oid"));
+        parameters.put("colcnt", constraintColProps.get("col_count"));
+        return executeByTemplate(parameters, "index_constraint/default/get_costraint_cols.ftl");
     }
     
     private Collection<Map<String, Object>> fetchConstraintsProperties(final Map<String, Object> context, final String constraintType) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("did", context.get("did"));
-        param.put("tid", context.get("tid"));
-        param.put("cid", context.get("cid"));
-        param.put("constraint_type", constraintType);
-        return executeByTemplate(param, "index_constraint/11_plus/properties.ftl");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("did", context.get("did"));
+        parameters.put("tid", context.get("tid"));
+        parameters.put("cid", context.get("cid"));
+        parameters.put("constraint_type", constraintType);
+        return executeByTemplate(parameters, "index_constraint/11_plus/properties.ftl");
     }
     
     private Collection<Map<String, Object>> getExclusionConstraints(final Map<String, Object> context) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", context.get("tid"));
-        param.put("did", context.get("did"));
-        Collection<Map<String, Object>> result = executeByTemplate(param, "exclusion_constraint/11_plus/properties.ftl");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", context.get("tid"));
+        parameters.put("did", context.get("did"));
+        Collection<Map<String, Object>> result = executeByTemplate(parameters, "exclusion_constraint/11_plus/properties.ftl");
         for (Map<String, Object> each : result) {
             getExclusionConstraintsColumns(each);
         }
         return result;
     }
     
-    private void getExclusionConstraintsColumns(final Map<String, Object> exclusionConstraintsProperties) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("cid", exclusionConstraintsProperties.get("oid"));
-        param.put("col_count", exclusionConstraintsProperties.get("col_count"));
+    private void getExclusionConstraintsColumns(final Map<String, Object> exclusionConstraintsProps) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cid", exclusionConstraintsProps.get("oid"));
+        parameters.put("col_count", exclusionConstraintsProps.get("col_count"));
         Collection<Map<String, Object>> columns = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(param, "exclusion_constraint/9.2_plus/get_constraint_cols.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(parameters, "exclusion_constraint/9.2_plus/get_constraint_cols.ftl")) {
             boolean order = (((int) each.get("options")) & 1) == 0;
             boolean nullsOrder = (((int) each.get("options")) & 2) != 0;
             Map<String, Object> col = new HashMap<>();
@@ -151,20 +151,20 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
             col.put("is_exp", each.get("is_exp"));
             columns.add(col);
         }
-        exclusionConstraintsProperties.put("columns", columns);
+        exclusionConstraintsProps.put("columns", columns);
         Map<String, Object> map = new HashMap<>();
-        map.put("cid", exclusionConstraintsProperties.get("oid"));
+        map.put("cid", exclusionConstraintsProps.get("oid"));
         Collection<String> include = new LinkedList<>();
         for (Map<String, Object> each : executeByTemplate(map, "exclusion_constraint/11_plus/get_constraint_include.ftl")) {
             include.add(each.get("colname").toString());
         }
-        exclusionConstraintsProperties.put("include", include);
+        exclusionConstraintsProps.put("include", include);
     }
     
     private Collection<Map<String, Object>> getForeignKeys(final Long tid) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", tid);
-        Collection<Map<String, Object>> result = executeByTemplate(param, "foreign_key/9.1_plus/properties.ftl");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", tid);
+        Collection<Map<String, Object>> result = executeByTemplate(parameters, "foreign_key/9.1_plus/properties.ftl");
         for (Map<String, Object> each : result) {
             Collection<Map<String, Object>> columns = new LinkedList<>();
             Set<String> cols = new HashSet<>();
@@ -188,9 +188,9 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private void setRemoteName(final Map<String, Object> foreignKey, final Collection<Map<String, Object>> columns) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", columns.iterator().next().get("references"));
-        Collection<Map<String, Object>> parents = executeByTemplate(param, "foreign_key/default/get_parent.ftl");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", columns.iterator().next().get("references"));
+        Collection<Map<String, Object>> parents = executeByTemplate(parameters, "foreign_key/default/get_parent.ftl");
         for (Map<String, Object> each : parents) {
             foreignKey.put("remote_schema", each.get("schema"));
             foreignKey.put("remote_table", each.get("table"));
@@ -198,16 +198,16 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
         }
     }
     
-    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProperties) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", tid);
+    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProps) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", tid);
         Collection<Map<String, Object>> keys = new LinkedList<>();
         Map<String, Object> key = new HashMap<>();
-        key.put("confkey", foreignKeyProperties.get("confkey"));
-        key.put("conkey", foreignKeyProperties.get("conkey"));
+        key.put("confkey", foreignKeyProps.get("confkey"));
+        key.put("conkey", foreignKeyProps.get("conkey"));
         keys.add(key);
-        param.put("keys", keys);
-        return executeByTemplate(param, "foreign_key/default/get_constraint_cols.ftl");
+        parameters.put("keys", keys);
+        return executeByTemplate(parameters, "foreign_key/default/get_constraint_cols.ftl");
     }
     
     private boolean isPartitionAndConstraintInherited(final Map<String, Object> constraint, final Map<String, Object> context) {
@@ -215,9 +215,9 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private Optional<String> searchCoveringIndex(final Long tid, final Set<String> cols) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", tid);
-        for (Map<String, Object> each : executeByTemplate(param, "foreign_key/default/get_constraints.ftl")) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", tid);
+        for (Map<String, Object> each : executeByTemplate(parameters, "foreign_key/default/get_constraints.ftl")) {
             Map<String, Object> map = new HashMap<>();
             map.put("cid", each.get("oid"));
             map.put("colcnt", each.get("col_count"));
@@ -255,8 +255,8 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     }
     
     private Collection<Map<String, Object>> getCheckConstraints(final Long tid) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("tid", tid);
-        return executeByTemplate(param, "check_constraint/9.2_plus/get_cols.ftl");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tid", tid);
+        return executeByTemplate(parameters, "check_constraint/9.2_plus/get_cols.ftl");
     }
 }

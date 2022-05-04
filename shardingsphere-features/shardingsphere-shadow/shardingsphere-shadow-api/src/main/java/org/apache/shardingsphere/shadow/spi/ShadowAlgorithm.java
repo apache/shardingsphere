@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.shadow.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
  * Shadow algorithm.
  */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface ShadowAlgorithm extends ShardingSphereAlgorithm {
 }

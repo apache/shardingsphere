@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -73,7 +74,7 @@ public class EncryptSpringBootStarterTest {
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
         assertThat(tableRuleConfig.getColumns().size(), is(2));
-        assertThat(tableRuleConfig.getQueryWithCipherColumn(), is(false));
+        assertFalse(tableRuleConfig.getQueryWithCipherColumn());
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn2(columnRuleConfigs.next());
         assertEncryptColumn1(columnRuleConfigs.next());

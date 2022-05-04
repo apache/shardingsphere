@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.sharding.IntervalStep;
 import me.ahoo.cosid.sharding.IntervalTimeline;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
@@ -60,10 +58,6 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
     
     private ZoneId zoneId = ZoneId.systemDefault();
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     /**
      * get zone id.
      *
@@ -74,21 +68,21 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
     }
     
     @Override
-    public void init() {
-        if (getProps().containsKey(ZONE_ID_KEY)) {
-            zoneId = ZoneId.of(getRequiredValue(ZONE_ID_KEY));
+    public void init(final Properties props) {
+        if (props.containsKey(ZONE_ID_KEY)) {
+            zoneId = ZoneId.of(getRequiredValue(props, ZONE_ID_KEY));
         }
-        String logicNamePrefix = getRequiredValue(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
-        LocalDateTime effectiveLower = LocalDateTime.parse(getRequiredValue(DATE_TIME_LOWER_KEY), DEFAULT_DATE_TIME_FORMATTER);
-        LocalDateTime effectiveUpper = LocalDateTime.parse(getRequiredValue(DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
-        DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(SHARDING_SUFFIX_FORMAT_KEY));
-        ChronoUnit stepUnit = ChronoUnit.valueOf(getRequiredValue(INTERVAL_UNIT_KEY));
-        int stepAmount = Integer.parseInt(getProps().getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
+        String logicNamePrefix = getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
+        LocalDateTime effectiveLower = LocalDateTime.parse(getRequiredValue(props, DATE_TIME_LOWER_KEY), DEFAULT_DATE_TIME_FORMATTER);
+        LocalDateTime effectiveUpper = LocalDateTime.parse(getRequiredValue(props, DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
+        DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(props, SHARDING_SUFFIX_FORMAT_KEY));
+        ChronoUnit stepUnit = ChronoUnit.valueOf(getRequiredValue(props, INTERVAL_UNIT_KEY));
+        int stepAmount = Integer.parseInt(props.getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
         intervalTimeline = new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
     }
     
-    private String getRequiredValue(final String key) {
-        return PropertiesUtil.getRequiredValue(getProps(), key);
+    private String getRequiredValue(final Properties props, final String key) {
+        return PropertiesUtil.getRequiredValue(props, key);
     }
     
     @Override

@@ -25,10 +25,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.c
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DenyUserStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Deny user statement assert.
@@ -58,10 +57,10 @@ public final class DenyUserStatementAssert {
     }
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
-        if (0 != expected.getColumns().size()) {
-            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
+        if (expected.getColumns().isEmpty()) {
+            assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
         } else {
-            assertThat(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().size(), is(0));
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }

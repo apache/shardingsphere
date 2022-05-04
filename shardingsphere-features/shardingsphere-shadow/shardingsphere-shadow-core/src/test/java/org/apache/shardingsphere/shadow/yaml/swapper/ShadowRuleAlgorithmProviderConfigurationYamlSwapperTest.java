@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
@@ -51,18 +50,15 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         YamlShadowRuleConfiguration actual = swapper.swapToYamlConfiguration(expected);
         actual.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfig = expected.getDataSources().get(key);
-            assertNotNull(dataSourceConfig);
             assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
             assertThat(value.getSourceDataSourceName(), is(dataSourceConfig.getSourceDataSourceName()));
         });
         actual.getTables().forEach((key, value) -> {
             ShadowTableConfiguration shadowTableConfig = expected.getTables().get(key);
-            assertNotNull(shadowTableConfig);
             assertThat(value.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
         });
         actual.getShadowAlgorithms().forEach((key, value) -> {
             ShadowAlgorithm shadowAlgorithm = expected.getShadowAlgorithms().get(key);
-            assertNotNull(shadowAlgorithm);
             assertThat(value.getType(), is(shadowAlgorithm.getType()));
         });
     }

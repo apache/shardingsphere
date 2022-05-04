@@ -37,17 +37,13 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     
     private static final String TEST_KEY = "TEST";
     
-    private Properties props = new Properties();
+    private Properties props;
     
     private byte[] key = DigestUtils.sha256(TEST_KEY);
     
     private Map<String, ShardingSphereSchema> schemas;
     
     private String databaseName;
-    
-    @Override
-    public void init() {
-    }
     
     @Override
     public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {

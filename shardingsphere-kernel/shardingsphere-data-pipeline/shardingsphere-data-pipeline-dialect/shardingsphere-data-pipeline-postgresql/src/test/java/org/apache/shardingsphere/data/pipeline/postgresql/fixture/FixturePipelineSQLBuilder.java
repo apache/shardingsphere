@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule;
+package org.apache.shardingsphere.data.pipeline.postgresql.fixture;
 
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-public final class TransactionRuleTest {
+public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    @Test
-    public void assertGetRuleType() {
-        TransactionRule transactionRule = new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
-        assertThat(transactionRule.getType(), is(TransactionRule.class.getSimpleName()));
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected boolean isSchemaEnabled() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

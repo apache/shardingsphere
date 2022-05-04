@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
@@ -93,6 +94,7 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
+            // TODO use original table name, for metadata loader
             inventoryDumperConfig.setActualTableName(key.getLowercase());
             inventoryDumperConfig.setLogicTableName(value.getLowercase());
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
@@ -130,11 +132,12 @@ public final class InventoryTaskSplitter {
     private Collection<IngestPosition<?>> getInventoryPositions(final RuleAlteredJobContext jobContext, final InventoryDumperConfiguration dumperConfig,
                                                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         JobProgress initProgress = jobContext.getInitProgress();
+        String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
             Collection<IngestPosition<?>> result = initProgress.getInventoryPosition(dumperConfig.getActualTableName()).values();
             for (IngestPosition<?> each : result) {
                 if (each instanceof PrimaryKeyPosition) {
-                    String primaryKey = metaDataLoader.getTableMetaData(dumperConfig.getActualTableName()).getPrimaryKeyColumns().get(0);
+                    String primaryKey = metaDataLoader.getTableMetaData(schemaName, dumperConfig.getActualTableName()).getPrimaryKeyColumns().get(0);
                     dumperConfig.setPrimaryKey(primaryKey);
                     break;
                 }
@@ -142,7 +145,7 @@ public final class InventoryTaskSplitter {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
             return result;
         }
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getActualTableName());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, dumperConfig.getActualTableName());
         if (isSpiltByPrimaryKeyRange(tableMetaData, dumperConfig.getActualTableName())) {
             String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
             dumperConfig.setPrimaryKey(primaryKey);
@@ -180,7 +183,7 @@ public final class InventoryTaskSplitter {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
-                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
+                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {

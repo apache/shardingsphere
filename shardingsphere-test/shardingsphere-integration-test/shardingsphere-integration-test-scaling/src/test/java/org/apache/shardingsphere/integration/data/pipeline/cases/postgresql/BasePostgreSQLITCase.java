@@ -33,6 +33,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 public abstract class BasePostgreSQLITCase extends BaseITCase {
@@ -47,14 +48,14 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
     
     public BasePostgreSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml"), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
         initTableAndData();
     }
     
     @SneakyThrows({SQLException.class, InterruptedException.class})
     protected void initTableAndData() {
-        Properties queryProperties = createQueryProperties();
-        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProperties), "root", "root")) {
+        Properties queryProps = createQueryProperties();
+        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
             addResource(connection);
         }
         initShardingRule();

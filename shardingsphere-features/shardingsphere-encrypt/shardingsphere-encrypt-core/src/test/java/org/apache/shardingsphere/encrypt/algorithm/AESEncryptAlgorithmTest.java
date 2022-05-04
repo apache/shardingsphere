@@ -37,9 +37,13 @@ public final class AESEncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("aes-key-value", "test");
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AES", props));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AES", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("aes-key-value", "test");
+        return result;
     }
     
     @Test
@@ -50,17 +54,14 @@ public final class AESEncryptAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertEncryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        encryptAlgorithm.init(new Properties());
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        Object actual = encryptAlgorithm.encrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
@@ -71,16 +72,13 @@ public final class AESEncryptAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertDecryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        encryptAlgorithm.init(new Properties());
         Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
         assertThat(actual.toString(), is("test"));
     }
     
     @Test
     public void assertDecryptWithNullCiphertext() {
-        Object actual = encryptAlgorithm.decrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

@@ -54,7 +54,6 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementAssert {
             Map<String, DatabaseDiscoveryHeartbeatSegment> actualMap = actual.getHeartbeats().stream().collect(Collectors.toMap(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName, each -> each));
             expected.getHeartbeats().forEach(each -> {
                 DatabaseDiscoveryHeartbeatSegment actualSegment = actualMap.get(each.getName());
-                assertNotNull(actualSegment);
                 assertThat(actualSegment.getHeartbeatName(), is(each.getName()));
                 PropertiesAssert.assertIs(assertContext, actualSegment.getProperties(), each.getProperties());
             });

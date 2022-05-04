@@ -23,12 +23,13 @@ import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.util.MockIdGenerator;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -39,11 +40,11 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
+        Properties props = new Properties();
+        props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        keyGenerateAlgorithm.setProps(properties);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(props);
+        keyGenerateAlgorithm.setProps(props);
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
@@ -53,9 +54,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        keyGenerateAlgorithm.setProps(properties);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
@@ -64,9 +63,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        keyGenerateAlgorithm.setProps(properties);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
     }
     
@@ -74,15 +71,15 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         DefaultIdGeneratorProvider.INSTANCE.set(idName, MockIdGenerator.INSTANCE);
+        Properties props = new Properties();
+        props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
+        props.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        properties.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, "true");
-        keyGenerateAlgorithm.setProps(properties);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(props);
+        keyGenerateAlgorithm.setProps(props);
         Comparable<?> actual = keyGenerateAlgorithm.generateKey();
-        assertThat(actual, Matchers.instanceOf(String.class));
-        assertThat(actual.toString(), Matchers.startsWith("test_"));
+        assertThat(actual, instanceOf(String.class));
+        assertThat(actual.toString(), startsWith("test_"));
         assertTrue(actual.toString().length() <= 16);
     }
 }

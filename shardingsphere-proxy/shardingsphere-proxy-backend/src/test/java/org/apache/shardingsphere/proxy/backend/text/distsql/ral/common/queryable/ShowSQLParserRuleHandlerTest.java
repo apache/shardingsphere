@@ -49,7 +49,7 @@ public final class ShowSQLParserRuleHandlerTest {
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
-        assertThat(data.get(0), is("true"));
+        assertThat(data.get(0), is(Boolean.TRUE.toString()));
         String parseTreeCache = String.valueOf(data.get(1));
         assertThat(parseTreeCache, containsString("\"initialCapacity\":128"));
         assertThat(parseTreeCache, containsString("\"maximumSize\":1024"));

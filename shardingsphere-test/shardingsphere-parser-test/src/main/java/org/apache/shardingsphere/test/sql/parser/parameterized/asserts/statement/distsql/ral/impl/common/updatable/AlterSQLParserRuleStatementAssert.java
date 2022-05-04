@@ -47,7 +47,6 @@ public final class AlterSQLParserRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
         }
         assertNotNull(actual);
-        assertNotNull(expected.getSqlParserRule());
         assertCacheOption(assertContext, actual.getParseTreeCache(), expected.getSqlParserRule().getParseTreeCache());
         assertCacheOption(assertContext, actual.getSqlStatementCache(), expected.getSqlParserRule().getSqlStatementCache());
     }

@@ -87,9 +87,9 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigs = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
         Stream.iterate(0, i -> i + 1)
                 .limit(expectedMultipleReadwriteSplittingRuleSegments.size())
-                .forEach(i -> {
-                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(i);
-                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(i);
+                .forEach(each -> {
+                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(each);
+                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(each);
                     assertThat(actualRuleConfig.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
                     String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer());
                     assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
@@ -105,13 +105,13 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                 });
     }
     
-    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final List<String> readDataSourceList, final String loadBalancerTypeName,
-                                                                              final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSourceList, loadBalancerTypeName, properties);
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final List<String> readDataSources, final String loadBalancerTypeName,
+                                                                              final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSources, loadBalancerTypeName, props);
     }
     
-    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, properties);
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
     }
     
     private Collection<String> convertToList(final String readDataSourceNames) {

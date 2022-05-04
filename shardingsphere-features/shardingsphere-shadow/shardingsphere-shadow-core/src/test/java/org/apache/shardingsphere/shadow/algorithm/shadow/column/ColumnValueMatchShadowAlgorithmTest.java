@@ -23,8 +23,8 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
@@ -32,36 +32,23 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Before
     public void init() {
+        Properties props = new Properties();
+        props.setProperty("column", SHADOW_COLUMN);
+        props.setProperty("operation", "insert");
+        props.setProperty("value", "1");
         shadowAlgorithm = new ColumnValueMatchShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("column", SHADOW_COLUMN);
-        properties.setProperty("operation", "insert");
-        properties.setProperty("value", "1");
-        shadowAlgorithm.setProps(properties);
-        shadowAlgorithm.init();
+        shadowAlgorithm.init(props);
+        shadowAlgorithm.setProps(props);
     }
     
     @Test
     public void assertIsShadow() {
-        assertTrueCase();
-        assertFalseCase();
-    }
-    
-    private void assertTrueCase() {
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(true)));
-    }
-    
-    private void assertFalseCase() {
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
+        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
+        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(shadowAlgorithm.getType(), is("VALUE_MATCH"));
+        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
 }

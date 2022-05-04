@@ -30,10 +30,6 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     @Getter
     @Setter
     private Properties props;
-
-    @Override
-    public void init() {
-    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

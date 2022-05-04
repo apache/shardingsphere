@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * ShardingSphere algorithm properties aware.
+ * Oracle drop synonym statement.
  */
-public interface ShardingSphereAlgorithmPropertiesAware {
-    
-    /**
-     * Get all property keys.
-     * 
-     * @return all property keys
-     */
-    Collection<String> getAllPropertyKeys();
+@ToString
+public final class OracleDropSynonymStatement extends DropSynonymStatement implements OracleStatement {
 }

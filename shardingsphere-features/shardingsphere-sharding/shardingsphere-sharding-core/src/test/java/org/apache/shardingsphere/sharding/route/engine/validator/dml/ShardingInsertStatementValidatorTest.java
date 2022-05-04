@@ -220,7 +220,7 @@ public final class ShardingInsertStatementValidatorTest {
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${id % 2}");
         shardingAlgorithm.setProps(props);
-        shardingAlgorithm.init();
+        shardingAlgorithm.init(props);
         Map<String, ShardingAlgorithm> result = new HashMap<>();
         result.put("database_inline", shardingAlgorithm);
         return result;

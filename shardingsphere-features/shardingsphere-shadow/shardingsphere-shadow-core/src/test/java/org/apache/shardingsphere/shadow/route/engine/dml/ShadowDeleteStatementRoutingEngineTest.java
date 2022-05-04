@@ -50,6 +50,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,7 +88,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowDeleteStatementRoutingEngine.parseSQLComments();
-        assertThat(sqlNotes.isPresent(), is(true));
+        assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
@@ -109,13 +110,13 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     }
     
     private ShadowAlgorithm createColumnShadowAlgorithm() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "delete");
-        properties.setProperty("regex", "[1]");
+        Properties props = new Properties();
+        props.setProperty("column", "user_id");
+        props.setProperty("operation", "delete");
+        props.setProperty("regex", "[1]");
         ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(properties);
-        columnRegexMatchShadowAlgorithm.init();
+        columnRegexMatchShadowAlgorithm.init(props);
+        columnRegexMatchShadowAlgorithm.setProps(props);
         return columnRegexMatchShadowAlgorithm;
     }
     

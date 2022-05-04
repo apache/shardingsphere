@@ -320,6 +320,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
@@ -962,6 +966,10 @@ clusteringJoin
 
 clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
+    ;
+
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
     ;
 
 clusteringColumns

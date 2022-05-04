@@ -32,6 +32,11 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     }
     
     @Override
+    protected boolean isSchemaEnabled() {
+        return false;
+    }
+    
+    @Override
     public String getType() {
         return "H2";
     }

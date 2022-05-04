@@ -26,7 +26,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateData
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryConstructionRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryDefinitionRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -83,7 +81,6 @@ public final class CreateDatabaseDiscoveryRuleStatementAssert {
                 .collect(Collectors.toMap(AbstractDatabaseDiscoverySegment::getName, each -> each));
         expected.forEach(each -> {
             DatabaseDiscoveryDefinitionSegment actualSegment = actualMap.get(each.getName());
-            assertNotNull(actualSegment);
             assertThat(actualSegment.getName(), is(each.getName()));
             assertThat(actualSegment.getDataSources(), is(each.getDataSources()));
             PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getDiscoveryHeartbeat());
@@ -99,20 +96,10 @@ public final class CreateDatabaseDiscoveryRuleStatementAssert {
                 .collect(Collectors.toMap(AbstractDatabaseDiscoverySegment::getName, each -> each));
         expected.forEach(each -> {
             DatabaseDiscoveryConstructionSegment actualSegment = actualMap.get(each.getName());
-            assertNotNull(actualSegment);
             assertThat(actualSegment.getName(), is(each.getName()));
             assertThat(actualSegment.getDataSources(), is(each.getDataSources()));
             assertThat(actualSegment.getDiscoveryHeartbeatName(), is(each.getDiscoveryHeartbeat()));
             assertThat(actualSegment.getDiscoveryTypeName(), is(each.getDiscoveryType()));
         });
-    }
-    
-    private static void assertProps(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
-        if (null == expected) {
-            assertNull(assertContext.getText("Actual properties should not exist"), actual);
-        } else {
-            assertNotNull(assertContext.getText("Actual properties should exist"), actual);
-            PropertiesAssert.assertIs(assertContext, actual, expected);
-        }
     }
 }

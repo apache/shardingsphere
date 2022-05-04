@@ -71,7 +71,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitDropReadwriteSplittingRule(final DropReadwriteSplittingRuleContext ctx) {
-        return new DropReadwriteSplittingRuleStatement(ctx.existClause() != null, ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new DropReadwriteSplittingRuleStatement(ctx.existClause() != null, ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
@@ -108,7 +108,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
         return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()),
                 getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()),
-                staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()),
+                staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(this::getIdentifierValue).collect(Collectors.toList()),
                 algorithmName, props);
     }
     

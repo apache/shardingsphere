@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule.builder;
+package org.apache.shardingsphere.infra.config.fixture;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
 
-public final class TrafficRuleBuilderTest {
+@Getter
+public final class FixtureShardingSphereAlgorithm implements ShardingSphereAlgorithm {
     
-    private final TrafficRuleBuilder builder = new TrafficRuleBuilder();
+    private String testValue;
     
-    @Test
-    public void getOrderTest() {
-        assertThat(builder.getOrder(), is(800));
+    @Override
+    public void init(final Properties props) {
+        testValue = props.getProperty("key");
     }
     
-    @Test
-    public void getTypeClassTest() {
-        assertThat(TrafficRuleConfiguration.class, equalTo(builder.getTypeClass()));
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

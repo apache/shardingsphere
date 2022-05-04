@@ -20,21 +20,19 @@ package org.apache.shardingsphere.encrypt.algorithm;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Properties;
 
 /**
  * SM3 encrypt algorithm.
  */
-@Getter
-@Setter
 public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     static {
@@ -45,27 +43,26 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final int SALT_LENGTH = 8;
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private byte[] sm3Salt;
     
     @Override
-    public void init() {
-        sm3Salt = createSm3Salt();
+    public void init(final Properties props) {
+        sm3Salt = createSm3Salt(props);
     }
     
-    private byte[] createSm3Salt() {
+    private byte[] createSm3Salt(final Properties props) {
         String salt = null == props.getProperty(SM3_SALT) ? "" : String.valueOf(props.getProperty(SM3_SALT));
         Preconditions.checkState(0 == salt.length() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
-        return 0 == salt.length() ? new byte[0] : StringUtils.getBytesUtf8(salt);
+        return 0 == salt.length() ? new byte[0] : salt.getBytes(StandardCharsets.UTF_8);
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        if (null == plainValue) {
-            return null;
-        }
-        return ByteUtils.toHexString(digest(StringUtils.getBytesUtf8(String.valueOf(plainValue)), sm3Salt));
+        return null == plainValue ? null : ByteUtils.toHexString(digest(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), sm3Salt));
     }
     
     @Override

@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.config;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class YamlShadowRuleConfigurationTest {
-    
-    @Test
-    public void assertGetRuleConfigurationType() {
-        assertThat(new YamlShadowRuleConfiguration().getRuleConfigurationType() == ShadowRuleConfiguration.class, is(true));
-    }
+/**
+ * Drop synonym statement.
+ */
+@ToString
+public abstract class DropSynonymStatement extends AbstractSQLStatement implements DDLStatement {
 }

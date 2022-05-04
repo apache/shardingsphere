@@ -22,10 +22,6 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 public final class SnowflakeAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "SNOWFLAKE_TEST";
     }

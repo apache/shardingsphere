@@ -28,18 +28,18 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Properties;
 
-@Getter
-@Setter
 public final class ClassBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private static final String SHARDING_COUNT = "sharding-count";
     
+    @Getter
+    @Setter
+    private Properties props;
+    
     private Integer shardingCount;
     
-    private Properties props = new Properties();
-    
     @Override
-    public void init() {
+    public void init(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
         shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
         Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);

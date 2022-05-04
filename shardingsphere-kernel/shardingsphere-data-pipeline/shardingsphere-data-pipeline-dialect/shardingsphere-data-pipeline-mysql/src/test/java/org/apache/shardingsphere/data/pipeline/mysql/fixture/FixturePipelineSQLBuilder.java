@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser;
+package org.apache.shardingsphere.data.pipeline.mysql.fixture;
 
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.junit.Test;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class SQLParserRuleTest {
+public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    @Test
-    public void assertGetRuleType() {
-        SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        assertThat(sqlParserRule.getType(), is(SQLParserRule.class.getSimpleName()));
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected boolean isSchemaEnabled() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

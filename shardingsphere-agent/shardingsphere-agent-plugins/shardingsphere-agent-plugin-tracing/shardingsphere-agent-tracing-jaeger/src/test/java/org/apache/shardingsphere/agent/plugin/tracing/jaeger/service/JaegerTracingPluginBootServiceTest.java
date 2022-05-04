@@ -38,7 +38,7 @@ public final class JaegerTracingPluginBootServiceTest {
         Properties props = new Properties();
         props.setProperty("JAEGER_SAMPLER_TYPE", "const");
         props.setProperty("JAEGER_SAMPLER_PARAM", "1");
-        props.setProperty("JAEGER_REPORTER_LOG_SPANS", "true");
+        props.setProperty("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString());
         props.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
         jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", props));
         assertTrue(GlobalTracer.isRegistered());

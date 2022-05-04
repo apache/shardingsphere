@@ -23,9 +23,9 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.util.Properties;
+
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -36,8 +36,9 @@ public final class SQLRegexTrafficAlgorithmTest {
     @Before
     public void setUp() {
         sqlRegexAlgorithm = new SQLRegexTrafficAlgorithm();
-        sqlRegexAlgorithm.getProps().put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
-        sqlRegexAlgorithm.init();
+        Properties props = new Properties();
+        props.put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
+        sqlRegexAlgorithm.init(props);
     }
     
     @Test
@@ -57,10 +58,5 @@ public final class SQLRegexTrafficAlgorithmTest {
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order`;")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(sqlRegexAlgorithm.getType(), is("SQL_REGEX"));
     }
 }
