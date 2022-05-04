@@ -183,7 +183,7 @@ public final class InventoryTaskSplitter {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
-                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
+                .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {

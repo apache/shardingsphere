@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class WithoutInitAlgorithm implements ShardingSphereAlgorithm {
-    
-    private Properties props;
-    
-    @Override
-    public String getType() {
-        return "WITHOUT_INIT";
-    }
+/**
+ * Oracle drop synonym statement.
+ */
+@ToString
+public final class OracleDropSynonymStatement extends DropSynonymStatement implements OracleStatement {
 }

@@ -45,10 +45,6 @@ public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements 
     }
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "T_ORDER_ITEM_SPI_BASED";
     }

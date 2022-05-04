@@ -38,9 +38,13 @@ public final class RC4EncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("rc4-key-value", "test-sharding");
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("Rc4", props));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("Rc4", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("rc4-key-value", "test-sharding");
+        return result;
     }
     
     @Test
@@ -55,14 +59,17 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertKeyIsToLong() {
-        Properties props = new Properties();
+        encryptAlgorithm.init(createInvalidProperties());
+    }
+    
+    private Properties createInvalidProperties() {
+        Properties result = new Properties();
         StringBuilder keyBuffer = new StringBuilder();
         for (int i = 0; i < 100; i++) {
             keyBuffer.append("test");
         }
-        props.setProperty("rc4-key-value", keyBuffer.toString());
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        result.setProperty("rc4-key-value", keyBuffer.toString());
+        return result;
     }
     
     @Test
@@ -73,10 +80,5 @@ public final class RC4EncryptAlgorithmTest {
     @Test
     public void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
-    }
-    
-    @Test
-    public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().getProperty("rc4-key-value"), is("test-sharding"));
     }
 }

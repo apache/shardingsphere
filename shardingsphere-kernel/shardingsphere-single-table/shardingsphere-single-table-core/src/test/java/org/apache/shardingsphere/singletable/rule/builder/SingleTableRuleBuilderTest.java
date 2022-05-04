@@ -45,11 +45,9 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuild() {
         Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.newInstance();
         SchemaRuleBuilder builder = builders.iterator().next();
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
         SingleTableRuleConfiguration config = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertFalse(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
     }
@@ -57,16 +55,20 @@ public final class SingleTableRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuildWithDefaultDataSource() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
         Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.newInstance();
         SchemaRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = new SingleTableRuleConfiguration();
         config.setDefaultDataSource("ds_0");
-        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertTrue(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
         assertThat(((SingleTableRule) schemaRule).getDefaultDataSource().get(), is("ds_0"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
+        return result;
     }
 }

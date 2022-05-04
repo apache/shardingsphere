@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
@@ -79,11 +80,12 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     }
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("shadow", Boolean.TRUE.toString());
-        simpleHintShadowAlgorithm.setProps(props);
-        simpleHintShadowAlgorithm.init();
-        return Collections.singletonMap("simple-hint-algorithm", simpleHintShadowAlgorithm);
+        return Collections.singletonMap("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createProperties())));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("shadow", Boolean.TRUE.toString());
+        return result;
     }
 }

@@ -42,17 +42,15 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
         return Collections.unmodifiableList(parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList()));
     }
     
     private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
-        Optional<String> sql = sqlBuilder.buildCRC32SQL(parameter.getLogicTableName(), columnName);
+        String logicTableName = parameter.getLogicTableName();
+        String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName);
         if (!sql.isPresent()) {
             throw new PipelineDataConsistencyCheckFailedException(
                     String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`", parameter.getDatabaseType()));
@@ -60,7 +58,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
         try {
             return calculateCRC32(parameter.getDataSource(), sql.get());
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", parameter.getLogicTableName()), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", logicTableName), ex);
         }
     }
     

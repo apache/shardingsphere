@@ -25,10 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 public final class FixtureInputJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "FIXTURE_INPUT";
     }

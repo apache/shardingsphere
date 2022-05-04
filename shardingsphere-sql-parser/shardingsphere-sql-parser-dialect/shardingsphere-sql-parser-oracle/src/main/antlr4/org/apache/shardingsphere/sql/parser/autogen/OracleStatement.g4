@@ -78,5 +78,6 @@ execute
     | alterDatabaseDictionary
     | createSynonym
     | createDirectory
+    | dropSynonym
     ) SEMI_?
     ;

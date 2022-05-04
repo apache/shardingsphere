@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.spi.detect;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
  * Job completion detect algorithm.
  *
  * @param <T> type of completion detect parameter
  */
-public interface JobCompletionDetectAlgorithm<T> extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface JobCompletionDetectAlgorithm<T> extends ShardingSphereAlgorithm {
     
     /**
      * Whether job is almost completed.

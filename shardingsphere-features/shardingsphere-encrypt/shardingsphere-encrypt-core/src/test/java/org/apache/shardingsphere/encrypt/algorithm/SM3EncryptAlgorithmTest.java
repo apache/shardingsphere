@@ -37,9 +37,13 @@ public final class SM3EncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("sm3-salt", "test1234");
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM3", props));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM3", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("sm3-salt", "test1234");
+        return result;
     }
     
     @Test
@@ -50,17 +54,13 @@ public final class SM3EncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWithoutSalt() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        Object actual = encryptAlgorithm.encrypt("test1234", mock(EncryptContext.class));
-        assertThat(actual, is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
+        encryptAlgorithm.init(new Properties());
+        assertThat(encryptAlgorithm.encrypt("test1234", mock(EncryptContext.class)), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        Object actual = encryptAlgorithm.encrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
@@ -71,16 +71,13 @@ public final class SM3EncryptAlgorithmTest {
     
     @Test
     public void assertDecryptWithoutSalt() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        encryptAlgorithm.init(new Properties());
         Object actual = encryptAlgorithm.decrypt("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79", mock(EncryptContext.class));
         assertThat(actual.toString(), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
     
     @Test
     public void assertDecryptWithNullCiphertext() {
-        Object actual = encryptAlgorithm.decrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

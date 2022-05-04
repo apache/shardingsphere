@@ -32,10 +32,14 @@ public final class OpenTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        Properties props = new Properties();
-        props.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
-        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", props));
+        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
         assertTrue(GlobalTracer.isRegistered());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
+        return result;
     }
     
     @After

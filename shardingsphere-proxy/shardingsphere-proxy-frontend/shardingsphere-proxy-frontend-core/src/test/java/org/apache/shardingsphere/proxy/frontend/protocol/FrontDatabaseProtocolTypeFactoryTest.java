@@ -74,10 +74,8 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
     public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(props));
+                mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
         setContextManager(metaDataContexts);
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
@@ -87,6 +85,12 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getName(), is("PostgreSQL"));
         assertThat(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType(), instanceOf(MySQLDatabaseType.class));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
+        return result;
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {

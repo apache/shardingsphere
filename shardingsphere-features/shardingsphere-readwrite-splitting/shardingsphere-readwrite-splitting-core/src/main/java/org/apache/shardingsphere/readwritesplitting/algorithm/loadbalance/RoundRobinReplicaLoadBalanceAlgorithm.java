@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
+    
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {

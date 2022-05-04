@@ -31,18 +31,20 @@ import java.util.Properties;
 /**
  * Simple hint shadow algorithm.
  */
-@Getter
-@Setter
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
-    private Properties props = new Properties();
+    // TODO convert to static key, or use HashMap
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
-    public void init() {
-        checkPropsSize();
+    public void init(final Properties props) {
+        checkPropsSize(props);
+        this.props = props;
     }
     
-    private void checkPropsSize() {
+    private void checkPropsSize(final Properties props) {
         Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
     }
     

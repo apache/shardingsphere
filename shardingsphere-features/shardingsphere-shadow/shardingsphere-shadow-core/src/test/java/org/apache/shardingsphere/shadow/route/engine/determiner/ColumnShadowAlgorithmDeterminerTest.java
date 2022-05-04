@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,14 +37,16 @@ public final class ColumnShadowAlgorithmDeterminerTest {
         assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(createColumnShadowAlgorithms(), createShadowDetermineCondition()));
     }
     
+    @SuppressWarnings("unchecked")
     private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        final ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("column", "user_id");
-        props.setProperty("operation", "insert");
-        props.setProperty("regex", "[1]");
-        result.setProps(props);
-        result.init();
+        return (ColumnShadowAlgorithm<Comparable<?>>) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", "user_id");
+        result.setProperty("operation", "insert");
+        result.setProperty("regex", "[1]");
         return result;
     }
     

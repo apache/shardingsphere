@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.config.fixture;
 
-/**
- * ShardingSphere algorithm post processor.
- */
-public interface ShardingSphereAlgorithmPostProcessor {
+import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+
+import java.util.Properties;
+
+@Getter
+public final class FixtureShardingSphereAlgorithm implements ShardingSphereAlgorithm {
     
-    /**
-     * Initialize algorithm.
-     */
-    void init();
+    private String testValue;
+    
+    @Override
+    public void init(final Properties props) {
+        testValue = props.getProperty("key");
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

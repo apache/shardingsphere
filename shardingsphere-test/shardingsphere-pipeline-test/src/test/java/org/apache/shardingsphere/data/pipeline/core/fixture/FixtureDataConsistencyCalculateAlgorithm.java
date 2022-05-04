@@ -27,17 +27,8 @@ import java.util.Collections;
 public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
         return Collections.singletonList(true);
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
     }
     
     @Override
@@ -48,5 +39,10 @@ public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsi
     @Override
     public String getDescription() {
         return "Fixture";
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

@@ -82,6 +82,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
             log.error("failed to get actual table definitions", ex);
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
+        log.info("prepareTargetTables, actualTableDefinitions={}", actualTableDefinitions);
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         try (
                 Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
@@ -171,7 +172,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     }
     
     private String queryCreateTableSql(final Connection sourceConnection, final String schemaName, final String actualTableName, final List<String> pkColumns) throws SQLException {
-        final String sql = String.format(FETCH_CREATE_TABLE_TEMPLATE, actualTableName, actualTableName, schemaName);
+        final String sql = String.format(FETCH_CREATE_TABLE_TEMPLATE, schemaName + "." + actualTableName, actualTableName, schemaName);
         log.info("queryCreateTableSql, sql={}", sql);
         try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             if (!resultSet.next()) {

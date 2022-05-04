@@ -41,10 +41,6 @@ public final class SPIBasedStandardShardingAlgorithmFixture implements StandardS
     }
 
     @Override
-    public void init() {
-    }
-
-    @Override
     public String getType() {
         return "SPI_BASED";
     }

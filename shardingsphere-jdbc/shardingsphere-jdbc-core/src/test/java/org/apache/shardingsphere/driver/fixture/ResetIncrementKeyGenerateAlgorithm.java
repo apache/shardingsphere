@@ -28,10 +28,6 @@ public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgo
     private static final AtomicInteger COUNT = new AtomicInteger();
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Comparable<?> generateKey() {
         return COUNT.incrementAndGet();
     }

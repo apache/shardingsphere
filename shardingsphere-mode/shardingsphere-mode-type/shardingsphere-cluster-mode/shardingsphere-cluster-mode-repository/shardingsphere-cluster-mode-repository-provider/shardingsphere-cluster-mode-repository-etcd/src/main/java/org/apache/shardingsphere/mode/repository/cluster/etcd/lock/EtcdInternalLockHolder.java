@@ -62,12 +62,12 @@ public class EtcdInternalLockHolder {
      * @return standard lock
      */
     public Lock getStandardLock(final String lockName) {
-        EtcdInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = createLock(lockName);
-            locks.put(lockName, lock);
+        EtcdInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = createLock(lockName);
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     private EtcdInternalLock createLock(final String lockName) {

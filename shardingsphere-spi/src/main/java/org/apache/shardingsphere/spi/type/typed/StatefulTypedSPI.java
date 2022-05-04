@@ -17,27 +17,10 @@
 
 package org.apache.shardingsphere.spi.type.typed;
 
-import java.util.Properties;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
 /**
  * Stateful typed SPI.
  */
-public interface StatefulTypedSPI extends TypedSPI {
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    default Properties getProps() {
-        return new Properties();
-    }
-    
-    /**
-     * Set properties.
-     * 
-     * @param props properties
-     */
-    default void setProps(final Properties props) {
-    }
+public interface StatefulTypedSPI extends TypedSPI, SPIPostProcessor {
 }

@@ -179,44 +179,44 @@ public final class SafeNumberOperationUtilTest {
     
     @Test
     public void assertSafeCollectionEqualsForInteger() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10, 12);
-        List<Comparable<?>> targetCollection = Arrays.asList(10, 12);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(10, 12);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test
     public void assertSafeCollectionEqualsForLong() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10, 12);
-        List<Comparable<?>> targetCollection = Arrays.asList(10L, 12L);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(10L, 12L);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test
     public void assertSafeCollectionEqualsForBigInteger() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10, 12);
-        List<Comparable<?>> targetCollection = Arrays.asList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test
     public void assertSafeCollectionEqualsForFloat() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10.01F, 12.01F);
-        List<Comparable<?>> targetCollection = Arrays.asList(10.01F, 12.01F);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01F, 12.01F);
+        List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01F);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test
     public void assertSafeCollectionEqualsForDouble() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10.01, 12.01);
-        List<Comparable<?>> targetCollection = Arrays.asList(10.01F, 12.01);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
+        List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test
     public void assertSafeCollectionEqualsForBigDecimal() {
-        List<Comparable<?>> sourceCollection = Arrays.asList(10.01, 12.01);
-        List<Comparable<?>> targetCollection = Arrays.asList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
+        List<Comparable<?>> targets = Arrays.asList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test

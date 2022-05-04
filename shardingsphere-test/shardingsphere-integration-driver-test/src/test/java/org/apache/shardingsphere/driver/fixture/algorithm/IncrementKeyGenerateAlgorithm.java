@@ -26,10 +26,6 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Comparable<?> generateKey() {
         return SEQUENCE.incrementAndGet();
     }

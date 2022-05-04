@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -44,20 +45,20 @@ public final class YamlExampleConfigurationValidator {
         configurationMap.put("features", config.getFeatures());
         configurationMap.put("frameworks", config.getFrameworks());
         validateConfigurationValues(configurationMap);
-        validateAccountConfigProps(config.getProps());
+        validateAccountConfigProperties(config.getProps());
     }
     
     private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
-        configMap.forEach((configItem, configValues) -> {
-            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
+        configMap.forEach((key, value) -> {
+            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(key);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
-            configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
+            value.forEach(each -> Preconditions.checkArgument(supportedValues.contains(each), getConfigValueErrorMessage(key, supportedValues, each)));
         });
     }
     
-    private static void validateAccountConfigProps(final Properties props) {
-        List<String> accountConfigItemList = Lists.newArrayList("host", "port", "username", "password");
-        accountConfigItemList.forEach(each -> Preconditions.checkArgument(props.get(each) != null, getConfigItemErrorMessage(each)));
+    private static void validateAccountConfigProperties(final Properties props) {
+        Collection<String> accountConfigItems = Arrays.asList("host", "port", "username", "password");
+        accountConfigItems.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
     }
     
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {

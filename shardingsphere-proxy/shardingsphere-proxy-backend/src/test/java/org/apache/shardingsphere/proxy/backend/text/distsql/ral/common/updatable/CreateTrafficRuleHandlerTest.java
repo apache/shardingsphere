@@ -32,9 +32,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,59 +45,59 @@ public final class CreateTrafficRuleHandlerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithEmptyRuleAndInvalidAlgorithmType() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(new LinkedList<>());
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.emptyList());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
+        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithInvalidAlgorithmType() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRuleConfigurations());
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
+        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckWithDuplicatedRuleName() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRuleConfigurations());
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
+        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
     }
     
     @Test
     public void assertCheckSuccess() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRuleConfigurations());
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_4", Collections.emptyList(),
                 new AlgorithmSegment("TEST", new Properties()), null);
-        new CreateTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2)).execute();
+        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2))).execute();
     }
     
-    private Collection<RuleConfiguration> createTrafficRuleConfigurations() {
-        TrafficRuleConfiguration ruleConfig = new TrafficRuleConfiguration();
-        ruleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
-        ruleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
-        Properties props = new Properties();
-        props.put("sql", "select * from t_order");
-        ruleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", props));
-        ruleConfig.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
-        ruleConfig.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
-        ruleConfig.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
-        return Collections.singleton(ruleConfig);
+    private RuleConfiguration createTrafficRuleConfiguration() {
+        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
+        result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
+        result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
+        result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
+        result.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
+        result.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
+        result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
+        return result;
     }
     
-    private CreateTrafficRuleStatement getSQLStatement(final TrafficRuleSegment... segments) {
-        return new CreateTrafficRuleStatement(Arrays.asList(segments));
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("sql", "select * from t_order");
+        return result;
     }
 }

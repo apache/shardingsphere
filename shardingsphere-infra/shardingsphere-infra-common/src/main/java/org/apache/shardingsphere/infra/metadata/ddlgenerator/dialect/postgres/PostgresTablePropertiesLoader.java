@@ -57,22 +57,22 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     }
     
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("databaseName", getConnection().getCatalog());
-        appendFirstRow(executeByTemplate(param, "table/default/get_database_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("databaseName", getConnection().getCatalog());
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_database_id.ftl"), context);
     }
     
     private void fetchTableId(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("schemaName", schemaName);
-        param.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(param, "table/default/get_table_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("schemaName", schemaName);
+        parameters.put("tableName", tableName);
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_table_id.ftl"), context);
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
-        Map<String, Object> param = new LinkedHashMap<>();
-        param.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(param, "table/default/get_schema_id.ftl"), context);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("schemaName", schemaName);
+        appendFirstRow(executeByTemplate(parameters, "table/default/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) {

@@ -264,21 +264,18 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
-        IdentifierValue result = (IdentifierValue) (null != ctx.regularIdentifier() ? visit(ctx.regularIdentifier()) : visit(ctx.delimitedIdentifier()));
-        return result;
+        return null != ctx.regularIdentifier() ? visit(ctx.regularIdentifier()) : visit(ctx.delimitedIdentifier());
     }
     
     @Override
     public final ASTNode visitRegularIdentifier(final RegularIdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
-        IdentifierValue result = null != unreservedWord ? (IdentifierValue) visit(unreservedWord) : new IdentifierValue(ctx.getText());
-        return result;
+        return null == unreservedWord ? new IdentifierValue(ctx.getText()) : (IdentifierValue) visit(unreservedWord);
     }
     
     @Override
     public final ASTNode visitDelimitedIdentifier(final DelimitedIdentifierContext ctx) {
-        IdentifierValue result = new IdentifierValue(ctx.getText());
-        return result;
+        return new IdentifierValue(ctx.getText());
     }
     
     @Override
@@ -929,12 +926,13 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     public ASTNode visitWithClause(final WithClauseContext ctx) {
         List<CteClauseContext> cteClauses = ctx.cteClause();
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
-        for (CteClauseContext cte : cteClauses) {
-            SubquerySegment subquery = new SubquerySegment(cte.subquery().start.getStartIndex(), cte.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
-            IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
-            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);
-            if (null != cte.columnNames()) {
-                ColumnNamesContext columnNames = cte.columnNames();
+        for (CteClauseContext each : cteClauses) {
+            SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+            IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
+            CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+            if (null != each.columnNames()) {
+                ColumnNamesContext columnNames = each.columnNames();
                 CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
                 commonTableExpression.getColumns().addAll(columns.getValue());
             }
@@ -1209,11 +1207,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegmentList);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }

@@ -15,30 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.fixture;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+package org.apache.shardingsphere.spi.lifecycle;
 
 import java.util.Properties;
 
-@Getter
-@Setter
-public final class WithInitAlgorithm implements ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+/**
+ * SPI post processor.
+ */
+public interface SPIPostProcessor {
     
-    private Properties props;
-    
-    private String testValue;
-    
-    @Override
-    public void init() {
-        testValue = props.getProperty("key");
+    /**
+     * Initialize SPI.
+     * 
+     * @param props properties to be initialized
+     */
+    default void init(Properties props) {
     }
     
-    @Override
-    public String getType() {
-        return "WITH_INIT";
+    /**
+     * Get properties.
+     * 
+     * @return properties
+     */
+    // TODO consider about to remove it, for spring algorithm only for now
+    default Properties getProps() {
+        return new Properties();
+    }
+    
+    /**
+     * Set properties.
+     *
+     * @param props properties
+     */
+    // TODO consider about to remove it, for spring algorithm only for now
+    default void setProps(Properties props) {
     }
 }

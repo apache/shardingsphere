@@ -21,7 +21,6 @@ import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
@@ -41,7 +40,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -82,8 +80,7 @@ public final class EncryptAlgorithmMetaDataTest {
     @Before
     public void setUp() {
         when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
-        List<Projection> columnProjectionList = Collections.singletonList(columnProjection);
-        when(projectionsContext.getExpandProjections()).thenReturn(columnProjectionList);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         when(columnProjection.getName()).thenReturn("id");
         when(columnProjection.getExpression()).thenReturn("id");
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
@@ -127,6 +124,7 @@ public final class EncryptAlgorithmMetaDataTest {
         assertFalse(actual.isPresent());
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertFindEncryptor() {
         when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));

@@ -62,7 +62,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), getCurrentRuleConfig());
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
@@ -70,7 +70,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), getCurrentRuleConfig());
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -95,11 +95,15 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         return new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
     }
     
-    private ReadwriteSplittingRuleConfiguration getCurrentRuleConfig() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_write");
-        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", props, "TEST");
+    private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", createProperties(), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_write");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
     }
 }

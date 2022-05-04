@@ -95,10 +95,10 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     }
     
     private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> inUsedSet = getUsedKeyGenerators(shardingRuleConfig);
+        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
         Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
-            if (!inUsedSet.contains(each.getKey())) {
+            if (!inUsedKeyGenerators.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
         }

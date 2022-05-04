@@ -95,10 +95,10 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
     }
     
     private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> inUsedSet = getUsedShardingAlgorithms(shardingRuleConfig);
+        Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
         Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
-            if (!inUsedSet.contains(each.getKey())) {
+            if (!inUsedAlgorithms.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
         }

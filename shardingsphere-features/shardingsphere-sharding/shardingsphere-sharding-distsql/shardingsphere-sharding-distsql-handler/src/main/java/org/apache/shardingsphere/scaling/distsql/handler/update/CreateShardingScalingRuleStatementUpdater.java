@@ -51,7 +51,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         String databaseName = shardingSphereMetaData.getDatabaseName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
-        checkAlgorithms(sqlStatement.getConfigurationSegment());
+        checkAlgorithms(sqlStatement.getScalingRuleConfigSegment());
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -117,7 +117,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingScalingRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Map<String, OnRuleAlteredActionConfiguration> scalingConfigurationMap = new HashMap<>(1, 1);
-        scalingConfigurationMap.put(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getConfigurationSegment()));
+        scalingConfigurationMap.put(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getScalingRuleConfigSegment()));
         result.setScaling(scalingConfigurationMap);
         return result;
     }

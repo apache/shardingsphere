@@ -20,10 +20,12 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,17 +74,18 @@ public final class CosIdIntervalShardingAlgorithmTest {
     }
     
     static CosIdIntervalShardingAlgorithm createShardingAlgorithm() {
-        Properties props = new Properties();
-        props.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        props.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        props.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
-        props.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        props.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
-        CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
-        result.setProps(props);
-        result.init();
+        return (CosIdIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID_INTERVAL", createProperties()));
+    }
+    
+    private static Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
+        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
+        result.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
+        result.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
+        result.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         return result;
     }
     

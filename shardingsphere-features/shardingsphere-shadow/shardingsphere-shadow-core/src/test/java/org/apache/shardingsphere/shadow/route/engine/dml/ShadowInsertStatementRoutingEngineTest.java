@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -92,18 +93,19 @@ public final class ShadowInsertStatementRoutingEngineTest {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("user-id-insert-regex-algorithm"))));
-        result.setShadowAlgorithms(Collections.singletonMap("user-id-insert-regex-algorithm", createColumnShadowAlgorithm()));
+        result.setShadowAlgorithms(Collections.singletonMap("user-id-insert-regex-algorithm", createShadowAlgorithm()));
         return result;
     }
     
-    private ShadowAlgorithm createColumnShadowAlgorithm() {
-        Properties props = new Properties();
-        props.setProperty("column", "user_id");
-        props.setProperty("operation", "insert");
-        props.setProperty("regex", "[1]");
-        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(props);
-        result.init();
+    private ShadowAlgorithm createShadowAlgorithm() {
+        return ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", "user_id");
+        result.setProperty("operation", "insert");
+        result.setProperty("regex", "[1]");
         return result;
     }
     

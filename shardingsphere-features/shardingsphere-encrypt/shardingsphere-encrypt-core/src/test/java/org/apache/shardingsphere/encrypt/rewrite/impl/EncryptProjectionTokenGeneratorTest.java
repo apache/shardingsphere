@@ -41,8 +41,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,8 +56,23 @@ public final class EncryptProjectionTokenGeneratorTest {
     @Before
     public void setup() {
         generator = new EncryptProjectionTokenGenerator();
-        generator.setEncryptRule(buildEncryptRule());
-        generator.setSchemas(mockSchemaMap());
+        generator.setEncryptRule(mockEncryptRule());
+        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+    }
+    
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable1 = mock(EncryptTable.class);
+        EncryptTable encryptTable2 = mock(EncryptTable.class);
+        when(encryptTable1.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
+        when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
+        when(result.findPlainColumn("doctor", "mobile")).thenReturn(Optional.of("mobile"));
+        when(result.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
+        when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
+        when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
+        EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null);
+        when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
+        return result;
     }
     
     @Test
@@ -113,26 +126,5 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("doctor", "mobile", null)));
         Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
-    }
-    
-    private EncryptRule buildEncryptRule() {
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        EncryptTable encryptTable1 = mock(EncryptTable.class);
-        EncryptTable encryptTable2 = mock(EncryptTable.class);
-        when(encryptTable1.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
-        when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
-        when(encryptRule.findPlainColumn("doctor", "mobile")).thenReturn(Optional.of("mobile"));
-        when(encryptRule.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
-        when(encryptRule.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
-        when(encryptRule.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null);
-        when(encryptRule.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
-        return encryptRule;
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
-        result.put("test", mock(ShardingSphereSchema.class));
-        return result;
     }
 }

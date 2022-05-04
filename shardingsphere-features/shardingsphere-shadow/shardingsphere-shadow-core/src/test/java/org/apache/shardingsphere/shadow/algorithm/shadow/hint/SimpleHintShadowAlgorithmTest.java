@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,11 +36,13 @@ public final class SimpleHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = new SimpleHintShadowAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("shadow", Boolean.TRUE.toString());
-        shadowAlgorithm.setProps(props);
-        shadowAlgorithm.init();
+        shadowAlgorithm = (SimpleHintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("shadow", Boolean.TRUE.toString());
+        return result;
     }
     
     @Test
