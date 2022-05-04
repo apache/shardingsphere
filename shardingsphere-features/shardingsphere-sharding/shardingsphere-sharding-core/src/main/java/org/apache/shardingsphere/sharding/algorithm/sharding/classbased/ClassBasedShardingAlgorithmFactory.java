@@ -41,8 +41,8 @@ public final class ClassBasedShardingAlgorithmFactory {
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
         Class<?> result = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
