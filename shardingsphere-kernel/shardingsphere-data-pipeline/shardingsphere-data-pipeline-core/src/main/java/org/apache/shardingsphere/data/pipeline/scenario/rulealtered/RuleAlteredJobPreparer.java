@@ -78,6 +78,7 @@ public final class RuleAlteredJobPreparer {
         // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
         prepareAndCheckTargetWithLock(jobContext);
+        // TODO check metadata
         try {
             initIncrementalTasks(jobContext);
             initInventoryTasks(jobContext);
