@@ -75,12 +75,16 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", WRITE_DATASOURCE);
-        props.setProperty("read-data-source-names", READ_DATASOURCE);
         rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", props, "")), Collections.emptyMap()));
+                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.newInstance(Collections.singleton(rule)).get(rule);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", WRITE_DATASOURCE);
+        result.setProperty("read-data-source-names", READ_DATASOURCE);
+        return result;
     }
     
     @Test

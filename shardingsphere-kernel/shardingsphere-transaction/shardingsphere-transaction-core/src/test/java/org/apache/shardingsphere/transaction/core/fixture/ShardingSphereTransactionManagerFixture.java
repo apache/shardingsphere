@@ -34,7 +34,9 @@ public final class ShardingSphereTransactionManagerFixture implements ShardingSp
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        caller.run();
+        if (null != caller) {
+            caller.run();
+        }
     }
     
     @Override

@@ -228,13 +228,6 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    public void assertProperties() {
-        Properties props = new Properties();
-        repository.setProps(props);
-        assertThat(repository.getProps(), is(props));
-    }
-    
-    @Test
     public void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {

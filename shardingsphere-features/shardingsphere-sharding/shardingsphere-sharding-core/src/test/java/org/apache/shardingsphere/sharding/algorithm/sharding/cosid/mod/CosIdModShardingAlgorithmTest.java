@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.sharding.cosid.mod;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.algorithm.sharding.cosid.Arguments;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,27 +51,29 @@ public final class CosIdModShardingAlgorithmTest {
     
     static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
     
+    @SuppressWarnings("unchecked")
     static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
-        Properties props = new Properties();
-        props.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        props.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
-        CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
-        result.setProps(props);
-        result.init(props);
+        return (CosIdModShardingAlgorithm<Long>) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID_MOD", createProperties()));
+    }
+    
+    private static Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        result.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
         return result;
     }
     
-    @RequiredArgsConstructor
     @RunWith(Parameterized.class)
+    @RequiredArgsConstructor
     public static class PreciseValueDoShardingTest {
         
         private final long id;
         
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
+        private CosIdModShardingAlgorithm<Long> algorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlgorithm();
+            algorithm = createShardingAlgorithm();
         }
         
         @Parameters
@@ -79,7 +84,7 @@ public final class CosIdModShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), id);
-            String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
+            String actual = algorithm.doSharding(ALL_NODES, shardingValue);
             String expected = LOGIC_NAME_PREFIX + (id % DIVISOR);
             assertThat(actual, is(expected));
         }
@@ -93,11 +98,11 @@ public final class CosIdModShardingAlgorithmTest {
         
         private final Collection<String> expected;
         
-        private CosIdModShardingAlgorithm<Long> shardingAlgorithm;
+        private CosIdModShardingAlgorithm<Long> algorithm;
         
         @Before
         public void init() {
-            shardingAlgorithm = createShardingAlgorithm();
+            algorithm = createShardingAlgorithm();
         }
         
         @Parameters
@@ -149,7 +154,7 @@ public final class CosIdModShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), rangeValue);
-            Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
+            Collection<String> actual = algorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }

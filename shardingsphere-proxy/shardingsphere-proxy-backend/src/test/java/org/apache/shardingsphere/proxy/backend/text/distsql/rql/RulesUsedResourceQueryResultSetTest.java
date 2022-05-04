@@ -155,11 +155,15 @@ public final class RulesUsedResourceQueryResultSetTest {
     }
     
     private RuleConfiguration mockReadwriteSplittingRule() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_0");
-        props.setProperty("read-data-source-names", "read_0,read_1");
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", props, "")));
+        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createProperties(), "")));
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_0");
+        result.setProperty("read-data-source-names", "read_0,read_1");
         return result;
     }
     

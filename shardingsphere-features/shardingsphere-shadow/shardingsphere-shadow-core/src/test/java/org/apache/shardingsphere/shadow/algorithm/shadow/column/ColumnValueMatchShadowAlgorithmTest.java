@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
-import org.junit.Before;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -28,27 +29,28 @@ import static org.junit.Assert.assertTrue;
 
 public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
-    private ColumnValueMatchShadowAlgorithm shadowAlgorithm;
-    
-    @Before
-    public void init() {
-        Properties props = new Properties();
-        props.setProperty("column", SHADOW_COLUMN);
-        props.setProperty("operation", "insert");
-        props.setProperty("value", "1");
-        shadowAlgorithm = new ColumnValueMatchShadowAlgorithm();
-        shadowAlgorithm.init(props);
-        shadowAlgorithm.setProps(props);
-    }
-    
     @Test
     public void assertIsShadow() {
+        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
+        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+    }
+    
+    private ColumnValueMatchShadowAlgorithm createShadowAlgorithm() {
+        return (ColumnValueMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", SHADOW_COLUMN);
+        result.setProperty("operation", "insert");
+        result.setProperty("value", "1");
+        return result;
     }
 }

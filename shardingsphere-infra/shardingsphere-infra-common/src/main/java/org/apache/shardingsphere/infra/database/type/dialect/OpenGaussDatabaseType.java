@@ -90,6 +90,11 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
+    public boolean isSchemaAvailable() {
+        return true;
+    }
+    
+    @Override
     public String getDefaultSchema(final String databaseName) {
         return "public";
     }
