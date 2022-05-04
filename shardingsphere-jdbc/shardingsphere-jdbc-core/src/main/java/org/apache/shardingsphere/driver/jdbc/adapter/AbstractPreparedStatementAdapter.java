@@ -491,7 +491,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
 
-    public Time castToTime(final Object obj) {
+    private Time castToTime(final Object obj) {
         try {
             return new Time(getTimeOfDateObject(obj));
         } catch (final ClassCastException ex) {
@@ -499,7 +499,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
 
-    public Timestamp castToTimestamp(final Object obj) {
+    private Timestamp castToTimestamp(final Object obj) {
         try {
             return new Timestamp(getTimeOfDateObject(obj));
         } catch (final ClassCastException ex) {
