@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
 import org.junit.Test;
 
 import java.util.Collection;
