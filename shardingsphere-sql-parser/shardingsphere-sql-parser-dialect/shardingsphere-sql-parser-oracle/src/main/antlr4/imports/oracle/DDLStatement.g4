@@ -320,6 +320,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
