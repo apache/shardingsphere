@@ -353,12 +353,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
-        DropTrafficRuleStatement result = new DropTrafficRuleStatement();
-        if (null != ctx.ruleName()) {
-            result.setRuleNames(ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
-        }
-        result.setContainsIfExistClause(null != ctx.ifExists());
-        return result;
+        Collection<String> ruleNames = null == ctx.ruleName() ? null : ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
+        return new DropTrafficRuleStatement(ruleNames, null != ctx.ifExists());
     }
     
     @Override
