@@ -41,12 +41,16 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.put("range-lower", 10);
-        props.put("range-upper", 45);
-        props.put("sharding-volume", 10);
         shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
+        shardingAlgorithm.init(createProperties());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("range-lower", 10);
+        result.put("range-upper", 45);
+        result.put("sharding-volume", 10);
+        return result;
     }
     
     @Test
@@ -123,12 +127,16 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        Properties props = new Properties();
-        props.setProperty("range-lower", "10");
-        props.setProperty("range-upper", "45");
-        props.setProperty("sharding-volume", "10");
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(props);
+        shardingAlgorithm.init(createPropertiesForStringValue());
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
+    }
+    
+    private Properties createPropertiesForStringValue() {
+        Properties result = new Properties();
+        result.setProperty("range-lower", "10");
+        result.setProperty("range-upper", "45");
+        result.setProperty("sharding-volume", "10");
+        return result;
     }
 }
