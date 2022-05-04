@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,19 +43,23 @@ import static org.junit.Assert.assertFalse;
 
 public final class InventoryTaskTest {
     
-    private static TaskConfiguration taskConfig;
-    
     private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
+    
+    private TaskConfiguration taskConfig;
     
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @AfterClass
     public static void afterClass() {
         DATA_SOURCE_MANAGER.close();
+    }
+    
+    @Before
+    public void setUp() {
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
@@ -84,6 +89,7 @@ public final class InventoryTaskTest {
         // TODO use t_order_0, and also others
         inventoryDumperConfig.setActualTableName("t_order");
         inventoryDumperConfig.setLogicTableName("t_order");
+        inventoryDumperConfig.setPrimaryKey("order_id");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new PrimaryKeyPosition(0, 1000);

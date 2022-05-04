@@ -121,6 +121,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                     // TODO replace constraint and index name
                     case CREATE_TABLE:
                         sql = addIfNotExistsForCreateTableSQL(sql);
+                        // TODO schemaName in create table SQL
                         sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                         sql = skipCreateTableExtendSet(sql);
                         return sql;

@@ -34,23 +34,35 @@ import java.util.Set;
 public interface PipelineSQLBuilder extends StatefulTypedSPI {
     
     /**
+     * Build inventory dump SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return inventory dump SQL
+     */
+    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
+    
+    /**
      * Build insert SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param shardingColumnsMap sharding columns map
      * @return insert SQL
      */
-    String buildInsertSQL(DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildInsertSQL(String schemaName, DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Build update SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildUpdateSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Extract updated columns.
@@ -64,63 +76,70 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build delete SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @return delete SQL
      */
-    String buildDeleteSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
+    String buildDeleteSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
      * Build truncate SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return truncate SQL
      */
-    String buildTruncateSQL(String tableName);
+    String buildTruncateSQL(String schemaName, String tableName);
     
     /**
      * Build count SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return count SQL
      */
-    String buildCountSQL(String tableName);
+    String buildCountSQL(String schemaName, String tableName);
     
     /**
      * Build query SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key, it may be primary key, not null
      * @param startUniqueValue start unique value, not null
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String tableName, String uniqueKey, Number startUniqueValue);
+    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, Number startUniqueValue);
     
     /**
      * Build check empty SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return check SQL
      */
-    String buildCheckEmptySQL(String tableName);
+    String buildCheckEmptySQL(String schemaName, String tableName);
     
     /**
      * Build split by primary key range SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param primaryKey primary key
      * @return split SQL
      */
-    String buildSplitByPrimaryKeyRangeSQL(String tableName, String primaryKey);
+    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
     
     /**
      * Build CRC32 SQL.
      *
+     * @param schemaName schema name
      * @param tableName table Name
      * @param column column
      * @return CRC32 SQL
      */
-    default Optional<String> buildCRC32SQL(final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
 }

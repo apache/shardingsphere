@@ -78,7 +78,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String uniqueKey = parameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
-        String sql = sqlBuilder.buildChunkedQuerySQL(logicTableName, uniqueKey, startUniqueKeyValue);
+        String sql = sqlBuilder.buildChunkedQuerySQL(parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName), logicTableName, uniqueKey, startUniqueKeyValue);
         try {
             return query(parameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
         } catch (final SQLException ex) {

@@ -35,4 +35,9 @@ public final class MySQLImporter extends AbstractImporter {
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         importerConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);
     }
+    
+    @Override
+    protected String getSchemaName(final String logicTableName) {
+        return null;
+    }
 }
