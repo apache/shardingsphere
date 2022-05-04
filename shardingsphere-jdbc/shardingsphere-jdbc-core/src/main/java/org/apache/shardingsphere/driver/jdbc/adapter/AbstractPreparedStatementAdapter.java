@@ -317,7 +317,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
                 default:
                     setParameter(parameterIndex, x);
             }
-        } catch (Exception ex) {
+        } catch (final ClassCastException | NumberFormatException | SQLException | ArithmeticException ex) {
             setParameter(parameterIndex, x);
         }
     }
@@ -349,7 +349,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
     
-    private int castToInt(Object obj) throws Exception {
+    private int castToInt(final Object obj) throws ClassCastException, NumberFormatException, SQLException {
         if (obj instanceof String) {
             return Integer.parseInt((String) obj);
         } else if (obj instanceof Number) {
@@ -360,13 +360,13 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             return (int) ((java.util.Date) obj).getTime();
         } else if (obj instanceof Clob) {
             return Integer.parseInt(clobToString((Clob) obj));
-        }else if (obj instanceof Character) {
+        } else if (obj instanceof Character) {
             return Integer.parseInt(obj.toString());
         }
         throw new ClassCastException();
     }
 
-    private long castToLong(Object obj) throws Exception {
+    private long castToLong(final Object obj) throws ClassCastException, NumberFormatException, SQLException {
         if (obj instanceof String) {
             return Long.parseLong((String) obj);
         } else if (obj instanceof Number) {
@@ -383,7 +383,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         throw new ClassCastException();
     }
 
-    private double castToDouble(Object obj) throws Exception {
+    private double castToDouble(final Object obj) throws ClassCastException, NumberFormatException, SQLException {
         if (obj instanceof String) {
             return Double.parseDouble((String) obj);
         } else if (obj instanceof Number) {
@@ -403,7 +403,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         throw new ClassCastException();
     }
 
-    private short castToShort(Object obj) throws Exception {
+    private short castToShort(final Object obj) throws ClassCastException, NumberFormatException, SQLException {
         if (obj instanceof String) {
             return Short.parseShort((String) obj);
         } else if (obj instanceof Number) {
@@ -420,7 +420,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         throw new ClassCastException();
     }
 
-    private BigDecimal castToBigDecimal(Object obj,int scale) throws Exception {
+    private BigDecimal castToBigDecimal(final Object obj, final int scale) throws ClassCastException, ArithmeticException, NumberFormatException, SQLException {
         BigDecimal result = null;
         if (obj instanceof String) {
             result = new BigDecimal((String) obj);
@@ -444,7 +444,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             result = new BigDecimal(obj.toString());
         }
         if (result != null) {
-            if (scale>0) {
+            if (scale > 0) {
                 result = result.setScale(scale, 1);
             }
             return result;
@@ -452,10 +452,10 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         throw new ClassCastException();
     }
 
-    private long getTimeOfDateObject(Object obj) {
+    private long getTimeOfDateObject(final Object obj) {
         try {
             return castToLong(obj);
-        } catch (Exception ex) {
+        } catch (final ClassCastException | NumberFormatException | SQLException ex) {
             if (obj instanceof java.sql.Date) {
                 return ((Date) obj).getTime();
             } else if (obj instanceof Time) {
@@ -483,31 +483,31 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
 
-    private Date castToDate(Object obj) {
+    private Date castToDate(final Object obj) {
         try {
             return new Date(getTimeOfDateObject(obj));
-        } catch (Exception ex) {
+        } catch (final ClassCastException ex) {
             throw new ClassCastException();
         }
     }
 
-    public Time castToTime(Object obj) {
+    public Time castToTime(final Object obj) {
         try {
             return new Time(getTimeOfDateObject(obj));
-        } catch (Exception ex) {
+        } catch (final ClassCastException ex) {
             throw new ClassCastException();
         }
     }
 
-    public Timestamp castToTimestamp(Object obj) {
+    public Timestamp castToTimestamp(final Object obj) {
         try {
             return new Timestamp(getTimeOfDateObject(obj));
-        } catch (Exception ex) {
+        } catch (final ClassCastException ex) {
             throw new ClassCastException();
         }
     }
 
-    private boolean castToBoolean(Object obj) {
+    private boolean castToBoolean(final Object obj) {
         Boolean result = null;
         if (obj instanceof Boolean) {
             result = (Boolean) obj;
@@ -518,52 +518,52 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         } else if (obj instanceof Character) {
             result = castBooleanFromChar((Character) obj);
         }
-        if (result==null) {
+        if (result == null) {
             throw new ClassCastException();
         }
         return result;
     }
 
-    private boolean castBooleanFromString(String str) {
-        str = str.trim();
-        if ("yes".equalsIgnoreCase(str)
-                || "y".equalsIgnoreCase(str)
-                || "true".equalsIgnoreCase(str)
-                || "t".equalsIgnoreCase(str)
-                || "1".equalsIgnoreCase(str)) {
+    private boolean castBooleanFromString(final String str) {
+        String trimdStr = str.trim();
+        if ("yes".equalsIgnoreCase(trimdStr)
+                || "y".equalsIgnoreCase(trimdStr)
+                || "true".equalsIgnoreCase(trimdStr)
+                || "t".equalsIgnoreCase(trimdStr)
+                || "1".equalsIgnoreCase(trimdStr)) {
             return true;
-        } else if ("no".equalsIgnoreCase(str)
-                || "n".equalsIgnoreCase(str)
-                || "false".equalsIgnoreCase(str)
-                || "f".equalsIgnoreCase(str)
-                || "0".equalsIgnoreCase(str)) {
+        } else if ("no".equalsIgnoreCase(trimdStr)
+                || "n".equalsIgnoreCase(trimdStr)
+                || "false".equalsIgnoreCase(trimdStr)
+                || "f".equalsIgnoreCase(trimdStr)
+                || "0".equalsIgnoreCase(trimdStr)) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private boolean castBooleanFromChar(Character ch) {
-        if ('Y'== ch || 'y' == ch || 't' == ch || 'T' == ch || '1' == ch) {
+    private boolean castBooleanFromChar(final Character ch) {
+        if ('Y' == ch || 'y' == ch || 't' == ch || 'T' == ch || '1' == ch) {
             return true;
-        } else if ('N'== ch || 'n' == ch || 'f' == ch || 'F' == ch || '0' == ch) {
+        } else if ('N' == ch || 'n' == ch || 'f' == ch || 'F' == ch || '0' == ch) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private boolean castBooleanFromNumber(Number num) {
+    private boolean castBooleanFromNumber(final Number num) {
         int val = num.intValue();
         if (val == 1) {
             return true;
-        } else if(val == 0) {
+        } else if (val == 0) {
             return false;
         }
         throw new ClassCastException();
     }
 
-    private String clobToString(Clob clob) throws Exception {
+    private String clobToString(final Clob clob) throws SQLException {
         long length = clob.length();
-        if (length>0) {
+        if (length > 0) {
             return clob.getSubString(1, (int) length);
         } else {
             return "";

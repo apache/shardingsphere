@@ -46,7 +46,6 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
@@ -273,7 +272,7 @@ public final class PreparedStatementAdapterTest {
     @Test
     public void assertSetObjectForNull() {
         Object obj = "value";
-        shardingSpherePreparedStatement.setObject(1,obj,Types.NULL);
+        shardingSpherePreparedStatement.setObject(1, obj, Types.NULL);
         assertParameter(shardingSpherePreparedStatement, 1, obj);
     }
 
@@ -418,7 +417,7 @@ public final class PreparedStatementAdapterTest {
         shardingSpherePreparedStatement.setObject(16, BigDecimal.valueOf(1.1d), Types.DECIMAL);
         shardingSpherePreparedStatement.setObject(17, BigInteger.valueOf(1L), Types.NUMERIC);
         shardingSpherePreparedStatement.setObject(18, BigInteger.valueOf(1L), Types.DECIMAL);
-        BigDecimal one = BigDecimal.ONE;
+        final BigDecimal one = BigDecimal.ONE;
         BigDecimal onePointOne = BigDecimal.valueOf(1.1D);
         assertParameter(shardingSpherePreparedStatement, 1, onePointOne);
         assertParameter(shardingSpherePreparedStatement, 2, onePointOne);
@@ -556,15 +555,15 @@ public final class PreparedStatementAdapterTest {
         if (level == 1) {
             String date = parseDateFromToString(value);
             String newDate = parseDateFromToString(newVal);
-            assertThat(date,equalTo(newDate));
+            assertThat(date, equalTo(newDate));
         } else if (level == 2) {
             String time = parseTimeFromToString(value);
             String newTime = parseTimeFromToString(newVal);
-            assertThat(time,equalTo(newTime));
+            assertThat(time, equalTo(newTime));
         } else if (level == 3) {
             String datetime = parseDateFromToString(value) + parseTimeFromToString(value);
             String newDatetime = parseDateFromToString(newVal) + parseTimeFromToString(newVal);
-            assertThat(datetime,equalTo(newDatetime));
+            assertThat(datetime, equalTo(newDatetime));
         }
     }
 
@@ -574,13 +573,13 @@ public final class PreparedStatementAdapterTest {
         Matcher matcher = p.matcher(value);
         if (matcher.find()) {
             String syx = matcher.group();
-            return syx.substring(0,8);
+            return syx.substring(0, 8);
         }
         throw new AssertionError();
     }
 
     private String parseDateFromToString(final String value) {
-        Map<String,String> monthMap = new HashMap<>();
+        Map<String, String> monthMap = new HashMap<>();
         monthMap.put("Jan", "01");
         monthMap.put("Feb", "02");
         monthMap.put("Mar", "03");
