@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,22 +36,30 @@ import static org.junit.Assert.assertThat;
 
 public final class WeightReplicaLoadBalanceAlgorithmTest {
     
-    private final WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = new WeightReplicaLoadBalanceAlgorithm();
-    
-    @Test
-    public void assertGetOneReadDataSource() {
-        Properties props = new Properties();
-        props.setProperty("test_read_ds_1", "5");
-        weightReplicaLoadBalanceAlgorithm.setProps(props);
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+    @SuppressWarnings("rawtypes")
+    @Before
+    @After
+    public void reset() throws NoSuchFieldException, IllegalAccessException {
+        Field accuracyThresholdField = WeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
+        accuracyThresholdField.setAccessible(true);
+        ((Map) accuracyThresholdField.get(WeightReplicaLoadBalanceAlgorithm.class)).clear();
     }
     
     @Test
-    public void assertGetDataSource() {
-        Properties props = new Properties();
-        props.setProperty("test_read_ds_1", "5");
-        props.setProperty("test_read_ds_2", "5");
-        weightReplicaLoadBalanceAlgorithm.setProps(props);
+    public void assertGetSingleReadDataSource() {
+        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+    }
+    
+    private Properties createSingleDataSourceProperties() {
+        Properties result = new Properties();
+        result.setProperty("test_read_ds_1", "5");
+        return result;
+    }
+    
+    @Test
+    public void assertGetMultipleReadDataSources() {
+        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -53,5 +67,16 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
         assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
         assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
         assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
+    }
+    
+    private Properties createMultipleDataSourcesProperties() {
+        Properties result = new Properties();
+        result.setProperty("test_read_ds_1", "5");
+        result.setProperty("test_read_ds_2", "5");
+        return result;
+    }
+    
+    private WeightReplicaLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
+        return (WeightReplicaLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("WEIGHT", props));
     }
 }

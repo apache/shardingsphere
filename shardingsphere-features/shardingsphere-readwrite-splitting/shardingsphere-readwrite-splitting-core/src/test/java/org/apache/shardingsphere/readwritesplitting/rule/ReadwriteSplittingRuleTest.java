@@ -56,13 +56,17 @@ public final class ReadwriteSplittingRuleTest {
     }
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "write_ds");
-        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
         ReadwriteSplittingDataSourceRuleConfiguration config =
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", props, "random");
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "write_ds");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {

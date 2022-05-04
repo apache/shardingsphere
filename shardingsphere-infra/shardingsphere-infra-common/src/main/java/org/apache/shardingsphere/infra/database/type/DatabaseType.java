@@ -84,6 +84,15 @@ public interface DatabaseType {
     Collection<String> getSystemSchemas();
     
     /**
+     * Is schema feature available.
+     *
+     * @return true or false
+     */
+    default boolean isSchemaAvailable() {
+        return false;
+    }
+    
+    /**
      * Get default schema.
      *
      * @param databaseName database name

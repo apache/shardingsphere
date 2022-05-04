@@ -592,7 +592,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-synonym")
     private final List<CreateSynonymStatementTestCase> createSynonymTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-synonym")
     private final List<DropSynonymStatementTestCase> dropSynonymTestCase = new LinkedList<>();
     

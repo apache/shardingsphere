@@ -25,13 +25,27 @@ import java.util.Arrays;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Arguments {
     
+    /**
+     * Of arguments.
+     * 
+     * @param arguments arguments
+     * @param <T> type of arguments
+     * @return arguments
+     */
     @SafeVarargs
-    static <T> T[] of(final T... arguments) {
+    public static <T> T[] of(final T... arguments) {
         return arguments;
     }
     
+    /**
+     * Of array element.
+     * 
+     * @param arguments arguments
+     * @param <T> type of arguments
+     * @return iterable
+     */
     @SafeVarargs
-    static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
+    public static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
         return Arrays.asList(arguments);
     }
 }

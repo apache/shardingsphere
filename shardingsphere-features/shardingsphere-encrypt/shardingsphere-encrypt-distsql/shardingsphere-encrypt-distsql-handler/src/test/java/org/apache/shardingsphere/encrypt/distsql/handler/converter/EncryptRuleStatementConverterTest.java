@@ -34,18 +34,22 @@ public final class EncryptRuleStatementConverterTest {
     
     @Test
     public void assertCovert() {
-        EncryptRuleConfiguration ruleConfig = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
-        assertThat(ruleConfig.getTables().iterator().next().getName(), is("t_encrypt"));
-        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
-        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
-        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
-        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
-        assertThat(ruleConfig.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
+        EncryptRuleConfiguration actual = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", createColumns(), null)));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_encrypt"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
-    private Collection<EncryptColumnSegment> buildColumns() {
-        Properties props = new Properties();
-        props.setProperty("MD5-key", "MD5-value");
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", props)));
+    private Collection<EncryptColumnSegment> createColumns() {
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", createProperties())));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("MD5-key", "MD5-value");
+        return result;
     }
 }

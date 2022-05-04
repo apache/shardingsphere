@@ -67,8 +67,7 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenPropsIsNotEmpty() {
-        Properties props = new Properties();
-        props.setProperty("foo", "foo_value");
+        Properties props = createProperties();
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(props)
@@ -134,8 +133,7 @@ public final class ContextManagerBuilderParameterTest {
     @Test
     public void assertIsEmptyWhenOnlyGlobalRuleConfigsIsEmpty() {
         Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
-        Properties props = new Properties();
-        props.setProperty("foo", "foo_value");
+        Properties props = createProperties();
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.emptyList())
                 .props(props)
@@ -146,8 +144,7 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsEmptyWhenOnlySchemaConfigsIsEmpty() {
-        Properties props = new Properties();
-        props.setProperty("foo", "foo_value");
+        Properties props = createProperties();
         ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
                 .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
                 .props(props)
@@ -161,5 +158,11 @@ public final class ContextManagerBuilderParameterTest {
         lenient().when(result.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);
         lenient().when(result.getRuleConfigurations().isEmpty()).thenReturn(ruleConfigurationsIsEmpty);
         return Collections.singletonMap("logic", result);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("foo", "foo_value");
+        return result;
     }
 }

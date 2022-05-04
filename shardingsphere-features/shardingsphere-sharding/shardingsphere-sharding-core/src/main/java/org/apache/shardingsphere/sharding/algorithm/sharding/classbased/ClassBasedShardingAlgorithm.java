@@ -34,6 +34,7 @@ import java.util.Properties;
 /**
  * Class based sharding algorithm.
  */
+@SuppressWarnings("rawtypes")
 public final class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ComplexKeysShardingAlgorithm<Comparable<?>>, HintShardingAlgorithm<Comparable<?>> {
     
     private static final String STRATEGY_KEY = "strategy";
@@ -44,29 +45,36 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     @Setter
     private Properties props;
     
-    private StandardShardingAlgorithm standardShardingAlgorithm;
+    private volatile ClassBasedShardingAlgorithmStrategyType strategy;
     
-    private ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
+    private volatile String algorithmClassName;
     
-    private HintShardingAlgorithm hintShardingAlgorithm;
+    private volatile StandardShardingAlgorithm standardShardingAlgorithm;
     
-    @Getter
-    private ClassBasedShardingAlgorithmStrategyType strategy;
+    private volatile ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
     
-    @Getter
-    private String algorithmClassName;
+    private volatile HintShardingAlgorithm hintShardingAlgorithm;
     
     @Override
     public void init(final Properties props) {
-        String strategyKey = props.getProperty(STRATEGY_KEY);
-        Preconditions.checkNotNull(strategyKey, "The props `%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
-        strategy = ClassBasedShardingAlgorithmStrategyType.valueOf(strategyKey.toUpperCase().trim());
-        algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
-        Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
-        createAlgorithmInstance(props);
+        strategy = getStrategy(props);
+        algorithmClassName = getAlgorithmClassName(props);
+        initAlgorithmInstance(props);
     }
     
-    private void createAlgorithmInstance(final Properties props) {
+    private ClassBasedShardingAlgorithmStrategyType getStrategy(final Properties props) {
+        String strategy = props.getProperty(STRATEGY_KEY);
+        Preconditions.checkNotNull(strategy, "Properties `%s` can not be null when uses class based sharding strategy.", STRATEGY_KEY);
+        return ClassBasedShardingAlgorithmStrategyType.valueOf(strategy.toUpperCase().trim());
+    }
+    
+    private String getAlgorithmClassName(final Properties props) {
+        String result = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
+        Preconditions.checkNotNull(result, "Properties `%s` can not be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
+        return result;
+    }
+    
+    private void initAlgorithmInstance(final Properties props) {
         switch (strategy) {
             case STANDARD:
                 standardShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, StandardShardingAlgorithm.class, props);
@@ -82,21 +90,25 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return standardShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         return standardShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Comparable<?>> shardingValue) {
         return complexKeysShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Comparable<?>> shardingValue) {
         return hintShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
