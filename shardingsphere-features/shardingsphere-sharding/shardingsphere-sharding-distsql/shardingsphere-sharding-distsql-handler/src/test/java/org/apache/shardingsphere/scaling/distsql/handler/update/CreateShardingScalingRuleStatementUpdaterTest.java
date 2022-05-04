@@ -191,8 +191,4 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         result.setDataConsistencyCalculator(new AlgorithmSegment("DATA_MATCH", props));
         return result;
     }
-    
-    private AlgorithmSegment createAlgorithmSegment1(final String type) {
-        return new AlgorithmSegment(type, new Properties());
-    }
 }
