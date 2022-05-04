@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.fixture;
+package org.apache.shardingsphere.data.pipeline.mysql.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class WithInitAlgorithm implements ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
-    
-    private Properties props;
-    
-    private String testValue;
+public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public void init() {
-        testValue = props.getProperty("key");
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected boolean isSchemaEnabled() {
+        return false;
     }
     
     @Override
     public String getType() {
-        return "WITH_INIT";
+        return "H2";
     }
 }

@@ -49,8 +49,8 @@ public final class ClassBasedShardingAlgorithmFactory {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
         T instance = (T) result.getDeclaredConstructor().newInstance();
+        instance.init(props);
         setProperties(instance, props);
-        instance.init();
         return instance;
     }
     

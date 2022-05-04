@@ -23,13 +23,10 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,31 +34,39 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for rename schema statement.
+ * Schema refresher for alter schema statement.
  */
-public final class RenameSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
+public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
     
     private static final String TYPE = AlterSchemaStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Optional<String> renameSchemaName = sqlStatement instanceof PostgreSQLAlterSchemaStatement ? ((PostgreSQLAlterSchemaStatement) sqlStatement).getRenameSchema()
-                : ((OpenGaussAlterSchemaStatement) sqlStatement).getRenameSchema();
+        Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement);
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        Optional<FederationSchemaMetaData> schemaMetadata = database.getSchemaMetadata(sqlStatement.getSchemaName());
-        if (schemaMetadata.isPresent()) {
-            database.remove(sqlStatement.getSchemaName());
-            database.put(renameSchemaName.get(), schemaMetadata.get());
-            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-            AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), sqlStatement.getSchemaName(), renameSchemaName.get(),
-                    new ShardingSphereSchema(metaData.getSchemaByName(sqlStatement.getSchemaName()).getTables()));
-            metaData.getSchemas().remove(sqlStatement.getSchemaName());
-            ShardingSphereEventBus.getInstance().post(event);
-            // TODO Maybe need to refresh tables for SingleTableRule
-        }
+        String actualSchemaName = sqlStatement.getSchemaName();
+        putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get());
+        removeSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName);
+        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), actualSchemaName, renameSchemaName.get(), metaData.getSchemaByName(renameSchemaName.get()));
+        ShardingSphereEventBus.getInstance().post(event);
+        // TODO Maybe need to refresh tables for SingleTableRule
+    }
+    
+    private void removeSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
+                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName) {
+        metaData.getSchemas().remove(schemaName);
+        database.remove(schemaName);
+        optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+    }
+    
+    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
+                                   final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String renameSchemaName) {
+        metaData.getSchemas().put(renameSchemaName, metaData.getSchemaByName(schemaName));
+        database.getSchemaMetadata(schemaName).ifPresent(optional -> database.put(renameSchemaName, optional));
+        optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
     @Override

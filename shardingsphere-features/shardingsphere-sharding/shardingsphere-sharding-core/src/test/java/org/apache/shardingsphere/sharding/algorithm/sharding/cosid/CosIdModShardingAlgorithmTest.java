@@ -54,7 +54,7 @@ public final class CosIdModShardingAlgorithmTest {
         props.put(CosIdModShardingAlgorithm.MODULO_KEY, DIVISOR);
         CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
         result.setProps(props);
-        result.init();
+        result.init(props);
         return result;
     }
     

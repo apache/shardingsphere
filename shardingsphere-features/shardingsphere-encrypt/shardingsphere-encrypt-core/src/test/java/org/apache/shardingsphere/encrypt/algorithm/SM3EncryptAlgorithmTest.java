@@ -51,8 +51,8 @@ public final class SM3EncryptAlgorithmTest {
     @Test
     public void assertEncryptWithoutSalt() {
         Properties props = new Properties();
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         Object actual = encryptAlgorithm.encrypt("test1234", mock(EncryptContext.class));
         assertThat(actual, is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
@@ -72,8 +72,8 @@ public final class SM3EncryptAlgorithmTest {
     @Test
     public void assertDecryptWithoutSalt() {
         Properties props = new Properties();
+        encryptAlgorithm.init(props);
         encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
         Object actual = encryptAlgorithm.decrypt("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79", mock(EncryptContext.class));
         assertThat(actual.toString(), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }

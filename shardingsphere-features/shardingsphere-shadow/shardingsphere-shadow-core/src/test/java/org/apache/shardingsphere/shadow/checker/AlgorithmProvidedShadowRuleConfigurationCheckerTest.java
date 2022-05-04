@@ -71,8 +71,9 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     private ShadowAlgorithm createColumnRegexMatchShadowAlgorithm() {
         ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(createProperties());
-        result.init();
+        Properties props = createProperties();
+        result.init(props);
+        result.setProps(props);
         return result;
     }
     

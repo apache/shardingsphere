@@ -134,9 +134,9 @@ public final class SingleTableSQLRouterTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         CreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setTable(simpleTableSegment);
-        List<Object> parametersList = new LinkedList<>();
+        List<Object> parameters = new LinkedList<>();
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(createTableStatement);
-        return new LogicSQL(sqlStatementContext, "create table", parametersList);
+        return new LogicSQL(sqlStatementContext, "create table", parameters);
     }
     
     private Map<String, DataSource> createSingleDataSourceMap() {

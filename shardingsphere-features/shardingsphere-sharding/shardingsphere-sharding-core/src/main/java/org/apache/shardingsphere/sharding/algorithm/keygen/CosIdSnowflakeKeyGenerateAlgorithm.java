@@ -45,18 +45,28 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     public static final String EPOCH_KEY = "epoch";
     
+    @Getter
+    @Setter
+    private Properties props;
+    
     private volatile SnowflakeId snowflakeId;
     
     private volatile boolean asString;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private volatile long epoch;
     
     @Override
-    public void init() {
-        String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
-        asString = Boolean.parseBoolean(asStringStr);
+    public void init(final Properties props) {
+        asString = getAsString(props);
+        epoch = getEpoch(props);
+    }
+    
+    private boolean getAsString(final Properties props) {
+        return Boolean.parseBoolean(props.getProperty(AS_STRING_KEY, Boolean.FALSE.toString()));
+    }
+    
+    private long getEpoch(final Properties props) {
+        return props.containsKey(EPOCH_KEY) ? Long.parseLong(props.getProperty(EPOCH_KEY)) : DEFAULT_EPOCH;
     }
     
     @Override
@@ -75,10 +85,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
         long workerId = instanceContext.getWorkerId();
-        long epoch = DEFAULT_EPOCH;
-        if (props.containsKey(EPOCH_KEY)) {
-            epoch = Long.parseLong(props.getProperty(EPOCH_KEY));
-        }
         MillisecondSnowflakeId millisecondSnowflakeId =
                 new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
         ClockSyncSnowflakeId clockSyncSnowflakeId = new ClockSyncSnowflakeId(millisecondSnowflakeId);

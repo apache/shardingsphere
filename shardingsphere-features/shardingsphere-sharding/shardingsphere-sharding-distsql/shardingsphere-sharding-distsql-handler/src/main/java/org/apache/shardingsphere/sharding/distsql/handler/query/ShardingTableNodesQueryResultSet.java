@@ -97,7 +97,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
         if (ShardingAlgorithmFactory.contains(algorithmConfig.getType())) {
             ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfig);
             if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
-                shardingAlgorithm.init();
+                shardingAlgorithm.init(algorithmConfig.getProps());
                 return ((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount();
             }
         }

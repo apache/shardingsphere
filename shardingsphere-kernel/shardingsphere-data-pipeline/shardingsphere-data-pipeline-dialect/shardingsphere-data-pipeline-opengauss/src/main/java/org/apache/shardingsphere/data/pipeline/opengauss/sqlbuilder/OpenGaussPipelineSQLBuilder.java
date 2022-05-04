@@ -43,8 +43,13 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildConflictSQL(shardingColumnsMap);
+    protected boolean isSchemaEnabled() {
+        return true;
+    }
+    
+    @Override
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(shardingColumnsMap);
     }
     
     @Override

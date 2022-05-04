@@ -99,14 +99,12 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private boolean isNotAllowDataCheck(final String jobId) {
         Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
-        boolean flag = false;
         for (JobProgress each : jobProgressMap.values()) {
             if (null == each || !JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
-                flag = true;
-                break;
+                return true;
             }
         }
-        return flag;
+        return false;
     }
     
     private boolean dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {

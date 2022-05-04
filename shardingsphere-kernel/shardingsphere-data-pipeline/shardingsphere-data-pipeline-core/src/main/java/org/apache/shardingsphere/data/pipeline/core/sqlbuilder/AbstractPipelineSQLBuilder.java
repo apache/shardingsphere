@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -65,20 +66,37 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @param item to add quote item
      * @return add quote string
      */
-    public StringBuilder quote(final String item) {
-        return new StringBuilder().append(getLeftIdentifierQuoteString()).append(item).append(getRightIdentifierQuoteString());
+    public String quote(final String item) {
+        return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
+        String quotedUniqueKey = quote(uniqueKey);
+        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+    }
+    
+    protected String decorate(final String schemaName, final String tableName) {
+        StringBuilder result = new StringBuilder();
+        if (isSchemaEnabled() && !Strings.isNullOrEmpty(schemaName)) {
+            result.append(quote(schemaName)).append(".");
+        }
+        result.append(quote(tableName));
+        return result.toString();
+    }
+    
+    protected abstract boolean isSchemaEnabled();
+    
+    @Override
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord.getTableName(), dataRecord.getColumns()));
+            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildInsertSQLInternal(final String tableName, final List<Column> columns) {
+    private String buildInsertSQLInternal(final String schemaName, final String tableName, final List<Column> columns) {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (Column each : columns) {
@@ -87,7 +105,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", decorate(schemaName, tableName), columnsLiteral, holder);
     }
     
     // TODO seems sharding column could be updated for insert statement on conflict by kernel now
@@ -97,10 +115,10 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord, shardingColumnsMap)) {
@@ -110,8 +128,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
-    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("UPDATE %s SET %%s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     @Override
@@ -120,21 +138,21 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
+    public String buildDeleteSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), conditionColumns));
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
     @Override
-    public String buildTruncateSQL(final String tableName) {
-        return String.format("TRUNCATE TABLE %s", quote(tableName));
+    public String buildTruncateSQL(final String schemaName, final String tableName) {
+        return String.format("TRUNCATE TABLE %s", decorate(schemaName, tableName));
     }
     
-    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("DELETE FROM %s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
@@ -147,25 +165,25 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCountSQL(final String tableName) {
-        return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    public String buildCountSQL(final String schemaName, final String tableName) {
+        return String.format("SELECT COUNT(*) FROM %s", decorate(schemaName, tableName));
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String tableName, final String uniqueKey, final Number startUniqueValue) {
+    public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey, final Number startUniqueValue) {
         Preconditions.checkNotNull(uniqueKey, "uniqueKey is null");
         Preconditions.checkNotNull(startUniqueValue, "startUniqueValue is null");
-        return "SELECT * FROM " + quote(tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
     }
     
     @Override
-    public String buildCheckEmptySQL(final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", quote(tableName));
+    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", decorate(schemaName, tableName));
     }
     
     @Override
-    public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
-        String quotedKey = quote(primaryKey).toString();
-        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, quote(tableName), quotedKey, quotedKey);
+    public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String primaryKey) {
+        String quotedKey = quote(primaryKey);
+        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, decorate(schemaName, tableName), quotedKey, quotedKey);
     }
 }

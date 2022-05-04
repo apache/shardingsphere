@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.data.pipeline.postgresql.fixture;
 
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-/**
- * ShardingSphere algorithm properties aware.
- */
-public interface ShardingSphereAlgorithmPropertiesAware {
+public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    /**
-     * Get all property keys.
-     * 
-     * @return all property keys
-     */
-    Collection<String> getAllPropertyKeys();
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected boolean isSchemaEnabled() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
+    }
 }

@@ -32,13 +32,13 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Before
     public void init() {
-        shadowAlgorithm = new ColumnValueMatchShadowAlgorithm();
         Properties props = new Properties();
         props.setProperty("column", SHADOW_COLUMN);
         props.setProperty("operation", "insert");
         props.setProperty("value", "1");
+        shadowAlgorithm = new ColumnValueMatchShadowAlgorithm();
+        shadowAlgorithm.init(props);
         shadowAlgorithm.setProps(props);
-        shadowAlgorithm.init();
     }
     
     @Test

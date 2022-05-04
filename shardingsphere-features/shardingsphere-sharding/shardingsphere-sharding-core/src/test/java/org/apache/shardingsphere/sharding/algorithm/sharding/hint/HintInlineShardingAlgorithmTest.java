@@ -42,16 +42,16 @@ public final class HintInlineShardingAlgorithmTest {
     }
     
     private void initHintInlineShardingAlgorithm() {
-        hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "t_order_$->{value % 4}");
+        hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
         hintInlineShardingAlgorithm.setProps(props);
-        hintInlineShardingAlgorithm.init();
+        hintInlineShardingAlgorithm.init(props);
     }
     
     private void initHintInlineShardingAlgorithmDefault() {
         hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
-        hintInlineShardingAlgorithmDefault.init();
+        hintInlineShardingAlgorithmDefault.init(new Properties());
     }
     
     @Test
