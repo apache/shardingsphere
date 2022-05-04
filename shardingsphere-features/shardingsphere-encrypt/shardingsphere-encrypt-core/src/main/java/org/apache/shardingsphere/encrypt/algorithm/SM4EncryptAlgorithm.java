@@ -46,8 +46,6 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         Security.addProvider(new BouncyCastleProvider());
     }
     
-    private static final String SM4 = "SM4";
-    
     private static final String SM4_KEY = "sm4-key";
     
     private static final String SM4_IV = "sm4-iv";
@@ -92,21 +90,20 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private byte[] createSm4Key(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null.", SM4_KEY);
-        String sm4KeyValue = String.valueOf(props.getProperty(SM4_KEY));
-        byte[] sm4KeyBytes = ByteUtils.fromHexString(sm4KeyValue);
-        Preconditions.checkState(KEY_LENGTH == sm4KeyBytes.length, "Key length must be " + KEY_LENGTH + " bytes long.");
-        return sm4KeyBytes;
+        byte[] result = ByteUtils.fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
+        Preconditions.checkState(KEY_LENGTH == result.length, "Key length must be " + KEY_LENGTH + " bytes long.");
+        return result;
     }
     
     private byte[] createSm4Iv(final Properties props, final String sm4Mode) {
-        if ("CBC".equalsIgnoreCase(sm4Mode)) {
-            Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
-            String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
-            byte[] sm4IvBytes = ByteUtils.fromHexString(sm4IvValue);
-            Preconditions.checkState(IV_LENGTH == sm4IvBytes.length, "Iv length must be " + IV_LENGTH + " bytes long.");
-            return sm4IvBytes;
+        if (!"CBC".equalsIgnoreCase(sm4Mode)) {
+            return null;
         }
-        return null;
+        Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
+        String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
+        byte[] result = ByteUtils.fromHexString(sm4IvValue);
+        Preconditions.checkState(IV_LENGTH == result.length, "Iv length must be " + IV_LENGTH + " bytes long.");
+        return result;
     }
     
     private String createSm4Padding(final Properties props) {
@@ -138,8 +135,8 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     @SneakyThrows
     private byte[] handle(final byte[] input, final int mode) {
         Cipher cipher = Cipher.getInstance(sm4ModePadding, BouncyCastleProvider.PROVIDER_NAME);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, SM4);
-        Optional<byte[]> sm4Iv = getSm4Iv();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, "SM4");
+        Optional<byte[]> sm4Iv = Optional.ofNullable(this.sm4Iv);
         if (sm4Iv.isPresent()) {
             cipher.init(mode, secretKeySpec, new IvParameterSpec(sm4Iv.get()));
         } else {
@@ -148,12 +145,8 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return cipher.doFinal(input);
     }
     
-    private Optional<byte[]> getSm4Iv() {
-        return Optional.ofNullable(sm4Iv);
-    }
-    
     @Override
     public String getType() {
-        return SM4;
+        return "SM4";
     }
 }
