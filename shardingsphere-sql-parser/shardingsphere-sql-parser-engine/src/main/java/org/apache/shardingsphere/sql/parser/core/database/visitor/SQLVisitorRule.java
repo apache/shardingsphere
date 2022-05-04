@@ -145,6 +145,8 @@ public enum SQLVisitorRule {
     CREATE_SERVER("CreateServer", SQLStatementType.DDL),
     
     CREATE_SYNONYM("CreateSynonym", SQLStatementType.DDL),
+
+    DROP_SYNONYM("DropSynonym", SQLStatementType.DDL),
     
     CREATE_DIRECTORY("CreateDirectory", SQLStatementType.DDL),
     
