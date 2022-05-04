@@ -52,11 +52,16 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardi
     @Override
     public void init(final Properties props) {
         super.init(props);
-        if (props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY))) {
-            isSecondTs = true;
-        }
-        String dateTimePattern = props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
-        dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
+        isSecondTs = getIsSecondTs(props);
+        dateTimeFormatter = getDateTimeFormatter(props);
+    }
+    
+    private boolean getIsSecondTs(final Properties props) {
+        return props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY));
+    }
+    
+    private DateTimeFormatter getDateTimeFormatter(final Properties props) {
+        return DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN));
     }
     
     @Override
@@ -68,10 +73,7 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardi
             return LocalDateTimeConvert.fromDate((Date) shardingValue, getZoneId());
         }
         if (shardingValue instanceof Long) {
-            if (isSecondTs) {
-                return LocalDateTimeConvert.fromTimestampSecond((Long) shardingValue, getZoneId());
-            }
-            return LocalDateTimeConvert.fromTimestamp((Long) shardingValue, getZoneId());
+            return isSecondTs ? LocalDateTimeConvert.fromTimestampSecond((Long) shardingValue, getZoneId()) : LocalDateTimeConvert.fromTimestamp((Long) shardingValue, getZoneId());
         }
         if (shardingValue instanceof String) {
             return LocalDateTimeConvert.fromString((String) shardingValue, dateTimeFormatter);
