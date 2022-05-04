@@ -138,7 +138,7 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
         return result;
     }
     
-    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                                                  final AtomicInteger parametersOffset, final String defaultDatabaseName) {
         if (!getSqlStatement().getInsertSelect().isPresent()) {
             return Optional.empty();
@@ -236,7 +236,7 @@ public final class OracleMultiInsertStatementContext extends CommonSQLStatementC
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
-        
+    
     /**
      * Get insert column names.
      * @param insertStatement the insertStatement of multi insertStatement.

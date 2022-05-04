@@ -41,11 +41,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,15 +62,15 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final TablesContext tablesContext;
     
-    private final List<String> columnNames;
+    private List<String> columnNames;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final String defaultDatabaseName;
     
-    private final List<String> insertColumnNames;
+    private final List<String> insertColumnNames = new ArrayList<>();
     
-    private final List<List<ExpressionSegment>> valueExpressions;
+    private final List<List<ExpressionSegment>> valueExpressions = new ArrayList<>();
     
     private List<InsertValueContext> insertValueContexts;
     
@@ -78,22 +80,53 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private GeneratedKeyContext generatedKeyContext;
     
+    private final Map<Integer, List<String>> multiColumnNames = new LinkedHashMap<>();
+    
+    private final Map<Integer, List<String>> multiInsertColumnNames = new LinkedHashMap<>();
+    
+    private final Map<Integer, List<List<ExpressionSegment>>> multiValueExpressions = new LinkedHashMap<>();
+    
+    private Map<Integer, List<InsertValueContext>> multiInsertValueContexts = new LinkedHashMap<>();
+    
+    private Map<Integer, GeneratedKeyContext> multiGeneratedKeyContext = new LinkedHashMap<>();
+    
+    private List<InsertStatement> insertStatements;
+    
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                   final InsertStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         this.metaDataMap = metaDataMap;
         this.defaultDatabaseName = defaultDatabaseName;
-        insertColumnNames = getInsertColumnNames();
-        valueExpressions = getAllValueExpressions(sqlStatement);
-        AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
-                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        AtomicInteger parametersOffset = new AtomicInteger(0);
+        if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
+            ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().ifPresent(each -> {
+                insertStatements = new ArrayList<>(each.getInsertStatements());
+                for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
+                    InsertStatement insertStatement = insertStatements.get(cursor);
+                    List<String> insertColumnName = getMultiInsertColumnNames(insertStatement);
+                    multiInsertColumnNames.put(cursor, insertColumnName);
+                    List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
+                    multiValueExpressions.put(cursor, valueExpression);
+                    multiInsertValueContexts.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
+                    parametersOffset.getAndAdd(valueExpression.size());
+                    List<String> columnName = useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnName;
+                    multiColumnNames.put(cursor, columnName);
+                    multiGeneratedKeyContext.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(insertColumnName, getAllValueExpressions(insertStatement),
+                            parameters).orElse(null));
+                }
+            });
+        } else {
+            insertColumnNames.addAll(getInsertColumnNames());
+            valueExpressions.addAll(getAllValueExpressions(sqlStatement));
+            insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
+            columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
+            generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
+                    .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        }
+        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
+        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -229,6 +262,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
     
+    private List<String> getMultiInsertColumnNames(final InsertStatement insertStatement) {
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+    }
+    
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
@@ -270,10 +308,24 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     @Override
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
+        if (null != insertStatements) {
+            Integer cursor = 0;
+            for (InsertStatement insertStatement : insertStatements) {
+                List<List<ExpressionSegment>> valueExpression = multiValueExpressions.get(cursor);
+                multiInsertValueContexts.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
+                parametersOffset.getAndAdd(valueExpression.size());
+                multiGeneratedKeyContext.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(multiInsertColumnNames.get(cursor),
+                        valueExpression, parameters).orElse(null));
+                cursor++;
+            }
+            insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
+            onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
+        } else {
+            insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
+            insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
+            onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
+            generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
+        }
     }
 }
