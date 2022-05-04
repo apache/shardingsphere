@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -163,17 +164,13 @@ public final class DataConsistencyChecker {
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getDatabaseName());
-            logicTableNames.forEach(each -> {
-                // TODO put to preparer
-                if (!tableMetaDataMap.containsKey(each)) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s', tableMetaDataMap.keySet=%s", each, tableMetaDataMap.keySet()));
-                }
-            });
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
             String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
             for (String each : logicTableNames) {
-                TableMetaData tableMetaData = tableMetaDataMap.get(each);
+                TableMetaData tableMetaData = getTableMetaData(jobConfig.getDatabaseName(), each);
+                if (null == tableMetaData) {
+                    throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
+                }
                 Collection<String> columnNames = tableMetaData.getColumns().keySet();
                 String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
@@ -226,15 +223,19 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private Map<String, TableMetaData> getTableMetaDataMap(final String databaseName) {
+    private TableMetaData getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
         if (null == metaData) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
-        String schema = metaData.getResource().getDatabaseType().getDefaultSchema(databaseName);
-        return metaData.getSchemaByName(schema).getTables();
+        String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
+        if (null == schema) {
+            throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
+        }
+        return schema.get(logicTableName);
     }
     
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final String tableName,
