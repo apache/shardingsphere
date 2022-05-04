@@ -673,7 +673,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO :Unsupported for withClause.
         SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
         result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
@@ -691,8 +690,8 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         SQLServerSelectStatement result = new SQLServerSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
-            Collection<CommonTableExpressionSegment> commonTableExpressions = getCommonTableExpressionSegmentUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
-            WithSegment withSegment = new WithSegment(ctx.selectWithClause().getStart().getStartIndex(), ctx.selectWithClause().getStop().getStopIndex(), commonTableExpressions);
+            Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
+            WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
             result.setWithSegment(withSegment);
         }
         if (null != ctx.duplicateSpecification()) {
@@ -717,10 +716,11 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         return result;
     }
     
-    private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentUsingCteClauseSet(final CteClauseSetContext ctx) {
+    private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
-            SubquerySegment subquery = new SubquerySegment(each.subquery().start.getStartIndex(), each.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+            SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
             IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
             if (null != each.columnNames()) {
@@ -946,8 +946,8 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitWithClause(final WithClauseContext ctx) {
-        Collection<CommonTableExpressionSegment> commonTableExpressions = getCommonTableExpressionSegmentUsingCteClauseSet(ctx.cteClauseSet());
-        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
+        Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.cteClauseSet());
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressionSegments);
     }
     
     @Override
