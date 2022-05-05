@@ -129,6 +129,17 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
     }
     
+    private boolean isMultiInsertStatements(final InsertStatement sqlStatement) {
+        return sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent();
+    }
+    
+    private Collection<InsertStatement> getInsertStatements(final InsertStatement sqlStatement) {
+        if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
+            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().get().getInsertStatements();
+        }
+        return Collections.singletonList(sqlStatement);
+    }
+    
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultSchemaName);
         ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
