@@ -15,5 +15,5 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.ComplexKeysShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.SpringComplexKeysShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.SpringHintShardingAlgorithmFixture
