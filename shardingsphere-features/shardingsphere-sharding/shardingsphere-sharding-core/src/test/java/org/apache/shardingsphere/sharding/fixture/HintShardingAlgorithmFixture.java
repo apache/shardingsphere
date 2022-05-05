@@ -37,6 +37,6 @@ public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm
     
     @Override
     public String getType() {
-        return "HINT_TEST";
+        return "HINT.FIXTURE";
     }
 }
