@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.ddlgenerator.spi;
+package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
