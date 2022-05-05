@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.config.algorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 /**
- * ShardingSphere instance required algorithm.
+ * ShardingSphere instance aware algorithm.
  */
-public interface ShardingSphereInstanceRequiredAlgorithm {
+public interface ShardingSphereInstanceAwareAlgorithm {
     
     /**
      * Set instance context.
