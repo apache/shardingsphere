@@ -218,7 +218,7 @@ public abstract class DatabaseCommunicationEngine<T> {
         return !JDBCDriverType.STATEMENT.equals(driverType);
     }
     
-    protected void checkDatabaseSchema(final ExecutionContext executionContext) {
+    protected void checkLockedDatabase(final ExecutionContext executionContext) {
         if (isLockedDatabase(backendConnection.getConnectionSession().getDatabaseName())) {
             lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
         }
