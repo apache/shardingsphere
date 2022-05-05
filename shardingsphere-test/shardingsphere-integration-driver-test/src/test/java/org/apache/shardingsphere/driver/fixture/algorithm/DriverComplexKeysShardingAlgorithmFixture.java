@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 
 import java.util.Collection;
 
-public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String> {
+public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
@@ -31,6 +31,6 @@ public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String
     
     @Override
     public String getType() {
-        return "COMPLEX_TEST";
+        return "DRIVER.COMPLEX.FIXTURE";
     }
 }
