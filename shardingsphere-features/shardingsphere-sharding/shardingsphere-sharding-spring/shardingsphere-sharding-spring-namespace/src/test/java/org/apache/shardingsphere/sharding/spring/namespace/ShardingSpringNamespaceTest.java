@@ -128,7 +128,7 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertComplexShardingAlgorithm() {
-        assertThat(complexShardingAlgorithm.getType(), is("COMPLEX_TEST"));
+        assertThat(complexShardingAlgorithm.getType(), is("SPRING.COMPLEX.FIXTURE"));
     }
     
     @Test

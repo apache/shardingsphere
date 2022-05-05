@@ -75,7 +75,7 @@ rules:
     standard_test:
       type: STANDARD_TEST
     complex_test:
-      type: COMPLEX_TEST
+      type: COMPLEX.FIXTURE
     hint_test:
       type: HINT.FIXTURE
     database_inline:

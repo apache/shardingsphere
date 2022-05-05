@@ -72,7 +72,7 @@ rules:
     standard_test:
       type: STANDARD_TEST
     complex_test:
-      type: COMPLEX_TEST
+      type: DRIVER.COMPLEX.FIXTURE
     t_order_inline:
       type: INLINE
       props:
