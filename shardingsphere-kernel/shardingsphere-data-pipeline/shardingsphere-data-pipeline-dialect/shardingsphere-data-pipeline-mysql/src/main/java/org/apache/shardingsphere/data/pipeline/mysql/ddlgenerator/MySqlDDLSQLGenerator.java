@@ -43,7 +43,7 @@ public final class MySqlDDLSQLGenerator implements DialectDDLSQLGenerator {
                 return resultSet.getString(COLUMN_LABEL);
             }
         }
-        throw new ShardingSphereException(String.format("Failed to get ddl sql for table %s", tableName));
+        throw new ShardingSphereException("Failed to get ddl sql for table %s", tableName);
     }
     
     @Override
