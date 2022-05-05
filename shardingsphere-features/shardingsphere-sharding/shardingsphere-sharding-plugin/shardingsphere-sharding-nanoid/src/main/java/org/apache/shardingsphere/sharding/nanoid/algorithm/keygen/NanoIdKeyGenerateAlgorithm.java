@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<String> generateKey() {
+    public String generateKey() {
         return NanoIdUtils.randomNanoId(ThreadLocalRandom.current(), NanoIdUtils.DEFAULT_ALPHABET, NanoIdUtils.DEFAULT_SIZE);
     }
     
