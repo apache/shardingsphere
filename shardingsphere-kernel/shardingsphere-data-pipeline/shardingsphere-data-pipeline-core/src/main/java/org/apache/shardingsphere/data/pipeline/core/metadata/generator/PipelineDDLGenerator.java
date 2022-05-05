@@ -75,9 +75,8 @@ public final class PipelineDDLGenerator {
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
         String sql = generateActualDDLSQL(databaseType, schemaName, tableName, metaData);
-        String[] multiSql = sql.split(DELIMITER);
         StringBuilder result = new StringBuilder();
-        for (final String each : multiSql) {
+        for (String each : sql.split(DELIMITER)) {
             if (!each.trim().isEmpty()) {
                 result.append(decorateActualSQL(each.trim(), metaData, databaseType, databaseName)).append(DELIMITER + NEWLINE);
             }
