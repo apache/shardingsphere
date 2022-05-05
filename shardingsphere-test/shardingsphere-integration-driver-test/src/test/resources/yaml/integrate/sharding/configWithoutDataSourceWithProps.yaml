@@ -67,7 +67,7 @@ rules:
   
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: DRIVER.STANDARD.FIXTURE
     t_order_inline:
       type: INLINE
       props:

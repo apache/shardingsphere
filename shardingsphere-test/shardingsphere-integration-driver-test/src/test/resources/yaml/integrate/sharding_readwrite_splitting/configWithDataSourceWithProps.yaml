@@ -84,7 +84,7 @@ rules:
   
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: DRIVER.STANDARD.FIXTURE
     complex_test:
       type: DRIVER.COMPLEX.FIXTURE
     database_inline:

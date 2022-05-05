@@ -60,19 +60,19 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     @Setter
     private Properties props;
     
-    private DateTimeFormatter dateTimeFormatter;
+    private volatile DateTimeFormatter dateTimeFormatter;
     
-    private int dateTimePatternLength;
+    private volatile int dateTimePatternLength;
     
-    private LocalDateTime dateTimeLower;
+    private volatile LocalDateTime dateTimeLower;
     
-    private LocalDateTime dateTimeUpper;
+    private volatile LocalDateTime dateTimeUpper;
     
-    private DateTimeFormatter tableSuffixPattern;
+    private volatile DateTimeFormatter tableSuffixPattern;
     
-    private int stepAmount;
+    private volatile int stepAmount;
     
-    private ChronoUnit stepUnit;
+    private volatile ChronoUnit stepUnit;
     
     @Override
     public void init(final Properties props) {
