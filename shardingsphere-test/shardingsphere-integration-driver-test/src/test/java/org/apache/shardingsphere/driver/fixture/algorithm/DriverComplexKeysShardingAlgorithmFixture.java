@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding;
+package org.apache.shardingsphere.driver.fixture.algorithm;
 
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
 
-public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
+        return null;
     }
     
     @Override
     public String getType() {
-        return "COMPLEX_TEST";
+        return "DRIVER.COMPLEX.FIXTURE";
     }
 }

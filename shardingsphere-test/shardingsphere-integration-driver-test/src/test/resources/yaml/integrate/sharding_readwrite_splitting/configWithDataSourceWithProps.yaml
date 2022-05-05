@@ -86,7 +86,7 @@ rules:
     standard_test:
       type: STANDARD_TEST
     complex_test:
-      type: COMPLEX_TEST
+      type: DRIVER.COMPLEX.FIXTURE
     database_inline:
       type: INLINE
       props:
