@@ -61,8 +61,8 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true
 
 jobs:
-  build-it-image:
-    name: build-it-image
+  scaling-build-it-image:
+    name: scaling-build-it-image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -91,9 +91,9 @@ jobs:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
   
-  mysql-it-test:
+  scaling-mysql-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
-    name: mysql-it-test
+    name: scaling-mysql-it-test
     runs-on: ubuntu-latest
     env:
       mysql_version: mysql:5.7
@@ -121,9 +121,9 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=
   
-  postgresql-it-test:
+  scaling-postgresql-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
-    name: postgres-it-test
+    name: scaling-postgres-it-test
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
@@ -151,9 +151,9 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=
   
-  daily-it-test:
+  scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
-    name: daily-it-test
+    name: scaling-daily-it-test
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
