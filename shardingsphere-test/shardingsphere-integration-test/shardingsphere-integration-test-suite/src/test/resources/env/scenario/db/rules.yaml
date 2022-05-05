@@ -60,7 +60,7 @@ rules:
 
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: IT.STANDARD.FIXTURE
     db_inline_order_id:
       type: INLINE
       props:
