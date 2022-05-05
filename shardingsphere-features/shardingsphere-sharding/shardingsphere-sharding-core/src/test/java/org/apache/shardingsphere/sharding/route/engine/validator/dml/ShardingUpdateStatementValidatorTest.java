@@ -19,14 +19,15 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -50,7 +51,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -118,21 +118,20 @@ public final class ShardingUpdateStatementValidatorTest {
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);
-        StandardShardingStrategyConfiguration databaseStrategyConfiguration = mock(StandardShardingStrategyConfiguration.class);
-        when(databaseStrategyConfiguration.getShardingColumn()).thenReturn("id");
-        when(databaseStrategyConfiguration.getShardingAlgorithmName()).thenReturn("database_inline");
-        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfiguration);
+        StandardShardingStrategyConfiguration databaseStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
+        when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
+        when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
+        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
         when(shardingRule.getShardingAlgorithms()).thenReturn(createShardingAlgorithmMap());
     }
     
     private Map<String, ShardingAlgorithm> createShardingAlgorithmMap() {
-        ShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        Properties props = new Properties();
-        props.put("algorithm-expression", "ds_${id % 2}");
-        shardingAlgorithm.setProps(props);
-        shardingAlgorithm.init();
-        Map<String, ShardingAlgorithm> result = new HashMap<>();
-        result.put("database_inline", shardingAlgorithm);
+        return Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createProperties())));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("algorithm-expression", "ds_${id % 2}");
         return result;
     }
     

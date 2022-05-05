@@ -27,10 +27,6 @@ import java.util.Collections;
 public final class StandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         return "";
     }

@@ -28,10 +28,14 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 @Getter
 @Setter
 @ToString(callSuper = true)
+// TODO fields final
 public final class InventoryDumperConfiguration extends DumperConfiguration {
     
-    private String tableName;
+    private String actualTableName;
     
+    private String logicTableName;
+    
+    // TODO rename to uniqueKey
     private String primaryKey;
     
     private Integer shardingItem;
@@ -41,8 +45,10 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
     public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
+        setDatabaseName(dumperConfig.getDatabaseName());
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());
+        setTableNameSchemaNameMapping(dumperConfig.getTableNameSchemaNameMapping());
     }
 }

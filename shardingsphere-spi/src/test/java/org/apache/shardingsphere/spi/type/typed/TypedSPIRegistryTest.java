@@ -27,9 +27,7 @@ import org.junit.Test;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPIRegistryTest {
@@ -54,14 +52,11 @@ public final class TypedSPIRegistryTest {
     public void assertFindStatefulRegisteredService() {
         Optional<StatefulTypedSPIFixture> actual = TypedSPIRegistry.findRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
         assertTrue(actual.isPresent());
-        assertProperties(actual.get());
     }
     
     @Test
     public void assertGetStatefulRegisteredService() {
-        StatefulTypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
-        assertNotNull(actual);
-        assertProperties(actual);
+        TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
     }
     
     private Properties createProperties() {
@@ -71,14 +66,9 @@ public final class TypedSPIRegistryTest {
         return result;
     }
     
-    private void assertProperties(final StatefulTypedSPIFixture actual) {
-        assertThat(actual.getProps().getProperty("key1"), is("1"));
-        assertThat(actual.getProps().getProperty("key2"), is("2"));
-    }
-    
     @Test
     public void assertGetStatefulRegisteredServiceWithAlias() {
-        assertNotNull(TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Alias", null));
+        assertNotNull(TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Alias", new Properties()));
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)

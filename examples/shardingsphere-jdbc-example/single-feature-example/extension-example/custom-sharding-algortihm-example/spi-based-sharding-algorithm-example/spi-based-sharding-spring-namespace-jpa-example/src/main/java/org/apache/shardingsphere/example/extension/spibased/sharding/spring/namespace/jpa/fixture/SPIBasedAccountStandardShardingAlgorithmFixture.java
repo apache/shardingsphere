@@ -45,10 +45,6 @@ public final class SPIBasedAccountStandardShardingAlgorithmFixture implements St
     }
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String getType() {
         return "T_ACCOUNT_SPI_BASED";
     }

@@ -85,9 +85,9 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
         return getShardingCount(shardingAlgorithms.get(shardingStrategy.getShardingAlgorithmName()));
     }
     
-    private boolean useDefaultStrategy(final ShardingStrategyConfiguration currentShardingStrategy, final ShardingRuleConfiguration ruleConfiguration) {
+    private boolean useDefaultStrategy(final ShardingStrategyConfiguration currentShardingStrategy, final ShardingRuleConfiguration ruleConfig) {
         return (null == currentShardingStrategy || Strings.isNullOrEmpty(currentShardingStrategy.getShardingAlgorithmName()))
-                && null != ruleConfiguration.getDefaultDatabaseShardingStrategy() && null != ruleConfiguration.getDefaultTableShardingStrategy();
+                && null != ruleConfig.getDefaultDatabaseShardingStrategy() && null != ruleConfig.getDefaultTableShardingStrategy();
     }
     
     private int getShardingCount(final ShardingSphereAlgorithmConfiguration algorithmConfig) {
@@ -97,7 +97,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
         if (ShardingAlgorithmFactory.contains(algorithmConfig.getType())) {
             ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfig);
             if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
-                shardingAlgorithm.init();
+                shardingAlgorithm.init(algorithmConfig.getProps());
                 return ((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount();
             }
         }

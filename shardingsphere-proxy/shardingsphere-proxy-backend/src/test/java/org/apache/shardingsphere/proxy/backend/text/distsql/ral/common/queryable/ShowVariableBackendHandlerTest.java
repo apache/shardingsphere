@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -71,7 +72,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("transaction_type"));
         assertThat(rowData.get(1), is("LOCAL"));
     }
@@ -85,7 +86,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("cached_connections"));
         assertThat(rowData.get(1), is("0"));
     }
@@ -108,7 +109,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("agent_plugins_enabled"));
         assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
@@ -121,16 +122,15 @@ public final class ShowVariableBackendHandlerTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
-        props.put("sql-show", "true");
-        ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
-        when(metaDataContexts.getProps()).thenReturn(configurationProperties);
+        props.put("sql-show", Boolean.TRUE.toString());
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
@@ -149,7 +149,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
     }

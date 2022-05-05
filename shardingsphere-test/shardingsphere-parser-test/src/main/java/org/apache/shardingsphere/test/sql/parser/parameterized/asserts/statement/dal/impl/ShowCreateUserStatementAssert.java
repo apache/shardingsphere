@@ -22,9 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateUserStatementTestCase;
-import org.junit.Assert;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Show create user statement assert.
@@ -40,7 +41,7 @@ public final class ShowCreateUserStatementAssert {
      * @param expected expected show create user statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
-        Assert.assertNotNull("expected show create user should be not null", expected.getUser());
-        Assert.assertThat(actual.getName(), is(expected.getUser().getName()));
+        assertNotNull("expected show create user should be not null", expected.getUser());
+        assertThat(actual.getName(), is(expected.getUser().getName()));
     }
 }

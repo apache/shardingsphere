@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public final class PostgreSQLByteConverterTest {
     
     private final byte[] expected;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Iterable<Object[]> textValues() {
         return Arrays.asList(
                 new Object[]{new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}},

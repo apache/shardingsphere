@@ -149,7 +149,7 @@ public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaD
         Collection<IndexMetaData> result = new HashSet<>();
         for (Entry<String, IndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
-                getLogicIndex(entry.getValue().getName(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
+                getLogicIndex(entry.getValue().getName(), each.getTableName()).ifPresent(optional -> result.add(new IndexMetaData(optional)));
             }
         }
         return result;
@@ -160,8 +160,8 @@ public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaD
         for (Entry<String, ConstraintMetaData> entry : tableMetaData.getConstrains().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
                 String referencedTableName = entry.getValue().getReferencedTableName();
-                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicConstraint -> result.add(
-                        new ConstraintMetaData(logicConstraint, shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName))));
+                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(optional -> result.add(
+                        new ConstraintMetaData(optional, shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName))));
             }
         }
         return result;

@@ -48,11 +48,11 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void swapToYamlConfiguration() {
-        YamlTrafficStrategyConfiguration yamlTrafficStrategyConfiguration = yamlSwapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
-        assertThat(yamlTrafficStrategyConfiguration.getName(), is(NAME));
-        assertThat(yamlTrafficStrategyConfiguration.getLabels(), is(LABELS));
-        assertThat(yamlTrafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
-        assertThat(yamlTrafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
+        YamlTrafficStrategyConfiguration yamlStrategyConfig = yamlSwapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
+        assertThat(yamlStrategyConfig.getName(), is(NAME));
+        assertThat(yamlStrategyConfig.getLabels(), is(LABELS));
+        assertThat(yamlStrategyConfig.getAlgorithmName(), is(ALGORITHM_NAME));
+        assertThat(yamlStrategyConfig.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
     
     private TrafficStrategyConfiguration createTrafficStrategyConfiguration() {
@@ -61,11 +61,11 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void swapToObject() {
-        TrafficStrategyConfiguration trafficStrategyConfiguration = yamlSwapper.swapToObject(createYamlTrafficStrategyConfiguration());
-        assertThat(trafficStrategyConfiguration.getName(), is(NAME));
-        assertThat(trafficStrategyConfiguration.getLabels(), is(LABELS));
-        assertThat(trafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
-        assertThat(trafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
+        TrafficStrategyConfiguration strategyConfig = yamlSwapper.swapToObject(createYamlTrafficStrategyConfiguration());
+        assertThat(strategyConfig.getName(), is(NAME));
+        assertThat(strategyConfig.getLabels(), is(LABELS));
+        assertThat(strategyConfig.getAlgorithmName(), is(ALGORITHM_NAME));
+        assertThat(strategyConfig.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
     
     private YamlTrafficStrategyConfiguration createYamlTrafficStrategyConfiguration() {

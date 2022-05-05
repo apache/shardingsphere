@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,14 +43,13 @@ import static org.junit.Assert.assertFalse;
 
 public final class InventoryTaskTest {
     
-    private static TaskConfiguration taskConfig;
-    
     private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
+    
+    private TaskConfiguration taskConfig;
     
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @AfterClass
@@ -57,10 +57,16 @@ public final class InventoryTaskTest {
         DATA_SOURCE_MANAGER.close();
     }
     
+    @Before
+    public void setUp() {
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+    }
+    
     @Test(expected = IngestException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_non_exist");
+        inventoryDumperConfig.setActualTableName("t_non_exist");
+        inventoryDumperConfig.setLogicTableName("t_non_exist");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new PrimaryKeyPosition(0, 1000);
@@ -70,7 +76,7 @@ public final class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelFactory(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
                         DATA_SOURCE_MANAGER, dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
@@ -80,7 +86,10 @@ public final class InventoryTaskTest {
     public void assertGetProgress() throws SQLException {
         initTableData(taskConfig.getDumperConfig());
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_order");
+        // TODO use t_order_0, and also others
+        inventoryDumperConfig.setActualTableName("t_order");
+        inventoryDumperConfig.setLogicTableName("t_order");
+        inventoryDumperConfig.setPrimaryKey("order_id");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new PrimaryKeyPosition(0, 1000);
@@ -90,7 +99,7 @@ public final class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelFactory(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
                         new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);

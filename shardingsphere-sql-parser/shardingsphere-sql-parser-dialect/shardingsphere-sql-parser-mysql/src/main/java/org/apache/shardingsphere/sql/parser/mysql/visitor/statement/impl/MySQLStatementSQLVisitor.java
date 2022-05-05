@@ -1216,8 +1216,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
-        AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        return result;
+        return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
     @Override
@@ -1555,11 +1554,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegmentList);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }

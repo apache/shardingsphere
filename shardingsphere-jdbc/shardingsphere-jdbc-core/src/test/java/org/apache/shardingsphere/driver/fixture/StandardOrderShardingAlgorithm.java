@@ -27,10 +27,6 @@ import java.util.HashSet;
 public final class StandardOrderShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {

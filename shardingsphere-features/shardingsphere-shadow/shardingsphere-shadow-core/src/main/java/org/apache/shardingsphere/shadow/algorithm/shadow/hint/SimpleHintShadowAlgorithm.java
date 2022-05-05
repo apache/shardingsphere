@@ -25,26 +25,26 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Simple hint shadow algorithm.
  */
-@Getter
-@Setter
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
-    private Properties props = new Properties();
+    // TODO convert to static key, or use HashMap
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
-    public void init() {
-        checkPropsSize();
+    public void init(final Properties props) {
+        checkPropsSize(props);
+        this.props = props;
     }
     
-    private void checkPropsSize() {
+    private void checkPropsSize(final Properties props) {
         Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
     }
     
@@ -53,8 +53,8 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
         if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        Optional<Map<String, String>> noteOptional = ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue());
-        return noteOptional.filter(stringStringMap -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), stringStringMap.get(String.valueOf(entry.getKey()))))).isPresent();
+        return ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue())
+                .filter(optional -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), optional.get(String.valueOf(entry.getKey()))))).isPresent();
     }
     
     @Override

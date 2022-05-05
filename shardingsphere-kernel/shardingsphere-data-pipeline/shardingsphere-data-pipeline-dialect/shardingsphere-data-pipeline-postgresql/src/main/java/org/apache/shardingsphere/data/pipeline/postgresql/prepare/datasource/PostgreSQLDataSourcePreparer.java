@@ -55,20 +55,20 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     private static final String FETCH_CREATE_TABLE_TEMPLATE = "SELECT 'CREATE TABLE IF NOT EXISTS '||'%s'||'('||STRING_AGG"
             + "(column_list.column_expr, ',')||',PRIMARY KEY({PK_placeholder}))' FROM (SELECT *,column_name||' '||data_type||COALESCE('('"
             + " || character_maximum_length || ')', '')||CASE WHEN is_nullable = 'YES' then '' ELSE ' NOT NULL' END AS column_expr "
-            + "FROM information_schema.columns WHERE table_name = '%s' AND table_schema='public' ORDER BY ordinal_position) column_list";
+            + "FROM information_schema.columns WHERE table_name = '%s' AND table_schema='%s' ORDER BY ordinal_position) column_list";
     
     private static final String FETCH_NORMAL_INDEXES_TEMPLATE = "SELECT schemaname,indexname,indexdef FROM pg_indexes WHERE tablename = "
-            + "'%s' AND indexname != '%s' AND schemaname='public'";
+            + "'%s' AND indexname != '%s' AND schemaname='%s'";
     
     private static final String DROP_INDEX_TEMPLATE = "DROP INDEX IF EXISTS %s.%s";
     
     private static final String FETCH_PRIMARY_KEY_TEMPLATE = "SELECT constraint_name,column_name FROM information_schema"
-            + ".key_column_usage WHERE table_name = '%s' AND table_schema='public'";
+            + ".key_column_usage WHERE table_name = '%s' AND table_schema='%s'";
     
     private static final String COMMENT_TEMPLATE = "COMMENT ON %s %s IS '%s'";
     
     private static final String FETCH_TABLE_COLUMN_TEMPLATE = "SELECT ordinal_position,column_name FROM information_schema.columns WHERE "
-            + "table_name = '%s' AND table_schema='public' ORDER BY ordinal_position";
+            + "table_name = '%s' AND table_schema='%s' ORDER BY ordinal_position";
     
     private static final String FETCH_COMMENT_TEMPLATE = "SELECT objsubid,description FROM pg_catalog.pg_description WHERE objoid = "
             + "'%s'::regclass";
@@ -82,6 +82,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
             log.error("failed to get actual table definitions", ex);
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
+        log.info("prepareTargetTables, actualTableDefinitions={}", actualTableDefinitions);
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         try (
                 Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
@@ -130,16 +131,19 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                 // TODO to remove if config is fix the problem
                 final Map<String, Object> configMap =
                         sourceDataSourceConfig.getRootConfig().getDataSources().get(dataNode.getDataSourceName());
+                // TODO one of jdbcUrl or url might not exist, refactor to getActualDataSourceConfig
                 configMap.put("jdbcUrl", configMap.get("url"));
                 PipelineDataSourceWrapper dataSource =
                         dataSourceManager.getDataSource(sourceDataSourceConfig.getActualDataSourceConfig(dataNode.getDataSourceName()));
                 try (Connection sourceConnection = dataSource.getConnection()) {
                     String actualTableName = dataNode.getTableName();
+                    String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
                     StringJoiner joiner = new StringJoiner(";");
-                    Pair<String, List<String>> primaryKeyPair = queryTablePrimaryKey(sourceConnection, actualTableName);
-                    joiner.add(queryCreateTableSql(sourceConnection, actualTableName, primaryKeyPair.getRight()));
-                    queryCreateIndexes(sourceConnection, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
-                    queryCommentOnList(sourceConnection, actualTableName).forEach(joiner::add);
+                    Pair<String, List<String>> primaryKeyPair = queryTablePrimaryKey(sourceConnection, schemaName, actualTableName);
+                    joiner.add(queryCreateTableSql(sourceConnection, schemaName, actualTableName, primaryKeyPair.getRight()));
+                    queryCreateIndexes(sourceConnection, schemaName, actualTableName, primaryKeyPair.getLeft()).forEach(joiner::add);
+                    // TODO support query comment for multi schema
+                    // queryCommentOnList(sourceConnection, schemaName, actualTableName).forEach(joiner::add);
                     String tableDefinition = joiner.toString();
                     result.add(new ActualTableDefinition(each.getLogicTableName(), actualTableName, tableDefinition));
                 }
@@ -148,12 +152,14 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         return result;
     }
     
-    private Pair<String, List<String>> queryTablePrimaryKey(final Connection sourceConnection, final String actualTableName) throws SQLException {
+    private Pair<String, List<String>> queryTablePrimaryKey(final Connection sourceConnection, final String schemaName, final String actualTableName) throws SQLException {
+        String sql = String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName, schemaName);
+        log.info("queryTablePrimaryKey, sql={}", sql);
         String primaryKeyName = null;
         List<String> primaryKeyColumns = new LinkedList<>();
         try (
                 Statement statement = sourceConnection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(FETCH_PRIMARY_KEY_TEMPLATE, actualTableName))) {
+                ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
                 primaryKeyName = primaryKeyName == null ? resultSet.getString(1) : primaryKeyName;
                 primaryKeyColumns.add(resultSet.getString(2));
@@ -165,8 +171,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         return Pair.of(primaryKeyName, primaryKeyColumns);
     }
     
-    private String queryCreateTableSql(final Connection sourceConnection, final String actualTableName, final List<String> pkColumns) throws SQLException {
-        final String sql = String.format(FETCH_CREATE_TABLE_TEMPLATE, actualTableName, actualTableName);
+    private String queryCreateTableSql(final Connection sourceConnection, final String schemaName, final String actualTableName, final List<String> pkColumns) throws SQLException {
+        final String sql = String.format(FETCH_CREATE_TABLE_TEMPLATE, schemaName + "." + actualTableName, actualTableName, schemaName);
+        log.info("queryCreateTableSql, sql={}", sql);
         try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             if (!resultSet.next()) {
                 throw new PipelineJobPrepareFailedException("table struct has no result, sql: " + sql);
@@ -175,11 +182,13 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         }
     }
     
-    private List<String> queryCreateIndexes(final Connection sourceConnection, final String actualTableName, final String pkName) throws SQLException {
+    private List<String> queryCreateIndexes(final Connection sourceConnection, final String schemaName, final String actualTableName, final String pkName) throws SQLException {
         List<String> result = new LinkedList<>();
+        String sql = String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName, schemaName);
+        log.info("queryCreateIndexes, sql={}", sql);
         try (
                 Statement statement = sourceConnection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(FETCH_NORMAL_INDEXES_TEMPLATE, actualTableName, pkName))) {
+                ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
                 // TODO add drop index first, make sure the index is not exist
                 result.add(String.format(DROP_INDEX_TEMPLATE, resultSet.getString(1), resultSet.getString(2)));
@@ -189,8 +198,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         return result;
     }
     
-    private List<String> queryCommentOnList(final Connection sourceConnection, final String actualTableName) throws SQLException {
+    private List<String> queryCommentOnList(final Connection sourceConnection, final String schemaName, final String actualTableName) throws SQLException {
         final String fetchCommentSql = String.format(FETCH_COMMENT_TEMPLATE, actualTableName);
+        log.info("queryCommentOnList, fetchCommentSql={}", fetchCommentSql);
         List<String> result = new LinkedList<>();
         Map<Integer, String> commentMap = Maps.newHashMap();
         try (
@@ -204,7 +214,8 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                 result.add(String.format(COMMENT_TEMPLATE, "TABLE", actualTableName, tableComment));
             }
         }
-        final String fetchColumnSql = String.format(FETCH_TABLE_COLUMN_TEMPLATE, actualTableName);
+        final String fetchColumnSql = String.format(FETCH_TABLE_COLUMN_TEMPLATE, actualTableName, schemaName);
+        log.info("queryCommentOnList, fetchColumnSql={}", fetchColumnSql);
         try (
                 Statement statement = sourceConnection.createStatement();
                 ResultSet columnsResult = statement.executeQuery(fetchColumnSql)) {

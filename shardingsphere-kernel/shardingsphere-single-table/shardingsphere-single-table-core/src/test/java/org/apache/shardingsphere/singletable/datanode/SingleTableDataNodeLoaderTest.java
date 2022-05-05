@@ -119,19 +119,17 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertLoadWithCheckOption() {
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "true");
-        ConfigurationProperties props = new ConfigurationProperties(properties);
-        SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.TRUE.toString());
+        SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), new ConfigurationProperties(props));
     }
     
     @Test
     public void assertLoadWithExcludeTablesCheckOption() {
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), "true");
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.TRUE.toString());
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        ConfigurationProperties props = new ConfigurationProperties(properties);
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, props);
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, new ConfigurationProperties(props));
         assertFalse(dataNodeMap.containsKey("employee"));
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));

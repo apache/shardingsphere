@@ -63,18 +63,18 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Setter
     private Properties props = new Properties();
     
-    private EtcdProperties etcdProperties;
+    private EtcdProperties etcdProps;
     
     private EtcdInternalLockHolder etcdInternalLockHolder;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        etcdProperties = new EtcdProperties(props);
+        etcdProps = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists())))
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        etcdInternalLockHolder = new EtcdInternalLockHolder(client, etcdProperties);
+        etcdInternalLockHolder = new EtcdInternalLockHolder(client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -91,7 +91,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
         ByteSequence prefixByteSequence = ByteSequence.from(prefix, StandardCharsets.UTF_8);
         GetOption getOption = GetOption.newBuilder().withPrefix(prefixByteSequence).withSortField(GetOption.SortTarget.KEY).withSortOrder(GetOption.SortOrder.ASCEND).build();
         List<KeyValue> keyValues = client.getKVClient().get(prefixByteSequence, getOption).get().getKvs();
-        return keyValues.stream().map(e -> getSubNodeKeyName(prefix, e.getKey().toString(StandardCharsets.UTF_8))).distinct().collect(Collectors.toList());
+        return keyValues.stream().map(each -> getSubNodeKeyName(prefix, each.getKey().toString(StandardCharsets.UTF_8))).distinct().collect(Collectors.toList());
     }
     
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
@@ -108,7 +108,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
-        long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+        long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> {
         }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
@@ -156,7 +156,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         try {
-            long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
             client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
             return true;
             // CHECKSTYLE:OFF
@@ -170,7 +170,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Override
     public void releaseLock(final String key) {
         try {
-            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProperties.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
+            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProps.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

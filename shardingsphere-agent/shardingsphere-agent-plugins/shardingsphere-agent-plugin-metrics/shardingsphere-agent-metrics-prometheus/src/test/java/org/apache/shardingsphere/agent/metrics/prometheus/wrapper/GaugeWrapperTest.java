@@ -19,8 +19,10 @@ package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Gauge;
 import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
-import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class GaugeWrapperTest {
     
@@ -31,6 +33,6 @@ public final class GaugeWrapperTest {
         gaugeWrapper.inc();
         gaugeWrapper.inc(1);
         gauge = (Gauge) ReflectiveUtil.getFieldValue(gaugeWrapper, "gauge");
-        org.hamcrest.MatcherAssert.assertThat(gauge.get(), Matchers.is(2.0));
+        assertThat(gauge.get(), is(2.0));
     }
 }

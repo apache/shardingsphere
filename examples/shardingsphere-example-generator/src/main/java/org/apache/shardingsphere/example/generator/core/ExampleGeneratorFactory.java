@@ -58,14 +58,13 @@ public final class ExampleGeneratorFactory {
      * @throws TemplateException template exception
      * @throws IOException IO exception
      */
-    @SuppressWarnings("unchecked")
     public void generate() throws TemplateException, IOException {
-        YamlExampleConfiguration exampleConfiguration = swapConfigToObject();
-        YamlExampleConfigurationValidator.validate(exampleConfiguration);
-        Collection<String> products = exampleConfiguration.getProducts();
+        YamlExampleConfiguration exampleConfig = swapConfigToObject();
+        YamlExampleConfigurationValidator.validate(exampleConfig);
+        Collection<String> products = exampleConfig.getProducts();
         for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
             if (products.contains(each.getType())) {
-                each.generate(templateConfig, exampleConfiguration);
+                each.generate(templateConfig, exampleConfig);
             }
         }
     }

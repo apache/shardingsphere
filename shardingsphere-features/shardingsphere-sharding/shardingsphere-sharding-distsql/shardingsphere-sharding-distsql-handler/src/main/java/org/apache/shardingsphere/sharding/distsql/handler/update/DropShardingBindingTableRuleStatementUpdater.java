@@ -59,9 +59,9 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName));
     }
     
-    private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration configuration) {
+    private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
         Map<String, String> result = new LinkedHashMap<>();
-        configuration.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
+        config.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
         return result;
     }
     

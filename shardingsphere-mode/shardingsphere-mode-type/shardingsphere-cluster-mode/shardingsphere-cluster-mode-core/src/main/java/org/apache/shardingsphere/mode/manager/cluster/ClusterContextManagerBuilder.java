@@ -160,11 +160,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private ContextManager createContextManager(final ClusterPersistRepository repository, final MetaDataPersistService metaDataPersistService,
                                                 final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts,
-                                                final Properties transactionProps, final ModeConfiguration modeConfiguration) {
+                                                final Properties transactionProps, final ModeConfiguration modeConfig) {
         ComputeNodeInstance computeNodeInstance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition);
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, metaDataPersistService, instanceDefinition);
         DistributeLockContext distributeLockContext = new DistributeLockContext(repository, computeNodeInstance);
-        InstanceContext instanceContext = new InstanceContext(computeNodeInstance, clusterWorkerIdGenerator, modeConfiguration, distributeLockContext);
+        InstanceContext instanceContext = new InstanceContext(computeNodeInstance, clusterWorkerIdGenerator, modeConfig, distributeLockContext);
         instanceContext.initLockContext();
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);

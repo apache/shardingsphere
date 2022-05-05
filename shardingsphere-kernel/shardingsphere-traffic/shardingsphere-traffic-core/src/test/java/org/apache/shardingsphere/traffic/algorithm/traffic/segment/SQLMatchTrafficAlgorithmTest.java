@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
+import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.util.Properties;
+
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -35,9 +37,13 @@ public final class SQLMatchTrafficAlgorithmTest {
     
     @Before
     public void setUp() {
-        sqlMatchAlgorithm = new SQLMatchTrafficAlgorithm();
-        sqlMatchAlgorithm.getProps().put("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;");
-        sqlMatchAlgorithm.init();
+        sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TrafficAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;");
+        return result;
     }
     
     @Test
@@ -57,10 +63,5 @@ public final class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(sqlMatchAlgorithm.getType(), is("SQL_MATCH"));
     }
 }

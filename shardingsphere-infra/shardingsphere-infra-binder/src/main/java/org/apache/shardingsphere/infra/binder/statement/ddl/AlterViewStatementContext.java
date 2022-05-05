@@ -43,9 +43,9 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext<A
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatement);
-        selectStatement.ifPresent(select -> {
+        selectStatement.ifPresent(optional -> {
             TableExtractor extractor = new TableExtractor();
-            extractor.extractTablesFromSelect(select);
+            extractor.extractTablesFromSelect(optional);
             tables.addAll(extractor.getRewriteTables());
         });
         tablesContext = new TablesContext(tables, getDatabaseType());

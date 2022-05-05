@@ -56,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -146,7 +145,7 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     }
     
     private Collection<ExecutionUnit> samplingExecutionUnit() {
-        Collection<ExecutionUnit> result = new ArrayList<>(dataSourcesToExecutionUnits.size());
+        Collection<ExecutionUnit> result = new LinkedList<>();
         for (List<ExecutionUnit> each : dataSourcesToExecutionUnits.values()) {
             result.add(each.get(0));
         }

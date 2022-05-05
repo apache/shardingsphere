@@ -22,9 +22,7 @@ import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadow
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -33,17 +31,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
-    private RuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> checker;
-    
-    @Before
-    public void init() {
-        checker = new AlgorithmProvidedShadowRuleConfigurationChecker();
-    }
+    private final RuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> checker = new AlgorithmProvidedShadowRuleConfigurationChecker();
     
     @Test
     public void assertCheck() {
@@ -81,26 +71,17 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     private ShadowAlgorithm createColumnRegexMatchShadowAlgorithm() {
         ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(createProperties());
-        result.init();
+        Properties props = createProperties();
+        result.init(props);
+        result.setProps(props);
         return result;
     }
     
     private Properties createProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "shadow");
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        return properties;
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(checker.getOrder() == ShadowOrder.ALGORITHM_PROVIDER_ORDER, is(true));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(checker.getTypeClass() == AlgorithmProvidedShadowRuleConfiguration.class, is(true));
+        Properties result = new Properties();
+        result.setProperty("column", "shadow");
+        result.setProperty("operation", "insert");
+        result.setProperty("regex", "[1]");
+        return result;
     }
 }

@@ -118,8 +118,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
-        DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(dataSource);
-        String url = String.valueOf(dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        String url = String.valueOf(DataSourcePropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
         JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return hostName.equals(dataSourceJdbcUrl.getHostname()) && port.equals(String.valueOf(dataSourceJdbcUrl.getPort())) && database.equals(dataSourceJdbcUrl.getDatabase());
     }

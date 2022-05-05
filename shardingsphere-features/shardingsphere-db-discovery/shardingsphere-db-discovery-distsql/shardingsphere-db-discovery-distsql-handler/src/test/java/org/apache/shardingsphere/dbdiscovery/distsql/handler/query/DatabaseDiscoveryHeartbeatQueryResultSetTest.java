@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -50,7 +51,7 @@ public final class DatabaseDiscoveryHeartbeatQueryResultSetTest {
         DistSQLResultSet resultSet = new DatabaseDiscoveryHeartbeatQueryResultSet();
         resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();
-        ArrayList<Object> actual = new ArrayList<>(resultSet.getRowData());
+        List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(2));
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("test_name"));

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
@@ -34,8 +33,6 @@ import java.util.stream.Collectors;
 /**
  * Idle rule altered job completion detect algorithm.
  */
-@Getter
-@Setter
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
     public static final String IDLE_MINUTE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
@@ -44,12 +41,14 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     
     public static final long DEFAULT_IDLE_SECOND_THRESHOLD = TimeUnit.MINUTES.toSeconds(30);
     
-    private Properties props = new Properties();
+    private Properties props;
     
+    @Getter
     private long incrementalTaskIdleSecondThreshold = DEFAULT_IDLE_SECOND_THRESHOLD;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
         Preconditions.checkArgument(props.containsKey(IDLE_MINUTE_THRESHOLD_KEY) || props.containsKey(IDLE_SECOND_THRESHOLD_KEY), "incremental task idle threshold can not be null.");
         if (props.containsKey(IDLE_SECOND_THRESHOLD_KEY)) {
             incrementalTaskIdleSecondThreshold = Long.parseLong(props.getProperty(IDLE_SECOND_THRESHOLD_KEY));
@@ -57,11 +56,6 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
             incrementalTaskIdleSecondThreshold = TimeUnit.MINUTES.toSeconds(Long.parseLong(props.getProperty(IDLE_MINUTE_THRESHOLD_KEY)));
         }
         Preconditions.checkArgument(incrementalTaskIdleSecondThreshold > 0, "incremental task idle threshold must be positive.");
-    }
-    
-    @Override
-    public String getType() {
-        return "IDLE";
     }
     
     @Override
@@ -84,9 +78,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     private static boolean isAllInventoryTasksCompleted(final Collection<JobProgress> jobProgresses) {
-        return jobProgresses.stream()
-                .flatMap(each -> each.getInventoryTaskProgressMap().values().stream())
-                .allMatch(each -> each.getPosition() instanceof FinishedPosition);
+        return jobProgresses.stream().flatMap(each -> each.getInventoryTaskProgressMap().values().stream()).allMatch(each -> each.getPosition() instanceof FinishedPosition);
     }
     
     private static Collection<Long> getIncrementalTasksIdleSeconds(final Collection<JobProgress> jobProgresses) {
@@ -97,6 +89,11 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getType() {
+        return "IDLE";
     }
     
     @Override

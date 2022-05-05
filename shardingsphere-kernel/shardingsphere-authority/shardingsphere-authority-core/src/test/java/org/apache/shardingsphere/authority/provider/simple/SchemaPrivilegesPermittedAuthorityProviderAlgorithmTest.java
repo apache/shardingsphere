@@ -19,6 +19,8 @@ package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.schema.SchemaPrivilegesPermittedAuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -33,10 +35,7 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithmTest {
     
     @Test
     public void assertFindPrivileges() {
-        SchemaPrivilegesPermittedAuthorityProviderAlgorithm algorithm = new SchemaPrivilegesPermittedAuthorityProviderAlgorithm();
-        Properties props = new Properties();
-        props.setProperty(SchemaPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
-        algorithm.setProps(props);
+        SchemaPrivilegesPermittedAuthorityProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = algorithm.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
@@ -45,10 +44,7 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithmTest {
     
     @Test
     public void assertRefreshPrivileges() {
-        SchemaPrivilegesPermittedAuthorityProviderAlgorithm algorithm = new SchemaPrivilegesPermittedAuthorityProviderAlgorithm();
-        Properties props = new Properties();
-        props.setProperty(SchemaPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
-        algorithm.setProps(props);
+        SchemaPrivilegesPermittedAuthorityProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("root", "", "localhost")));
         Optional<ShardingSpherePrivileges> privileges1 = algorithm.findPrivileges(new Grantee("root", "localhost"));
         assertTrue(privileges1.isPresent());
@@ -57,5 +53,16 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithmTest {
         Optional<ShardingSpherePrivileges> privileges2 = algorithm.findPrivileges(new Grantee("user1", "127.0.0.1"));
         assertTrue(privileges2.isPresent());
         assertTrue(privileges2.get().hasPrivileges("test1"));
+    }
+    
+    private SchemaPrivilegesPermittedAuthorityProviderAlgorithm createAuthorityProviderAlgorithm() {
+        return (SchemaPrivilegesPermittedAuthorityProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("SCHEMA_PRIVILEGES_PERMITTED", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(SchemaPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
+        return result;
     }
 }

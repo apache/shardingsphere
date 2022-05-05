@@ -17,51 +17,40 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
-import org.junit.Before;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
-    private ColumnRegexMatchShadowAlgorithm shadowAlgorithm;
-    
-    @Before
-    public void init() {
-        shadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("column", SHADOW_COLUMN);
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        shadowAlgorithm.setProps(properties);
-        shadowAlgorithm.init();
-    }
-    
     @Test
     public void assertIsShadow() {
-        assertTrueCase();
-        assertFalseCase();
-    }
-    
-    private void assertFalseCase() {
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
-    }
-    
-    private void assertTrueCase() {
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(true)));
+        ColumnRegexMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
+        ColumnRegexMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    @Test
-    public void assertGetType() {
-        assertThat(shadowAlgorithm.getType(), is("REGEX_MATCH"));
+    private ColumnRegexMatchShadowAlgorithm createShadowAlgorithm() {
+        return (ColumnRegexMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", SHADOW_COLUMN);
+        result.setProperty("operation", "insert");
+        result.setProperty("regex", "[1]");
+        return result;
     }
 }

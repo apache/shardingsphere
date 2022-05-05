@@ -36,35 +36,11 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-sharding-table")
     private String createShardingTable;
     
-    @XmlElement(name = "create-sharding-binding")
-    private String createShardingBinding;
-    
-    @XmlElement(name = "create-sharding-scaling-rule")
-    private String createShardingScalingRule;
-    
     @XmlElement(name = "alter-sharding-algorithm")
     private String alterShardingAlgorithm;
     
     @XmlElement(name = "alter-sharding-table-rule")
     private String alterShardingTableRule;
-    
-    @XmlElement(name = "preview-select-order")
-    private String previewSelectOrder;
-    
-    @XmlElement(name = "show-scaling-status")
-    private String showScalingStatus;
-    
-    @XmlElement(name = "show-scaling-list")
-    private String showScalingList;
-    
-    @XmlElement(name = "stop-scaling-source-writing")
-    private String stopScalingSourceWriting;
-    
-    @XmlElement(name = "check-scaling-data-match")
-    private String checkScalingDataMatch;
-    
-    @XmlElement(name = "apply-scaling")
-    private String applyScaling;
     
     @XmlElement(name = "auto-alter-table-rule")
     private String autoAlterTableRule;

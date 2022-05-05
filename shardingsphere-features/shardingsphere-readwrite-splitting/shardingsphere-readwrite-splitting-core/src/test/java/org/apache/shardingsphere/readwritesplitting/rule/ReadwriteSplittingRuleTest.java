@@ -35,7 +35,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleTest {
     
@@ -57,18 +56,21 @@ public final class ReadwriteSplittingRuleTest {
     }
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "write_ds");
-        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
         ReadwriteSplittingDataSourceRuleConfiguration config =
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", props, "random");
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "write_ds");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
+    }
+    
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
         assertThat(actual.getName(), is("test_pr"));
-        assertNotNull(actual.getReadwriteSplittingStrategy().getWriteDataSource());
         assertThat(actual.getReadwriteSplittingStrategy().getWriteDataSource(), is("write_ds"));
         assertThat(actual.getReadwriteSplittingStrategy().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
@@ -103,11 +105,5 @@ public final class ReadwriteSplittingRuleTest {
         Map<String, Collection<String>> actual = readwriteSplittingRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
-    }
-    
-    @Test
-    public void assertGetRuleType() {
-        ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
-        assertThat(readwriteSplittingRule.getType(), is(ReadwriteSplittingRule.class.getSimpleName()));
     }
 }

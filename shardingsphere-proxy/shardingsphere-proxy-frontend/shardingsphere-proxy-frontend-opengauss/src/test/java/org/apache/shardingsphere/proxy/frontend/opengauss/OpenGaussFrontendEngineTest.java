@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -84,10 +83,5 @@ public final class OpenGaussFrontendEngineTest {
         ConnectionSession connection = mock(ConnectionSession.class);
         openGaussFrontendEngine.release(connection);
         verify(mockPostgreSQLFrontendEngine).release(connection);
-    }
-    
-    @Test
-    public void assertGetDatabaseType() {
-        assertThat(openGaussFrontendEngine.getType(), is("openGauss"));
     }
 }

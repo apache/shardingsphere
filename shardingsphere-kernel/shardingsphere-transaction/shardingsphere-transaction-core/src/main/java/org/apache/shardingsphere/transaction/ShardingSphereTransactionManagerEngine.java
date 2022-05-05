@@ -20,11 +20,11 @@ package org.apache.shardingsphere.transaction;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManagerFactory;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -41,16 +41,12 @@ public final class ShardingSphereTransactionManagerEngine {
     
     private final Map<TransactionType, ShardingSphereTransactionManager> transactionManagers = new EnumMap<>(TransactionType.class);
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereTransactionManager.class);
-    }
-    
     public ShardingSphereTransactionManagerEngine() {
         loadTransactionManager();
     }
     
     private void loadTransactionManager() {
-        for (ShardingSphereTransactionManager each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)) {
+        for (ShardingSphereTransactionManager each : ShardingSphereTransactionManagerFactory.newInstances()) {
             if (transactionManagers.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction manager implementation class, use `{}` now",
                         each.getTransactionType(), transactionManagers.get(each.getTransactionType()).getClass().getName());

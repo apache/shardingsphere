@@ -37,16 +37,15 @@ public final class ReadwriteSplittingConfiguration implements ExampleConfigurati
     public DataSource getDataSource() throws SQLException {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "demo_read_query_ds", "Static", getProperties(), "demo_weight_lb");
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("demo_read_ds_0", "2");
-        algorithmProperties.put("demo_read_ds_1", "1");
-        ShardingSphereAlgorithmConfiguration algorithmConfiguration = new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProperties);
+        Properties algorithmProps = new Properties();
+        algorithmProps.put("demo_read_ds_0", "2");
+        algorithmProps.put("demo_read_ds_1", "1");
         Map<String, ShardingSphereAlgorithmConfiguration> sphereAlgorithmConfigurationMap = new HashMap<>(1);
-        sphereAlgorithmConfigurationMap.put("demo_weight_lb", algorithmConfiguration);
+        sphereAlgorithmConfigurationMap.put("demo_weight_lb", new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProps));
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), sphereAlgorithmConfigurationMap);
-        Properties properties = new Properties();
-        properties.setProperty("sql-show", String.valueOf(true));
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), properties);
+        Properties props = new Properties();
+        props.setProperty("sql-show", Boolean.TRUE.toString());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), props);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

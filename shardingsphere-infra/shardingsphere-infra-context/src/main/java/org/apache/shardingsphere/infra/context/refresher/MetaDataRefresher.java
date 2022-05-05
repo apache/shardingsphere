@@ -29,14 +29,14 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere schema refresher.
+ * Meta data refresher.
  *
  * @param <T> type of SQL statement
  */
 public interface MetaDataRefresher<T extends SQLStatement> extends StatelessTypedSPI {
     
     /**
-     * Refresh ShardingSphere schema.
+     * Refresh schema.
      *
      * @param metaData meta data
      * @param database federation database meta data                      

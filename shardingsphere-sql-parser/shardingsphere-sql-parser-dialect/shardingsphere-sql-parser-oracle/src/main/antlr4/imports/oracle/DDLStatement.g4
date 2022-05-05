@@ -320,6 +320,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
@@ -509,6 +513,10 @@ dropReuseClause
 
 collationClause
     : DEFAULT COLLATION collationName
+    ;
+
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
     ;
 
 commitClause
@@ -958,6 +966,10 @@ clusteringJoin
 
 clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
+    ;
+
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
     ;
 
 clusteringColumns

@@ -97,7 +97,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new NativePrivileges()));
+        users.forEach(each -> result.put(each, new NativePrivileges()));
         fillTablePrivileges(result, dataSource, users);
         fillRolePrivileges(result, dataSource, users);
         return result;
@@ -137,7 +137,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         String db = resultSet.getString("table_catalog");
         String tableName = resultSet.getString("table_name");
         String privilegeType = resultSet.getString("privilege_type");
-        boolean hasPrivilege = "TRUE".equalsIgnoreCase(resultSet.getString("is_grantable"));
+        boolean hasPrivilege = Boolean.TRUE.toString().equalsIgnoreCase(resultSet.getString("is_grantable"));
         String grantee = resultSet.getString("grantee");
         if (hasPrivilege) {
             privilegeCache

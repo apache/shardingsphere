@@ -60,26 +60,26 @@ public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws DistSQLException {
-        DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "", "type_name");
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration),
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "", "type_name");
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(dataSourceRuleConfig),
                 Collections.emptyMap(), Collections.singletonMap("type_name", null)));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration);
-        assertFalse(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
+        DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig);
+        assertFalse(ruleConfig.getDiscoveryTypes().containsKey("type_name"));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryTypeStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
-        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration);
-        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
-        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(2));
+        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, ruleConfig);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, ruleConfig));
+        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("type_name"));
+        assertThat(ruleConfig.getDiscoveryTypes().size(), is(2));
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatement() {

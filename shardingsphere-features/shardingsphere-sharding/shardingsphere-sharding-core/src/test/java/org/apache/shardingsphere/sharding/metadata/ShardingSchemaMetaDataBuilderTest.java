@@ -235,11 +235,11 @@ public class ShardingSchemaMetaDataBuilderTest {
     }
     
     private ResultSet createDataTypeResultSet() throws SQLException {
-        ResultSet dataTypeResultSet = mock(ResultSet.class);
-        when(dataTypeResultSet.next()).thenReturn(true, false);
-        when(dataTypeResultSet.getString("TYPE_NAME")).thenReturn("INT");
-        when(dataTypeResultSet.getInt("DATA_TYPE")).thenReturn(1);
-        return dataTypeResultSet;
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TYPE_NAME")).thenReturn("INT");
+        when(result.getInt("DATA_TYPE")).thenReturn(1);
+        return result;
     }
     
     @Test

@@ -33,5 +33,6 @@
         <module>shardingsphere-sharding-core</module>
         <module>shardingsphere-sharding-distsql</module>
         <module>shardingsphere-sharding-spring</module>
+        <module>shardingsphere-sharding-plugin</module>
     </modules>
 </project>

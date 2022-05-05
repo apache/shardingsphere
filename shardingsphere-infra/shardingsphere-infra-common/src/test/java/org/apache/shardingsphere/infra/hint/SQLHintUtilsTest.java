@@ -23,13 +23,13 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SQLHintUtilsTest {
     
     @Test
     public void assertGetSQLHintPropsWithNoProp() {
-        Properties actual = SQLHintUtils.getSQLHintProps("/* */");
-        assertThat(actual.size(), is(0));
+        assertTrue(SQLHintUtils.getSQLHintProps("/* */").isEmpty());
     }
     
     @Test

@@ -108,7 +108,7 @@ public final class ProjectionEngine {
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
+        String owner = projectionSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
         Collection<ColumnProjection> columnProjections = new LinkedHashSet<>();
         columnProjections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
         columnProjections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
@@ -154,9 +154,9 @@ public final class ProjectionEngine {
         String tableAlias = table.getAlias().orElse(tableName);
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(tableAlias, columnName, null)).forEach(result::add);
+            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).forEach(result::add);
+            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
         }
         return result;
     }

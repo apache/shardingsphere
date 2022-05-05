@@ -40,6 +40,13 @@
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
+    <#if transaction?contains("xa")>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
     <#if framework?contains("jpa")>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
@@ -95,7 +102,7 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>2.2.0.RELEASE</version>
         </dependency>
-    <#elseif framework=="spring-boot-starter-mybaits">
+    <#elseif framework=="spring-boot-starter-mybatis">
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>

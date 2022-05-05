@@ -57,8 +57,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() * 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber * 4;
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit((Callable<Comparable<?>>) keyGenerateAlgorithm::generateKey).get());
@@ -69,8 +69,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertGenerateKeyWithSingleThread() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -84,8 +84,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", "3");
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         assertThat(keyGenerateAlgorithm.generateKey(), is(0L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
@@ -98,8 +98,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         Properties props = new Properties();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         props.setProperty("max-vibration-offset", String.valueOf(3));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
         Thread.sleep(2L);
@@ -120,8 +120,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWithClockCallBack() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -137,8 +137,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(0));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -151,8 +151,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis());
         setSequence(keyGenerateAlgorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
@@ -181,7 +181,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenNegative() {
         keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1L),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();
     }
@@ -190,8 +190,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", String.valueOf(-1));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
     }
     
@@ -199,7 +199,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();
     }
@@ -208,8 +208,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", String.valueOf(4096));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
     }
     
@@ -217,8 +217,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException, IllegalAccessException {
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
         field.setAccessible(true);
         assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));

@@ -36,12 +36,12 @@ public interface ExampleGenerator {
     
     String RESOURCES_PATH = "src/main/resources";
     
-    default void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
-        for (String eachMode : configuration.getModes()) {
-            for (String eachTransaction : configuration.getTransactions()) {
-                for (String eachFramework : configuration.getFrameworks()) {
-                    for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
-                        generate(templateConfig, buildDataModel(configuration.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
+    default void generate(final Configuration templateConfig, final YamlExampleConfiguration exampleConfig) throws IOException, TemplateException {
+        for (String eachMode : exampleConfig.getModes()) {
+            for (String eachTransaction : exampleConfig.getTransactions()) {
+                for (String eachFramework : exampleConfig.getFrameworks()) {
+                    for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
+                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
                     }
                 }
             }

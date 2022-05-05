@@ -88,7 +88,7 @@ public final class ConnectionSavepointManager {
     }
     
     private Optional<Savepoint> lookupSavepoint(final Connection connection, final String savepointName) {
-        return Optional.ofNullable(CONNECTION_SAVEPOINT_MAP.get(connection)).map(savepointMap -> savepointMap.get(savepointName));
+        return Optional.ofNullable(CONNECTION_SAVEPOINT_MAP.get(connection)).map(optional -> optional.get(savepointName));
     }
     
     /**

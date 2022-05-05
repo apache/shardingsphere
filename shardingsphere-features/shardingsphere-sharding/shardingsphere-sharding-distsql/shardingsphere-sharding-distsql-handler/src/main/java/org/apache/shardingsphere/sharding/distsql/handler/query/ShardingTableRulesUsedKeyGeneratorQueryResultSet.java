@@ -47,16 +47,16 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
     }
     
     private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String databaseName, final List<Collection<Object>> result,
-                               final ShardingRuleConfiguration shardingRuleConfiguration) {
+                               final ShardingRuleConfiguration shardingRuleConfig) {
         if (!statement.getKeyGeneratorName().isPresent()) {
             return;
         }
-        shardingRuleConfiguration.getTables().forEach(each -> {
+        shardingRuleConfig.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
             }
         });
-        shardingRuleConfiguration.getAutoTables().forEach(each -> {
+        shardingRuleConfig.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
             }

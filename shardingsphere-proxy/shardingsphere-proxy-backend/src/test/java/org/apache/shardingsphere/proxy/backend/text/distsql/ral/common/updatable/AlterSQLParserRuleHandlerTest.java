@@ -30,10 +30,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -46,41 +46,37 @@ public final class AlterSQLParserRuleHandlerTest {
     @Test
     public void assertExecuteWithoutCurrentRuleConfiguration() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.emptyList());
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         ProxyContext.getInstance().init(contextManager);
         new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
-        Collection<RuleConfiguration> globalRuleConfigurations = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration ruleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findAny().orElse(null);
-        assertNotNull(ruleConfiguration);
-        SQLParserRuleConfiguration sqlParserRuleConfiguration = (SQLParserRuleConfiguration) ruleConfiguration;
-        assertTrue(sqlParserRuleConfiguration.isSqlCommentParseEnabled());
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getInitialCapacity(), is(1000));
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getConcurrencyLevel(), is(3));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getInitialCapacity(), is(64));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getConcurrencyLevel(), is(3));
+        SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
+        assertTrue(actual.isSqlCommentParseEnabled());
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
+        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
+        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     @Test
     public void assertExecuteWithDefaultRuleConfiguration() throws SQLException {
-        Collection<RuleConfiguration> globalRuleConfiguration = new LinkedList<>();
-        globalRuleConfiguration.add(new DefaultSQLParserRuleConfigurationBuilder().build());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfiguration);
+        SQLParserRuleConfiguration sqlParserRuleConfig = new DefaultSQLParserRuleConfigurationBuilder().build();
+        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(Collections.singleton(sqlParserRuleConfig));
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.singleton(sqlParserRuleConfig));
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfigs);
         ProxyContext.getInstance().init(contextManager);
         new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
-        Collection<RuleConfiguration> globalRuleConfigurations = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration ruleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findAny().orElse(null);
-        assertNotNull(ruleConfiguration);
-        SQLParserRuleConfiguration sqlParserRuleConfiguration = (SQLParserRuleConfiguration) ruleConfiguration;
-        assertTrue(sqlParserRuleConfiguration.isSqlCommentParseEnabled());
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getInitialCapacity(), is(1000));
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(sqlParserRuleConfiguration.getSqlStatementCache().getConcurrencyLevel(), is(3));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getInitialCapacity(), is(64));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(sqlParserRuleConfiguration.getParseTreeCache().getConcurrencyLevel(), is(3));
+        SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
+        assertTrue(actual.isSqlCommentParseEnabled());
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
+        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
+        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     private AlterSQLParserRuleStatement getSQLStatement() {

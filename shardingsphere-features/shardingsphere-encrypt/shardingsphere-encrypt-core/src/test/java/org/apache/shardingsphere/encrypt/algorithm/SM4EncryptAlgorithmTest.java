@@ -21,7 +21,6 @@ import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -33,54 +32,69 @@ import static org.mockito.Mockito.mock;
 
 public final class SM4EncryptAlgorithmTest {
     
-    private EncryptAlgorithm<Object, String> encryptAlgorithm;
-    
-    @Before
-    public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("sm4-key", "4D744E003D713D054E7E407C350E447E");
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", props));
-    }
-    
-    @Test
-    public void assertEncryptWithECBAndPKCS5Padding() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
-    }
-    
     @Test(expected = IllegalArgumentException.class)
-    public void assertEncryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
+    public void assertInitWithoutKey() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        algorithm.init(createInvalidProperties());
+    }
+    
+    private Properties createInvalidProperties() {
+        Properties result = new Properties();
+        result.setProperty("sm4-mode", "ECB");
+        result.setProperty("sm4-padding", "PKCS5Padding");
+        return result;
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
+    public void assertEncryptNullPlaintext() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        assertNull(algorithm.encrypt(null, mock(EncryptContext.class)));
+    }
+    
+    @Test
+    public void assertEncryptWithECBMode() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
+    }
+    
+    @Test
+    public void assertDecryptNullCiphertext() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        assertNull(algorithm.decrypt(null, mock(EncryptContext.class)));
+    }
+    
+    @Test
+    public void assertDecryptWithECBMode() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        assertThat(algorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
+    }
+    
+    private Properties createECBProperties() {
+        Properties result = new Properties();
+        result.setProperty("sm4-key", "4D744E003D713D054E7E407C350E447E");
+        result.setProperty("sm4-mode", "ECB");
+        result.setProperty("sm4-padding", "PKCS5Padding");
+        return result;
+    }
+    
+    @Test
+    public void assertEncryptWithCBCMode() {
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createCBCProperties()));
+        assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("dca2127b57ba8cac36a0914e0208dc11"));
     }
     
     @Test
     public void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createCBCProperties()));
+        assertThat(algorithm.decrypt("dca2127b57ba8cac36a0914e0208dc11", mock(EncryptContext.class)).toString(), is("test"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertDecryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        props.setProperty("sm4-mode", "ECB");
-        props.setProperty("sm4-padding", "PKCS5Padding");
-        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
-    }
-    
-    @Test
-    public void assertDecryptWithNullCiphertext() {
-        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
+    private Properties createCBCProperties() {
+        Properties result = new Properties();
+        result.setProperty("sm4-key", "f201326119911788cFd30575b81059ac");
+        result.setProperty("sm4-iv", "e166c3391294E69cc4c620f594fe00d7");
+        result.setProperty("sm4-mode", "CBC");
+        result.setProperty("sm4-padding", "PKCS7Padding");
+        return result;
     }
 }

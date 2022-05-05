@@ -50,9 +50,13 @@ public final class PrometheusPluginBootServiceTest {
     public void assertStart() throws IOException {
         ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
                 new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        Properties props = new Properties();
-        props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
-        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", props));
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
         new Socket().connect(new InetSocketAddress("localhost", 8090));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
+        return result;
     }
 }

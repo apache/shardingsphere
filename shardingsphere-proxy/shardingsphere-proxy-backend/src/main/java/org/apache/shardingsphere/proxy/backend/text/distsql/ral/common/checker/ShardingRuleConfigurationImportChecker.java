@@ -97,8 +97,8 @@ public final class ShardingRuleConfigurationImportChecker {
         checkInvalidAlgorithms(KEY_GENERATOR, currentRuleConfig.getKeyGenerators().values());
     }
     
-    private void checkInvalidAlgorithms(final String algorithmType, final Collection<ShardingSphereAlgorithmConfiguration> algorithmConfigurations) throws DistSQLException {
-        Collection<String> invalidAlgorithms = algorithmConfigurations.stream()
+    private void checkInvalidAlgorithms(final String algorithmType, final Collection<ShardingSphereAlgorithmConfiguration> algorithmConfigs) throws DistSQLException {
+        Collection<String> invalidAlgorithms = algorithmConfigs.stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), new Properties()).isPresent())
                 .map(ShardingSphereAlgorithmConfiguration::getType).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(algorithmType, invalidAlgorithms));

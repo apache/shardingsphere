@@ -81,16 +81,16 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), readwriteSplittingRuleConfiguration));
-        assertThat(readwriteSplittingRuleConfiguration.getLoadBalancers().size(), is(1));
+        ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
+        assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = createMultipleCurrentRuleConfigurations();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), readwriteSplittingRuleConfiguration));
-        assertThat(readwriteSplittingRuleConfiguration.getLoadBalancers().size(), is(1));
+        ReadwriteSplittingRuleConfiguration ruleConfig = createMultipleCurrentRuleConfigurations();
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
+        assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {

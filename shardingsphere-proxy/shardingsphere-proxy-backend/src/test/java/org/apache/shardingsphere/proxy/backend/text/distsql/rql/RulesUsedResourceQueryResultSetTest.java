@@ -136,9 +136,9 @@ public final class RulesUsedResourceQueryResultSetTest {
         assertThat(rowData.next(), is("shadow_source"));
     }
     
-    private void init(final RuleConfiguration ruleConfiguration) {
+    private void init(final RuleConfiguration ruleConfig) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfiguration));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfig));
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData.getResource()).thenReturn(createResource());
     }
@@ -156,10 +156,14 @@ public final class RulesUsedResourceQueryResultSetTest {
     
     private RuleConfiguration mockReadwriteSplittingRule() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_0");
-        props.setProperty("read-data-source-names", "read_0,read_1");
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", props, "")));
+        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createProperties(), "")));
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_0");
+        result.setProperty("read-data-source-names", "read_0,read_1");
         return result;
     }
     
