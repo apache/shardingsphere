@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.ddlgenerator.util;
+package org.apache.shardingsphere.data.pipeline.postgresql.util;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
