@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<?> generateKey() {
+    public Comparable<String> generateKey() {
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
         return new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "");
     }
