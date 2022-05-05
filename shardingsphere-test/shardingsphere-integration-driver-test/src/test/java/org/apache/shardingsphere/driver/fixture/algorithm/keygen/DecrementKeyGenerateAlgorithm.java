@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm;
+package org.apache.shardingsphere.driver.fixture.algorithm.keygen;
 
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
+public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+    
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
-        return null;
+    public Comparable<?> generateKey() {
+        return sequence.decrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "DRIVER.COMPLEX.FIXTURE";
+        return "DECREMENT";
     }
 }

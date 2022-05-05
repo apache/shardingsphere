@@ -73,7 +73,7 @@ rules:
   
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: STANDARD.FIXTURE
     complex_test:
       type: COMPLEX.FIXTURE
     hint_test:

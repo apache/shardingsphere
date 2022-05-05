@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm;
+package org.apache.shardingsphere.driver.fixture.algorithm.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Properties;
 
-public final class StandardAlgorithm implements StandardShardingAlgorithm<Integer> {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class DriverStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -49,6 +42,6 @@ public final class StandardAlgorithm implements StandardShardingAlgorithm<Intege
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "DRIVER.STANDARD.FIXTURE";
     }
 }

@@ -51,6 +51,6 @@ public final class StandardShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "STANDARD.FIXTURE";
     }
 }
