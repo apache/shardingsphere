@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-public final class SnowflakeAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    @Override
-    public String getType() {
-        return "SNOWFLAKE_TEST";
-    }
+public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
     public Comparable<?> generateKey() {
-        return null;
+        return 0L;
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
     }
 }
