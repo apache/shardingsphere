@@ -57,6 +57,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -130,14 +132,22 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
-        for (String each : databaseNames) {
-            if (databaseType.getSystemSchemas().contains(each)) {
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
+        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (databaseType.getSystemSchemas().contains(entry.getKey())) {
                 continue;
             }
-            result.addDatabase(each, databaseType, createDatabaseConfiguration(each, metaDataPersistService, parameter), props);
+            result.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
         }
         result.addSystemDatabases(databaseType);
+        return result;
+    }
+    
+    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
+                                                                     final ContextManagerBuilderParameter parameter) {
+        Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size());
+        databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
         return result;
     }
     

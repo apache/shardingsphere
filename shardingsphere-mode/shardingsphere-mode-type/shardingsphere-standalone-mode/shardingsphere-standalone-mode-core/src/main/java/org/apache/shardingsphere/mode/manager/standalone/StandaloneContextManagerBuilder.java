@@ -45,6 +45,8 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -68,21 +70,29 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private MetaDataContexts createMetaDataContexts(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        Properties props = metaDataPersistService.getPropsService().load();
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
-        for (String each : databaseNames) {
-            if (databaseType.getSystemSchemas().contains(each)) {
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        Properties props = metaDataPersistService.getPropsService().load();
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
+        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (databaseType.getSystemSchemas().contains(entry.getKey())) {
                 continue;
             }
-            builder.addDatabase(each, databaseType, createDatabaseConfiguration(each, metaDataPersistService, parameter), props);
+            builder.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
         }
         builder.addSystemDatabases(databaseType);
         return builder.build(metaDataPersistService);
+    }
+    
+    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
+                                                                    final ContextManagerBuilderParameter parameter) {
+        Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size());
+        databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
+        return result;
     }
     
     private DatabaseConfiguration createDatabaseConfiguration(final String databaseName, final MetaDataPersistService metaDataPersistService,
