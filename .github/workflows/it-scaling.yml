@@ -98,7 +98,7 @@ jobs:
     env:
       mysql_version: mysql:5.7
     timeout-minutes: 30
-    needs: build-it-image
+    needs: scaling-build-it-image
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -128,7 +128,7 @@ jobs:
     env:
       postgresql_version: postgres:12-alpine
     timeout-minutes: 30
-    needs: build-it-image
+    needs: scaling-build-it-image
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -159,7 +159,7 @@ jobs:
       postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
       mysql_version: mysql:5.7,mysql:8.0
     timeout-minutes: 60
-    needs: build-it-image
+    needs: scaling-build-it-image
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
