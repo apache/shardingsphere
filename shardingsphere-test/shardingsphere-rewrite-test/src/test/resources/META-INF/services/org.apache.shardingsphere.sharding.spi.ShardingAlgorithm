@@ -16,5 +16,4 @@
 #
  
 org.apache.shardingsphere.sharding.rewrite.fixture.ComplexKeysShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.rewrite.fixture.HintShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.rewrite.fixture.StandardShardingAlgorithmFixture
