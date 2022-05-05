@@ -21,15 +21,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sharding</artifactId>
+        <artifactId>shardingsphere-sharding-plugin</artifactId>
         <version>5.1.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sharding-plugin</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-sharding-nanoid</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-sharding-cosid</module>
-        <module>shardingsphere-sharding-nanoid</module>
-    </modules>
+    <properties>
+        <jnanoid.version>2.0.0</jnanoid.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.aventrix.jnanoid</groupId>
+            <artifactId>jnanoid</artifactId>
+            <version>${jnanoid.version}</version>
+        </dependency>
+    </dependencies>
 </project>
