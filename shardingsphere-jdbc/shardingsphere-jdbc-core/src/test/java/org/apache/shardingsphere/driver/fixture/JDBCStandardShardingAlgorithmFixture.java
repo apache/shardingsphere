@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.HashSet;
 
-public final class StandardOrderShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
+public final class JDBCStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -51,6 +51,6 @@ public final class StandardOrderShardingAlgorithm implements StandardShardingAlg
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "JDBC.STANDARD.FIXTURE";
     }
 }
