@@ -70,7 +70,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     private void removeTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
         metaData.getSchemaByName(schemaName).remove(viewName);
-        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(viewName));
+        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
         database.remove(schemaName, viewName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
@@ -78,7 +78,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
         if (!containsInDataNodeContainedRule(viewName, metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);

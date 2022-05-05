@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -57,6 +59,8 @@ public final class SingleTableRuleTest {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
+    private static final String TABLE_SCHEME = "TABLE_SCHEM";
+    
     private Map<String, DataSource> dataSourceMap;
     
     @Before
@@ -69,12 +73,21 @@ public final class SingleTableRuleTest {
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(result.getConnection().getCatalog()).thenReturn(dataSourceName);
-        ResultSet resultSet = mockResultSet(tableNames);
-        when(result.getConnection().getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+        ResultSet tableResultSet = mockTableResultSet(tableNames);
+        when(result.getConnection().getMetaData().getTables(dataSourceName, DefaultSchema.LOGIC_NAME, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(tableResultSet);
+        ResultSet schemaResultSet = mockSchemaResultSet();
+        when(result.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
         return result;
     }
     
-    private ResultSet mockResultSet(final List<String> tableNames) throws SQLException {
+    private ResultSet mockSchemaResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString(TABLE_SCHEME)).thenReturn(DefaultSchema.LOGIC_NAME);
+        return result;
+    }
+    
+    private ResultSet mockTableResultSet(final List<String> tableNames) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         Collection<Boolean> nextResults = tableNames.stream().map(each -> true).collect(Collectors.toList());
         nextResults.add(false);
@@ -114,7 +127,7 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode("employee");
+        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode(DefaultSchema.LOGIC_NAME, "employee");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("ds_0"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -125,7 +138,7 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode("EMPLOYEE");
+        Optional<DataNode> actual = singleTableRule.findSingleTableDataNode(DefaultSchema.LOGIC_NAME, "EMPLOYEE");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("ds_0"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -136,15 +149,15 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        Collection<String> singleTableNames = new LinkedList<>();
-        singleTableNames.add("employee");
+        Collection<QualifiedTable> singleTableNames = new LinkedList<>();
+        singleTableNames.add(new QualifiedTable(DefaultSchema.LOGIC_NAME, "employee"));
         assertTrue(singleTableRule.isSingleTablesInSameDataSource(singleTableNames));
     }
     
     @Test
     public void assertIsAllTablesInSameDataSource() {
-        Collection<String> singleTableNames = new LinkedList<>();
-        singleTableNames.add("employee");
+        Collection<QualifiedTable> singleTableNames = new LinkedList<>();
+        singleTableNames.add(new QualifiedTable(DefaultSchema.LOGIC_NAME, "employee"));
         RouteMapper dataSourceMapper = new RouteMapper("ds_0", null);
         Collection<RouteMapper> tableMappers = new LinkedList<>();
         tableMappers.add(dataSourceMapper);
@@ -172,9 +185,10 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add("employee");
-        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next(), is("employee"));
+        Collection<QualifiedTable> tableNames = new LinkedList<>();
+        tableNames.add(new QualifiedTable(DefaultSchema.LOGIC_NAME, "employee"));
+        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next().getTableName(), is("employee"));
     }
     
     @Test
@@ -184,10 +198,11 @@ public final class SingleTableRuleTest {
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         String tableName = "teacher";
         String dataSourceName = "ds_0";
-        singleTableRule.put(tableName, dataSourceName);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add("teacher");
-        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next(), is("teacher"));
+        singleTableRule.put(dataSourceName, DefaultSchema.LOGIC_NAME, tableName);
+        Collection<QualifiedTable> tableNames = new LinkedList<>();
+        tableNames.add(new QualifiedTable(DefaultSchema.LOGIC_NAME, "teacher"));
+        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(singleTableRule.getSingleTableNames(tableNames).iterator().next().getTableName(), is("teacher"));
         assertTrue(singleTableRule.getAllTables().contains("employee"));
         assertTrue(singleTableRule.getAllTables().contains("student"));
         assertTrue(singleTableRule.getAllTables().contains("t_order_0"));
@@ -201,9 +216,9 @@ public final class SingleTableRuleTest {
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         String tableName = "employee";
-        singleTableRule.remove(tableName);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add("employee");
+        singleTableRule.remove(DefaultSchema.LOGIC_NAME, tableName);
+        Collection<QualifiedTable> tableNames = new LinkedList<>();
+        tableNames.add(new QualifiedTable(DefaultSchema.LOGIC_NAME, "employee"));
         assertTrue(singleTableRule.getSingleTableNames(tableNames).isEmpty());
         assertTrue(singleTableRule.getAllTables().contains("student"));
         assertTrue(singleTableRule.getAllTables().contains("t_order_0"));

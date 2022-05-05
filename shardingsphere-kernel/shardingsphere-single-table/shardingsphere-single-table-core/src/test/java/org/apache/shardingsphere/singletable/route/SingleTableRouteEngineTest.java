@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.singletable.route;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -31,6 +33,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,11 +52,11 @@ public final class SingleTableRouteEngineTest {
     
     @Test
     public void assertRouteInSameDataSource() {
-        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), null);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("ds_0", "t_order")));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(new DataNode("ds_0", "t_order_item")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("ds_0", "t_order")));
+        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(createDataNode("ds_0", "t_order_item")));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -70,13 +73,23 @@ public final class SingleTableRouteEngineTest {
         assertFalse(routeContext.isFederated());
     }
     
+    private DataNode createDataNode(final String dataSourceName, final String tableName) {
+        DataNode result = new DataNode(dataSourceName, tableName);
+        result.setSchemaName(DefaultSchema.LOGIC_NAME);
+        return result;
+    }
+    
+    private Collection<QualifiedTable> mockQualifiedTables() {
+        return Arrays.asList(new QualifiedTable(DefaultSchema.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultSchema.LOGIC_NAME, "t_order_item"));
+    }
+    
     @Test
     public void assertRouteInDifferentDataSource() {
-        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), null);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("ds_0", "t_order")));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(new DataNode("ds_1", "t_order_item")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(getDataNode()));
+        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(createDataNode("ds_1", "t_order_item")));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -94,9 +107,13 @@ public final class SingleTableRouteEngineTest {
         assertTrue(routeContext.isFederated());
     }
     
+    private DataNode getDataNode() {
+        return createDataNode("ds_0", "t_order");
+    }
+    
     @Test
     public void assertRouteWithoutSingleTableRule() {
-        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
@@ -112,7 +129,7 @@ public final class SingleTableRouteEngineTest {
     
     @Test
     public void assertRouteWithDefaultSingleTableRule() {
-        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -74,8 +75,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().put("t_single", "db");
-            singleTableRule.get().put("t_single_extend", "db");
+            singleTableRule.get().put("db", DefaultSchema.LOGIC_NAME, "t_single");
+            singleTableRule.get().put("db", DefaultSchema.LOGIC_NAME, "t_single_extend");
         }
     }
     

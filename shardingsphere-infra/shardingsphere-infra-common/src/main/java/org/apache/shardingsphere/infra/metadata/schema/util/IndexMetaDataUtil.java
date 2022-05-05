@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -85,14 +86,19 @@ public class IndexMetaDataUtil {
      * @param databaseType database type
      * @return table names
      */
-    public static Collection<String> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
-        Collection<String> result = new LinkedList<>();
+    public static Collection<QualifiedTable> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
+        Collection<QualifiedTable> result = new LinkedList<>();
         String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName), each.getIndexName().getIdentifier().getValue()).ifPresent(result::add);
+            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName), 
+                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(createQualifiedTable(actualSchemaName, optional)));
         }
         return result;
+    }
+    
+    private static QualifiedTable createQualifiedTable(final String schemaName, final String tableName) {
+        return new QualifiedTable(schemaName, tableName);
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {

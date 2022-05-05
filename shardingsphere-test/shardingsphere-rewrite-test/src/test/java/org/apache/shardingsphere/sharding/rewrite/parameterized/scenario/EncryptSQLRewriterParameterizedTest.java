@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -85,10 +86,10 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().put("t_account", "encrypt_ds");
-            singleTableRule.get().put("t_account_bak", "encrypt_ds");
-            singleTableRule.get().put("t_account_detail", "encrypt_ds");
-            singleTableRule.get().put("t_order", "encrypt_ds");
+            singleTableRule.get().put("encrypt_ds", DefaultSchema.LOGIC_NAME, "t_account");
+            singleTableRule.get().put("encrypt_ds", DefaultSchema.LOGIC_NAME, "t_account_bak");
+            singleTableRule.get().put("encrypt_ds", DefaultSchema.LOGIC_NAME, "t_account_detail");
+            singleTableRule.get().put("encrypt_ds", DefaultSchema.LOGIC_NAME, "t_order");
         }
     }
     
