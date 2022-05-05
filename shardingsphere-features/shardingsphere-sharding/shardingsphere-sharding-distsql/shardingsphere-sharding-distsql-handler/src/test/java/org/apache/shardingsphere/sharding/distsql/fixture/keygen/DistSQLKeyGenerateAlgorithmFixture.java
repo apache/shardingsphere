@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-/**
- * ShardingSphere instance required algorithm.
- */
-public interface ShardingSphereInstanceRequiredAlgorithm {
+public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    /**
-     * Set instance context.
-     * 
-     * @param instanceContext instance context
-     */
-    void setInstanceContext(InstanceContext instanceContext);
+    @Override
+    public Comparable<?> generateKey() {
+        return 0L;
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
 }
