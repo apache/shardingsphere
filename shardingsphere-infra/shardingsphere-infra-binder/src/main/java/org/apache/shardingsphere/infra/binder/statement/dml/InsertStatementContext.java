@@ -96,8 +96,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
                 .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
-    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
-        String databaseName = tablesContext.getDatabaseName().orElse(defaultSchemaName);
+    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultDatabaseName) {
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
             throw new DatabaseNotExistedException(databaseName);
