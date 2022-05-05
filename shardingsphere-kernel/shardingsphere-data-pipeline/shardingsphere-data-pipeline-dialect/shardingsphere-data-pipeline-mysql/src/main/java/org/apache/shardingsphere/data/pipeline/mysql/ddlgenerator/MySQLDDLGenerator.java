@@ -28,7 +28,7 @@ import java.sql.Statement;
 /**
  * DDL SQL generator for MySql.
  */
-public final class MySqlDDLSQLGenerator implements DialectDDLSQLGenerator {
+public final class MySQLDDLGenerator implements DialectDDLSQLGenerator {
     
     private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
     
