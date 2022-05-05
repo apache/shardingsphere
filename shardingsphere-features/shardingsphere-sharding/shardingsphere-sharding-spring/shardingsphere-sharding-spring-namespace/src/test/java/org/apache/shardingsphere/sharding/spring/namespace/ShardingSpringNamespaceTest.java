@@ -133,7 +133,7 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertHintShardingAlgorithm() {
-        assertThat(hintShardingAlgorithm.getType(), is("HINT_TEST"));
+        assertThat(hintShardingAlgorithm.getType(), is("SPRING.HINT.FIXTURE"));
     }
     
     @Test

@@ -77,7 +77,7 @@ rules:
     complex_test:
       type: COMPLEX_TEST
     hint_test:
-      type: HINT_TEST
+      type: HINT.FIXTURE
     database_inline:
       type: INLINE
       props:

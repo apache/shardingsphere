@@ -16,4 +16,4 @@
 #
  
 org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.ComplexKeysShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.HintShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding.SpringHintShardingAlgorithmFixture

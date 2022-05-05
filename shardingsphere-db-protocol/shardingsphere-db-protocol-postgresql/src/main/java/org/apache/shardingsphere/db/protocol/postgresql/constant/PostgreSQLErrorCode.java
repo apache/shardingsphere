@@ -46,6 +46,7 @@ public enum PostgreSQLErrorCode {
     TRANSACTION_RESOLUTION_UNKNOWN("08007", "transaction_resolution_unknown"),
     PROTOCOL_VIOLATION("08P01", "protocol_violation"),
     FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
+    DUPLICATE_DATABASE("42P04", "Database '%s' already exists"),
     INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
     INVALID_PARAMETER_VALUE("22023", "invalid_parameter_value"),
     INVALID_PASSWORD("28P01", "invalid_password"),

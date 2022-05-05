@@ -62,7 +62,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
                 return Future.succeededFuture(new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement()));
             }
             reactiveProxySQLExecutor.checkExecutePrerequisites(executionContext);
-            checkDatabaseSchema(executionContext);
+            checkLockedDatabase(executionContext);
             return reactiveProxySQLExecutor.execute(executionContext).compose(result -> {
                 try {
                     refreshMetaData(executionContext);
