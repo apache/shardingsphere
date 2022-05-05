@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * Dialect DDL SQL generator.
  */
-public interface DialectDDLSQLGenerator extends StatelessTypedSPI {
+public interface DialectDDLGenerator extends StatelessTypedSPI {
     
     /**
     * Generate DDL SQL.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
@@ -28,7 +28,7 @@ import java.sql.Statement;
 /**
 * DDL generator for MySQL.
  */
-public final class MySQLDDLGenerator implements DialectDDLSQLGenerator {
+public final class MySQLDDLGenerator implements DialectDDLGenerator {
     
     private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import javax.sql.DataSource;
@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * DDL SQL generator for PostgreSQL.
+ * DDL generator for PostgreSQL.
  */
-public final class PostgreDDLSQLGenerator implements DialectDDLSQLGenerator {
+public final class PostgreDDLGenerator implements DialectDDLGenerator {
     
     // TODO support version, partitions, index etc.
     @Override

@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class DialectDDLSQLGeneratorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DialectDDLSQLGenerator.class);
+        ShardingSphereServiceLoader.register(DialectDDLGenerator.class);
     }
     
     /**
@@ -41,7 +41,7 @@ public final class DialectDDLSQLGeneratorFactory {
      * @param databaseType database type
      * @return new instance of dialect DDL SQL generator
      */
-    public static Optional<DialectDDLSQLGenerator> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectDDLSQLGenerator.class, databaseType.getName());
+    public static Optional<DialectDDLGenerator> newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectDDLGenerator.class, databaseType.getName());
     }
 }
