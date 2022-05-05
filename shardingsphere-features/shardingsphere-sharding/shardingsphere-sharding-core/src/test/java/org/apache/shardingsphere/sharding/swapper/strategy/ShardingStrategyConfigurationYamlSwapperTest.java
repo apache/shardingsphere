@@ -82,14 +82,16 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithStandardWithRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new ShardingStrategyConfigurationYamlSwapper().swapToObject(createStandardShardingStrategyConfiguration());
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new ShardingStrategyConfigurationYamlSwapper().swapToObject(
+                createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
         assertThat(actual.getShardingAlgorithmName(), is("standard"));
     }
     
     @Test
     public void assertSwapToObjectWithStandardWithoutRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new ShardingStrategyConfigurationYamlSwapper().swapToObject(createStandardShardingStrategyConfiguration());
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new ShardingStrategyConfigurationYamlSwapper().swapToObject(
+                createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
         assertThat(actual.getShardingAlgorithmName(), is("standard"));
     }
