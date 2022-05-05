@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import me.ahoo.cosid.sharding.ModCycle;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -29,7 +30,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Modular sharding algorithm.
+ * Modular sharding algorithm with CosId.
  */
 public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> implements StandardShardingAlgorithm<T> {
     
@@ -45,10 +46,15 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     @Override
     public void init(final Properties props) {
-        String divisorStr = PropertiesUtil.getRequiredValue(props, MODULO_KEY);
+        String divisorStr = getRequiredValue(props, MODULO_KEY);
         int divisor = Integer.parseInt(divisorStr);
-        String logicNamePrefix = PropertiesUtil.getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
+        String logicNamePrefix = getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
         modCycle = new ModCycle<>(divisor, logicNamePrefix);
+    }
+    
+    private String getRequiredValue(final Properties props, final String key) {
+        Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
+        return props.get(key).toString();
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.constant;
+package org.apache.shardingsphere.sharding.cosid.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

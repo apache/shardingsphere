@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
-import java.util.Arrays;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Arguments {
+@RequiredArgsConstructor
+public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     
-    @SafeVarargs
-    static <T> T[] of(final T... arguments) {
-        return arguments;
-    }
+    private final long fixtureWorkerId;
     
-    @SafeVarargs
-    static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
-        return Arrays.asList(arguments);
+    @Override
+    public long generate() {
+        return fixtureWorkerId;
     }
 }

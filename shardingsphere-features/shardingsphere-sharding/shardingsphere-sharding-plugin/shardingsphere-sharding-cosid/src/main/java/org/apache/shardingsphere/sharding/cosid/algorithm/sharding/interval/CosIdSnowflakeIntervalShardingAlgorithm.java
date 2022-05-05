@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -24,16 +24,16 @@ import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
 
 import java.time.LocalDateTime;
 import java.util.Properties;
 
 /**
- * The algorithm parses the timestamp from snowflake-id as the sharding value of Interval-based time range sharding algorithm.
+ * Snowflake interval sharding algorithm with CosId.
  */
-public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
+public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
     
@@ -48,12 +48,13 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
     @Override
     public void init(final Properties props) {
         super.init(props);
-        long epoch = CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
-        if (props.containsKey(EPOCH_KEY)) {
-            epoch = Long.parseLong(props.getProperty(EPOCH_KEY));
-        }
-        snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(epoch,
-                MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
+        snowflakeIdStateParser = getSnowflakeIdStateParser(props);
+    }
+    
+    private SnowflakeIdStateParser getSnowflakeIdStateParser(final Properties props) {
+        long epoch = props.containsKey(EPOCH_KEY) ? Long.parseLong(props.getProperty(EPOCH_KEY)) : CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
+        return new MillisecondSnowflakeIdStateParser(
+                epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
     }
     
     @Override

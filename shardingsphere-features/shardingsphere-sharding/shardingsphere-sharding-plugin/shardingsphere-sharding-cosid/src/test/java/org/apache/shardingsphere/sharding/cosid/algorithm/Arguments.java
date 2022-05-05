@@ -15,18 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding;
+package org.apache.shardingsphere.sharding.cosid.algorithm;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-/**
- * Sharding algorithm exception.
- */
-public final class ShardingAlgorithmException extends ShardingSphereException {
+import java.util.Arrays;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Arguments {
     
-    private static final long serialVersionUID = -8513765890834900694L;
+    /**
+     * Of arguments.
+     * 
+     * @param arguments arguments
+     * @param <T> type of arguments
+     * @return arguments
+     */
+    @SafeVarargs
+    public static <T> T[] of(final T... arguments) {
+        return arguments;
+    }
     
-    public ShardingAlgorithmException(final String errorMessage, final Object... args) {
-        super(errorMessage, args);
+    /**
+     * Of array element.
+     * 
+     * @param arguments arguments
+     * @param <T> type of arguments
+     * @return iterable
+     */
+    @SafeVarargs
+    public static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
+        return Arrays.asList(arguments);
     }
 }

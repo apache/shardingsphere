@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -27,9 +27,10 @@ import me.ahoo.cosid.snowflake.SnowflakeId;
 import me.ahoo.cosid.snowflake.StringSnowflakeId;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceRequiredAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
+import java.util.Calendar;
 import java.util.Properties;
 
 /**
@@ -39,7 +40,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
     
-    public static final long DEFAULT_EPOCH = SnowflakeKeyGenerateAlgorithm.EPOCH;
+    public static final long DEFAULT_EPOCH;
     
     public static final String AS_STRING_KEY = "as-string";
     
@@ -54,6 +55,16 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     private volatile boolean asString;
     
     private volatile long epoch;
+    
+    static {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2016, Calendar.NOVEMBER, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        DEFAULT_EPOCH = calendar.getTimeInMillis();
+    }
     
     @Override
     public void init(final Properties props) {
