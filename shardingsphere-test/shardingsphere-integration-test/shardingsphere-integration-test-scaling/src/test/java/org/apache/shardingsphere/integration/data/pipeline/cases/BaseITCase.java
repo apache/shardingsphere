@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -80,6 +81,9 @@ public abstract class BaseITCase {
     
     private JdbcTemplate jdbcTemplate;
     
+    @Setter
+    private Thread increaseTaskThread;
+    
     public BaseITCase(final ScalingParameterized parameterized) {
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
@@ -136,7 +140,7 @@ public abstract class BaseITCase {
     protected void initShardingRule() throws InterruptedException {
         for (String sql : getCommonSQLCommand().getCreateShardingAlgorithm()) {
             getJdbcTemplate().execute(sql);
-            // TODO sleep to wait for sharding algorithm table created，otherwise, the next sql will fail.
+            // TODO sleep to wait for sharding algorithm table created,otherwise the next sql will fail.
             TimeUnit.SECONDS.sleep(1);
         }
         getJdbcTemplate().execute(getCommonSQLCommand().getCreateShardingTable());
@@ -186,6 +190,19 @@ public abstract class BaseITCase {
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSources, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
+    }
+    
+    protected void manualScalingSuccess() throws InterruptedException {
+        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
+        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
+        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
+        String jobId = showScalingResMap.get("id").toString();
+        if (getIncreaseTaskThread() != null) {
+            getIncreaseTaskThread().join(60 * 1000);
+        }
+        checkMatchConsistency(getJdbcTemplate(), jobId);
     }
     
     @After

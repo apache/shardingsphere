@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,34 +36,25 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * MySQL manual scaling test case.
- */
-@Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLManualScalingCase extends BaseMySQLITCase {
+public final class PostgreSQLManualScalingITCase extends BasePostgreSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    public MySQLManualScalingCase(final ScalingParameterized parameterized) {
+    public PostgreSQLManualScalingITCase(final ScalingParameterized parameterized) {
         super(parameterized);
     }
     
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String version : ENV.getMysqlVersions()) {
-            if (Strings.isNullOrEmpty(version)) {
+        for (String dockerImageName : ENV.getPostgresVersions()) {
+            if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            result.add(new ScalingParameterized(DATABASE, version, "env/scenario/manual/mysql"));
+            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgres"));
         }
         return result;
-    }
-    
-    @Before
-    public void initEnv() {
-        getIncreaseTaskThread().start();
     }
     
     @Test
@@ -75,8 +64,8 @@ public final class MySQLManualScalingCase extends BaseMySQLITCase {
         assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
-        String jobId = showScalingResMap.get("id").toString();
-        getIncreaseTaskThread().join(60 * 1000);
+        String jobId = String.valueOf(showScalingResMap.get("id"));
+        getIncreaseTaskThread().join(60 * 1000L);
         checkMatchConsistency(getJdbcTemplate(), jobId);
     }
 }
