@@ -77,7 +77,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     }
     
     private long getEpoch(final Properties props) {
-        return props.containsKey(EPOCH_KEY) ? Long.parseLong(props.getProperty(EPOCH_KEY)) : DEFAULT_EPOCH;
+        return props.containsKey(EPOCH_KEY) ? Long.parseLong(props.get(EPOCH_KEY).toString()) : DEFAULT_EPOCH;
     }
     
     @Override
