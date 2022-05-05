@@ -53,7 +53,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     
     private void mapConfigurationFiles() {
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getName().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
-        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3307, 3307);
             addFixedExposedPort(3308, 5005);
         }
