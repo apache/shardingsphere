@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 188 家公司。
+共计 189 家公司。
 
 ### 基础软件
 <ul>
@@ -91,6 +91,7 @@ chapter = true
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
     <li><a href="https://www.danchuangglobal.com/" rel="nofollow">浙江单创品牌管理有限公司</a></li>
+    <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
 </ul>
 
 ### 数字化与云服务
@@ -286,5 +287,10 @@ chapter = true
     <li><a href="https://www.xingren.com/" rel="nofollow">未来医生</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
 </ul>
+
+### 电商
+<ul>
+    <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
+</ul>    
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
