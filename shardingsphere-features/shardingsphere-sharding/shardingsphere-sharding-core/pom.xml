@@ -84,6 +84,11 @@
             <artifactId>shardingsphere-sharding-cosid</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-nanoid</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -126,11 +131,6 @@
             <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.aventrix.jnanoid</groupId>
-            <artifactId>jnanoid</artifactId>
         </dependency>
     </dependencies>
 </project>

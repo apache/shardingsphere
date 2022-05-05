@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
+import org.junit.Test;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Properties;
 
-/**
- * NanoId key generate algorithm.
- */
-public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class NanoIdKeyGenerateAlgorithmTest {
     
-    @Override
-    public Comparable<String> generateKey() {
-        return NanoIdUtils.randomNanoId(ThreadLocalRandom.current(), NanoIdUtils.DEFAULT_ALPHABET, NanoIdUtils.DEFAULT_SIZE);
-    }
-    
-    @Override
-    public String getType() {
-        return "NANOID";
+    @Test
+    public void assertGenerateKey() {
+        assertThat(((String) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("NANOID", new Properties())).generateKey()).length(), is(21));
     }
 }
