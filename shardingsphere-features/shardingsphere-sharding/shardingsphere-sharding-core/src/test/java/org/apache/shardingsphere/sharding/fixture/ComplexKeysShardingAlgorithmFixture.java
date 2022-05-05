@@ -31,6 +31,6 @@ public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysSha
     
     @Override
     public String getType() {
-        return "COMPLEX_TEST";
+        return "COMPLEX.FIXTURE";
     }
 }
