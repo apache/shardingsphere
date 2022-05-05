@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
+package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import org.apache.shardingsphere.infra.metadata.ddlgenerator.spi.DialectDDLSQLGenerator;
-import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

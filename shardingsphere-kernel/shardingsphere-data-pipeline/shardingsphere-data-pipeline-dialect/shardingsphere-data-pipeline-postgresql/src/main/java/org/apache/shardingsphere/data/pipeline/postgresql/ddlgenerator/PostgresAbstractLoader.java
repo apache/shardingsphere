@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.ddlgenerator.dialect.postgres;
+package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.ddlgenerator.util.FreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
