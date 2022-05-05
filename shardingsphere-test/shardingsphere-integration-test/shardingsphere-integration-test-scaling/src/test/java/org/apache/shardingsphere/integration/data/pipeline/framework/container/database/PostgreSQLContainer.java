@@ -44,7 +44,7 @@ public final class PostgreSQLContainer extends DockerDatabaseContainer {
         super.configure();
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         withExposedPorts(5432);
-        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
+        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.NATIVE) {
             addFixedExposedPort(5432, 5432);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),

@@ -43,7 +43,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.cluster.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
         mysqlVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
         postgresVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
     }
