@@ -192,19 +192,6 @@ public abstract class BaseITCase {
         assertThat(originalSources, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
     }
     
-    protected void manualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResList = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSourceList = previewResList.stream().map(result -> result.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSourceList, is(Sets.newHashSet("ds_0", "ds_1")));
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
-        String jobId = showScalingResMap.get("id").toString();
-        if (getIncreaseTaskThread() != null) {
-            getIncreaseTaskThread().join(60 * 1000);
-        }
-        checkMatchConsistency(getJdbcTemplate(), jobId);
-    }
-    
     @After
     public void stopContainer() {
         composedContainer.stop();
