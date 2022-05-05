@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * DDL SQL generator for MySql.
+* DDL generator for MySQL.
  */
 public final class MySQLDDLGenerator implements DialectDDLSQLGenerator {
     
