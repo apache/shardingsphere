@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 189 家公司。
+共计 190 家公司。
 
 ### 基础软件
 <ul>
@@ -115,6 +115,7 @@ chapter = true
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
+    <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
 </ul>
 
 ### 出行
@@ -288,9 +289,5 @@ chapter = true
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
 </ul>
 
-### 电商
-<ul>
-    <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
-</ul>    
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
