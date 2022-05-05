@@ -18,21 +18,14 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * NanoId key generate algorithm.
  */
 public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     @Override
     public Comparable<?> generateKey() {
