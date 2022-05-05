@@ -54,12 +54,12 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Setter
     private Properties props;
     
-    private LocalDateTime dateTimeLower;
+    private volatile LocalDateTime dateTimeLower;
     
-    private long shardingSeconds;
+    private volatile long shardingSeconds;
     
     @Getter
-    private int autoTablesAmount;
+    private volatile int autoTablesAmount;
     
     @Override
     public void init(final Properties props) {
