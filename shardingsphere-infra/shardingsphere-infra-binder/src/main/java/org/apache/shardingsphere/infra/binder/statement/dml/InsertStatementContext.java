@@ -100,12 +100,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         this.defaultDatabaseName = defaultDatabaseName;
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        Collection<InsertStatement> insertStatements = getInsertStatements(sqlStatement);
-    
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        for (InsertStatement insertStatement : insertStatements) {
-            
-        }
         if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
             ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().ifPresent(each -> {
                 insertStatements = new ArrayList<>(each.getInsertStatements());
