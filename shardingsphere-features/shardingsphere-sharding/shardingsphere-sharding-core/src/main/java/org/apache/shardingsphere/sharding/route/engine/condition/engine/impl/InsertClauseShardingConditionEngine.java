@@ -87,7 +87,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
             return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().get().getInsertStatements();
-        } 
+        }
         return Collections.singletonList(sqlStatementContext.getSqlStatement());
     }
     
