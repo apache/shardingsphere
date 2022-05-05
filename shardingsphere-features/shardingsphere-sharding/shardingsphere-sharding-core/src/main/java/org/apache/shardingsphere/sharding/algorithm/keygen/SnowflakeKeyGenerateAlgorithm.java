@@ -72,16 +72,17 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Setter
     private Properties props;
     
-    private int maxVibrationOffset;
+    private volatile int maxVibrationOffset;
     
-    private int maxTolerateTimeDifferenceMilliseconds;
+    private volatile int maxTolerateTimeDifferenceMilliseconds;
     
-    private int sequenceOffset = -1;
+    private volatile int sequenceOffset = -1;
     
-    private long sequence;
+    private volatile long sequence;
     
-    private long lastMilliseconds;
+    private volatile long lastMilliseconds;
     
+    @Setter
     private InstanceContext instanceContext;
     
     static {
@@ -111,7 +112,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public synchronized Comparable<?> generateKey() {
+    public synchronized Comparable<Long> generateKey() {
         long currentMilliseconds = timeService.getCurrentMillis();
         if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
             currentMilliseconds = timeService.getCurrentMillis();
@@ -148,6 +149,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         return result;
     }
     
+    @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private void vibrateSequenceOffset() {
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
@@ -169,10 +171,5 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Override
     public boolean isDefault() {
         return true;
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        this.instanceContext = instanceContext;
     }
 }
