@@ -90,7 +90,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
                                                                     final ContextManagerBuilderParameter parameter) {
-        Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size());
+        Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size(), 1);
         databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
         return result;
     }
