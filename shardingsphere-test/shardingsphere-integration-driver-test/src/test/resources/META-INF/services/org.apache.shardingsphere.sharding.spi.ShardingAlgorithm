@@ -16,3 +16,4 @@
 #
  
 org.apache.shardingsphere.driver.fixture.algorithm.StandardAlgorithm
+org.apache.shardingsphere.driver.fixture.algorithm.MultiAlgorithm
