@@ -32,13 +32,15 @@ public final class MySqlDDLSQLGenerator implements DialectDDLSQLGenerator {
     
     private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
     
+    private static final String COLUMN_LABEL = "create table";
+    
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (
                 Statement statement = dataSource.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery(String.format(SHOW_CREATE_SQL, tableName))) {
             if (resultSet.next()) {
-                return resultSet.getString(2);
+                return resultSet.getString(COLUMN_LABEL);
             }
         }
         throw new ShardingSphereException(String.format("Failed to get ddl sql for table %s", tableName));
