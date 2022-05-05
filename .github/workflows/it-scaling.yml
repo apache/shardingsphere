@@ -119,14 +119,14 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Prun-it-test -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Pscaling-it -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=
   
   postgresql-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
     name: postgres-it-test
     runs-on: ubuntu-latest
     env:
-      postgresql_version: postgresql:12-alpine
+      postgresql_version: postgres:12-alpine
     timeout-minutes: 30
     needs: build-it-image
     steps:
@@ -149,14 +149,14 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Prun-it-test -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Pscaling-it -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=
   
   daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: daily-it-test
     runs-on: ubuntu-latest
     env:
-      postgresql_version: postgresql:10-alpine,postgresql:11-alpine,postgresql:12-alpine,postgresql:13-alpine,postgresql:14-alpine
+      postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
       mysql_version: mysql:5.7,mysql:8.0
     timeout-minutes: 60
     needs: build-it-image
@@ -180,4 +180,4 @@ jobs:
       - name: Load IT image
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Prun-it-test -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Pscaling-it -Dcheckstyle.skip=true -Dit.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }}
