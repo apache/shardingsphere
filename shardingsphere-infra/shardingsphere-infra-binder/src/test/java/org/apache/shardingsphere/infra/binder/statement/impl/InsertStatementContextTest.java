@@ -90,16 +90,9 @@ public final class InsertStatementContextTest {
         insertStatement1.setInsertColumns(insertColumnsSegment1);
         setUpInsertValues(insertStatement1);
         
-        InsertStatement insertStatement2 = new OracleInsertStatement();
-        insertStatement2.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        InsertColumnsSegment insertColumnsSegment2 = new InsertColumnsSegment(0, 0, Arrays.asList(
-                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
-        insertStatement2.setInsertColumns(insertColumnsSegment2);
-        setUpInsertValues(insertStatement2);
-        
         OracleInsertStatement oracleInsertStatement = new OracleInsertStatement();
         InsertMultiTableElementSegment insertMultiTableElementSegment = new InsertMultiTableElementSegment(0, 1);
-        insertMultiTableElementSegment.getInsertStatements().addAll(Lists.newArrayList(insertStatement1, insertStatement2));
+        insertMultiTableElementSegment.getInsertStatements().addAll(Lists.newArrayList(insertStatement1));
         oracleInsertStatement.setInsertMultiTableElementSegment(insertMultiTableElementSegment);
         return oracleInsertStatement;
     }

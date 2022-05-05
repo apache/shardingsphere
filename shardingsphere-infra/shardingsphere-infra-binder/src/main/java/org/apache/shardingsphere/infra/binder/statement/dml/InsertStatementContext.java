@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -99,7 +100,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         this.defaultDatabaseName = defaultDatabaseName;
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
+        Collection<InsertStatement> insertStatements = getInsertStatements(sqlStatement);
+    
         AtomicInteger parametersOffset = new AtomicInteger(0);
+        for (InsertStatement insertStatement : insertStatements) {
+            
+        }
         if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
             ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().ifPresent(each -> {
                 insertStatements = new ArrayList<>(each.getInsertStatements());
@@ -129,15 +135,19 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
     }
     
-    private boolean isMultiInsertStatements(final InsertStatement sqlStatement) {
-        return sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent();
-    }
-    
     private Collection<InsertStatement> getInsertStatements(final InsertStatement sqlStatement) {
-        if (sqlStatement instanceof OracleInsertStatement && ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().isPresent()) {
-            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment().get().getInsertStatements();
+        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(sqlStatement);
+        if (optional.isPresent()) {
+            return optional.get().getInsertStatements();
         }
         return Collections.singletonList(sqlStatement);
+    }
+    
+    private Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement sqlStatement) {
+        if (sqlStatement instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment();
+        }
+        return Optional.empty();
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -152,7 +162,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        tableExtractor.extractTablesFromInsert(getInsertStatements(getSqlStatement()));
         return tableExtractor.getRewriteTables();
     }
     

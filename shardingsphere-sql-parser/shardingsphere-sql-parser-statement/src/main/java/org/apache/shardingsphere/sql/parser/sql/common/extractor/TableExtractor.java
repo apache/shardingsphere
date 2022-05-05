@@ -51,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -213,11 +212,6 @@ public final class TableExtractor {
         if (null != insertStatement.getTable()) {
             extractTablesFromTableSegment(insertStatement.getTable());
         }
-        if (insertStatement instanceof OracleInsertStatement) {
-            ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment().ifPresent(optional -> {
-                optional.getInsertStatements().forEach(each -> extractTablesFromInsert(each));
-            });
-        }
         if (!insertStatement.getColumns().isEmpty()) {
             for (ColumnSegment each : insertStatement.getColumns()) {
                 extractTablesFromExpression(each);
@@ -225,6 +219,27 @@ public final class TableExtractor {
         }
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
+        }
+    }
+    
+    /**
+     * Extract table that should be rewrite from insert statement.
+     *
+     * @param insertStatements insert statement collection
+     */
+    public void extractTablesFromInsert(final Collection<InsertStatement> insertStatements) {
+        for (InsertStatement insertStatement : insertStatements) {
+            if (null != insertStatement.getTable()) {
+                extractTablesFromTableSegment(insertStatement.getTable());
+            }
+            if (!insertStatement.getColumns().isEmpty()) {
+                for (ColumnSegment each : insertStatement.getColumns()) {
+                    extractTablesFromExpression(each);
+                }
+            }
+            if (insertStatement.getInsertSelect().isPresent()) {
+                extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
+            }
         }
     }
     
