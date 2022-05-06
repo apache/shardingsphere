@@ -71,7 +71,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
         metaData.getSchemaByName(schemaName).remove(viewName);
         metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
-        database.remove(schemaName, viewName);
+        database.removeTableMetadata(schemaName, viewName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
@@ -86,7 +86,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
         actualViewMetaData.ifPresent(optional -> {
             metaData.getSchemaByName(schemaName).put(viewName, optional);
-            database.put(schemaName, optional);
+            database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }

@@ -23,15 +23,16 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateSchemaStatementHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,7 +51,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
             return;
         }
         metaData.getSchemas().put(schema.get(), new ShardingSphereSchema());
-        database.put(schema.get(), new TableMetaData());
+        database.putSchemaMetadata(schema.get(), new FederationSchemaMetaData(schema.get(), new LinkedHashMap<>()));
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         AddSchemaEvent event = new AddSchemaEvent(metaData.getDatabaseName(), schema.get());
         ShardingSphereEventBus.getInstance().post(event);

@@ -46,7 +46,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
             metaData.getSchemaByName(schemaName).remove(each.getTableName().getIdentifier().getValue());
-            database.remove(schemaName, each.getTableName().getIdentifier().getValue());
+            database.removeTableMetadata(schemaName, each.getTableName().getIdentifier().getValue());
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });

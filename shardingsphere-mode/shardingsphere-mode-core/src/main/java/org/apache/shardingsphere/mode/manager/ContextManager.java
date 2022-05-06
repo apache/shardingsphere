@@ -157,7 +157,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.put(schemaName, new TableMetaData());
+        databaseMetaData.putTableMetadata(schemaName, new TableMetaData());
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
         metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
@@ -209,7 +209,7 @@ public final class ContextManager implements AutoCloseable {
         alterSingleTableDataNodes(databaseName, metaData, changedTableMetaData);
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
         metaData.getSchemaByName(schemaName).put(changedTableMetaData.getName(), changedTableMetaData);
-        databaseMetaData.put(schemaName, changedTableMetaData);
+        databaseMetaData.putTableMetadata(schemaName, changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
     }
     
@@ -230,7 +230,7 @@ public final class ContextManager implements AutoCloseable {
         if (null != metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
             metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName).remove(deletedTable);
             FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-            databaseMetaData.remove(schemaName, deletedTable);
+            databaseMetaData.removeTableMetadata(schemaName, deletedTable);
             metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
         }
     }
@@ -269,7 +269,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.remove(schemaName);
+        databaseMetaData.removeSchemaMetadata(schemaName);
         metaData.getSchemas().remove(schemaName);
     }
     

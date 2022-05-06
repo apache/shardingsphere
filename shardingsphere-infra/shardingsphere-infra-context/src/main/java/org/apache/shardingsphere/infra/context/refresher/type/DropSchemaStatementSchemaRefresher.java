@@ -50,7 +50,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
             ShardingSphereSchema schema = metaData.getSchemas().remove(each);
             tobeRemovedTables.addAll(schema.getAllTableNames());
             tobeRemovedSchemas.add(each.toLowerCase());
-            database.remove(each);
+            database.removeSchemaMetadata(each);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);

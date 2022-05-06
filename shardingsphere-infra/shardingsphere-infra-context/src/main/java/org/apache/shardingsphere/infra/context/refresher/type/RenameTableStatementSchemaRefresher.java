@@ -66,7 +66,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
         metaData.getSchemaByName(schemaName).remove(tableName);
         metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
-        database.remove(schemaName, tableName);
+        database.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
@@ -81,7 +81,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
             metaData.getSchemaByName(schemaName).put(tableName, optional);
-            database.put(schemaName, optional);
+            database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
