@@ -21,12 +21,13 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override

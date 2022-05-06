@@ -55,7 +55,7 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: order_id
@@ -68,7 +68,7 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: id
@@ -80,12 +80,12 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithmName: complex_test
+      shardingAlgorithmName: complex_sharding_fixture
   
   shardingAlgorithms:
-    standard_test:
+    standard_sharding_fixture:
       type: DRIVER.STANDARD.FIXTURE
-    complex_test:
+    complex_sharding_fixture:
       type: DRIVER.COMPLEX.FIXTURE
     database_inline:
       type: INLINE
