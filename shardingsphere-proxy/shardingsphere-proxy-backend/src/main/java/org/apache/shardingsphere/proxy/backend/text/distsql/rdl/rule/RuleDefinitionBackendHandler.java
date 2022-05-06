@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -57,7 +57,7 @@ import java.util.Set;
  * @param <T> type of SQL statement
  */
 @Slf4j
-public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends SchemaRequiredBackendHandler<T> {
+public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends DatabaseRequiredBackendHandler<T> {
     
     private static final Set<String> RULE_ALTERED_ACTION_LIST = Sets.newHashSet(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
             AlterDefaultShardingStrategyStatement.class.getName(), AlterShardingBindingTableRulesStatement.class.getName(), AlterShardingBroadcastTableRulesStatement.class.getName());
@@ -146,7 +146,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         if (metaDataPersistService.isPresent()) {
             Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(shardingSphereMetaData.getDatabaseName());
             if (!newVersion.isPresent()) {
-                throw new RuntimeException(String.format("Unable to get a new version for schema: %s", shardingSphereMetaData.getDatabaseName()));
+                throw new RuntimeException(String.format("Unable to get a new version for database: %s", shardingSphereMetaData.getDatabaseName()));
             }
             metaDataPersistService.get().getDatabaseRulePersistService().persist(shardingSphereMetaData.getDatabaseName(), newVersion.get(),
                     buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement, updater, currentRuleConfig, preprocessor));
