@@ -69,12 +69,4 @@ public interface LockContext {
      * @return standard lock
      */
     ShardingSphereLock getStandardLock(String lockName);
-    
-    // /**
-    // * Get global lock.
-    // *
-    // * @param lockName lock name
-    // * @return global lock
-    // */
-    // ShardingSphereLock getGlobalLock(String lockName);
 }
