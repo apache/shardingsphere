@@ -40,10 +40,10 @@ rules:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint_fixture
       tableStrategy: 
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint_fixture
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
@@ -76,7 +76,7 @@ rules:
       type: STANDARD.FIXTURE
     complex_fixture:
       type: COMPLEX.FIXTURE
-    hint_test:
+    hint_fixture:
       type: HINT.FIXTURE
     database_inline:
       type: INLINE
