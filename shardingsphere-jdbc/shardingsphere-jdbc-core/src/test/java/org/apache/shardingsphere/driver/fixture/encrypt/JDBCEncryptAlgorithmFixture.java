@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -34,6 +34,6 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, Stri
     
     @Override
     public String getType() {
-        return "test";
+        return "JDBC.FIXTURE";
     }
 }
