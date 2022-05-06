@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
+package org.apache.shardingsphere.sharding.rewrite.fixture.keygen;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    private final AtomicInteger count = new AtomicInteger();
+public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+    public Long generateKey() {
+        return 1L;
     }
     
     @Override
     public String getType() {
-        return "INCREMENT";
+        return "REWRITE.FIXTURE";
     }
 }
