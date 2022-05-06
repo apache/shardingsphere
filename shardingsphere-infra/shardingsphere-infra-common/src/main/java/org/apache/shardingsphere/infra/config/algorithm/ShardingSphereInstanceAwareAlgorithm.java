@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture;
+package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
-public final class SnowflakeAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * ShardingSphere instance aware algorithm.
+ */
+public interface ShardingSphereInstanceAwareAlgorithm {
     
-    @Override
-    public String getType() {
-        return "SNOWFLAKE_TEST";
-    }
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return null;
-    }
+    /**
+     * Set instance context.
+     * 
+     * @param instanceContext instance context
+     */
+    void setInstanceContext(InstanceContext instanceContext);
 }

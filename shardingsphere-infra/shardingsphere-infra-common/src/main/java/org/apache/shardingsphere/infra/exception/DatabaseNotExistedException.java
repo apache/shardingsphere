@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.exception;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import lombok.Getter;
 
 /**
- * ShardingSphere instance required algorithm.
+ * Database does not exist exception.
  */
-public interface ShardingSphereInstanceRequiredAlgorithm {
+@Getter
+public final class DatabaseNotExistedException extends ShardingSphereException {
     
-    /**
-     * Set instance context.
-     * 
-     * @param instanceContext instance context
-     */
-    void setInstanceContext(InstanceContext instanceContext);
+    private static final long serialVersionUID = -1818822065202117480L;
+    
+    private final String databaseName;
+    
+    public DatabaseNotExistedException(final String databaseName) {
+        super(String.format("Database '%s' doesn't exist.", databaseName));
+        this.databaseName = databaseName;
+    }
 }

@@ -65,7 +65,7 @@ rules:
   
   shardingAlgorithms:
     standard_test:
-        type: STANDARD_TEST
+        type: JDBC.STANDARD.FIXTURE
     table_inline:
       type: INLINE
       props:

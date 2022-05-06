@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm;
+package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
+import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Properties;
 
-public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class NanoIdKeyGenerateAlgorithmTest {
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return sequence.decrementAndGet();
-    }
-    
-    @Override
-    public String getType() {
-        return "DECREMENT";
+    @Test
+    public void assertGenerateKey() {
+        assertThat(((String) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("NANOID", new Properties())).generateKey()).length(), is(21));
     }
 }

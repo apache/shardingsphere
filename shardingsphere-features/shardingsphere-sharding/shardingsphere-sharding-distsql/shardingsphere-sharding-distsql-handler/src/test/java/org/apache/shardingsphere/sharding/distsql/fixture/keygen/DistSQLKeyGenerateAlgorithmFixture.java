@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm;
+package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
     public Comparable<?> generateKey() {
-        return SEQUENCE.incrementAndGet();
+        return 0L;
     }
     
     @Override
     public String getType() {
-        return "INCREMENT";
+        return "DISTSQL.FIXTURE";
     }
 }

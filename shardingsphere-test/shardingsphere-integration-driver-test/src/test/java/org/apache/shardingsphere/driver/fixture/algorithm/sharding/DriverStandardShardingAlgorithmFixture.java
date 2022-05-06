@@ -15,42 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture;
+package org.apache.shardingsphere.driver.fixture.algorithm.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
 
-public final class ModShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class DriverStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        return "";
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException("");
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        return Collections.emptyList();
+        throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
     }
     
     @Override
     public String getType() {
-        return "MOD_TEST";
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        return 2;
+        return "DRIVER.STANDARD.FIXTURE";
     }
 }

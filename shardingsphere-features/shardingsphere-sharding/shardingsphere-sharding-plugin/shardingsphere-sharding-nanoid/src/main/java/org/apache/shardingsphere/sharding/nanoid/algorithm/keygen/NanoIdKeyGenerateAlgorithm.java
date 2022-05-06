@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
-import lombok.Getter;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Schema does not exist exception.
+ * NanoId key generate algorithm.
  */
-@Getter
-public final class SchemaNotExistedException extends ShardingSphereException {
+public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    private static final long serialVersionUID = -1818822065202117480L;
+    @Override
+    public String generateKey() {
+        return NanoIdUtils.randomNanoId(ThreadLocalRandom.current(), NanoIdUtils.DEFAULT_ALPHABET, NanoIdUtils.DEFAULT_SIZE);
+    }
     
-    private final String schemaName;
-    
-    public SchemaNotExistedException(final String schemaName) {
-        super(String.format("Schema '%s' doesn't exist.", schemaName));
-        this.schemaName = schemaName;
+    @Override
+    public String getType() {
+        return "NANOID";
     }
 }

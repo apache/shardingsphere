@@ -43,9 +43,6 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
     @Getter
     private final ExtraSQLCommand extraSQLCommand;
     
-    @Getter
-    private Thread increaseTaskThread;
-    
     public BasePostgreSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
@@ -59,7 +56,7 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
-        increaseTaskThread = new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand()));
+        setIncreaseTaskThread(new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);

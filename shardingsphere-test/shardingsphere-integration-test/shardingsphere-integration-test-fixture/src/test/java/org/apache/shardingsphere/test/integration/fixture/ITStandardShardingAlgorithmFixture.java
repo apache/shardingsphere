@@ -15,33 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.test.integration.fixture;
 
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
-public final class StandardOrderShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
+public final class ITStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
                 return each;
             }
         }
-        return null;
+        throw new UnsupportedOperationException("");
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(2);
-        for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
+        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        int minValue = shardingValue.getValueRange().hasLowerBound() ? shardingValue.getValueRange().lowerEndpoint() : Integer.MIN_VALUE;
+        int maxValue = shardingValue.getValueRange().hasUpperBound() ? shardingValue.getValueRange().upperEndpoint() : Integer.MAX_VALUE;
+        long range = BigInteger.valueOf(maxValue).subtract(BigInteger.valueOf(minValue)).longValue();
+        int begin = Math.abs(minValue) % 10;
+        if (range > 9) {
+            return availableTargetNames;
+        }
+        for (int i = begin; i <= range; i += 1) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % 2))) {
+                if (each.endsWith(String.valueOf(i))) {
                     result.add(each);
                 }
             }
@@ -51,6 +59,6 @@ public final class StandardOrderShardingAlgorithm implements StandardShardingAlg
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "IT.STANDARD.FIXTURE";
     }
 }

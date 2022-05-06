@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
@@ -71,7 +71,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
-        checkDatabase(databaseName);
+        checkDatabaseName(databaseName);
         checkReadwriteSplittingRule(contextManager, databaseName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
@@ -103,12 +103,12 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private void checkDatabaseName(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
+            throw new DatabaseNotExistedException(databaseName);
         }
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -42,8 +43,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String databaseName = connectionSession.getDatabaseName();
-        checkDatabase(databaseName);
+        String databaseName = getDatabaseName();
         if (sqlStatement.getResourceName().isPresent()) {
             contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return;
@@ -55,12 +55,14 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
         contextManager.reloadMetaData(databaseName);
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private String getDatabaseName() {
+        String result = connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
+        if (!ProxyContext.getInstance().databaseExists(result)) {
+            throw new UnknownDatabaseException(result);
         }
+        return result;
     }
 }

@@ -165,7 +165,7 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        if (!hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
+        if (hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
@@ -289,15 +289,15 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(each.getJobParameter(), RuleAlteredJobConfiguration.class, true);
-            if (hasUncompletedJobOfSameDatabaseName(jobConfig, each.getJobId(), databaseName)) {
+            if (hasUncompletedJobOfSameDatabaseName(jobConfig, databaseName)) {
                 result = true;
                 break;
             }
         }
-        return !result;
+        return result;
     }
     
-    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
+    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String currentDatabaseName) {
         return currentDatabaseName.equals(jobConfig.getDatabaseName());
     }
     

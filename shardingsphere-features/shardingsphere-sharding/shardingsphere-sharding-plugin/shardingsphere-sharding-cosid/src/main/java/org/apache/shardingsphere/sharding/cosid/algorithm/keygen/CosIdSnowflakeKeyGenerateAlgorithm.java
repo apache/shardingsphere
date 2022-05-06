@@ -25,7 +25,7 @@ import me.ahoo.cosid.snowflake.ClockSyncSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.SnowflakeId;
 import me.ahoo.cosid.snowflake.StringSnowflakeId;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceRequiredAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -36,7 +36,7 @@ import java.util.Properties;
 /**
  * CosId snowflake key generate algorithm.
  */
-public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
+public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceAwareAlgorithm {
     
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
     
@@ -98,8 +98,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
         long workerId = instanceContext.getWorkerId();
         MillisecondSnowflakeId millisecondSnowflakeId =
                 new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
-        ClockSyncSnowflakeId clockSyncSnowflakeId = new ClockSyncSnowflakeId(millisecondSnowflakeId);
-        snowflakeId = new StringSnowflakeId(clockSyncSnowflakeId, Radix62IdConverter.PAD_START);
+        snowflakeId = new StringSnowflakeId(new ClockSyncSnowflakeId(millisecondSnowflakeId), Radix62IdConverter.PAD_START);
     }
     
     @Override

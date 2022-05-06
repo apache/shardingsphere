@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.driver.fixture.algorithm.keygen;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * NanoId key generate algorithm.
- */
-public final class NanoIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    @Getter
-    @Setter
-    private Properties props;
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
     @Override
     public Comparable<?> generateKey() {
-        return NanoIdUtils.randomNanoId(ThreadLocalRandom.current(), NanoIdUtils.DEFAULT_ALPHABET, NanoIdUtils.DEFAULT_SIZE);
+        return SEQUENCE.incrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "NANOID";
+        return "INCREMENT";
     }
 }

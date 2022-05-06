@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -43,9 +42,6 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     
     private final ExtraSQLCommand extraSQLCommand;
     
-    @Getter
-    private Thread increaseTaskThread;
-    
     public BaseMySQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
@@ -61,7 +57,7 @@ public abstract class BaseMySQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
-        increaseTaskThread = new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand()));
+        setIncreaseTaskThread(new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);

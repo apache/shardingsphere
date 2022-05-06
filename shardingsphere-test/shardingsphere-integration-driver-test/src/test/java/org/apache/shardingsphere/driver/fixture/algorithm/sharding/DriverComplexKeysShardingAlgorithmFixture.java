@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen;
+package org.apache.shardingsphere.driver.fixture.algorithm.sharding;
 
-import org.junit.Test;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
 
-public final class NanoIdKeyGenerateAlgorithmTest {
+public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
     
-    private final NanoIdKeyGenerateAlgorithm nanoIdKeyGenerateAlgorithm = new NanoIdKeyGenerateAlgorithm();
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
+        return null;
+    }
     
-    @Test
-    public void assertGenerateKey() {
-        assertThat(((String) nanoIdKeyGenerateAlgorithm.generateKey()).length(), is(21));
+    @Override
+    public String getType() {
+        return "DRIVER.COMPLEX.FIXTURE";
     }
 }

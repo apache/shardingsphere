@@ -15,48 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.fixture;
+package org.apache.shardingsphere.driver.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-import java.math.BigInteger;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Properties;
+import java.util.HashSet;
 
-public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<Integer> {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class JDBCStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
                 return each;
             }
         }
-        throw new UnsupportedOperationException("");
+        return null;
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        int minValue = shardingValue.getValueRange().hasLowerBound() ? shardingValue.getValueRange().lowerEndpoint() : Integer.MIN_VALUE;
-        int maxValue = shardingValue.getValueRange().hasUpperBound() ? shardingValue.getValueRange().upperEndpoint() : Integer.MAX_VALUE;
-        long range = BigInteger.valueOf(maxValue).subtract(BigInteger.valueOf(minValue)).longValue();
-        int begin = Math.abs(minValue) % 10;
-        if (range > 9) {
-            return availableTargetNames;
-        }
-        for (int i = begin; i <= range; i += 1) {
+        Collection<String> result = new HashSet<>(2);
+        for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i))) {
+                if (each.endsWith(String.valueOf(i % 2))) {
                     result.add(each);
                 }
             }
@@ -66,6 +51,6 @@ public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "JDBC.STANDARD.FIXTURE";
     }
 }

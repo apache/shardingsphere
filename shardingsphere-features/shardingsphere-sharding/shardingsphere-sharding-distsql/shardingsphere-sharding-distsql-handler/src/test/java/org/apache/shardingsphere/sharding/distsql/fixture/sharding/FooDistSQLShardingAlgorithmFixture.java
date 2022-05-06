@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture;
+package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -26,13 +24,8 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
-public final class BoundaryRangeShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class FooDistSQLShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -46,11 +39,11 @@ public final class BoundaryRangeShardingAlgorithmFixture implements StandardShar
     
     @Override
     public String getType() {
-        return "BOUNDARY_RANGE_TEST";
+        return "FOO.DISTSQL.FIXTURE";
     }
     
     @Override
     public int getAutoTablesAmount() {
-        return 4;
+        return 2;
     }
 }
