@@ -88,7 +88,7 @@ public final class FreemarkerManager {
      */
     @SneakyThrows
     public static String getSqlByPgVersion(final Map<String, Object> data, final String pathFormat, final int majorVersion, final int minorVersion) {
-        int version = majorVersion * 10000 + minorVersion * 100;
+        int version = majorVersion * 10000 + minorVersion;
         try (StringWriter result = new StringWriter()) {
             findTemplate(pathFormat, version).orElseThrow(() -> new ShardingSphereException("Failed to get template, path:%s, version:%s", pathFormat, version)).process(data, result);
             return result.toString();
