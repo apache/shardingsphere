@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.driver.fixture.keygen;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class ResetIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Getter
     private static final AtomicInteger COUNT = new AtomicInteger();
@@ -34,6 +34,6 @@ public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public String getType() {
-        return "RESET_INCREMENT";
+        return "JDBC.RESET_INCREMENT.FIXTURE";
     }
 }

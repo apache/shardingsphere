@@ -15,7 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
-org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm
-org.apache.shardingsphere.driver.fixture.IncrementKeyGenerateAlgorithm
-org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm
+org.apache.shardingsphere.driver.fixture.keygen.IncrementKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture
