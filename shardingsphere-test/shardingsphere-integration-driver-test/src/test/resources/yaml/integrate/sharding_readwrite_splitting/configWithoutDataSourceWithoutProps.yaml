@@ -45,7 +45,7 @@ rules:
           shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
-        keyGeneratorName: increment
+        keyGeneratorName: keygen_fixture
     t_order_item:
       actualDataNodes: readwrite_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy:
@@ -80,8 +80,8 @@ rules:
         algorithm-expression: t_order_item_${order_id % 2}
   
   keyGenerators:
-    increment:
-      type: INCREMENT
+    keygen_fixture:
+      type: DRIVER.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSources:
