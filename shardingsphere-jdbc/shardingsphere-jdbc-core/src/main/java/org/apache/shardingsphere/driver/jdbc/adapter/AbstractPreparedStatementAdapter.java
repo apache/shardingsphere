@@ -275,9 +275,6 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
         try {
             switch (targetSqlType) {
-                case Types.NULL:
-                    setNull(parameterIndex, targetSqlType);
-                    break;
                 case Types.INTEGER:
                     setInt(parameterIndex, castToInt(x));
                     break;
