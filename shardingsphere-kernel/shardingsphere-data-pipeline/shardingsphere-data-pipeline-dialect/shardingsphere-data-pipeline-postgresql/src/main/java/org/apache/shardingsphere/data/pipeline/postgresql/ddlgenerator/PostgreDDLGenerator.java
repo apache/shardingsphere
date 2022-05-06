@@ -35,16 +35,18 @@ public final class PostgreDDLGenerator implements DialectDDLGenerator {
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName).loadTableProperties();
-            new PostgresColumnPropertiesLoader(connection).loadColumnProperties(context);
-            new PostgresConstraintsLoader(connection).loadConstraints(context);
-            return doGenerateDDLSQL(context);
+            int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
+            int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
+            Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
+            new PostgresColumnPropertiesLoader(connection, majorVersion, minorVersion).loadColumnProperties(context);
+            new PostgresConstraintsLoader(connection, majorVersion, minorVersion).loadConstraints(context);
+            return doGenerateDDLSQL(context, majorVersion, minorVersion);
         }
     }
     
-    private String doGenerateDDLSQL(final Map<String, Object> context) {
+    private String doGenerateDDLSQL(final Map<String, Object> context, final int majorVersion, final int minorVersion) {
         formatColumnList(context);
-        return FreemarkerManager.getSqlFromTemplate(context, "table/12_plus/create.ftl");
+        return FreemarkerManager.getSqlByPgVersion(context, "table/%s/create.ftl", majorVersion, minorVersion);
     }
     
     @SuppressWarnings("unchecked")

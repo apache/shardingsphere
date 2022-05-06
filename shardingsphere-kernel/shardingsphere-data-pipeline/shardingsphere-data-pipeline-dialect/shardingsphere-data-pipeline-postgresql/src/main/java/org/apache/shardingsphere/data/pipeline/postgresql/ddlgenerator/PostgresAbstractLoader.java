@@ -39,15 +39,21 @@ public abstract class PostgresAbstractLoader {
     
     private final Connection connection;
     
-    protected PostgresAbstractLoader(final Connection connection) {
+    private final int majorVersion;
+    
+    private final int minorVersion;
+    
+    protected PostgresAbstractLoader(final Connection connection, final int majorVersion, final int minorVersion) {
         this.connection = connection;
+        this.majorVersion = majorVersion;
+        this.minorVersion = minorVersion;
     }
     
     @SneakyThrows
     protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> parameters, final String path) {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlFromTemplate(parameters, path))) {
+                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlByPgVersion(parameters, path, majorVersion, minorVersion))) {
             return getRows(resultSet);
         }
     }

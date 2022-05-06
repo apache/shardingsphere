@@ -35,8 +35,8 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     
     private final String schemaName;
     
-    public PostgresTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName) {
-        super(connection);
+    public PostgresTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName, final int majorVersion, final int minorVersion) {
+        super(connection, majorVersion, minorVersion);
         this.tableName = tableName;
         this.schemaName = schemaName;
     }
@@ -59,24 +59,24 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("databaseName", getConnection().getCatalog());
-        appendFirstRow(executeByTemplate(parameters, "table/default/get_database_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "table/%s/get_database_id.ftl"), context);
     }
     
     private void fetchTableId(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("schemaName", schemaName);
         parameters.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(parameters, "table/default/get_table_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "table/%s/get_table_id.ftl"), context);
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(parameters, "table/default/get_schema_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "table/%s/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) {
-        appendFirstRow(executeByTemplate(context, "table/12_plus/properties.ftl"), context);
+        appendFirstRow(executeByTemplate(context, "table/%s/properties.ftl"), context);
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
     }
