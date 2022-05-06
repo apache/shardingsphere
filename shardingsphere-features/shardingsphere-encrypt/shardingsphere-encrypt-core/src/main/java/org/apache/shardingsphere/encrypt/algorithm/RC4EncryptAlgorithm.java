@@ -43,9 +43,9 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     @Setter
     private Properties props;
     
-    private byte[] key = new byte[SBOX_LENGTH - 1];
+    private volatile byte[] key = new byte[SBOX_LENGTH - 1];
     
-    private int[] sBox = new int[SBOX_LENGTH];
+    private volatile int[] sBox = new int[SBOX_LENGTH];
     
     @Override
     public void init(final Properties props) {
