@@ -34,10 +34,10 @@ rules:
           encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
         amount_new:
           cipherColumn: amount_new_cipher
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
     t_account_bak:
       columns:
         certificate_number:
@@ -58,7 +58,7 @@ rules:
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
         certificate_number:
@@ -74,7 +74,7 @@ rules:
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
       queryWithCipherColumn: true
     t_order:
       columns:
@@ -83,8 +83,8 @@ rules:
           plainColumn: PLAIN_CONTENT
           encryptorName: schema_based
   encryptors:
-    normal:
-      type: NORMAL_ENCRYPT
+    rewrite_normal_fixture:
+      type: REWRITE.NORMAL.FIXTURE
     schema_based:
       type: SCHEMA_BASED_ENCRYPT
     rewrite_assisted_query_fixture:
