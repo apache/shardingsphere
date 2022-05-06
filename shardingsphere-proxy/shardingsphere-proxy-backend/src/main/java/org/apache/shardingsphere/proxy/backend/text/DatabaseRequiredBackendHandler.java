@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -60,7 +59,7 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
     }
     
     private void checkDatabaseName(final String databaseName) {
-        if (Strings.isNullOrEmpty(databaseName)) {
+        if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().databaseExists(databaseName)) {
