@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.driver.fixture.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    @Getter
-    @Setter
-    private Properties props;
+    private final AtomicInteger count = new AtomicInteger();
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public Comparable<?> generateKey() {
+        return count.incrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "test";
+        return "JDBC.INCREMENT.FIXTURE";
     }
 }

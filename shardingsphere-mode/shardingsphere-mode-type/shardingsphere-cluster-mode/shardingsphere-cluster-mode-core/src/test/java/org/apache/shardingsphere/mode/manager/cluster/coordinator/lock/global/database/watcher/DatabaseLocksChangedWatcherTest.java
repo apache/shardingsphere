@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -63,12 +64,12 @@ public final class DatabaseLocksChangedWatcherTest {
         DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/database/locks/sharding_db/leases/c_l_0000000", "000000000", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertTrue(addGovernanceEvent.get() instanceof DatabaseLockedEvent);
+        assertThat(addGovernanceEvent.get(), instanceOf(DatabaseLockedEvent.class));
         assertThat(((DatabaseLockedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/database/locks/sharding_db/leases/c_l_0000000", "000000000", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertTrue(deleteGovernanceEvent.get() instanceof DatabaseLockReleasedEvent);
+        assertThat(deleteGovernanceEvent.get(), instanceOf(DatabaseLockReleasedEvent.class));
         assertThat(((DatabaseLockReleasedEvent) deleteGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         DataChangedEvent updateDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
         Optional<GovernanceEvent> updateGovernanceEvent = watcher.createGovernanceEvent(updateDataChangedEvent);

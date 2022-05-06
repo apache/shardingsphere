@@ -24,7 +24,10 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
@@ -48,25 +51,53 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
             return;
         }
         String actualSchemaName = sqlStatement.getSchemaName();
-        putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get());
+        putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get(), logicDataSourceNames);
         removeSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName);
         AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), actualSchemaName, renameSchemaName.get(), metaData.getSchemaByName(renameSchemaName.get()));
         ShardingSphereEventBus.getInstance().post(event);
-        // TODO Maybe need to refresh tables for SingleTableRule
     }
     
     private void removeSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                       final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName) {
-        metaData.getSchemas().remove(schemaName);
-        database.remove(schemaName);
+        ShardingSphereSchema schema = metaData.getSchemas().remove(schemaName);
+        database.removeSchemaMetadata(schemaName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        for (String each : schema.getAllTableNames()) {
+            removeDataNode(rules, schemaName, each);
+        }
     }
     
-    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
-                                   final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String renameSchemaName) {
-        metaData.getSchemas().put(renameSchemaName, metaData.getSchemaByName(schemaName));
-        database.getSchemaMetadata(schemaName).ifPresent(optional -> database.put(renameSchemaName, optional));
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final String schemaName, final String tableName) {
+        for (MutableDataNodeRule each : rules) {
+            each.remove(schemaName, tableName);
+        }
+    }
+    
+    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+                                   final String schemaName, final String renameSchemaName, final Collection<String> logicDataSourceNames) {
+        ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
+        metaData.getSchemas().put(renameSchemaName, schema);
+        database.getSchemaMetadata(schemaName).ifPresent(optional -> database.putSchemaMetadata(renameSchemaName, optional));
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        for (String each : schema.getAllTableNames()) {
+            if (containsInImmutableDataNodeContainedRule(each, metaData)) {
+                continue;
+            }
+            putDataNode(rules, logicDataSourceNames.iterator().next(), renameSchemaName, each);
+        }
+    }
+    
+    private void putDataNode(final Collection<MutableDataNodeRule> rules, final String dataSourceName, final String schemaName, final String tableName) {
+        for (MutableDataNodeRule each : rules) {
+            each.put(dataSourceName, schemaName, tableName);
+        }
+    }
+    
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereMetaData metaData) {
+        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     @Override

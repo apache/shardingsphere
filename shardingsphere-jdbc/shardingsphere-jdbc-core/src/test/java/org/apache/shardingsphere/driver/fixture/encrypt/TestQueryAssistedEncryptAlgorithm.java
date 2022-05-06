@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.fixture.keygen;
+package org.apache.shardingsphere.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    private final AtomicInteger sequence = new AtomicInteger(100);
+public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
-    public Comparable<?> generateKey() {
-        return sequence.incrementAndGet();
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "assistedEncryptValue";
     }
     
     @Override
     public String getType() {
-        return "INCREMENT";
+        return "assistedTest";
     }
 }

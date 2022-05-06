@@ -49,12 +49,12 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
         });
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            removeSegment(rules, each, schemaName);
+            removeDataNode(rules, each, schemaName);
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
-    private void removeSegment(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
         for (MutableDataNodeRule each : rules) {
             each.remove(schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
         }

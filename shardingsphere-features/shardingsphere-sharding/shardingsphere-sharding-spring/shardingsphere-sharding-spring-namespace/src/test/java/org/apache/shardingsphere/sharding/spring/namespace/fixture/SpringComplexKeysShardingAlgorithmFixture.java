@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.sharding.spring.namespace.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collection;
 
-public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    @Getter
-    private static final AtomicInteger COUNT = new AtomicInteger();
+public final class SpringComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
     @Override
-    public Comparable<?> generateKey() {
-        return COUNT.incrementAndGet();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
     }
     
     @Override
     public String getType() {
-        return "RESET_INCREMENT";
+        return "SPRING.COMPLEX.FIXTURE";
     }
 }
