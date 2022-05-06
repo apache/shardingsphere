@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -63,13 +64,13 @@ public final class DatabaseAckChangedWatcherTest {
         DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertTrue(addGovernanceEvent.get() instanceof DatabaseAckLockedEvent);
+        assertThat(addGovernanceEvent.get(), instanceOf(DatabaseAckLockedEvent.class));
         assertThat(((DatabaseAckLockedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         assertThat(((DatabaseAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertTrue(deleteGovernanceEvent.get() instanceof DatabaseAckLockReleasedEvent);
+        assertThat(deleteGovernanceEvent.get(), instanceOf(DatabaseAckLockReleasedEvent.class));
         assertThat(((DatabaseAckLockReleasedEvent) deleteGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         assertThat(((DatabaseAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
         DataChangedEvent updateDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);

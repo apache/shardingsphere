@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -63,7 +64,7 @@ public final class GeneralLocksChangedWatcherTest {
         DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/general/locks/lock_name/leases/c_l_0000000", "0000000000", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertTrue(addGovernanceEvent.get() instanceof GeneralLockedEvent);
+        assertThat(addGovernanceEvent.get(), instanceOf(GeneralLockedEvent.class));
         assertThat(((GeneralLockedEvent) addGovernanceEvent.get()).getLockName(), is("lock_name"));
     }
     
@@ -72,7 +73,7 @@ public final class GeneralLocksChangedWatcherTest {
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/general/locks/lock_name/leases/c_l_0000000", "0000000000", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertTrue(deleteGovernanceEvent.get() instanceof GeneralLockReleasedEvent);
+        assertThat(deleteGovernanceEvent.get(), instanceOf(GeneralLockReleasedEvent.class));
         assertThat(((GeneralLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lock_name"));
     }
     
