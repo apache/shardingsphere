@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class SchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
+public final class CoreSchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
     
     private String databaseName;
     
@@ -46,6 +46,6 @@ public final class SchemaMetaDataAwareEncryptAlgorithmFixture implements Encrypt
     
     @Override
     public String getType() {
-        return "METADATA_AWARE.FIXTURE";
+        return "CORE.METADATA_AWARE.FIXTURE";
     }
 }

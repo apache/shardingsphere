@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.fixture.SchemaMetaDataAwareEncryptAlgorithmFixture;
+import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.fixture.EncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -175,15 +175,15 @@ public final class EncryptRuleTest {
         encryptRule.setSchemaMetaData("foo_db", Collections.singletonMap("foo_schema", schema));
         Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SchemaMetaDataAwareEncryptAlgorithmFixture.class));
-        assertThat(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getDatabaseName(), is("foo_db"));
-        assertThat(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas(), is(Collections.singletonMap("foo_schema", schema)));
-        assertFalse(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas().isEmpty());
+        assertThat(actual.get(), instanceOf(CoreSchemaMetaDataAwareEncryptAlgorithmFixture.class));
+        assertThat(((CoreSchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getDatabaseName(), is("foo_db"));
+        assertThat(((CoreSchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas(), is(Collections.singletonMap("foo_schema", schema)));
+        assertFalse(((CoreSchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas().isEmpty());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED.FIXTURE", new Properties());
-        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
+        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.METADATA_AWARE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
@@ -192,8 +192,8 @@ public final class EncryptRuleTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
-        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED.FIXTURE", new Properties());
-        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
+        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.METADATA_AWARE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");

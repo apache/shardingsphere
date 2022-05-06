@@ -16,5 +16,5 @@
 #
 
 org.apache.shardingsphere.encrypt.fixture.EncryptAlgorithmFixture
-org.apache.shardingsphere.encrypt.fixture.QueryAssistedEncryptAlgorithmFixture
-org.apache.shardingsphere.encrypt.fixture.SchemaMetaDataAwareEncryptAlgorithmFixture
+org.apache.shardingsphere.encrypt.fixture.CoreQueryAssistedEncryptAlgorithmFixture
+org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture
