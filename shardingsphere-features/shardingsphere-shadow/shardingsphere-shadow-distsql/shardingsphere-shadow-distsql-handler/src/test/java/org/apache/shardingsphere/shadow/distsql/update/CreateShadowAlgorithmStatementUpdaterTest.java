@@ -52,17 +52,17 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteWithDuplicateAlgorithm() throws DistSQLException {
         Properties props = new Properties();
         props.setProperty("type", "value");
-        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", props)),
-                new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
+        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)),
+                new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithExistAlgorithm() throws DistSQLException {
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleNoteAlgorithm", null));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("foo_algorithm", null));
         Properties props = new Properties();
         props.setProperty("type", "value");
-        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
+        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
@@ -70,7 +70,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteWithAlgorithmCompleteness() throws DistSQLException {
         Properties props = new Properties();
         props.setProperty("type", "value");
-        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("", props)));
+        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("", props)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
@@ -78,7 +78,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteWithInvalidAlgorithmType() throws DistSQLException {
         Properties props = new Properties();
         props.setProperty("type", "value");
-        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleNoteAlgorithm1", new AlgorithmSegment("HINT_TEST_1", props)));
+        CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("NOT_EXISTED_ALGORITHM", props)));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
     }
     
