@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,13 +33,13 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Schema required backend handler.
- * 
+ * Database required backend handler.
+ *
  * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
+public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
     
     private final T sqlStatement;
     
@@ -47,7 +48,7 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> imple
     @Override
     public final ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession, sqlStatement);
-        checkDatabase(databaseName);
+        checkDatabaseName(databaseName);
         return execute(databaseName, sqlStatement);
     }
     
@@ -58,8 +59,8 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> imple
         return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private void checkDatabaseName(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().databaseExists(databaseName)) {
