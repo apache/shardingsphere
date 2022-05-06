@@ -67,7 +67,7 @@ public final class PipelineSimpleLock {
      * @return true if lock got, else false
      */
     public boolean tryLock(final String lockName, final long timeoutMills) {
-        boolean result = lockContext.getOrCreateGlobalLock(lockName).tryLock(decorateLockName(lockName), timeoutMills);
+        boolean result = lockContext.getGlobalLock(lockName).tryLock(decorateLockName(lockName), timeoutMills);
         if (result) {
             lockNameLockedMap.put(lockName, true);
         }
@@ -84,7 +84,7 @@ public final class PipelineSimpleLock {
         log.info("releaseLock, lockName={}", lockName);
         if (lockNameLockedMap.getOrDefault(lockName, false)) {
             lockNameLockedMap.remove(lockName);
-            lockContext.getOrCreateGlobalLock(lockName).releaseLock(lockName);
+            lockContext.getGlobalLock(lockName).releaseLock(lockName);
         }
     }
     
