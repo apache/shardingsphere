@@ -81,11 +81,11 @@ rules:
         CONTENT:
           cipherColumn: CIPHER_CONTENT
           plainColumn: PLAIN_CONTENT
-          encryptorName: schema_based
+          encryptorName: rewrite_metadata_aware_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE
-    schema_based:
-      type: SCHEMA_BASED_ENCRYPT
+    rewrite_metadata_aware_fixture:
+      type: REWRITE.METADATA_AWARE.FIXTURE
     rewrite_assisted_query_fixture:
       type: REWRITE.ASSISTED_QUERY.FIXTURE
