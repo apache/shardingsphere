@@ -20,10 +20,9 @@ package org.apache.shardingsphere.sharding.route.engine.fixture;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -243,14 +242,17 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
+    /**
+     * Create single table rule.
+     * 
+     * @param rules rules
+     * @return single table rule
+     */
+    protected SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        singleTableRule.put("t_category", dataSourceMap.keySet().iterator().next());
-        return singleTableRule;
-    }
-    
-    protected SQLParserRule createDefaultSQLParserRule() {
-        return new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        result.put(dataSourceMap.keySet().iterator().next(), DefaultSchema.LOGIC_NAME, "t_category");
+        return result;
     }
 }

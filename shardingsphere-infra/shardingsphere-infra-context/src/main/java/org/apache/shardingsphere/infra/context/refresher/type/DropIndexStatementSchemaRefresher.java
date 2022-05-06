@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
@@ -64,8 +65,8 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         if (simpleTableSegment.isPresent()) {
             return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        Collection<String> tableNames = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexSegments, metaData.getResource().getDatabaseType());
-        return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next());
+        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexSegments, metaData.getResource().getDatabaseType());
+        return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
     private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {

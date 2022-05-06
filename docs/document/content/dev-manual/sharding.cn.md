@@ -33,12 +33,13 @@ chapter = true
 | ----------------------------- | ------------------------- |
 | KeyGenerateAlgorithm          | 分布式主键生成算法           |
 
-| *已知实现类*                            | *详细说明*                  |
-|------------------------------------|-------------------------|
+| *已知实现类*                         | *详细说明*                         |
+|----------------------------------- |---------------------------------- |
 | SnowflakeKeyGenerateAlgorithm      | 基于雪花算法的分布式主键生成算法        |
-| UUIDKeyGenerateAlgorithm           | 基于 UUID 的分布式主键生成算法      |
-| CosIdKeyGenerateAlgorithm          | 基于 CosId 的分布式主键生成算法     |
+| UUIDKeyGenerateAlgorithm           | 基于 UUID 的分布式主键生成算法        |
+| CosIdKeyGenerateAlgorithm          | 基于 CosId 的分布式主键生成算法       |
 | CosIdSnowflakeKeyGenerateAlgorithm | 基于 CosId 的雪花算法分布式主键生成算法 |
+| NanoIdKeyGenerateAlgorithm         | 基于 NanoId 的分布式主键生成算法      |
 
 ## DatetimeService
 

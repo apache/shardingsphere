@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 189 家公司。
+共计 192 家公司。
 
 ### 基础软件
 <ul>
@@ -24,6 +24,7 @@ chapter = true
 
 ### 银行
 <ul>
+    <li><a href="https://www.abchina.com/" rel="nofollow">中国农业银行</a></li>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
@@ -100,6 +101,7 @@ chapter = true
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
     <li>京东大数据与智能供应链</li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
+    <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
@@ -115,6 +117,7 @@ chapter = true
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
+    <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
 </ul>
 
 ### 出行
@@ -288,9 +291,5 @@ chapter = true
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
 </ul>
 
-### 电商
-<ul>
-    <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
-</ul>    
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

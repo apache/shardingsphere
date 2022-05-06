@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
 
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
@@ -31,9 +29,6 @@ public final class ZookeeperContainer extends GovernanceContainer {
         super("zookeeper", "zookeeper:3.6.2");
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
         withExposedPorts(2181);
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(2181, 2181);
-        }
     }
     
     @Override

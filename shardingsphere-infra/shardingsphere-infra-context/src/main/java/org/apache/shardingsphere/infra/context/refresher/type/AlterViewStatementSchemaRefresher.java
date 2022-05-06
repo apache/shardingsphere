@@ -70,15 +70,15 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     private void removeTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
         metaData.getSchemaByName(schemaName).remove(viewName);
-        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(viewName));
-        database.remove(schemaName, viewName);
+        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
+        database.removeTableMetadata(schemaName, viewName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
     private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
-        if (!containsInDataNodeContainedRule(viewName, metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(viewName, logicDataSourceNames.iterator().next()));
+        if (!containsInImmutableDataNodeContainedRule(viewName, metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
@@ -86,13 +86,14 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
         actualViewMetaData.ifPresent(optional -> {
             metaData.getSchemaByName(schemaName).put(viewName, optional);
-            database.put(schemaName, optional);
+            database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
     
-    private boolean containsInDataNodeContainedRule(final String viewName, final ShardingSphereMetaData metaData) {
-        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(viewName));
+    private boolean containsInImmutableDataNodeContainedRule(final String viewName, final ShardingSphereMetaData metaData) {
+        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(viewName));
     }
     
     @Override

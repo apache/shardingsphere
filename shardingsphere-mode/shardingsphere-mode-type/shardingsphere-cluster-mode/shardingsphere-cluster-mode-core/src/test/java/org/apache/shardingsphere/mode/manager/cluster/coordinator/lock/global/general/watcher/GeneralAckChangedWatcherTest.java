@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -63,7 +64,7 @@ public final class GeneralAckChangedWatcherTest {
         DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/general/ack/lock_name#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertTrue(addGovernanceEvent.get() instanceof GeneralAckLockedEvent);
+        assertThat(addGovernanceEvent.get(), instanceOf(GeneralAckLockedEvent.class));
         assertThat(((GeneralAckLockedEvent) addGovernanceEvent.get()).getLockName(), is("lock_name"));
         assertThat(((GeneralAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
     }
@@ -73,7 +74,7 @@ public final class GeneralAckChangedWatcherTest {
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/general/ack/lock_name#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertTrue(deleteGovernanceEvent.get() instanceof GeneralAckLockReleasedEvent);
+        assertThat(deleteGovernanceEvent.get(), instanceOf(GeneralAckLockReleasedEvent.class));
         assertThat(((GeneralAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lock_name"));
         assertThat(((GeneralAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
     }

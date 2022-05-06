@@ -34,11 +34,12 @@ chapter = true
 | KeyGenerateAlgorithm          | Key generate algorithm           |
 
 | *Implementation Class*             | *Description*                                      |
-|------------------------------------|----------------------------------------------------|
+|----------------------------------- |--------------------------------------------------- |
 | SnowflakeKeyGenerateAlgorithm      | Snowflake key generate algorithm                   |
 | UUIDKeyGenerateAlgorithm           | UUID key generate algorithm                        |
 | CosIdKeyGenerateAlgorithm          | CosId key generate algorithm                       |
 | CosIdSnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm provided by CosId |
+| NanoIdKeyGenerateAlgorithm         | NanoId key generate algorithm                      |
 
 ## DatetimeService
 

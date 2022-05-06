@@ -34,7 +34,7 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.ITWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.LocalComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
@@ -88,7 +88,7 @@ public abstract class BaseITCase {
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
-            composedContainer = new LocalComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+            composedContainer = new NativeComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         }
         composedContainer.start();
         commonSQLCommand = JAXB.unmarshal(BaseITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);

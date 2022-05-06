@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 189 companies.
+Total: 192 companies.
 
 ### Infra Software
 <ul>
@@ -24,8 +24,9 @@ Total: 189 companies.
 
 ### Bank
 <ul>
+    <li><a href="https://www.abchina.com/en/" rel="nofollow">AGRICULTURAL BANK OF CHINA</a></li>
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
+    <li><a href="http://en.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
     <li><a href="https://www.psbc.com/en/" rel="nofollow">Postal Savings Bank of China</a></li>
 </ul>
@@ -100,6 +101,7 @@ Total: 189 companies.
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
+    <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
@@ -115,6 +117,7 @@ Total: 189 companies.
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">ZEGO</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">Sdjic Tec</a></li>
+    <li><a href="https://www.baozun.com/" rel="nofollow">BAO ZUN</a></li>
 </ul>
 
 ### Transportation

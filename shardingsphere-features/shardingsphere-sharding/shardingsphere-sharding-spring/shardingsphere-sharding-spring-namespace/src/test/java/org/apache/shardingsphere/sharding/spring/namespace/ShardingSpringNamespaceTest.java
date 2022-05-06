@@ -64,7 +64,7 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private HintShardingAlgorithm<?> hintShardingAlgorithm;
     
     @Resource
-    private KeyGenerateAlgorithm incrementAlgorithm;
+    private KeyGenerateAlgorithm keyGenerateAlgorithm;
     
     @Resource
     private StandardShardingStrategyConfiguration dataSourceShardingStrategy;
@@ -171,20 +171,20 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     }
     
     @Test
-    public void assertIncrementAlgorithm() {
-        assertThat(incrementAlgorithm.getType(), is("INCREMENT"));
+    public void assertKeyGenAlgorithm() {
+        assertThat(keyGenerateAlgorithm.getType(), is("UUID"));
     }
     
     @Test
     public void assertDefaultKeyGenerator() {
         assertThat(defaultKeyGenerator.getColumn(), is("id"));
-        assertThat(defaultKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
+        assertThat(defaultKeyGenerator.getKeyGeneratorName(), is("uuidAlgorithm"));
     }
     
     @Test
     public void assertOrderKeyGenerator() {
         assertThat(orderKeyGenerator.getColumn(), is("order_id"));
-        assertThat(orderKeyGenerator.getKeyGeneratorName(), is("incrementAlgorithm"));
+        assertThat(orderKeyGenerator.getKeyGeneratorName(), is("uuidAlgorithm"));
     }
     
     @Test
@@ -204,9 +204,8 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(actualComplexRuleConfig.getActualDataNodes(), is("ds_$->{0..1}.t_order_$->{0..3}"));
         assertThat(actualComplexRuleConfig.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("dataSourceShardingAlgorithm"));
         assertThat(actualComplexRuleConfig.getTableShardingStrategy().getShardingAlgorithmName(), is("orderTableShardingAlgorithm"));
-        assertThat(actualComplexRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName(), is("incrementAlgorithm"));
-        assertThat(complexRule.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("incrementAlgorithm"));
-        
+        assertThat(actualComplexRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName(), is("uuidAlgorithm"));
+        assertThat(complexRule.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("uuidAlgorithm"));
     }
     
     @Test

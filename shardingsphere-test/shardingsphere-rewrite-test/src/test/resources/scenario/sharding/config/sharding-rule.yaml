@@ -30,7 +30,7 @@ rules:
           shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -86,8 +86,8 @@ rules:
         algorithm-expression: t_user_extend_${user_id % 2}
   
   keyGenerators:
-    test:
-      type: TEST
+    rewrite_keygen_fixture:
+      type: REWRITE.FIXTURE
 
 props:
   sql-federation-enabled: true

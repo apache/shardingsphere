@@ -30,7 +30,7 @@ rules:
           shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_bak:
       actualDataNodes: db.t_account_bak_${0..1}
       tableStrategy: 
@@ -39,7 +39,7 @@ rules:
           shardingAlgorithmName: t_account_bak_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -64,8 +64,8 @@ rules:
         algorithm-expression: t_account_detail_${account_id % 2}
   
   keyGenerators:
-    test:
-      type: TEST
+    rewrite_keygen_fixture:
+      type: REWRITE.FIXTURE
 
 - !ENCRYPT
   tables:
