@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture;
+package org.apache.shardingsphere.sharding.rewrite.fixture.keygen;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<?> generateKey() {
-        return 1;
+    public Long generateKey() {
+        return 1L;
     }
     
     @Override
     public String getType() {
-        return "TEST";
+        return "REWRITE.FIXTURE";
     }
 }

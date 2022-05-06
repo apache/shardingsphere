@@ -15,43 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture;
+package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
-import java.util.Map;
 import java.util.Properties;
 
-@Setter
-public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String>, SchemaMetaDataAware {
+public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Getter
+    @Setter
     private Properties props;
-    
-    private Map<String, ShardingSphereSchema> schemas;
-    
-    private String databaseName;
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
-        return "encrypt_" + plainValue + "_" + tableMetaData.getName();
+        return "encrypt_" + plainValue;
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
-        return cipherValue.replaceAll("encrypt_", "").replaceAll("_" + tableMetaData.getName(), "");
+        return cipherValue.replaceAll("encrypt_", "");
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "assisted_query_" + plainValue;
     }
     
     @Override
     public String getType() {
-        return "SCHEMA_BASED_ENCRYPT";
+        return "ASSISTED_QUERY_ENCRYPT";
     }
 }
