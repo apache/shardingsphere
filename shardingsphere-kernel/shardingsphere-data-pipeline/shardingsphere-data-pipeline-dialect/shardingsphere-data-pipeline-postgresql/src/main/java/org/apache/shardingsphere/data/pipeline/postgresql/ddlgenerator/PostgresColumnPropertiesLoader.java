@@ -43,8 +43,8 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
     
-    public PostgresColumnPropertiesLoader(final Connection connection) {
-        super(connection);
+    public PostgresColumnPropertiesLoader(final Connection connection, final int majorVersion, final int minorVersion) {
+        super(connection, majorVersion, minorVersion);
     }
     
     /**
@@ -55,7 +55,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     @SneakyThrows
     public void loadColumnProperties(final Map<String, Object> context) {
         Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
-        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "columns/12_plus/properties.ftl");
+        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "columns/%s/properties.ftl");
         for (Map<String, Object> each : allColumns) {
             for (Map<String, Object> column : typeAndInheritedColumns) {
                 if (each.get("name").equals(column.get("name"))) {
@@ -88,11 +88,11 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     
     private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
         Collection<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "table/10_plus/get_inherits.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "table/%s/get_inherits.ftl")) {
             if (collInherits.contains((String) each.get("inherits"))) {
                 Map<String, Object> parameters = new LinkedHashMap<>();
                 parameters.put("tid", each.get("oid"));
-                result.addAll(executeByTemplate(parameters, "table/10_plus/get_columns_for_table.ftl"));
+                result.addAll(executeByTemplate(parameters, "table/%s/get_columns_for_table.ftl"));
             }
         }
         return result;
@@ -101,7 +101,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("tid", context.get("typoid"));
-        return executeByTemplate(parameters, "table/10_plus/get_columns_for_table.ftl");
+        return executeByTemplate(parameters, "table/%s/get_columns_for_table.ftl");
     }
     
     @SuppressWarnings("unchecked")
@@ -124,7 +124,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
-        for (Map<String, Object> each : executeByTemplate(parameters, "columns/default/edit_mode_types_multi.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(parameters, "columns/%s/edit_mode_types_multi.ftl")) {
             result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
         }
         return result;
