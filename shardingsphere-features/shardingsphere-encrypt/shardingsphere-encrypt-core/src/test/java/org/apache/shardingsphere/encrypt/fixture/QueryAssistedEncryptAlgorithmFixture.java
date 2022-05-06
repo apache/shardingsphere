@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.fixture;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
+public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -39,6 +39,6 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     
     @Override
     public String getType() {
-        return "QUERY_ASSISTED_TEST";
+        return "QUERY_ASSISTED.FIXTURE";
     }
 }

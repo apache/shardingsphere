@@ -182,7 +182,7 @@ public final class EncryptRuleTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED.FIXTURE", new Properties());
         ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
@@ -192,7 +192,7 @@ public final class EncryptRuleTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
-        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED.FIXTURE", new Properties());
         ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
