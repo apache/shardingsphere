@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.exception;
 import lombok.Getter;
 
 /**
- * Schema does not exist exception.
+ * Database does not exist exception.
  */
 @Getter
-public final class SchemaNotExistedException extends ShardingSphereException {
+public final class DatabaseNotExistedException extends ShardingSphereException {
     
     private static final long serialVersionUID = -1818822065202117480L;
     
-    private final String schemaName;
+    private final String databaseName;
     
-    public SchemaNotExistedException(final String schemaName) {
-        super(String.format("Schema '%s' doesn't exist.", schemaName));
-        this.schemaName = schemaName;
+    public DatabaseNotExistedException(final String databaseName) {
+        super(String.format("Database '%s' doesn't exist.", databaseName));
+        this.databaseName = databaseName;
     }
 }

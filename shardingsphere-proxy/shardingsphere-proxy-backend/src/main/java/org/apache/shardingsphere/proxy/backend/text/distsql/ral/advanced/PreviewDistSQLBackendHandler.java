@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -164,7 +164,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
-            throw new SchemaNotExistedException(result);
+            throw new DatabaseNotExistedException(result);
         }
         return result;
     }

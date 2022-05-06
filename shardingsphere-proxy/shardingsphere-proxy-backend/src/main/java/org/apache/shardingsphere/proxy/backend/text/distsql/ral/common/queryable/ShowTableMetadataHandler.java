@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -62,17 +63,22 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
-        }
+        String databaseName = getDatabaseName();
         String defaultSchema = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(databaseName).getSchemaByName(defaultSchema);
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+    
+    private String getDatabaseName() {
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+            throw new DatabaseNotExistedException(result);
+        }
+        return result;
     }
     
     private Collection<List<Object>> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {

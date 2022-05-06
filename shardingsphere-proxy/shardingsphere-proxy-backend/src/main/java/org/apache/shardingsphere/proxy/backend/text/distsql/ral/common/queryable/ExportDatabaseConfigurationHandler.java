@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -220,11 +221,11 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     
     private String getDatabaseName() {
         String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (null == result) {
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
-            throw new SchemaNotExistedException(result);
+            throw new DatabaseNotExistedException(result);
         }
         return result;
     }
