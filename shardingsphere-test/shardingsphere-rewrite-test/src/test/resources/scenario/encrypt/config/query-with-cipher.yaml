@@ -27,11 +27,11 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
@@ -44,17 +44,17 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           plainColumn: plain_certificate_number
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         password_new:
           cipherColumn: password_new_cipher
           assistedQueryColumn: password_new_assisted
           plainColumn: password_new_plain
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -65,12 +65,12 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           plainColumn: plain_certificate_number
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -87,5 +87,5 @@ rules:
       type: NORMAL_ENCRYPT
     schema_based:
       type: SCHEMA_BASED_ENCRYPT
-    assisted_query:
-      type: ASSISTED_QUERY_ENCRYPT
+    rewrite_assisted_query_fixture:
+      type: REWRITE.ASSISTED_QUERY.FIXTURE

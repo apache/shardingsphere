@@ -74,7 +74,7 @@ rules:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
@@ -84,7 +84,7 @@ rules:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -95,7 +95,7 @@ rules:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -103,5 +103,5 @@ rules:
   encryptors:
     normal:
       type: NORMAL_ENCRYPT
-    assisted_query:
-      type: ASSISTED_QUERY_ENCRYPT
+    rewrite_assisted_query_fixture:
+      type: REWRITE.ASSISTED_QUERY.FIXTURE
