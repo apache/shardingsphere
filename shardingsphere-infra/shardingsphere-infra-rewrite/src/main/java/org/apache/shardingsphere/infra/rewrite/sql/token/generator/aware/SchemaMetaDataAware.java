@@ -27,16 +27,16 @@ import java.util.Map;
 public interface SchemaMetaDataAware {
     
     /**
+     * Set database name.
+     *
+     * @param databaseName database name
+     */
+    void setDatabaseName(String databaseName);
+    
+    /**
      * Set schema meta data.
      * 
      * @param schemas schema meta data map
      */
     void setSchemas(Map<String, ShardingSphereSchema> schemas);
-    
-    /**
-     * Set database name.
-     * 
-     * @param databaseName database name
-     */
-    void setDatabaseName(String databaseName);
 }

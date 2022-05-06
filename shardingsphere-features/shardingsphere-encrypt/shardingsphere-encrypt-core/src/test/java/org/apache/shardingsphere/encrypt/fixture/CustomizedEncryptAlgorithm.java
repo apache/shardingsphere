@@ -41,9 +41,9 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     
     private byte[] key = DigestUtils.sha256(TEST_KEY);
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {

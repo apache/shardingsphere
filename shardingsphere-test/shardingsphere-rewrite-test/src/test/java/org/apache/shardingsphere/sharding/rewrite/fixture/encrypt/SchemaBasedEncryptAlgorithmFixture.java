@@ -34,9 +34,9 @@ public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorith
     @Getter
     private Properties props;
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

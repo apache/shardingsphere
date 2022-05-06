@@ -171,10 +171,9 @@ public final class EncryptRuleTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertSetUpEncryptorSchema() {
+    public void assertSchemaMetaData() {
         EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap());
-        Map<String, ShardingSphereSchema> schemas = mockSchemaMap();
-        encryptRule.setUpEncryptorSchema(schemas, "test");
+        encryptRule.setSchemaMetaData("test", mockSchemaMap());
         Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(CustomizedEncryptAlgorithm.class));
