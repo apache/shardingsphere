@@ -171,7 +171,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
         for (DataNode each : dataNodes) {
-            if (null != qualifiedTable.getSchemaName() && qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
+            if (qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
                 return true;
             }
         }
@@ -202,7 +202,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public Optional<DataNode> findSingleTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());
         for (DataNode each : dataNodes) {
-            if (null != schemaName && schemaName.equalsIgnoreCase(each.getSchemaName())) {
+            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
                 return Optional.of(each);
             }
         }
