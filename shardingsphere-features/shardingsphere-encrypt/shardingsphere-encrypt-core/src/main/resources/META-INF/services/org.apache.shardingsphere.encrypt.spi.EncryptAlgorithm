@@ -20,4 +20,3 @@ org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.SM3EncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.SM4EncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.EmptyEncryptAlgorithm
