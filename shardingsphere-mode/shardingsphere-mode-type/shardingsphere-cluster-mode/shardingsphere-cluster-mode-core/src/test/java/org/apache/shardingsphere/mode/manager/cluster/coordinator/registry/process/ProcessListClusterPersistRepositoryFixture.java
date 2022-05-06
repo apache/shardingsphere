@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
@@ -69,15 +68,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        return false;
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
     }
     
     @Override
