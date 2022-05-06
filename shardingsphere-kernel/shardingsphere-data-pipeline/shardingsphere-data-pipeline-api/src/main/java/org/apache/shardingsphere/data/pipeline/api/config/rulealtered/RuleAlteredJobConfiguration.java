@@ -81,6 +81,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
      * </p>
      */
+    // TODO list all
     private String tablesFirstDataNodes;
     
     private List<String> jobShardingDataNodes;
