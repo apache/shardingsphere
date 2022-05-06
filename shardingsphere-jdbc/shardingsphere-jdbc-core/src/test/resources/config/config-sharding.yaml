@@ -57,14 +57,14 @@ rules:
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
-      shardingAlgorithmName: standard_test
+      shardingAlgorithmName: jdbc_standard_fixture
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: standard_test
+      shardingAlgorithmName: jdbc_standard_fixture
   
   shardingAlgorithms:
-    standard_test:
+    jdbc_standard_fixture:
         type: JDBC.STANDARD.FIXTURE
     table_inline:
       type: INLINE
