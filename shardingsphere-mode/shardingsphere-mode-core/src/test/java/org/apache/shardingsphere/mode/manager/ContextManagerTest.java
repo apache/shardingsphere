@@ -261,11 +261,10 @@ public final class ContextManagerTest {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        contextManager.reloadMetaData("foo_db");
-        verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
-        contextManager.reloadMetaData("foo_db", "foo_table");
-        contextManager.reloadMetaData("foo_db", "foo_table", "foo_ds");
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getSchemaByName("foo_db"));
+        contextManager.reloadMetaData("foo_db", "foo_schema");
+        verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_schema"), any(ShardingSphereSchema.class));
+        contextManager.reloadMetaData("foo_db", "foo_schema", "foo_table");
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_db").getSchemaByName("foo_schema"));
         assertTrue(contextManager.getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }
     
