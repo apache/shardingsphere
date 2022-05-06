@@ -278,7 +278,7 @@ rules:
 
   keyGenerators:
     constant:
-      type: CONSTANT
+      type: IT.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSources:

@@ -72,7 +72,7 @@ rules:
   
   keyGenerators:
     constant:
-      type: Constant
+      type: IT.FIXTURE
 
 props:
   sql-federation-enabled: true
