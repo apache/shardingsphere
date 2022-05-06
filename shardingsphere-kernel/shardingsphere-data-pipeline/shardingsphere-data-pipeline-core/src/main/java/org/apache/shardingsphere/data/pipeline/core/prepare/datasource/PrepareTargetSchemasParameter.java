@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+
 /**
- * Data source preparer.
+ * Prepare target schemas parameter.
  */
-public interface DataSourcePreparer {
+@RequiredArgsConstructor
+@Getter
+public final class PrepareTargetSchemasParameter {
     
-    /**
-     * Prepare target schemas.
-     *
-     * @param parameter prepare target schemas parameter
-     */
-    void prepareTargetSchemas(PrepareTargetSchemasParameter parameter);
+    private final TaskConfiguration taskConfig;
     
-    /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+    private final PipelineDataSourceManager dataSourceManager;
+    
+    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
 }

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,6 +55,19 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_COMMENT_ON = Pattern.compile("COMMENT\\s+ON\\s+(COLUMN\\s+|TABLE\\s+)", Pattern.CASE_INSENSITIVE);
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
+    
+    @Override
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
+        DatabaseType sourceDatabaseType = DatabaseTypeRegistry.getActualDatabaseType(parameter.getTaskConfig().getJobConfig().getSourceDatabaseType());
+        DatabaseType targetDatabaseType = DatabaseTypeRegistry.getActualDatabaseType(parameter.getTaskConfig().getJobConfig().getTargetDatabaseType());
+        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
+            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
+        }
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+            // TODO create schema
+        } catch (final SQLException ignored) {
+        }
+    }
     
     protected final PipelineDataSourceWrapper getSourceCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
