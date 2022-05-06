@@ -92,13 +92,9 @@ public class IndexMetaDataUtil {
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName),
-                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(createQualifiedTable(actualSchemaName, optional)));
+                    each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;
-    }
-    
-    private static QualifiedTable createQualifiedTable(final String schemaName, final String tableName) {
-        return new QualifiedTable(schemaName, tableName);
     }
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
