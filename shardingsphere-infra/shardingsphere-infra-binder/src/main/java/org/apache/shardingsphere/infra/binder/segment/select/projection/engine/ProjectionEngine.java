@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,7 +59,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ProjectionEngine {
     
-    private final ShardingSphereSchema schema;
+    private final String databaseName;
+    
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final DatabaseType databaseType;
     
@@ -152,11 +155,12 @@ public final class ProjectionEngine {
         }
         String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAlias().orElse(tableName);
+        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(databaseType.getDefaultSchema(databaseName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
+            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schema.getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
+            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
         }
         return result;
     }
