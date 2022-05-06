@@ -53,6 +53,13 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }
     
+    private void setKey(final byte[] key) throws ShardingSphereException {
+        if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
+            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
+        }
+        this.key = key;
+    }
+    
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), key));
@@ -80,10 +87,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         Arrays.fill(sBox, 0);
     }
     
-    /**
-     * Crypt given byte array. Be aware, that you must init key, before using.
-     * @param message array to be crypt
-     * @return byte array
+    /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Pseudo-random_generation_algorithm_.28PRGA.29">Pseudo-random generation algorithm</a>
      */
     private byte[] crypt(final byte[] message) {
@@ -101,11 +105,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return result;
     }
     
-    /**
-     * Initialize SBOX with given key, Key-scheduling algorithm.
-     *
-     * @param key key
-     * @return sBox int array
+    /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sBox</a>
      */
     private int[] initSBox(final byte[] key) {
@@ -125,19 +125,6 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         int temp = sBox[i];
         sBox[i] = sBox[j];
         sBox[j] = temp;
-    }
-    
-    /**
-     * Set key.
-     *
-     * @param key key to be setup
-     * @throws ShardingSphereException if key length is smaller than 5 or bigger than 255
-     */
-    private void setKey(final byte[] key) throws ShardingSphereException {
-        if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
-        }
-        this.key = key;
     }
     
     @Override
