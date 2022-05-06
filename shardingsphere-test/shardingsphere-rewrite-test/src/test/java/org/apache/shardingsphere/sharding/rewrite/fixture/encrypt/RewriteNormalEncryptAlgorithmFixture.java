@@ -17,18 +17,10 @@
 
 package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Properties;
-
-public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -42,6 +34,6 @@ public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm<Obj
     
     @Override
     public String getType() {
-        return "NORMAL_ENCRYPT";
+        return "REWRITE.NORMAL.FIXTURE";
     }
 }

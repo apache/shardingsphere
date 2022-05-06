@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -26,13 +25,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Map;
-import java.util.Properties;
 
 @Setter
-public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String>, SchemaMetaDataAware {
-    
-    @Getter
-    private Properties props;
+public final class RewriteSchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String>, SchemaMetaDataAware {
     
     private String databaseName;
     
@@ -40,8 +35,7 @@ public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorith
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        TableMetaData tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
-        return "encrypt_" + plainValue + "_" + tableMetaData.getName();
+        return "encrypt_" + plainValue + "_" + schemas.get(databaseName).get(encryptContext.getTableName()).getName();
     }
     
     @Override
@@ -52,6 +46,6 @@ public final class SchemaBasedEncryptAlgorithmFixture implements EncryptAlgorith
     
     @Override
     public String getType() {
-        return "SCHEMA_BASED_ENCRYPT";
+        return "REWRITE.METADATA_AWARE.FIXTURE";
     }
 }
