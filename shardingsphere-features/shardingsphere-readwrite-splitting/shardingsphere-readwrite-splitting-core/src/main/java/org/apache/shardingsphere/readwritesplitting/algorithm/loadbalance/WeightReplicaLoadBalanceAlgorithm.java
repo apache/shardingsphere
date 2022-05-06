@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +34,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
     
