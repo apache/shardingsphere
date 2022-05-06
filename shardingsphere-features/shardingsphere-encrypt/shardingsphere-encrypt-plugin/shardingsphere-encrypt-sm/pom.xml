@@ -21,18 +21,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-encrypt-plugin</artifactId>
         <version>5.1.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-encrypt</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-encrypt-sm</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-encrypt-api</module>
-        <module>shardingsphere-encrypt-core</module>
-        <module>shardingsphere-encrypt-distsql</module>
-        <module>shardingsphere-encrypt-spring</module>
-        <module>shardingsphere-encrypt-plugin</module>
-    </modules>
+    <properties>
+        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${bcprov-jdk15on.version}</version>
+        </dependency>
+    </dependencies>
 </project>
