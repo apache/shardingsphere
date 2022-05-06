@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -43,6 +44,14 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
      * @param tableName table name
      */
     void remove(String schemaName, String tableName);
+    
+    /**
+     * Remove data node.
+     *
+     * @param schemaNames schema name collection
+     * @param tableName table name
+     */
+    void remove(Collection<String> schemaNames, String tableName);
     
     /**
      * Find single data node.

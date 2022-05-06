@@ -77,7 +77,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     
     private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
-        if (!containsInDataNodeContainedRule(viewName, metaData)) {
+        if (!containsInImmutableDataNodeContainedRule(viewName, metaData)) {
             metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
@@ -91,8 +91,9 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         });
     }
     
-    private boolean containsInDataNodeContainedRule(final String viewName, final ShardingSphereMetaData metaData) {
-        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(viewName));
+    private boolean containsInImmutableDataNodeContainedRule(final String viewName, final ShardingSphereMetaData metaData) {
+        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(viewName));
     }
     
     @Override
