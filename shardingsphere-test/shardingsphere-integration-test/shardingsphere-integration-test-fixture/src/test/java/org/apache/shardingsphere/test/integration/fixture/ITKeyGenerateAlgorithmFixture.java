@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.integration.fixture;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<?> generateKey() {
-        return 1;
+    public Long generateKey() {
+        return 1L;
     }
     
     @Override
     public String getType() {
-        return "CONSTANT";
+        return "IT.FIXTURE";
     }
 }
