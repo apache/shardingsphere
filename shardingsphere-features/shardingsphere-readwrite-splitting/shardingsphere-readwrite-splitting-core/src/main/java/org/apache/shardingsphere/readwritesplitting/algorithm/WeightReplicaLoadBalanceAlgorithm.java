@@ -36,7 +36,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
 
@@ -47,8 +47,8 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
 
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
-        WEIGHT_MAP.putIfAbsent(name, weight);
+        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
+        weightMap.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
 
