@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.driver.fixture.JDBCStandardShardingAlgorithmFixture
+org.apache.shardingsphere.driver.fixture.sharding.JDBCStandardShardingAlgorithmFixture

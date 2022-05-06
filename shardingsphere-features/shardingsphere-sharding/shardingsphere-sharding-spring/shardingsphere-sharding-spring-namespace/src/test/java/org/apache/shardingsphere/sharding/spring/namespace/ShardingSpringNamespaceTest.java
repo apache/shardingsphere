@@ -206,7 +206,6 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(actualComplexRuleConfig.getTableShardingStrategy().getShardingAlgorithmName(), is("orderTableShardingAlgorithm"));
         assertThat(actualComplexRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName(), is("uuidAlgorithm"));
         assertThat(complexRule.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("uuidAlgorithm"));
-        
     }
     
     @Test

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.driver.fixture.keygen;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger();
     
@@ -32,6 +32,6 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public String getType() {
-        return "INCREMENT";
+        return "JDBC.INCREMENT.FIXTURE";
     }
 }
