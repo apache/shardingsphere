@@ -40,11 +40,13 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public boolean tryLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
         return getGlobalLock(databaseName).tryLock(databaseName);
     }
     
     @Override
     public void releaseLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
         getGlobalLock(databaseName).releaseLock(databaseName);
     }
     
