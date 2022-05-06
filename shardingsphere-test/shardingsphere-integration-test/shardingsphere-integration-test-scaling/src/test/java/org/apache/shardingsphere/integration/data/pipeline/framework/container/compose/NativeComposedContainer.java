@@ -17,26 +17,20 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyLocalContainer;
 
 /**
- * Local composed container.
+ * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
-public final class LocalComposedContainer extends BaseComposedContainer {
-    private ShardingSphereProxyLocalContainer shardingSphereProxyContainer;
+public final class NativeComposedContainer extends BaseComposedContainer {
     
-    public LocalComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public NativeComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         super(databaseType, dockerImageName);
     }
     
-    @SneakyThrows
     @Override
     public void start() {
         super.start();
-        shardingSphereProxyContainer = new ShardingSphereProxyLocalContainer(getDatabaseContainer().getDatabaseType());
-        shardingSphereProxyContainer.start();
     }
     
     @Override
