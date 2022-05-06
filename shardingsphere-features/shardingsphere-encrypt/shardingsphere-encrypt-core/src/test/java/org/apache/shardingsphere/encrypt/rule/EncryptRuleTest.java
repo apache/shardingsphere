@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture;
-import org.apache.shardingsphere.encrypt.fixture.EncryptAlgorithmFixture;
+import org.apache.shardingsphere.encrypt.fixture.CoreEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -52,14 +52,14 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new EncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewInstanceWithInvalidConfiguration() {
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", encryptAlgorithmConfig));
@@ -71,7 +71,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new EncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new CoreEncryptAlgorithmFixture()), true);
         new EncryptRule(ruleConfig, Collections.emptyMap());
     }
     
@@ -145,7 +145,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), true);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new EncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt"));
     }

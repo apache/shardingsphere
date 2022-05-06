@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.fixture;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-public final class EncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class CoreEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -34,6 +34,6 @@ public final class EncryptAlgorithmFixture implements EncryptAlgorithm<Object, S
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "CORE.FIXTURE";
     }
 }
