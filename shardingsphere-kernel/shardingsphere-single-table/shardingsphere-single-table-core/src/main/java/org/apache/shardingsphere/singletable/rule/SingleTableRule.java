@@ -181,7 +181,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     @Override
     public void put(final String dataSourceName, final String schemaName, final String tableName) {
         if (dataSourceNames.contains(dataSourceName)) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName, key -> new LinkedHashSet<>());
+            Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName.toLowerCase(), key -> new LinkedHashSet<>());
             DataNode dataNode = new DataNode(dataSourceName, tableName);
             dataNode.setSchemaName(schemaName);
             dataNodes.add(dataNode);
@@ -191,9 +191,18 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public void remove(final String schemaName, final String tableName) {
-        Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName, new LinkedHashSet<>());
-        dataNodes.removeIf(each -> schemaName.equalsIgnoreCase(each.getSchemaName()));
+        remove(Collections.singleton(schemaName.toLowerCase()), tableName);
+    }
+    
+    @Override
+    public void remove(final Collection<String> schemaNames, final String tableName) {
+        if (!singleTableDataNodes.containsKey(tableName.toLowerCase())) {
+            return;
+        }
+        Collection<DataNode> dataNodes = singleTableDataNodes.get(tableName.toLowerCase());
+        dataNodes.removeIf(each -> schemaNames.contains(each.getSchemaName().toLowerCase()));
         if (dataNodes.isEmpty()) {
+            singleTableDataNodes.remove(tableName.toLowerCase());
             tableNames.remove(tableName.toLowerCase());
         }
     }

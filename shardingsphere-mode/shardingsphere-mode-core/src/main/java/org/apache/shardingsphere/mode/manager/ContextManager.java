@@ -48,6 +48,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -156,7 +157,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.put(schemaName, new TableMetaData());
+        databaseMetaData.putTableMetadata(schemaName, new TableMetaData());
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
         metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
@@ -208,12 +209,12 @@ public final class ContextManager implements AutoCloseable {
         alterSingleTableDataNodes(databaseName, metaData, changedTableMetaData);
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
         metaData.getSchemaByName(schemaName).put(changedTableMetaData.getName(), changedTableMetaData);
-        databaseMetaData.put(schemaName, changedTableMetaData);
+        databaseMetaData.putTableMetadata(schemaName, changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
     }
     
     private void alterSingleTableDataNodes(final String databaseName, final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
-        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
+        if (!containsInImmutableDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
             refreshRules(databaseName, metaData);
         }
     }
@@ -229,13 +230,14 @@ public final class ContextManager implements AutoCloseable {
         if (null != metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
             metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName).remove(deletedTable);
             FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-            databaseMetaData.remove(schemaName, deletedTable);
+            databaseMetaData.removeTableMetadata(schemaName, deletedTable);
             metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
         }
     }
     
-    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     /**
@@ -267,7 +269,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.remove(schemaName);
+        databaseMetaData.removeSchemaMetadata(schemaName);
         metaData.getSchemas().remove(schemaName);
     }
     
