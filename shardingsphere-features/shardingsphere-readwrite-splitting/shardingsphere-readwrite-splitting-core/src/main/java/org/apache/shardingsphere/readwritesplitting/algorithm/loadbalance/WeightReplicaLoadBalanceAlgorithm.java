@@ -34,7 +34,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
     
