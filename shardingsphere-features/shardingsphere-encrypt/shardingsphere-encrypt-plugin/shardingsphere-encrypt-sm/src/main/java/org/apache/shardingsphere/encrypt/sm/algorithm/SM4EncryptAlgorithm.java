@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
