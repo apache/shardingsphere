@@ -77,7 +77,7 @@ rules:
 
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: IT.STANDARD.FIXTURE
     table_inline_item_id:
       type: INLINE
       props:
@@ -94,7 +94,7 @@ rules:
 
   keyGenerators:
     constant:
-      type: Constant
+      type: IT.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSources:

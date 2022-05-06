@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -135,7 +135,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             if (tablesContext.getTables().isEmpty()) {
                 return new ShardingSphereSchema();
             } else {
-                throw new SchemaNotExistedException(databaseName);
+                throw new DatabaseNotExistedException(databaseName);
             }
         }
         String defaultSchemaName = getDatabaseType().getDefaultSchema(databaseName);

@@ -15,6 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.fixture.StandardShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.distsql.fixture.ModShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.distsql.fixture.BoundaryRangeShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.FooDistSQLShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.BarDistSQLShardingAlgorithmFixture

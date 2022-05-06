@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 188 companies.
+Total: 190 companies.
 
 ### Infra Software
 <ul>
@@ -91,6 +91,7 @@ Total: 188 companies.
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
     <li><a href="https://www.danchuangglobal.com/" rel="nofollow">VTN</a></li>
+    <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -114,6 +115,7 @@ Total: 188 companies.
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">ZEGO</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">Sdjic Tec</a></li>
+    <li><a href="https://www.baozun.com/" rel="nofollow">BAO ZUN</a></li>
 </ul>
 
 ### Transportation

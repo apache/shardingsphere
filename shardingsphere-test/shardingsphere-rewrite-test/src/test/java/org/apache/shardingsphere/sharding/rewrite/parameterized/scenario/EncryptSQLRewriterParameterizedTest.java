@@ -71,24 +71,24 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String databaseName) {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("ORDER_ID", "USER_ID", "CONTENT"));
         when(result.get("t_order")).thenReturn(new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(databaseName, result);
+        return Collections.singletonMap(schemaName, result);
     }
     
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules) {
+    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().put("t_account", "encrypt_ds");
-            singleTableRule.get().put("t_account_bak", "encrypt_ds");
-            singleTableRule.get().put("t_account_detail", "encrypt_ds");
-            singleTableRule.get().put("t_order", "encrypt_ds");
+            singleTableRule.get().put("encrypt_ds", schemaName, "t_account");
+            singleTableRule.get().put("encrypt_ds", schemaName, "t_account_bak");
+            singleTableRule.get().put("encrypt_ds", schemaName, "t_account_detail");
+            singleTableRule.get().put("encrypt_ds", schemaName, "t_order");
         }
     }
     

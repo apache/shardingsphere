@@ -254,7 +254,7 @@ rules:
     - t_broadcast_table_for_ddl
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: IT.STANDARD.FIXTURE
     table_inline_item_id:
       type: INLINE
       props:
@@ -266,7 +266,7 @@ rules:
 
   keyGenerators:
     constant:
-      type: CONSTANT
+      type: IT.FIXTURE
   
 - !READWRITE_SPLITTING
   dataSources:

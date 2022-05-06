@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +84,10 @@ public final class IndexMetaDataUtilTest {
     @Test
     public void assertGetTableNamesFromMetaData() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
-        assertThat(IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Lists.newArrayList(indexSegment), new MySQLDatabaseType()), is(Collections.singletonList(TABLE_NAME)));
+        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Lists.newArrayList(indexSegment), new MySQLDatabaseType());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));
     }
     
     private ShardingSphereMetaData buildMetaData() {

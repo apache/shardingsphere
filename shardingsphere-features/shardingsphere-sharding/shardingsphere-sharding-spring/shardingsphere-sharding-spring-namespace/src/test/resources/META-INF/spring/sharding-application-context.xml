@@ -39,9 +39,9 @@
             <prop key="sharding-count">2</prop>
         </props>
     </sharding:sharding-algorithm>
-    <sharding:sharding-algorithm id="complexShardingAlgorithm" type="COMPLEX_TEST" />
-    <sharding:sharding-algorithm id="hintShardingAlgorithm" type="HINT_TEST" />
-
+    <sharding:sharding-algorithm id="complexShardingAlgorithm" type="SPRING.COMPLEX.FIXTURE" />
+    <sharding:sharding-algorithm id="hintShardingAlgorithm" type="SPRING.HINT.FIXTURE" />
+    
     <sharding:standard-strategy id="dataSourceShardingStrategy" sharding-column="order_id" algorithm-ref="dataSourceShardingAlgorithm" />
     <sharding:standard-strategy id="dataSourceShardingStrategyWithoutShardingColumn" algorithm-ref="dataSourceShardingAlgorithm" />
     <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" algorithm-ref="orderTableShardingAlgorithm" />

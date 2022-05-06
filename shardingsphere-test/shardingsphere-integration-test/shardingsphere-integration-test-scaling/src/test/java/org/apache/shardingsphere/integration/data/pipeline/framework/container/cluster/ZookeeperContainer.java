@@ -31,7 +31,7 @@ public final class ZookeeperContainer extends GovernanceContainer {
         super("zookeeper", "zookeeper:3.6.2");
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
         withExposedPorts(2181);
-        if (ITEnvTypeEnum.LOCAL == IntegrationTestEnvironment.getInstance().getItEnvType()) {
+        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(2181, 2181);
         }
     }

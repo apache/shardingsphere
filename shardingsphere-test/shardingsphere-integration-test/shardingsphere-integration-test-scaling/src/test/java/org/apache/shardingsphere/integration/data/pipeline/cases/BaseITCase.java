@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -80,6 +81,9 @@ public abstract class BaseITCase {
     
     private JdbcTemplate jdbcTemplate;
     
+    @Setter
+    private Thread increaseTaskThread;
+    
     public BaseITCase(final ScalingParameterized parameterized) {
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
@@ -136,7 +140,7 @@ public abstract class BaseITCase {
     protected void initShardingRule() throws InterruptedException {
         for (String sql : getCommonSQLCommand().getCreateShardingAlgorithm()) {
             getJdbcTemplate().execute(sql);
-            // TODO sleep to wait for sharding algorithm table created，otherwise, the next sql will fail.
+            // TODO sleep to wait for sharding algorithm table created,otherwise the next sql will fail.
             TimeUnit.SECONDS.sleep(1);
         }
         getJdbcTemplate().execute(getCommonSQLCommand().getCreateShardingTable());

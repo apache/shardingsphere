@@ -45,9 +45,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Setter
     private Properties props;
     
-    private String algorithmExpression;
+    private volatile String algorithmExpression;
     
-    private boolean allowRangeQuery;
+    private volatile boolean allowRangeQuery;
     
     @Override
     public void init(final Properties props) {

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.driver.fixture.algorithm.MultiAlgorithm
-org.apache.shardingsphere.driver.fixture.algorithm.StandardAlgorithm
+org.apache.shardingsphere.driver.fixture.algorithm.sharding.DriverStandardShardingAlgorithmFixture
+org.apache.shardingsphere.driver.fixture.algorithm.sharding.DriverComplexKeysShardingAlgorithmFixture

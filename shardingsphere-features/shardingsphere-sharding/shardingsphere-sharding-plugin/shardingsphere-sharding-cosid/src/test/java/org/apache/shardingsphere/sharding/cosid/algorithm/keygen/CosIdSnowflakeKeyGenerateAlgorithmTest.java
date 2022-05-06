@@ -28,12 +28,13 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
@@ -56,11 +57,11 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         long secondActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
         SnowflakeIdState firstActualState = snowflakeIdStateParser.parse(firstActualKey);
         SnowflakeIdState secondActualState = snowflakeIdStateParser.parse(secondActualKey);
-        assertThat(firstActualState.getMachineId(), CoreMatchers.is(FIXTURE_WORKER_ID));
-        assertThat(firstActualState.getSequence(), CoreMatchers.is(0L));
-        assertThat(secondActualState.getMachineId(), CoreMatchers.is(FIXTURE_WORKER_ID));
+        assertThat(firstActualState.getMachineId(), is(FIXTURE_WORKER_ID));
+        assertThat(firstActualState.getSequence(), is(0L));
+        assertThat(secondActualState.getMachineId(), is(FIXTURE_WORKER_ID));
         long expectedSecondSequence = secondActualState.getTimestamp().isAfter(firstActualState.getTimestamp()) ? 0L : 1L;
-        assertThat(secondActualState.getSequence(), CoreMatchers.is(expectedSecondSequence));
+        assertThat(secondActualState.getSequence(), is(expectedSecondSequence));
     }
     
     @Test
@@ -73,13 +74,13 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         cosIdSnowflakeKeyGenerateAlgorithm.init(props);
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(props);
         Comparable<?> actualKey = cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
-        assertThat(actualKey, CoreMatchers.instanceOf(String.class));
+        assertThat(actualKey, instanceOf(String.class));
         String actualStringKey = (String) actualKey;
-        assertThat(actualStringKey.length(), CoreMatchers.is(Radix62IdConverter.MAX_CHAR_SIZE));
+        assertThat(actualStringKey.length(), is(Radix62IdConverter.MAX_CHAR_SIZE));
         long actualLongKey = Radix62IdConverter.PAD_START.asLong(actualStringKey);
         SnowflakeIdState actualState = snowflakeIdStateParser.parse(actualLongKey);
-        assertThat(actualState.getMachineId(), CoreMatchers.is(FIXTURE_WORKER_ID));
-        assertThat(actualState.getSequence(), CoreMatchers.is(0L));
+        assertThat(actualState.getMachineId(), is(FIXTURE_WORKER_ID));
+        assertThat(actualState.getSequence(), is(0L));
     }
     
     @Test(expected = NullPointerException.class)

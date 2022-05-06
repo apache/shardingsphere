@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 /**
- * Encrypt algorithm for SPI.
+ * Encrypt algorithm.
  * 
  * @param <I> type of plain value
  * @param <O> type of cipher value

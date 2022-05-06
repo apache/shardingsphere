@@ -73,11 +73,11 @@ rules:
   
   shardingAlgorithms:
     standard_test:
-      type: STANDARD_TEST
+      type: STANDARD.FIXTURE
     complex_test:
-      type: COMPLEX_TEST
+      type: COMPLEX.FIXTURE
     hint_test:
-      type: HINT_TEST
+      type: HINT.FIXTURE
     database_inline:
       type: INLINE
       props:
