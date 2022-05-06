@@ -57,7 +57,7 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
         ShardingSphereLock result = locks.get(lockName);
         if (null != result) {
             return result;
@@ -75,6 +75,19 @@ public final class MemoryLockContext implements LockContext {
     
     @Override
     public ShardingSphereLock getStandardLock(final String lockName) {
-        return getGlobalLock(lockName);
+        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
+        ShardingSphereLock result = locks.get(lockName);
+        if (null != result) {
+            return result;
+        }
+        synchronized (locks) {
+            result = locks.get(lockName);
+            if (null != result) {
+                return result;
+            }
+            result = new ShardingSphereReentrantLock(new ReentrantLock());
+            locks.put(lockName, result);
+            return result;
+        }
     }
 }
