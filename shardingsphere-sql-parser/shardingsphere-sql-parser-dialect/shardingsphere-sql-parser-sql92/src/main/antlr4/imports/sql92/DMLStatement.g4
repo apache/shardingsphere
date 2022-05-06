@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
+import BaseRule;
 
 insert
     : INSERT INTO? tableName (insertValuesClause | insertSelectClause)

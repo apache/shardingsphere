@@ -19,53 +19,60 @@ package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
  */
+@Getter
 public final class StandardShardingStrategy implements ShardingStrategy {
     
-    private final String shardingColumn;
+    private final Collection<String> shardingColumns;
     
-    @Getter
     private final StandardShardingAlgorithm<?> shardingAlgorithm;
     
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
         Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
-        this.shardingColumn = shardingColumn;
+        Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        shardingColumns.add(shardingColumn);
+        this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues,
+                                         final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
         ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
         Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
-                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue) : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue);
+                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo)
+                : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodeInfo);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
-            String target;
-            target = shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
+            String target = shardingAlgorithm.doSharding(availableTargetNames,
+                    new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
             } else if (null != target && !availableTargetNames.contains(target)) {
@@ -75,16 +82,9 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         return shardingAlgorithm.doSharding(availableTargetNames,
-                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
-    }
-    
-    @Override
-    public Collection<String> getShardingColumns() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(shardingColumn);
-        return result;
+                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, shardingValue.getValueRange()));
     }
 }

@@ -56,21 +56,40 @@ public final class SQLRewriteEngineTestParametersBuilder {
      */
     public static Collection<Object[]> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(path, targetClass).entrySet()) {
+        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(type, path, targetClass).entrySet()) {
             result.addAll(createTestParameters(type, entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String path, final Class<?> targetClass) {
+    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String type, final String path, final Class<?> targetClass) {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(targetClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + path);
         for (File each : Objects.requireNonNull(file.listFiles())) {
-            if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new RewriteAssertionsRootEntityLoader().load(path + "/" + each.getName()));
+            if (each.isFile()) {
+                appendFromFile(type, each, path, result);
+            } else {
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
             }
         }
         return result;
+    }
+    
+    private static void appendFromDirectory(final String type, final File directory, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        for (File each : Objects.requireNonNull(directory.listFiles())) {
+            if (each.isFile()) {
+                appendFromFile(type, each, path, result);
+            } else {
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
+            }
+        }
+    }
+    
+    private static void appendFromFile(final String type, final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        if (file.getName().endsWith(".xml")) {
+            String key = path.toLowerCase().replace(type.toLowerCase() + "/", "") + "/" + file.getName();
+            result.put(key, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
+        }
     }
     
     private static Collection<Object[]> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
@@ -78,7 +97,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());   
+                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
             }
         }
         return result;
@@ -96,9 +115,9 @@ public final class SQLRewriteEngineTestParametersBuilder {
         if (null == inputParameters) {
             return Collections.emptyList();
         } else {
-            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(input -> {
-                Object result = Ints.tryParse(input);
-                return result == null ? input : result;
+            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
+                Object result = Ints.tryParse(each);
+                return result == null ? each : result;
             }).collect(Collectors.toList());
         }
     }

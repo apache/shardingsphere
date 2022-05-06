@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.clone;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected instance.
@@ -30,16 +30,16 @@ public final class ExpectedInstance extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "username")
     private String username;
-
+    
     @XmlAttribute(name = "hostname")
     private String hostname;
-
+    
     @XmlAttribute(name = "port")
     private Integer port;
-
+    
     @XmlAttribute(name = "password")
     private String password;
-
+    
     @XmlAttribute(name = "require-ssl")
     private boolean sslRequired;
 }

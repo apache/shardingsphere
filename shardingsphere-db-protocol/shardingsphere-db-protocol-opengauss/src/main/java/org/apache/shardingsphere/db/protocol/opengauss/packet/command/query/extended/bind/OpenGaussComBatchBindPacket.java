@@ -24,17 +24,14 @@ import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussC
 import org.apache.shardingsphere.db.protocol.opengauss.packet.identifier.OpenGaussIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimestampUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,22 +44,20 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     
     private final PostgreSQLPacketPayload payload;
     
-    private final String statementId;
+    private final int batchNum;
     
-    private final String sql;
+    private final String statementId;
     
     private final List<Integer> parameterFormats;
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
-    private final PostgreSQLPreparedStatement preparedStatement;
-    
     private final int eachGroupParametersCount;
     
-    public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
+    public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload) {
         this.payload = payload;
         payload.readInt4();
-        payload.readInt4();
+        batchNum = payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
         int parameterFormatCount = payload.readInt2();
@@ -75,33 +70,25 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
         for (int i = 0; i < resultFormatsLength; i++) {
             resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
-        preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId);
-        sql = null == preparedStatement ? null : preparedStatement.getSql();
         eachGroupParametersCount = payload.readInt2();
     }
     
     /**
-     * Check if batch bind packet has next parameters.
+     * Read parameter sets from payload.
      *
-     * @return has next parameters
+     * @param parameterTypes types of parameters
+     * @return parameter sets
      */
-    public boolean hasNextParameters() {
-        if (payload.getByteBuf().readableBytes() < 1) {
-            return false;
+    public List<List<Object>> readParameterSets(final List<PostgreSQLColumnType> parameterTypes) {
+        List<List<Object>> result = new ArrayList<>(batchNum);
+        for (int i = 0; i < batchNum; i++) {
+            result.add(readOneGroupOfParameters(parameterTypes));
         }
-        payload.getByteBuf().markReaderIndex();
-        int c = payload.readInt1();
-        payload.getByteBuf().resetReaderIndex();
-        return 'E' != c;
+        payload.skipReserved(payload.getByteBuf().readableBytes());
+        return result;
     }
     
-    /**
-     * Read a group of parameters.
-     *
-     * @return a group of parameters
-     */
-    public List<Object> readOneGroupOfParameters() {
-        List<PostgreSQLColumnType> columnTypes = preparedStatement.getColumnTypes();
+    private List<Object> readOneGroupOfParameters(final List<PostgreSQLColumnType> parameterTypes) {
         List<Object> result = new ArrayList<>(eachGroupParametersCount);
         for (int parameterIndex = 0; parameterIndex < eachGroupParametersCount; parameterIndex++) {
             int parameterValueLength = payload.readInt4();
@@ -110,7 +97,8 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
                 continue;
             }
             Object parameterValue = isTextParameterValue(parameterFormats, parameterIndex)
-                    ? getTextParameters(payload, parameterValueLength, columnTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, columnTypes.get(parameterIndex));
+                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex))
+                    : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
             result.add(parameterValue);
         }
         return result;
@@ -120,16 +108,13 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
         return parameterFormats.isEmpty() || 0 == parameterFormats.get(parameterIndex % parameterFormats.size());
     }
     
-    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType columnType) {
-        byte[] bytes = new byte[parameterValueLength];
-        payload.getByteBuf().readBytes(bytes);
-        return getTextParameters(new String(bytes), columnType);
+    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType parameterType) {
+        String value = payload.getByteBuf().readCharSequence(parameterValueLength, payload.getCharset()).toString();
+        return getTextParameters(value, parameterType);
     }
     
     private Object getTextParameters(final String textValue, final PostgreSQLColumnType columnType) {
         switch (columnType) {
-            case POSTGRESQL_TYPE_UNSPECIFIED:
-                return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
             case POSTGRESQL_TYPE_BOOL:
                 return Boolean.valueOf(textValue);
             case POSTGRESQL_TYPE_INT2:
@@ -157,7 +142,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
                 return Time.valueOf(textValue);
             case POSTGRESQL_TYPE_TIMESTAMP:
             case POSTGRESQL_TYPE_TIMESTAMPTZ:
-                return Timestamp.valueOf(textValue);
+                return PostgreSQLTextTimestampUtils.parse(textValue);
             default:
                 return textValue;
         }

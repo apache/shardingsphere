@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderLoader;
+import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -34,6 +34,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -51,7 +52,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManagerProvider = XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider(transactionRule.getProviderType());
+        xaTransactionManagerProvider = XATransactionManagerProviderFactory.newInstance(transactionRule.getProviderType());
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }
@@ -88,10 +89,25 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
         xaTransactionManagerProvider.getTransactionManager().begin();
     }
     
+    @Override
+    @SneakyThrows({SystemException.class, NotSupportedException.class})
+    public void begin(final int timeout) {
+        if (timeout < 0) {
+            throw new NotSupportedException("timeout should more than 0s");
+        }
+        TransactionManager transactionManager = xaTransactionManagerProvider.getTransactionManager();
+        transactionManager.setTransactionTimeout(timeout);
+        transactionManager.begin();
+    }
+    
     @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
     @Override
-    public void commit() {
-        xaTransactionManagerProvider.getTransactionManager().commit();
+    public void commit(final boolean rollbackOnly) {
+        if (rollbackOnly) {
+            xaTransactionManagerProvider.getTransactionManager().rollback();
+        } else {
+            xaTransactionManagerProvider.getTransactionManager().commit();
+        }
     }
     
     @SneakyThrows(SystemException.class)

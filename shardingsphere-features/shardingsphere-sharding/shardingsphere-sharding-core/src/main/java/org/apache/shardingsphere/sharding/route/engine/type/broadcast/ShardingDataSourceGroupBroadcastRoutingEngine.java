@@ -66,16 +66,16 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
     
     private Collection<Set<String>> getCandidateDataSourceGroup(final Collection<Set<String>> dataSourceSetGroup, final Set<String> compareSet) {
         Collection<Set<String>> result = new LinkedList<>();
-        Set<String> intersectionSet;
+        Set<String> intersections;
         if (dataSourceSetGroup.isEmpty()) {
             result.add(compareSet);
             return result;
         }
         boolean hasIntersection = false;
         for (Set<String> each : dataSourceSetGroup) {
-            intersectionSet = Sets.intersection(each, compareSet);
-            if (!intersectionSet.isEmpty()) {
-                result.add(intersectionSet);
+            intersections = Sets.intersection(each, compareSet);
+            if (!intersections.isEmpty()) {
+                result.add(intersections);
                 hasIntersection = true;
             } else {
                 result.add(each);

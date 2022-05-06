@@ -33,7 +33,7 @@ import java.util.Optional;
 public final class PostgreSQLInsertStatement extends InsertStatement implements PostgreSQLStatement {
     
     private WithSegment withSegment;
-
+    
     /**
      * Get with segment.
      *

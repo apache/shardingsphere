@@ -32,7 +32,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingTableRuleStatementTestCase;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,11 +58,11 @@ public final class CreateShardingTableRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             if (expected instanceof CreateShardingAutoTableRuleStatementTestCase) {
                 CreateShardingAutoTableRuleStatementTestCase autoTableRuleStatementTestCase = (CreateShardingAutoTableRuleStatementTestCase) expected;
-                LinkedList<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
+                Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
                 assertShardingAutoTableRules(assertContext, actualAutoTableRules, autoTableRuleStatementTestCase.getRules());
             } else {
                 CreateShardingTableRuleStatementTestCase tableRuleStatementTestCase = (CreateShardingTableRuleStatementTestCase) expected;
-                LinkedList<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
+                Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toList());
                 assertShardingTableRules(assertContext, actualTableRules, tableRuleStatementTestCase.getRules());
             }
         }

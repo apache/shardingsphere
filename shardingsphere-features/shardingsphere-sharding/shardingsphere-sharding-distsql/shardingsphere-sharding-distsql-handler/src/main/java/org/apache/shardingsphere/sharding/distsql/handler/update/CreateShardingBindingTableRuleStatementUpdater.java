@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -42,23 +42,23 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeCreatedBindingTables(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeCreatedDuplicateBindingTables(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
+        checkToBeCreatedDuplicateBindingTables(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", databaseName);
         }
     }
     
-    private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement,
+    private void checkToBeCreatedBindingTables(final String databaseName, final CreateShardingBindingTableRulesStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
-        Set<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), new RequiredRuleMissedException("Sharding", schemaName, notExistedBindingTables));
+        Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new));
+        DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), () -> new RequiredRuleMissedException("Sharding", databaseName, notExistedBindingTables));
     }
     
     private Collection<String> getCurrentLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
@@ -68,13 +68,13 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
         return result;
     }
     
-    private void checkToBeCreatedDuplicateBindingTables(final String schemaName, 
+    private void checkToBeCreatedDuplicateBindingTables(final String databaseName,
                                                         final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> toBeCreatedBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet());
         duplicateBindingTables.addAll(getCurrentBindingTables(currentRuleConfig).stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet()));
         if (!duplicateBindingTables.isEmpty()) {
-            throw new DuplicateRuleException("binding", schemaName, duplicateBindingTables);
+            throw new DuplicateRuleException("binding", databaseName, duplicateBindingTables);
         }
     }
     
@@ -105,6 +105,6 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return CreateShardingBindingTableRulesStatement.class.getCanonicalName();
+        return CreateShardingBindingTableRulesStatement.class.getName();
     }
 }

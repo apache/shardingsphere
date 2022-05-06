@@ -25,6 +25,8 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
+    <logger name="org.apache.shardingsphere.schedule.core.api.ModeScheduleContext" level="error" />
+    <logger name="org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService" level="off" />
     
     <root>
         <level value="error" />

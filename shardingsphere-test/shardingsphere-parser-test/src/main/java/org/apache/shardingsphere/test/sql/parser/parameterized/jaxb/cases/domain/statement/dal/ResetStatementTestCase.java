@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ import java.util.List;
  */
 @Getter
 public final class ResetStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "option")
-    private List<ExpectedResetOptionSegment> options;
+    private final List<ExpectedResetOptionSegment> options = new LinkedList<>();
 }

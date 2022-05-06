@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "expr")
     private ExpectedExpression expr;
 }

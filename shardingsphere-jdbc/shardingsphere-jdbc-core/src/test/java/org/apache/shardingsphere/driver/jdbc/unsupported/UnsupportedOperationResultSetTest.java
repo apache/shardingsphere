@@ -70,7 +70,6 @@ public final class UnsupportedOperationResultSetTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertBeforeFirst() throws SQLException {
         shardingSphereResultSet.beforeFirst();
-            
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
@@ -192,7 +191,7 @@ public final class UnsupportedOperationResultSetTest {
     public void assertGetRefForColumnLabel() throws SQLException {
         shardingSphereResultSet.getRef("label");
     }
-
+    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRowIdForColumnIndex() throws SQLException {
         shardingSphereResultSet.getRowId(1);
@@ -201,16 +200,6 @@ public final class UnsupportedOperationResultSetTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRowIdForColumnLabel() throws SQLException {
         shardingSphereResultSet.getRowId("label");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnIndexWithType() throws SQLException {
-        shardingSphereResultSet.getObject(1, String.class);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnLabelWithType() throws SQLException {
-        shardingSphereResultSet.getObject("label", String.class);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

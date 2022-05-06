@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.impl;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -29,10 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Data source router for readwrite-splitting.
@@ -50,25 +43,12 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
         if (isPrimaryRoute(sqlStatementContext)) {
-            String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
-            if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-                return rule.getWriteDataSourceName();
-            }
-            Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-            if (dataSourceNameAware.isPresent()) {
-                return dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName);
-            }
+            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
         }
-        String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
-        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), rule.getReadDataSourceNames());
+        if (1 == rule.getReadDataSourceNames().size()) {
+            return rule.getReadDataSourceNames().get(0);
         }
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        if (dataSourceNameAware.isPresent()) {
-            Collection<String> replicaDataSourceNames = dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName);
-            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), new ArrayList<>(replicaDataSourceNames));
-        }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), rule.getReadDataSourceNames());
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {

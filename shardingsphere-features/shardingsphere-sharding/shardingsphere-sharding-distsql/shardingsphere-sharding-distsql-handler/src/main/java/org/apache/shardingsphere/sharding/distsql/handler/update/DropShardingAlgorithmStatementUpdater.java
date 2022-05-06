@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 
 import java.util.Collection;
@@ -38,33 +39,39 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
-        checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);
+        if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
+            return;
+        }
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeDroppedShardingAlgorithms(databaseName, sqlStatement, currentRuleConfig);
+        checkShardingAlgorithmsInUsed(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredAlgorithmMissedException(schemaName);
+            throw new RequiredAlgorithmMissedException(databaseName);
         }
     }
     
-    private void checkToBeDroppedShardingAlgorithms(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
+    private void checkToBeDroppedShardingAlgorithms(final String databaseName, final DropShardingAlgorithmStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
+        if (sqlStatement.isContainsExistClause()) {
+            return;
+        }
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
         Collection<String> notExistedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
-            throw new RequiredAlgorithmMissedException(schemaName, notExistedAlgorithms);
+            throw new RequiredAlgorithmMissedException(databaseName, notExistedAlgorithms);
         }
     }
     
-    private void checkShardingAlgorithmsInUsed(final String schemaName, final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig)
-            throws AlgorithmInUsedException {
+    private void checkShardingAlgorithmsInUsed(final String databaseName, final DropShardingAlgorithmStatement sqlStatement,
+                                               final ShardingRuleConfiguration currentRuleConfig) throws AlgorithmInUsedException {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed(currentRuleConfig);
         Collection<String> usedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
         if (!usedAlgorithms.isEmpty()) {
-            throw new AlgorithmInUsedException(schemaName, usedAlgorithms);
+            throw new AlgorithmInUsedException(databaseName, usedAlgorithms);
         }
     }
     
@@ -79,6 +86,14 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
             }
         });
         shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
+        if (null != tableShardingStrategy && !tableShardingStrategy.getShardingAlgorithmName().isEmpty()) {
+            result.add(tableShardingStrategy.getShardingAlgorithmName());
+        }
+        ShardingStrategyConfiguration databaseShardingStrategy = shardingRuleConfig.getDefaultDatabaseShardingStrategy();
+        if (null != databaseShardingStrategy && !databaseShardingStrategy.getShardingAlgorithmName().isEmpty()) {
+            result.add(databaseShardingStrategy.getShardingAlgorithmName());
+        }
         return result;
     }
     
@@ -94,6 +109,11 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         return false;
     }
     
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(getCurrentShardingAlgorithms(currentRuleConfig), sqlStatement.getAlgorithmNames()).isEmpty();
+    }
+    
     private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
         getCurrentShardingAlgorithms(currentRuleConfig).removeIf(algorithmName::equalsIgnoreCase);
     }
@@ -105,6 +125,6 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     @Override
     public String getType() {
-        return DropShardingAlgorithmStatement.class.getCanonicalName();
+        return DropShardingAlgorithmStatement.class.getName();
     }
 }

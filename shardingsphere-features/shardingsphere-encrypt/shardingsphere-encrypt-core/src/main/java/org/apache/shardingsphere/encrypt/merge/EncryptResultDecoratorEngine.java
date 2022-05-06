@@ -24,12 +24,12 @@ import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
 /**
@@ -38,12 +38,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public ResultDecorator newInstance(final DatabaseType databaseType, final ShardingSphereSchema schema,
-                                       final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public ResultDecorator<?> newInstance(final DatabaseType databaseType, final String databaseName, final ShardingSphereMetaData metaData,
+                                          final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(schema, encryptRule, (SelectStatementContext) sqlStatementContext);
-            return new EncryptDQLResultDecorator(metaData);
-        } 
+            EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(databaseName, metaData, encryptRule, (SelectStatementContext) sqlStatementContext);
+            return new EncryptDQLResultDecorator(algorithmMetaData);
+        }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();
         }

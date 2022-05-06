@@ -89,7 +89,7 @@
                             <operator>REGEXP</operator>
                             <right>
                                 <literal-expression value="init" start-index="51" stop-index="56"/>
-                                <parameter-marker-expression value="0" start-index="51" stop-index="51"/>
+                                <parameter-marker-expression parameter-index="0" start-index="51" stop-index="51"/>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -106,11 +106,11 @@
                                 <list-expression start-index="70" stop-index="75" literal-start-index="75" literal-stop-index="80">
                                     <items>
                                         <literal-expression value="1" start-index="76" stop-index="76"/>
-                                        <parameter-marker-expression value="1" start-index="71" stop-index="71"/>
+                                        <parameter-marker-expression parameter-index="1" start-index="71" stop-index="71"/>
                                     </items>
                                     <items>
                                         <literal-expression value="2" start-index="79" stop-index="79"/>
-                                        <parameter-marker-expression value="2" start-index="74" stop-index="74"/>
+                                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74"/>
                                     </items>
                                 </list-expression>
                             </right>
@@ -196,7 +196,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="47" stop-index="47"/>
-                                <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -205,7 +205,7 @@
                         <binary-operation-expression start-index="52" stop-index="71">
                             <left>
                                 <literal-expression value="2" start-index="52" stop-index="52"/>
-                                <parameter-marker-expression value="1" start-index="52" stop-index="52"/>
+                                <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -274,7 +274,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="47" stop-index="47"/>
-                                <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -283,7 +283,7 @@
                         <binary-operation-expression start-index="53" stop-index="72">
                             <left>
                                 <literal-expression value="2" start-index="53" stop-index="53"/>
-                                <parameter-marker-expression value="1" start-index="53" stop-index="53"/>
+                                <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -318,7 +318,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="47" stop-index="47"/>
-                                <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -327,7 +327,7 @@
                         <binary-operation-expression start-index="53" stop-index="72">
                             <left>
                                 <literal-expression value="2" start-index="53" stop-index="53"/>
-                                <parameter-marker-expression value="1" start-index="53" stop-index="53"/>
+                                <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -364,7 +364,7 @@
                                     <operator>=</operator>
                                     <right>
                                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                                     </right>
                                 </binary-operation-expression>
                             </left>
@@ -373,7 +373,7 @@
                                 <binary-operation-expression start-index="53" stop-index="72">
                                     <left>
                                         <literal-expression value="2" start-index="53" stop-index="53"/>
-                                        <parameter-marker-expression value="1" start-index="53" stop-index="53"/>
+                                        <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53"/>
                                     </left>
                                     <operator>=</operator>
                                     <right>
@@ -406,7 +406,7 @@
                                 <binary-operation-expression start-index="107" stop-index="126">
                                     <left>
                                         <literal-expression value="2" start-index="107" stop-index="107"/>
-                                        <parameter-marker-expression value="2" start-index="107" stop-index="107"/>
+                                        <parameter-marker-expression parameter-index="2" start-index="107" stop-index="107"/>
                                     </left>
                                     <operator>=</operator>
                                     <right>
@@ -443,7 +443,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="47" stop-index="47"/>
-                                <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -452,7 +452,7 @@
                         <binary-operation-expression start-index="52" stop-index="71">
                             <left>
                                 <literal-expression value="2" start-index="52" stop-index="52"/>
-                                <parameter-marker-expression value="1" start-index="52" stop-index="52"/>
+                                <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -481,7 +481,7 @@
                         <binary-operation-expression start-index="33" stop-index="52">
                             <left>
                                 <literal-expression value="1" start-index="33" stop-index="33"/>
-                                <parameter-marker-expression value="0" start-index="33" stop-index="33"/>
+                                <parameter-marker-expression parameter-index="0" start-index="33" stop-index="33"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -510,7 +510,7 @@
                         <binary-operation-expression start-index="32" stop-index="51">
                             <left>
                                 <literal-expression value="1" start-index="32" stop-index="32"/>
-                                <parameter-marker-expression value="0" start-index="32" stop-index="32"/>
+                                <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -539,7 +539,7 @@
                         <binary-operation-expression start-index="28" stop-index="47">
                             <left>
                                 <literal-expression value="1" start-index="28" stop-index="28"/>
-                                <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                                <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -572,7 +572,7 @@
                         <binary-operation-expression start-index="28" stop-index="47">
                             <left>
                                 <literal-expression value="1" start-index="28" stop-index="28"/>
-                                <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                                <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28"/>
                             </left>
                             <operator>=</operator>
                             <right>
@@ -725,7 +725,7 @@
                                             <operator>&gt;</operator>
                                             <right>
                                                 <literal-expression value="1" start-index="97" stop-index="97"/>
-                                                <parameter-marker-expression value="0" start-index="97" stop-index="97"/>
+                                                <parameter-marker-expression parameter-index="0" start-index="97" stop-index="97"/>
                                             </right>
                                         </binary-operation-expression>
                                     </expr>
@@ -772,7 +772,7 @@
                                             <operator>&gt;</operator>
                                             <right>
                                                 <literal-expression value="1" start-index="102" stop-index="102"/>
-                                                <parameter-marker-expression value="0" start-index="102" stop-index="102"/>
+                                                <parameter-marker-expression parameter-index="0" start-index="102" stop-index="102"/>
                                             </right>
                                         </binary-operation-expression>
                                     </expr>
@@ -805,15 +805,15 @@
                         <list-expression start-index="48" stop-index="56">
                             <items>
                                 <literal-expression value="1" start-index="49" stop-index="49"/>
-                                <parameter-marker-expression value="0" start-index="49" stop-index="49"/>
+                                <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49"/>
                             </items>
                             <items>
                                 <literal-expression value="2" start-index="52" stop-index="52"/>
-                                <parameter-marker-expression value="1" start-index="52" stop-index="52"/>
+                                <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52"/>
                             </items>
                             <items>
                                 <literal-expression value="3" start-index="55" stop-index="55"/>
-                                <parameter-marker-expression value="2" start-index="55" stop-index="55"/>
+                                <parameter-marker-expression parameter-index="2" start-index="55" stop-index="55"/>
                             </items>
                         </list-expression>
                     </right>
@@ -840,11 +840,11 @@
                     </left>
                     <between-expr>
                         <literal-expression value="1" start-index="53" stop-index="53"/>
-                        <parameter-marker-expression value="0" start-index="53" stop-index="53"/>
+                        <parameter-marker-expression parameter-index="0" start-index="53" stop-index="53"/>
                     </between-expr>
                     <and-expr>
                         <literal-expression value="2" start-index="59" stop-index="59"/>
-                        <parameter-marker-expression value="1" start-index="59" stop-index="59"/>
+                        <parameter-marker-expression parameter-index="1" start-index="59" stop-index="59"/>
                     </and-expr>
                 </between-expression>
             </expr>
@@ -948,7 +948,7 @@
                     <operator>|</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -973,7 +973,7 @@
                     <operator>&amp;</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -998,7 +998,7 @@
                     <operator>&lt;&lt;</operator>
                     <right>
                         <literal-expression value="1" start-index="48" stop-index="48"/>
-                        <parameter-marker-expression value="0" start-index="48" stop-index="48"/>
+                        <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1023,7 +1023,7 @@
                     <operator>&gt;&gt;</operator>
                     <right>
                         <literal-expression value="1" start-index="48" stop-index="48"/>
-                        <parameter-marker-expression value="0" start-index="48" stop-index="48"/>
+                        <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1048,7 +1048,7 @@
                     <operator>+</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1073,7 +1073,7 @@
                     <operator>-</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1098,7 +1098,7 @@
                     <operator>*</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1123,7 +1123,7 @@
                     <operator>/</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1148,7 +1148,7 @@
                     <operator>DIV</operator>
                     <right>
                         <literal-expression value="1" start-index="49" stop-index="49"/>
-                        <parameter-marker-expression value="0" start-index="49" stop-index="49"/>
+                        <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1173,7 +1173,7 @@
                     <operator>MOD</operator>
                     <right>
                         <literal-expression value="1" start-index="49" stop-index="49"/>
-                        <parameter-marker-expression value="0" start-index="49" stop-index="49"/>
+                        <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1198,7 +1198,7 @@
                     <operator>%</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1223,7 +1223,7 @@
                     <operator>^</operator>
                     <right>
                         <literal-expression value="1" start-index="47" stop-index="47"/>
-                        <parameter-marker-expression value="0" start-index="47" stop-index="47"/>
+                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1290,7 +1290,7 @@
                 <binary-operation-expression start-index="28" stop-index="39">
                     <left>
                         <literal-expression value="1" start-index="28" stop-index="28"/>
-                        <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                        <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28"/>
                     </left>
                     <operator>&lt;</operator>
                     <right>
@@ -1346,13 +1346,18 @@
         <projections distinct-row="false" start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
-        <where start-index="22" stop-index="64">
+        <where start-index="22" stop-index="45" literal-stop-index="64">
             <expr>
-                <common-expression text="order_id collate 'utf8mb4_0900_ai_ci'" start-index="28" stop-index="64"/>
+                <collate-expression start-index="28" stop-index="45" literal-stop-index="64">
+                    <collate-name>
+                        <literal-expression value="'utf8mb4_0900_ai_ci'" start-index="37" stop-index="64"/>
+                        <parameter-marker-expression parameter-index="0" start-index="37" stop-index="45"/>
+                    </collate-name>
+                </collate-expression>
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_where_with_simple_expr_with_variable">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20"/>
@@ -1387,7 +1392,7 @@
                 <binary-operation-expression start-index="28" stop-index="47">
                     <left>
                         <literal-expression value="1" start-index="28" stop-index="28"/>
-                        <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                        <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28"/>
                     </left>
                     <operator>+</operator>
                     <right>
@@ -1412,7 +1417,7 @@
                 <binary-operation-expression start-index="28" stop-index="47">
                     <left>
                         <literal-expression value="1" start-index="28" stop-index="28"/>
-                        <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                        <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28"/>
                     </left>
                     <operator>-</operator>
                     <right>
@@ -1468,7 +1473,34 @@
         </projections>
         <where start-index="22" stop-index="50">
             <expr>
-                <common-expression text="BINARY t_order.order_id" start-index="28" stop-index="50"/>
+                <column name="order_id" start-index="35" stop-index="50">
+                    <owner name="t_order" start-index="35" stop-index="41" />
+                </column>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_simple_expr_with_binary_value" parameters="1">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where start-index="22" stop-index="54">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="54">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="43">
+                            <owner name="t_order" start-index="28" stop-index="34" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="54" stop-index="54" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </right>
+                </binary-operation-expression>
             </expr>
         </where>
     </select>
@@ -1521,7 +1553,7 @@
                                     <operator>&gt;</operator>
                                     <right>
                                         <literal-expression value="1" start-index="78" stop-index="78"/>
-                                        <parameter-marker-expression value="0" start-index="78" stop-index="78"/>
+                                        <parameter-marker-expression parameter-index="0" start-index="78" stop-index="78"/>
                                     </right>
                                 </binary-operation-expression>
                             </expr>
@@ -1560,7 +1592,7 @@
                                         <operator>&gt;</operator>
                                         <right>
                                             <literal-expression value="1" start-index="85" stop-index="85"/>
-                                            <parameter-marker-expression value="0" start-index="85" stop-index="85"/>
+                                            <parameter-marker-expression parameter-index="0" start-index="85" stop-index="85"/>
                                         </right>
                                     </binary-operation-expression>
                                 </expr>
@@ -1990,5 +2022,32 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+    
+    <select sql-case-id="select_with_collate_with_marker" parameters="latin1_bin">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="45" literal-stop-index="54">
+            <expr>
+                <collate-expression start-index="28" stop-index="45" literal-stop-index="54">
+                    <collate-name>
+                        <literal-expression value="latin1_bin" start-index="37" stop-index="54"/>
+                        <parameter-marker-expression parameter-index="0" start-index="37" stop-index="45"/>
+                    </collate-name>
+                </collate-expression>
+            </expr>
+        </where>
+    </select>
+    <select sql-case-id="select_age_for_postgres" >
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="not support" start-index="14" stop-index="70" />
+        </from>
     </select>
 </sql-parser-test-cases>

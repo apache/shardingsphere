@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -45,10 +43,13 @@ public final class ShadowRuleStatementConverterTest {
     }
     
     private ShadowRuleSegment createTableRuleSegment() {
-        ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
-        Properties props = new Properties();
-        props.setProperty("foo", "bar");
         return new ShadowRuleSegment("ruleName", "source", "shadow",
-                Collections.singletonMap("t_order", Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", props)))));
+                Collections.singletonMap("t_order", Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", createProperties())))));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("foo", "bar");
+        return result;
     }
 }

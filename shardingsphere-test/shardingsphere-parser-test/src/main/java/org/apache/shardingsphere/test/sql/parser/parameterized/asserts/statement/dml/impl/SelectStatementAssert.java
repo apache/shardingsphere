@@ -25,8 +25,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.groupby.GroupByClauseAssert;
@@ -44,11 +46,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.Collection;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Select statement assert.
@@ -103,12 +105,20 @@ public final class SelectStatementAssert {
         }
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
     }
-
+    
     private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (null != expected.getFrom()) {
             TableAssert.assertIs(assertContext, actual.getFrom(), expected.getFrom());
         } else {
-            assertNull(assertContext.getText("Actual from should not exist."), actual.getFrom());
+            assertNull(assertContext.getText("Actual simple-table should not exist."), actual.getFrom());
+        }
+        if (actual instanceof MySQLSelectStatement) {
+            if (null != expected.getSimpleTable()) {
+                Optional<SimpleTableSegment> table = ((MySQLSelectStatement) actual).getTable();
+                TableAssert.assertIs(assertContext, table.orElse(null), expected.getSimpleTable());
+            } else {
+                assertFalse(assertContext.getText("Actual simple-table should not exist."), ((MySQLSelectStatement) actual).getTable().isPresent());
+            }
         }
     }
     
@@ -150,7 +160,7 @@ public final class SelectStatementAssert {
             assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
     }
-
+    
     private static void assertLockClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<LockSegment> actualLock = SelectStatementHandler.getLockSegment(actual);
         if (null != expected.getLockClause()) {

@@ -20,13 +20,22 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -35,12 +44,12 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import javax.sql.DataSource;
 import java.security.SecureRandom;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,38 +58,78 @@ import java.util.Random;
 /**
  * Connection manager.
  */
-public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
+public final class ConnectionManager implements ExecutorJDBCConnectionManager, AutoCloseable {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+    
+    private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     private final Random random = new SecureRandom();
     
-    public ConnectionManager(final String schema, final ContextManager contextManager) {
-        dataSourceMap = contextManager.getDataSourceMap(schema);
-        connectionTransaction = createConnectionTransaction(schema, contextManager);
+    public ConnectionManager(final String databaseName, final ContextManager contextManager) {
+        dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
+        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        connectionTransaction = createConnectionTransaction(databaseName, contextManager);
     }
     
-    private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
+    private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
+        Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        if (!trafficRule.isPresent() || trafficRule.get().getStrategyRules().isEmpty() || !metaDataPersistService.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
+        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
+        Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
+        Collection<InstanceId> instanceIds = contextManager.getInstanceContext().getComputeNodeInstanceIds(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instanceIds, users, dataSourcePropsSample, schema));
+    }
+    
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<InstanceId> instanceIds, final Collection<ShardingSphereUser> users,
+                                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        for (InstanceId each : instanceIds) {
+            result.put(each.getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
+        }
+        return result;
+    }
+    
+    private DataSourceProperties createDataSourceProperties(final InstanceId instanceId, final Collection<ShardingSphereUser> users,
+                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
+        props.put("jdbcUrl", createJdbcUrl(instanceId, schema, props));
+        ShardingSphereUser user = users.iterator().next();
+        props.put("username", user.getGrantee().getUsername());
+        props.put("password", user.getPassword());
+        return new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props);
+    }
+    
+    private String createJdbcUrl(final InstanceId instanceId, final String schema, final Map<String, Object> props) {
+        String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
+        String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
+        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
+        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceId.getIp(), instanceId.getUniqueSign(), schema, jdbcUrlSuffix);
+    }
+    
+    private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
         TransactionType type = TransactionTypeHolder.get();
         if (null == type) {
             Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-            return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
-                    .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
+            return transactionRule.map(optional -> new ConnectionTransaction(databaseName, optional, contextManager.getTransactionContexts()))
+                    .orElseGet(() -> new ConnectionTransaction(databaseName, contextManager.getTransactionContexts()));
         }
-        ConnectionTransaction result = new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
-        if (null == result) {
-            throw new RuntimeException(String.format("Get connectionTransaction error for transaction type %s", type.name()));
-        }
-        return result;
+        return new ConnectionTransaction(databaseName, type, contextManager.getTransactionContexts());
     }
     
     /**
@@ -90,7 +139,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
     }
     
@@ -100,7 +149,9 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
-        if (connectionTransaction.isLocalTransaction()) {
+        if (connectionTransaction.isLocalTransaction() && connectionTransaction.isRollbackOnly()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+        } else if (connectionTransaction.isLocalTransaction() && !connectionTransaction.isRollbackOnly()) {
             forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
         } else {
             connectionTransaction.commit();
@@ -121,6 +172,61 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     /**
+     * Rollback to savepoint.
+     *
+     * @param savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
+        }
+    }
+    
+    /**
+     * Set savepoint.
+     *
+     * @param savepointName savepoint name
+     * @return savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public Savepoint setSavepoint(final String savepointName) throws SQLException {
+        ShardingSphereSavepoint result = new ShardingSphereSavepoint(savepointName);
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
+        }
+        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
+        return result;
+    }
+    
+    /**
+     * Set savepoint.
+     *
+     * @return savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public Savepoint setSavepoint() throws SQLException {
+        ShardingSphereSavepoint result = new ShardingSphereSavepoint();
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, result.getSavepointName());
+        }
+        methodInvocationRecorder.record("setSavepoint", target -> ConnectionSavepointManager.getInstance().setSavepoint(target, result.getSavepointName()));
+        return result;
+    }
+    
+    /**
+     * Release savepoint.
+     *
+     * @param savepoint savepoint
+     * @throws SQLException SQL exception
+     */
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        for (Connection each : cachedConnections.values()) {
+            ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepoint.getSavepointName());
+        }
+    }
+    
+    /**
      * Get transaction isolation.
      * 
      * @return transaction isolation level
@@ -137,7 +243,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void setTransactionIsolation(final int level) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        methodInvocationRecorder.record("setTransactionIsolation", connection -> connection.setTransactionIsolation(level));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     
@@ -148,7 +254,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void setReadOnly(final boolean readOnly) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        methodInvocationRecorder.record("setReadOnly", connection -> connection.setReadOnly(readOnly));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     
@@ -174,7 +280,8 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        Collection<String> datasourceNames = cachedConnections.isEmpty() ? dataSourceMap.keySet() : cachedConnections.keySet();
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
+        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
@@ -249,22 +356,12 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
-                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+    private boolean isRawJdbcDataSource(final String dataSourceName) {
+        return physicalDataSourceMap.containsKey(dataSourceName);
     }
     
     @Override

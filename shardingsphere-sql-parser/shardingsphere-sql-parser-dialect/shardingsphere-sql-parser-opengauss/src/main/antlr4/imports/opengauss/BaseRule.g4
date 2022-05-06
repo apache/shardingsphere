@@ -21,6 +21,7 @@ import Keyword, OpenGaussKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_ literalsType?
+    | DOLLAR_ numberLiterals
     ;
 
 reservedKeyword
@@ -205,6 +206,7 @@ unreservedWord
     | EXECUTE
     | EXPLAIN
     | EXPRESSION
+    | EXTENDED
     | EXTENSION
     | EXTERNAL
     | FAMILY
@@ -242,6 +244,7 @@ unreservedWord
     | INSERT
     | INSTEAD
     | INVOKER
+    | INTERVAL
     | ISOLATION
     | KEY
     | LABEL
@@ -257,6 +260,7 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | MAIN
     | MAPPING
     | MATCH
     | MATERIALIZED
@@ -267,6 +271,7 @@ unreservedWord
     | MODE
     | MONTH
     | MOVE
+    | MOD
     | NAME
     | NAMES
     | NEW
@@ -301,6 +306,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PLAIN
     | PLANS
     | POLICY
     | PRECEDING
@@ -391,6 +397,8 @@ unreservedWord
     | TRUSTED
     | TYPE
     | TYPES
+    | TIME
+    | TIMESTAMP
     | UESCAPE
     | UNBOUNDED
     | UNCOMMITTED

@@ -23,16 +23,12 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import java.util.Collection;
 
 public final class ClassBasedComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
-
-    @Override
-    public void init() {
-    }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
     public String getType() {
         return null;

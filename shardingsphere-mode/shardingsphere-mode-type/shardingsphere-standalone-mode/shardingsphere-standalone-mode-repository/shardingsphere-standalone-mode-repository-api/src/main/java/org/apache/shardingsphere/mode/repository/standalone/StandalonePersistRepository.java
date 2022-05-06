@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mode.repository.standalone;
 
 import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
  * Standalone persist repository.
  */
-public interface StandalonePersistRepository extends PersistRepository {
+public interface StandalonePersistRepository extends PersistRepository, RequiredSPI {
 }

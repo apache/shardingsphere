@@ -19,15 +19,17 @@ package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,23 +40,26 @@ public final class StandardShardingStrategyTest {
     
     private StandardShardingStrategy standardShardingStrategy;
     
+    private DataNodeInfo dataNodeSegment;
+    
     @Before
     public void setUp() {
         standardShardingStrategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
+        dataNodeSegment = new DataNodeInfo("logicTable_", 1, '0');
     }
     
     @Test
     public void assertDoShardingForRangeSharding() {
-        Collection<String> actualRangeSharding = standardShardingStrategy
-            .doSharding(targets, Collections.singletonList(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties()));
+        Collection<String> actualRangeSharding = standardShardingStrategy.doSharding(targets, Collections.singletonList(
+                new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3))), dataNodeSegment, new ConfigurationProperties(new Properties()));
         assertThat(actualRangeSharding.size(), is(1));
         assertThat(actualRangeSharding.iterator().next(), is("1"));
     }
     
     @Test
     public void assertDoShardingForListSharding() {
-        Collection<String> actualListSharding = standardShardingStrategy
-            .doSharding(targets, Collections.singletonList(new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), new ConfigurationProperties(new Properties()));
+        Collection<String> actualListSharding = standardShardingStrategy.doSharding(targets, Collections.singletonList(
+                new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), dataNodeSegment, new ConfigurationProperties(new Properties()));
         assertThat(actualListSharding.size(), is(1));
         assertThat(actualListSharding.iterator().next(), is("1"));
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -51,7 +51,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private boolean hasMetaData;
     
-    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final DatabaseCommunicationEngine databaseCommunicationEngine,
+    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine,
                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(databaseType, sqlStatement, isExceptionThrown);
         this.databaseCommunicationEngine = databaseCommunicationEngine;
@@ -110,10 +110,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllSchemaNames().isEmpty()) {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().isEmpty()) {
             return DatabaseTypeRegistry.getTrunkDatabaseType("MySQL");
         }
-        String schemaName = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllSchemaNames().iterator().next();
+        String schemaName = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().iterator().next();
         return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.fixture;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -26,7 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 public final class TestClusterPersistRepository implements ClusterPersistRepository {
     
@@ -58,6 +59,11 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
+    public String getSequentialId(final String key, final String value) {
+        return null;
+    }
+    
+    @Override
     public void delete(final String key) {
     }
     
@@ -66,12 +72,17 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        return false;
+    public void watchSessionConnection(final InstanceContext instanceContext) {
     }
     
     @Override
-    public void releaseLock(final String key) {
+    public Lock getGlobalLock(final String lockName) {
+        return null;
+    }
+    
+    @Override
+    public Lock getStandardLock(final String lockName) {
+        return null;
     }
     
     @Override

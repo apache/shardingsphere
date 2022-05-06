@@ -58,9 +58,6 @@
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseInlineStrategyShardingAlgorithm"/>
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
     </sharding:key-generate-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />

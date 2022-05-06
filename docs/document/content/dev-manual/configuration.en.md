@@ -26,6 +26,7 @@ chapter = true
 | EncryptRuleBuilder                             | Used to convert encrypted user configuration into encryption rule objects                                        |
 | ShadowRuleBuilder                              | Used to convert shadow database user configuration into shadow database rule objects                             |
 | TransactionRuleBuilder                         | Used to convert transaction user configuration into transaction rule objects                                     |
+| SQLParserRuleBuilder                           | Used to convert SQL parser user configuration into SQL parser rule objects                                       |
 
 ## YamlRuleConfigurationSwapper
 
@@ -47,6 +48,8 @@ chapter = true
 | EncryptRuleConfigurationYamlSwapper                             | Used to convert encrypted YAML configuration into encrypted standard configuration                                       |
 | ShadowRuleConfigurationYamlSwapper                              | Used to convert the YAML configuration of the shadow database into the standard configuration of the shadow database     |
 | TransactionRuleConfigurationYamlSwapper                         | Used to convert the YAML configuration of the transaction into the standard configuration of the transaction             |
+| SingleTableRuleConfigurationYamlSwapper                         | Used to convert the YAML configuration of the single table into the standard configuration of the single table           |
+| SQLParserRuleConfigurationYamlSwapper                           | Used to convert the YAML configuration of the SQL parser into the standard configuration of the SQL parser               |
 
 ## ShardingSphereYamlConstruct
 

@@ -19,12 +19,18 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
+import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
@@ -67,11 +73,38 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (hasSelectExpandProjections()) {
+            return createColumnLabelAndIndexMapWithExpandProjections();
+        }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
+    }
+    
+    private Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections() throws SQLException {
+        SelectStatementContext statementContext = (SelectStatementContext) getExecutionContext().getSqlStatementContext();
+        Map<String, Integer> result = new CaseInsensitiveMap<>(statementContext.getProjectionsContext().getExpandProjections().size(), 1);
+        for (int columnIndex = statementContext.getProjectionsContext().getExpandProjections().size(); columnIndex > 0; columnIndex--) {
+            checkColumnIndex(columnIndex);
+            Projection projection = statementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
+            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+        }
+        return result;
+    }
+    
+    private boolean hasSelectExpandProjections() {
+        SQLStatementContext<?> sqlStatementContext = getExecutionContext().getSqlStatementContext();
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private void checkColumnIndex(final int column) throws SQLException {
+        List<Projection> actualProjections = ((SelectStatementContext) getExecutionContext().getSqlStatementContext()).getProjectionsContext().getExpandProjections();
+        if (column > actualProjections.size()) {
+            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
+            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+        }
     }
     
     @Override
@@ -163,12 +196,12 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public String getString(final String columnLabel) throws SQLException {
         return getString(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
-
+    
     @Override
     public String getNString(final int columnIndex) throws SQLException {
         return getString(columnIndex);
     }
-
+    
     @Override
     public String getNString(final String columnLabel) throws SQLException {
         return getString(columnLabel);
@@ -243,7 +276,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
         return getTime(getIndexFromColumnLabelAndIndexMap(columnLabel), cal);
     }
-            
+    
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
@@ -367,10 +400,17 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
+        if (BigInteger.class.equals(type)) {
+            return (T) BigInteger.valueOf(getLong(columnIndex));
+        } else if (Blob.class.equals(type)) {
+            return (T) getBlob(columnIndex);
+        } else if (Clob.class.equals(type)) {
+            return (T) getClob(columnIndex);
+        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+        } else {
+            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
         }
-        throw new SQLFeatureNotSupportedException("getObject with type");
     }
     
     @Override

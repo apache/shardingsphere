@@ -27,10 +27,6 @@ import java.util.HashSet;
 public final class StandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
@@ -55,6 +51,6 @@ public final class StandardShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public String getType() {
-        return "STANDARD_TEST";
+        return "STANDARD.FIXTURE";
     }
 }

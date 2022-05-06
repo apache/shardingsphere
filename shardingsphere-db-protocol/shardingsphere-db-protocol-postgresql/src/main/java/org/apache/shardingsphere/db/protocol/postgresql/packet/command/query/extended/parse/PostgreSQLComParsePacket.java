@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,30 +35,31 @@ import java.util.List;
 @ToString
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
+    private final PostgreSQLPacketPayload payload;
+    
     private final String statementId;
     
     private final String sql;
     
-    private final List<PostgreSQLColumnType> columnTypes;
-    
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
+        this.payload = payload;
         payload.readInt4();
         statementId = payload.readStringNul();
-        sql = alterSQLToJDBCStyle(payload.readStringNul());
-        columnTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
+        sql = payload.readStringNul();
     }
     
-    private List<PostgreSQLColumnType> getParameterTypes(final PostgreSQLPacketPayload payload) {
+    /**
+     * Read parameter types from Parse message.
+     * 
+     * @return types of parameters
+     */
+    public List<PostgreSQLColumnType> readParameterTypes() {
         int parameterCount = payload.readInt2();
         List<PostgreSQLColumnType> result = new ArrayList<>(parameterCount);
         for (int i = 0; i < parameterCount; i++) {
             result.add(PostgreSQLColumnType.valueOf(payload.readInt4()));
         }
         return result;
-    }
-    
-    private String alterSQLToJDBCStyle(final String sql) {
-        return sql.replaceAll("\\$[0-9]+", "?");
     }
     
     @Override

@@ -62,7 +62,7 @@ spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # Key generate algorithm properties
 ```
 
-Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen)。
+Please refer to [Built-in sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding) and [Built-in keygen Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen).
 
 ### Readwrite-splitting
 
@@ -167,8 +167,8 @@ spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.shard
 
 # Data encrypt configuration
 # Table `t_user` is the name of the logical table that uses for data sharding configuration.
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
 
@@ -187,11 +187,10 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strate
 # The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with readwrite-splitting
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.props.algorithm-expression=t_user_$->{user_id % 2}
 
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # read query configuration
 # ds_0,ds_1 is the logical data source name of the readwrite-splitting
@@ -247,7 +246,7 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #Om
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
 
 spring.shardingsphere.sharding.binding-tables[0]= #Binding table rule list
 spring.shardingsphere.sharding.binding-tables[1]= #Binding table rule list
@@ -261,7 +260,7 @@ spring.shardingsphere.sharding.default-data-source-name= #Tables without shardin
 spring.shardingsphere.sharding.default-database-strategy.xxx= #Default database sharding strategy
 spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table sharding strategy
 spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
-spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as worker.id and max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
+spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to readwrite-splitting part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to readwrite-splitting part for more details
@@ -299,11 +298,11 @@ spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
 
-spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES  
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= #Type of encryptor, use user-defined ones or built-in ones, e.g. MD5/AES  
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= #Plain column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipherColumn= #Cipher column name 
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= #AssistedColumns for query, when use ShardingQueryAssistedEncryptor, it can help query encrypted data
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= #Encryptor name
 ```
 

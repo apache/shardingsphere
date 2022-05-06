@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.route.impl.DatabaseDiscoveryDataSou
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -56,7 +56,7 @@ public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDisco
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
             Optional<DatabaseDiscoveryDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
-            if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            if (dataSourceRule.isPresent() && dataSourceRule.get().getGroupName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
                 String actualDataSourceName = new DatabaseDiscoveryDataSourceRouter(dataSourceRule.get()).route();
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));

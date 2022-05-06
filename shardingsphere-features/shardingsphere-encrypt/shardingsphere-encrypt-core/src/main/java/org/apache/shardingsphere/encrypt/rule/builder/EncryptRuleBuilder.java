@@ -20,11 +20,13 @@ package org.apache.shardingsphere.encrypt.rule.builder;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Encrypt rule builder.
@@ -32,8 +34,9 @@ import java.util.Collection;
 public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final SchemaRulesBuilderMaterials materials, final EncryptRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new EncryptRule(config);
+    public EncryptRule build(final EncryptRuleConfiguration config, final String databaseName,
+                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        return new EncryptRule(config, dataSources);
     }
     
     @Override

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -34,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,23 +51,15 @@ public final class TableMetaDataBuilderTest {
     public void assertLoadWithExistedTableName() throws SQLException {
         assertFalse(TableMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
-                new DataNodeContainedFixtureRule()), props)).isEmpty());
+                        new DataNodeContainedFixtureRule()),
+                props, "sharding_db")).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         assertTrue(TableMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                props)).isEmpty());
+                props, "sharding_db")).isEmpty());
     }
     
-    @Test
-    public void assertDecorateForFederation() {
-        assertNotNull(TableMetaDataBuilder.decorateFederationTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
-    }
-    
-    @Test
-    public void assertDecorateForKernel() {
-        assertNotNull(TableMetaDataBuilder.decorateKernelTableMetaData(new TableMetaData(), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule())));
-    }
 }

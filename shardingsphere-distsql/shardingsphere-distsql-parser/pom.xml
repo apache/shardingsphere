@@ -16,15 +16,14 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>shardingsphere-distsql</artifactId>
-        <groupId>org.apache.shardingsphere</groupId>
-        <version>5.0.1-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-distsql</artifactId>
+        <version>5.1.2-SNAPSHOT</version>
+    </parent>
     <artifactId>shardingsphere-distsql-parser</artifactId>
     
     <dependencies>
@@ -40,10 +39,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
         </dependency>
@@ -57,14 +52,14 @@
                 <executions>
                     <execution>
                         <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
                         <configuration>
                             <libDirectory>src/main/antlr4/imports/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

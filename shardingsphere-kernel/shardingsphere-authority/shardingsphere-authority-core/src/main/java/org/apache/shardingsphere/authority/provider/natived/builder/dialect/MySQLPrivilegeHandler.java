@@ -59,8 +59,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 grantees.add(new Grantee(resultSet.getString("user"), resultSet.getString("host")));
             }
@@ -97,20 +96,19 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new NativePrivileges()));
+        users.forEach(each -> result.put(each, new NativePrivileges()));
         fillGlobalPrivileges(result, dataSource, users);
         fillSchemaPrivileges(result, dataSource, users);
         fillTablePrivileges(result, dataSource, users);
         return result;
     }
     
-    private void fillGlobalPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, 
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
                                       final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 fillGlobalPrivileges(userPrivilegeMap, resultSet);
             }
@@ -125,13 +123,12 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
         }
     }
     
-    private void fillSchemaPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, 
+    private void fillSchemaPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
                                       final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 fillSchemaPrivileges(userPrivilegeMap, resultSet);
             }
@@ -148,13 +145,12 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
         }
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, 
+    private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
             while (resultSet.next()) {
                 fillTablePrivileges(userPrivilegeMap, resultSet);
             }
@@ -274,7 +270,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     }
     
     private void addToPrivilegeTypesIfPresent(final Object hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
-        if (hasPrivilege instanceof String && "Y".equals(hasPrivilege)) {
+        if ("Y".equals(hasPrivilege)) {
             target.add(privilegeType);
         }
         if (hasPrivilege instanceof Boolean && (boolean) hasPrivilege) {

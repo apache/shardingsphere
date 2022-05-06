@@ -19,20 +19,16 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -41,21 +37,15 @@ import static org.mockito.Mockito.mock;
 
 public final class DatabaseDiscoveryRuleBuilderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "ha_heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), mock(DatabaseType.class),
-                dataSourceMap, new ConfigurationProperties(new Properties())), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
+                Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "CORE.FIXTURE")),
+                Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties())));
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(config)).get(config);
+        assertThat(builder.build(config, "test_schema", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())),
+                instanceOf(DatabaseDiscoveryRule.class));
     }
 }

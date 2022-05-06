@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.UnsupportedSQLCasesRegistry;
@@ -27,6 +30,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 @RequiredArgsConstructor
 public abstract class UnsupportedSQLParserParameterizedTest {
@@ -43,10 +47,12 @@ public abstract class UnsupportedSQLParserParameterizedTest {
         return SQL_CASES_LOADER.getTestParameters(Collections.singleton(databaseType));
     }
     
-    @Test(expected = SQLParsingException.class)
+    @Test(expected = Exception.class)
     public final void assertUnsupportedSQL() {
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList());
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList(), databaseType);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        new SQLParserEngine(databaseType, true).parse(sql, false);
+        CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+        ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
+        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
     }
 }

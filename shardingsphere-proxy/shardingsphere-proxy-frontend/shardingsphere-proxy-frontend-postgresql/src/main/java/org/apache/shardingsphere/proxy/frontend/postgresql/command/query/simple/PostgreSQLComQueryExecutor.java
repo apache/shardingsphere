@@ -21,23 +21,26 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception.InvalidParameterValueException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -47,6 +50,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Command query executor for PostgreSQL.
@@ -61,9 +65,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private volatile ResponseType responseType;
     
     public PostgreSQLComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
-                                      final BackendConnection backendConnection) throws SQLException {
+                                      final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"),
+                comQueryPacket.getSql(), Optional::empty, connectionSession);
     }
     
     @Override
@@ -73,7 +78,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
-        return Collections.singleton(createUpdatePacket((UpdateResponseHeader) responseHeader));
+        return responseHeader instanceof UpdateResponseHeader ? Collections.singleton(createUpdatePacket((UpdateResponseHeader) responseHeader))
+                : createClientEncodingPackets((ClientEncodingResponseHeader) responseHeader);
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
@@ -91,13 +97,24 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
+    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             connectionContext.closeAllPortals();
         }
         return sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount());
+    }
+    
+    private Collection<DatabasePacket<?>> createClientEncodingPackets(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
+        if (currentCharsetValue.isPresent()) {
+            result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+            result.add(new PostgreSQLParameterStatusPacket("client_encoding", currentCharsetValue.get()));
+            return result;
+        }
+        throw new InvalidParameterValueException(String.format("invalid value for parameter \"clientEncoding\": \"%s\"", clientEncodingResponseHeader.getInputValue()));
     }
     
     @Override

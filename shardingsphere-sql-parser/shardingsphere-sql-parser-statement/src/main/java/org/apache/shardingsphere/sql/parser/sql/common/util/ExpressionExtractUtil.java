@@ -46,35 +46,38 @@ public final class ExpressionExtractUtil {
      * @return and predicate collection
      */
     public static Collection<AndPredicate> getAndPredicates(final ExpressionSegment expression) {
+        Collection<AndPredicate> result = new LinkedList<>();
+        extractAndPredicates(result, expression);
+        return result;
+    }
+    
+    private static void extractAndPredicates(final Collection<AndPredicate> result, final ExpressionSegment expression) {
         if (!(expression instanceof BinaryOperationExpression)) {
-            return Collections.singletonList(createAndPredicate(expression));
+            result.add(createAndPredicate(expression));
+            return;
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryExpression.getOperator());
-        Collection<AndPredicate> result = new LinkedList<>();
         if (logicalOperator.isPresent() && LogicalOperator.OR == logicalOperator.get()) {
-            result.addAll(getAndPredicates(binaryExpression.getLeft()));
-            result.addAll(getAndPredicates(binaryExpression.getRight()));
+            extractAndPredicates(result, binaryExpression.getLeft());
+            extractAndPredicates(result, binaryExpression.getRight());
         } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
             Collection<AndPredicate> predicates = getAndPredicates(binaryExpression.getRight());
             for (AndPredicate each : getAndPredicates(binaryExpression.getLeft())) {
-                result.addAll(getCombinedAndPredicates(each, predicates));
+                extractCombinedAndPredicates(result, each, predicates);
             }
         } else {
             result.add(createAndPredicate(expression));
         }
-        return result;
     }
     
-    private static Collection<AndPredicate> getCombinedAndPredicates(final AndPredicate current, final Collection<AndPredicate> predicates) {
-        Collection<AndPredicate> result = new LinkedList<>();
+    private static void extractCombinedAndPredicates(final Collection<AndPredicate> result, final AndPredicate current, final Collection<AndPredicate> predicates) {
         for (AndPredicate each : predicates) {
             AndPredicate predicate = new AndPredicate();
             predicate.getPredicates().addAll(current.getPredicates());
             predicate.getPredicates().addAll(each.getPredicates());
             result.add(predicate);
         }
-        return result;
     }
     
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
@@ -91,19 +94,23 @@ public final class ExpressionExtractUtil {
      */
     public static List<ParameterMarkerExpressionSegment> getParameterMarkerExpressions(final Collection<ExpressionSegment> expressions) {
         List<ParameterMarkerExpressionSegment> result = new ArrayList<>();
+        extractParameterMarkerExpressions(result, expressions);
+        return result;
+    }
+    
+    private static void extractParameterMarkerExpressions(final List<ParameterMarkerExpressionSegment> result, final Collection<ExpressionSegment> expressions) {
         for (ExpressionSegment each : expressions) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.add((ParameterMarkerExpressionSegment) each);
             }
-            // TODO support more expression type if necessary 
+            // TODO support more expression type if necessary
             if (each instanceof BinaryOperationExpression) {
-                result.addAll(getParameterMarkerExpressions(Collections.singletonList(((BinaryOperationExpression) each).getLeft())));
-                result.addAll(getParameterMarkerExpressions(Collections.singletonList(((BinaryOperationExpression) each).getRight())));
+                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getLeft()));
+                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getRight()));
             }
             if (each instanceof FunctionSegment) {
-                result.addAll(getParameterMarkerExpressions(((FunctionSegment) each).getParameters()));
+                extractParameterMarkerExpressions(result, ((FunctionSegment) each).getParameters());
             }
         }
-        return result;
     }
 }

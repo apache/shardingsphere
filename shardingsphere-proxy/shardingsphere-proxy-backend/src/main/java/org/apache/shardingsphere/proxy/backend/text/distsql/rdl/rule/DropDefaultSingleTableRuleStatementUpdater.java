@@ -32,12 +32,15 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
+    private void checkCurrentRuleConfiguration(final String databaseName, final DropDefaultSingleTableRuleStatement sqlStatement,
+                                               final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (!sqlStatement.isContainsExistClause()) {
+            DistSQLException.predictionThrow(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
+        }
     }
     
     @Override
@@ -47,12 +50,17 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     }
     
     @Override
+    public boolean hasAnyOneToBeDropped(final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent();
+    }
+    
+    @Override
     public Class<SingleTableRuleConfiguration> getRuleConfigurationClass() {
         return SingleTableRuleConfiguration.class;
     }
     
     @Override
     public String getType() {
-        return DropDefaultSingleTableRuleStatement.class.getCanonicalName();
+        return DropDefaultSingleTableRuleStatement.class.getName();
     }
 }

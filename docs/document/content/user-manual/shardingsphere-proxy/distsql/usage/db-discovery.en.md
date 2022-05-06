@@ -32,25 +32,39 @@ PASSWORD=root
 - Create DB discovery rule
 
 ```sql
-CREATE DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))
+CREATE DB_DISCOVERY RULE db_discovery_group_0 (
+RESOURCES(ds_0, ds_1),
+TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
 - Alter DB discovery rule
 
 ```sql
-ALTER DB_DISCOVERY RULE group_0 (
-RESOURCES(ds_0,ds_1,ds_2),
-TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec' ,keepAliveCron=''))
+ALTER DB_DISCOVERY RULE db_discovery_group_0 (
+RESOURCES(ds_0, ds_1, ds_2),
+TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='92504d5b-6dec')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
 - Drop db_discovery rule
 
 ```sql
-DROP DB_DISCOVERY RULE group_0;
+DROP DB_DISCOVERY RULE db_discovery_group_0;
+```
+
+- Drop db_discovery type
+
+```sql
+DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
+```
+
+- Drop db_discovery heartbeat
+
+```sql
+DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 ```
 
 - Drop resource

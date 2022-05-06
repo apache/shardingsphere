@@ -23,9 +23,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception.InvalidParameterValueException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -56,10 +58,18 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof PostgreSQLProtocolViolationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).build();
+                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType()))
+                    .build();
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
+        }
+        if (cause instanceof InvalidParameterValueException) {
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.INVALID_PARAMETER_VALUE, cause.getMessage()).build();
+        }
+        if (cause instanceof DBCreateExistsException) {
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.DUPLICATE_DATABASE,
+                    String.format(PostgreSQLErrorCode.DUPLICATE_DATABASE.getConditionName(), ((DBCreateExistsException) cause).getDatabaseName())).build();
         }
         // TODO PostgreSQL need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);

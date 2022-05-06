@@ -17,52 +17,52 @@
 
 package org.apache.shardingsphere.authority.provider.schema;
 
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-
-public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
-
+    
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
-
+    
     private Properties props;
-
+    
     @Override
     public void setProps(final Properties props) {
         this.props = props;
     }
-
+    
     @Override
     public Properties getProps() {
         return this.props;
     }
-
+    
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
-
+    
     @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
-
+    
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
     }
-
+    
     @Override
     public String getType() {
         return "SCHEMA_PRIVILEGES_PERMITTED";

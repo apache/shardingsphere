@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,56 +30,55 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class RC4EncryptAlgorithmTest {
     
-    static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
-    }
-    
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("rc4-key-value", "test-sharding");
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Rc4", props), EncryptAlgorithm.class);
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("Rc4", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("rc4-key-value", "test-sharding");
+        return result;
     }
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("qn36NQ=="));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null));
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertKeyIsToLong() {
-        Properties props = new Properties();
+        encryptAlgorithm.init(createInvalidProperties());
+    }
+    
+    private Properties createInvalidProperties() {
+        Properties result = new Properties();
         StringBuilder keyBuffer = new StringBuilder();
         for (int i = 0; i < 100; i++) {
             keyBuffer.append("test");
         }
-        props.setProperty("rc4-key-value", keyBuffer.toString());
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
+        result.setProperty("rc4-key-value", keyBuffer.toString());
+        return result;
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("qn36NQ==").toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("qn36NQ==", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test
     public void assertDecryptWithNullCiphertext() {
-        assertNull(encryptAlgorithm.decrypt(null));
-    }
-    
-    @Test
-    public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProps().getProperty("rc4-key-value"), is("test-sharding"));
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

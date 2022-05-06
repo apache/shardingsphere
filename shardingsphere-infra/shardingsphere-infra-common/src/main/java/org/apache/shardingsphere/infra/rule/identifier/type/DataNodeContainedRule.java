@@ -37,11 +37,12 @@ public interface DataNodeContainedRule extends ShardingSphereRule {
     Map<String, Collection<DataNode>> getAllDataNodes();
     
     /**
-     * Get all actual tables.
+     * Get data nodes by table name.
      * 
-     * @return all actual tables
+     * @param tableName table name
+     * @return data nodes
      */
-    Collection<String> getAllActualTables();
+    Collection<DataNode> getDataNodesByTableName(String tableName);
     
     /**
      * Find first actual table name.
@@ -68,7 +69,7 @@ public interface DataNodeContainedRule extends ShardingSphereRule {
     Optional<String> findLogicTableByActualTable(String actualTable);
     
     /**
-     * Find actual table name via catelog.
+     * Find actual table name via catalog.
      * 
      * @param catalog catalog
      * @param logicTable logic table name

@@ -26,4 +26,7 @@
     <sql-case id="alter_login_drop_credential" value="ALTER LOGIN login1 DROP CREDENTIAL credential" db-types="SQLServer" />
     <sql-case id="alter_login_unlock" value="ALTER LOGIN login1 WITH PASSWORD = 'password' UNLOCK" db-types="SQLServer" />
     <sql-case id="alter_login_rename" value="ALTER LOGIN login1_bak WITH NAME = login1" db-types="SQLServer" />
+    <sql-case id="alter_login_with_credential" value="ALTER LOGIN login1 WITH CREDENTIAL = credential" db-types="SQLServer" />
+    <sql-case id="alter_login_check_policy" value="ALTER LOGIN [login1] WITH CHECK_POLICY = OFF" db-types="SQLServer" />
+    <sql-case id="alter_login_disable" value="ALTER LOGIN [user@contoso.com] DISABLE" db-types="SQLServer" />
 </sql-cases>

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -31,8 +32,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Getter
 @Setter
 public final class MySQLShowRelaylogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
-
+    
     private String logName;
+    
+    private LimitSegment limit;
     
     private String channel;
 }

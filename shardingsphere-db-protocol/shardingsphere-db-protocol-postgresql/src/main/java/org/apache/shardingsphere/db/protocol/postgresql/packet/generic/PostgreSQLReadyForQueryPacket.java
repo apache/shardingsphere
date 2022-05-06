@@ -17,34 +17,31 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Ready for query packet for PostgreSQL.
  */
-@RequiredArgsConstructor
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifierPacket {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     
-    private static final char IN_TRANSACTION = 'T';
+    public static final PostgreSQLReadyForQueryPacket NOT_IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'I');
     
-    private static final char NOT_IN_TRANSACTION = 'I';
+    public static final PostgreSQLReadyForQueryPacket IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'T');
     
-    // TODO consider about TRANSACTION_FAILED
-    private static final char TRANSACTION_FAILED = 'E';
+    public static final PostgreSQLReadyForQueryPacket TRANSACTION_FAILED = new PostgreSQLReadyForQueryPacket((byte) 'E');
     
-    private final boolean isInTransaction;
+    private static final byte[] PREFIX = new byte[]{(byte) PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue(), 0, 0, 0, 5};
+    
+    private final byte status;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(isInTransaction ? IN_TRANSACTION : NOT_IN_TRANSACTION);
-    }
-    
-    @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.READY_FOR_QUERY;
+        payload.getByteBuf().writeBytes(PREFIX);
+        payload.getByteBuf().writeByte(status);
     }
 }

@@ -18,34 +18,54 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.converter;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DatabaseDiscoveryRuleStatementConverterTest {
     
     @Test
     public void assertConvert() {
-        DatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
-        assertNotNull(yamlDatabaseDiscoveryRuleConfiguration);
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().iterator().next().getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().iterator().next().getDiscoveryTypeName(), is("pr_ds_MGR"));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().keySet(), is(Collections.singleton("pr_ds_MGR")));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getType(), is("MGR"));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getProps().get("test"), is("value"));
+        DatabaseDiscoveryRuleConfiguration ruleConfig = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
+        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_MySQL.MGR"));
+        assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));
+        Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
+        assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(dataSourceRuleConfig.getGroupName(), is("definition"));
+        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("definition_MySQL.MGR"));
+        assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
+        dataSourceRuleConfig = iterator.next();
+        assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(dataSourceRuleConfig.getGroupName(), is("construction"));
+        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("type"));
+        assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("heartbeat"));
     }
     
-    private Collection<DatabaseDiscoveryRuleSegment> createDatabaseDiscoveryRuleSegments() {
-        Properties props = new Properties();
-        props.setProperty("test", "value");
-        return Collections.singleton(new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("resource0", "resource1"), "MGR", props));
+    private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
+        Properties props = createProperties();
+        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
+                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
+        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
+                new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
+        return Arrays.asList(databaseDiscoveryConstructionSegment, databaseDiscoveryDefinitionSegment);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("key", "value");
+        return result;
     }
 }

@@ -14,7 +14,7 @@ Attributes:
 | *Name*      | *DataType* | *Description*  |
 | -------------- | --------- | ------- |
 | column         | String    | Shadow column |
-| operation      | String    | SQL operation type（INSERT, UPDATE, DELETE, SELECT） |
+| operation      | String    | SQL operation type (INSERT, UPDATE, DELETE, SELECT) |
 | value          | String    | Shadow column matching value |
 
 ### Column Regex Match Shadow Algorithm
@@ -29,9 +29,9 @@ Attributes:
 | operation      | String    | SQL operation type (insert, update, delete, select) |
 | regex          | String    | Shadow column matching regular expression |
 
-## Note Shadow Algorithm
+## Hint Shadow Algorithm
 
-### Simple SQL Note Shadow Algorithm
+### Simple Hint Shadow Algorithm
 
 Type: SIMPLE_HINT
 

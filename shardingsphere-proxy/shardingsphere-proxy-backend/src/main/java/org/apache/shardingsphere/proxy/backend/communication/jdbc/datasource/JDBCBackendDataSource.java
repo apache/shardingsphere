@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -32,7 +34,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Backend data source of JDBC.
@@ -42,21 +43,21 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     /**
      * Get connections.
      *
-     * @param schemaName scheme name
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @param connectionSize size of connections to get
      * @param connectionMode connection mode
      * @return connections
      * @throws SQLException SQL exception
      */
-    public List<Connection> getConnections(final String schemaName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, getTransactionRule().getDefaultType());
+    public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return getConnections(databaseName, dataSourceName, connectionSize, connectionMode, getTransactionRule().getDefaultType());
     }
     
     /**
      * Get connections.
      *
-     * @param schemaName scheme name
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
      * @param connectionMode connection mode
@@ -65,27 +66,33 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    public List<Connection> getConnections(final String schemaName, final String dataSourceName,
+    public List<Connection> getConnections(final String databaseName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources().get(dataSourceName);
+        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDataSources().get(dataSourceName);
+        if (dataSourceName.contains(".")) {
+            String dataSourceStr = dataSourceName.split("\\.")[0];
+            if (GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceStr)) {
+                dataSource = GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().get(dataSourceStr);
+            }
+        }
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));
+            return Collections.singletonList(createConnection(databaseName, dataSourceName, dataSource, transactionType));
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(schemaName, dataSourceName, dataSource, connectionSize, transactionType);
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionType);
         }
         synchronized (dataSource) {
-            return createConnections(schemaName, dataSourceName, dataSource, connectionSize, transactionType);
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, transactionType);
         }
     }
     
-    private List<Connection> createConnections(final String schemaName, final String dataSourceName,
+    private List<Connection> createConnections(final String databaseName, final String dataSourceName,
                                                final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(schemaName, dataSourceName, dataSource, transactionType));
+                result.add(createConnection(databaseName, dataSourceName, dataSource, transactionType));
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -97,10 +104,15 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return result;
     }
     
-    private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingSphereTransactionManager transactionManager
-                = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(schemaName).getTransactionManager(transactionType);
-        return isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+    private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
+        ShardingSphereTransactionManager transactionManager =
+                ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(databaseName).getTransactionManager(transactionType);
+        Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        if (dataSourceName.contains(".")) {
+            String catalog = dataSourceName.split("\\.")[1];
+            result.setCatalog(catalog);
+        }
+        return result;
     }
     
     private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {
@@ -108,8 +120,11 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
-            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
+        for (ShardingSphereRule each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules()) {
+            if (each instanceof TransactionRule) {
+                return (TransactionRule) each;
+            }
+        }
+        return new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
     }
 }

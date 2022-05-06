@@ -32,9 +32,32 @@ EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
-JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
+is_openjdk=$(java -version 2>&1 | tail -1 | awk '{print ($1 == "OpenJDK") ? "true" : "false"}')
+total_version=`java -version 2>&1 | grep version | sed '1!d' | sed -e 's/"//g' | awk '{print $3}'`
+int_version=${total_version%%.*}
+if [ $int_version = '1' ] ; then
+    int_version=${total_version%.*}
+    int_version=${int_version:2}
+fi
+echo "we find java version: java${int_version}, full_version=${total_version}"
 
-JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
+VERSION_OPTS=""
+if [ $int_version = '8' ] ; then
+    VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+elif [ $int_version = '11' ] ; then
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
+    if $is_openjdk; then
+      VERSION_OPTS="$VERSION_OPTS -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
+    fi
+elif [ $int_version = '17' ] ; then
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
+else
+    echo "unadapted java version, please notice..."
+fi
+
+JAVA_OPTS=" -Djava.awt.headless=true "
+
+JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
@@ -47,6 +70,15 @@ print_usage() {
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
     print_usage
+fi
+
+print_version() {
+    java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
+    exit 0
+}
+
+if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
+    print_version
 fi
 
 echo "Starting the $SERVER_NAME ..."

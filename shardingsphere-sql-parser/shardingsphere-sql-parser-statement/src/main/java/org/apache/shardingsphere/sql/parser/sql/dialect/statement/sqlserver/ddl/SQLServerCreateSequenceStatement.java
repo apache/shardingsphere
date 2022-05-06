@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer create sequence statement.
  */
 @ToString
-public class SQLServerCreateSequenceStatement extends CreateSequenceStatement implements SQLServerStatement {
+public final class SQLServerCreateSequenceStatement extends CreateSequenceStatement implements SQLServerStatement {
 }

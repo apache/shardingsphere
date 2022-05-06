@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -53,40 +52,40 @@ public final class ShardingDeleteStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForMySQL() {
-        assertValidateDeleteModifyMultiTables(new MySQLDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForMySQL() {
+        assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForOracle() {
-        assertValidateDeleteModifyMultiTables(new OracleDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForOracle() {
+        assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForPostgreSQL() {
-        assertValidateDeleteModifyMultiTables(new PostgreSQLDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
+        assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForSQL92() {
-        assertValidateDeleteModifyMultiTables(new SQL92DeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForSQL92() {
+        assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement());
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDeleteModifyMultiTablesForSQLServer() {
-        assertValidateDeleteModifyMultiTables(new SQLServerDeleteStatement());
+    public void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
+        assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement());
     }
     
-    private void assertValidateDeleteModifyMultiTables(final DeleteStatement sqlStatement) {
+    private void assertPreValidateWhenDeleteMultiTables(final DeleteStatement sqlStatement) {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
         sqlStatement.setTableSegment(tableSegment);
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, DefaultSchema.LOGIC_NAME);
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
 }

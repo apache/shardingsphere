@@ -34,6 +34,14 @@ if "%PORT%"=="--help" (
     goto print_usage
 )
 
+if "%PORT%"=="-v" (
+    goto print_version
+)
+
+if "%PORT%"=="--version" (
+    goto print_version
+)
+
 if "%PORT%"=="" (
 set MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 set CLASS_PATH=../conf;%CLASS_PATH%
@@ -50,9 +58,30 @@ set CLASS_PATH=../conf;%CLASS_PATH%
     echo The classpath is %CLASS_PATH%
 )
 
+for /f "tokens=3" %%a in ('java -version 2^>^&1 ^| findstr /i "version"') do set total_version=%%a
+for /f "tokens=1,2 delims=." %%a in (%total_version%) do (
+    if %%a == 1 (
+        set int_version=%%b
+    ) else (
+        set int_version=%%a
+    )
+)
+echo we find java version: java%int_version%, full_version=%total_version:~1,9%
+set VERSION_OPTS=
+if %int_version% == 8 (
+    set VERSION_OPTS=-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
+) else if %int_version% == 11 (
+    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap
+    @rem TODO Consider using -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler in OpenJDK 11 for Performance
+) else if %int_version% == 17 (
+    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap
+) else (
+    echo unadapted java version, please notice...
+)
+
 echo Starting the %SERVER_NAME% ...
 
-java -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -Dfile.encoding=UTF-8 -classpath %CLASS_PATH% %MAIN_CLASS%
+java -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
 
 goto exit
 
@@ -60,7 +89,11 @@ goto exit
  echo "usage: start.bat [port] [config_dir]"
  echo "  port: proxy listen port, default is 3307"
  echo "  config_dir: proxy config directory, default is conf"
- pause
+ goto exit
+
+:print_version
+ java -classpath %CLASS_PATH% org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
+ goto exit
 
 :exit
  pause

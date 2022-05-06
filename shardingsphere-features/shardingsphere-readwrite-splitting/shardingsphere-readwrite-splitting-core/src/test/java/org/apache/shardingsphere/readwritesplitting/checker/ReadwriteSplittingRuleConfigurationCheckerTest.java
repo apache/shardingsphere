@@ -18,39 +18,45 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertValidCheck() {
         ReadwriteSplittingRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
-        assertThat(checker, instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.check("test", config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
+        checker.get().check("test", config);
     }
     
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("ds0");
+        when(dataSourceConfig.getType()).thenReturn("Dynamic");
+        when(dataSourceConfig.getProps()).thenReturn(getProperties());
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        return result;
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty("auto-aware-data-source-name", "ds0");
         return result;
     }
     
@@ -58,17 +64,18 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(config)).get(config);
-        assertThat(checker, instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.check("test", config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
+        checker.get().check("test", config);
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("");
-        when(dataSourceConfig.getWriteDataSourceName()).thenReturn("");
-        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        when(dataSourceConfig.getType()).thenReturn("Dynamic");
+        when(dataSourceConfig.getProps()).thenReturn(new Properties());
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }
 }

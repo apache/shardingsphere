@@ -139,6 +139,10 @@ SCHEMA
     : S C H E M A
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 SINGLE
     : S I N G L E
     ;
@@ -150,23 +154,163 @@ TABLES
 LIST
     : L I S T
     ;
-    
+
 TABLE
     : T A B L E
+    ;
+
+TRANSACTION
+    : T R A N S A C T I O N
     ;
 
 RULES
     : R U L E S
     ;
-    
+
 RULE
     : R U L E
     ;
-    
+
 REFRESH
     : R E F R E S H
     ;
-    
+
 METADATA
     : M E T A D A T A
+    ;
+
+SQL_PARSER
+    : S Q L UL_ P A R S E R
+    ;
+
+AUTHORITY
+    : A U T H O R I T Y
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
+SQL_COMMENT_PARSE_ENABLE
+    : S Q L UL_ C O M M E N T UL_ P A R S E UL_ E N A B L E
+    ;
+
+PARSE_TREE_CACHE
+    : P A R S E UL_ T R E E UL_ C A C H E
+    ;
+
+SQL_STATEMENT_CACHE
+    : S Q L UL_ S T A T E M E N T UL_ C A C H E
+    ;
+
+INITIAL_CAPACITY
+    : I N I T I A L UL_ C A P A C I T Y
+    ;
+
+MAXIMUM_SIZE
+    : M A X I M U M UL_ S I Z E
+    ;
+
+CONCURRENCY_LEVEL
+    : C O N C U R R E N C Y UL_ L E V E L
+    ;
+
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+MODE
+    : M O D E
+    ;
+
+COUNT
+    : C O U N T
+    ;
+
+TRAFFIC
+    : T R A F F I C
+    ;
+
+LABEL
+    : L A B E L
+    ;
+
+RELABEL
+    : R E L A B E L
+    ;
+
+UNLABEL
+    : U N L A B E L
+    ;
+
+LABELS
+    : L A B E L S
+    ;
+
+TRAFFIC_ALGORITHM
+    : T R A F F I C UL_ A L G O R I T H M
+    ;
+
+LOAD_BALANCER
+    : L O A D UL_ B A L A N C E R
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+IMPORT
+    : I M P O R T
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+CONFIG
+    : C O N F I G
+    ;
+
+FILE
+    : F I L E
+    ;
+
+USED
+    : U S E D
+    ;
+
+WITH
+    : W I T H
+    ;
+
+UNUSED
+    : U N U S E D
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+DISTSQL
+    : D I S T S Q L
+    ;
+
+APPLY
+    : A P P L Y
+    ;
+
+DISCARD
+    : D I S C A R D
     ;

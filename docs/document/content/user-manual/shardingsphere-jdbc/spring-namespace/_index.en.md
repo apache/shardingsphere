@@ -24,7 +24,7 @@ ShardingSphere-JDBC provides official Spring Namespace to make convenient for de
 
 ### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
 
 \<shardingsphere:data-source />
 
@@ -35,7 +35,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/da
 | data-source-names | Attribute | Data source name, multiple data source names are separated by commas                                                                           |
 | rule-refs         | Attribute | Rule name, multiple rule names are separated by commas                                                                                         |
 | mode (?)          | Tag       | Mode configuration                                                                                                                             |
-| props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/configuration/props) for more details |
+| props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/props) for more details |
 
 ### Example
 

@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -31,16 +36,50 @@ public final class AlterViewStatementHandlerTest {
     
     @Test
     public void assertGetSelectStatementWithSelectStatementForMySQL() {
-        MySQLAlterViewStatement createViewStatement = new MySQLAlterViewStatement();
-        createViewStatement.setSelect(new MySQLSelectStatement());
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(createViewStatement);
+        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
+        alterViewStatement.setSelect(new MySQLSelectStatement());
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertTrue(selectStatement.isPresent());
     }
     
     @Test
     public void assertGetSelectStatementWithoutSelectStatementForMySQL() {
-        MySQLAlterViewStatement createViewStatement = new MySQLAlterViewStatement();
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(createViewStatement);
+        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertFalse(selectStatement.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameViewWithRenameViewSegmentForPostgreSQL() {
+        PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
+        IdentifierValue identifierValue = new IdentifierValue("t_order");
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 6, identifierValue);
+        alterViewStatement.setRenameView(new SimpleTableSegment(tableNameSegment));
+        Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
+        assertTrue(renameViewSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameViewWithoutRenameViewSegmentForPostgreSQL() {
+        PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
+        Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
+        assertFalse(renameViewSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameViewWithRenameViewSegmentForOpenGauss() {
+        OpenGaussAlterViewStatement alterViewStatement = new OpenGaussAlterViewStatement();
+        IdentifierValue identifierValue = new IdentifierValue("t_order");
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 6, identifierValue);
+        alterViewStatement.setRenameView(new SimpleTableSegment(tableNameSegment));
+        Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
+        assertTrue(renameViewSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameViewWithoutRenameViewSegmentForOpenGauss() {
+        OpenGaussAlterViewStatement alterViewStatement = new OpenGaussAlterViewStatement();
+        Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
+        assertFalse(renameViewSegment.isPresent());
     }
 }

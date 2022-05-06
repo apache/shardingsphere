@@ -73,6 +73,8 @@ public final class SQLUtil {
     
     private static final String COMMENT_SUFFIX = "*/";
     
+    private static final String EXCLUDED_CHARACTERS = "[]`'\"";
+    
     private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
     
     private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
@@ -116,7 +118,24 @@ public final class SQLUtil {
      * @return exactly SQL expression
      */
     public static String getExactlyValue(final String value) {
-        return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
+        return null == value ? null : CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value);
+    }
+    
+    /**
+     * Get exactly value for SQL expression.
+     *
+     * <p>remove special char for SQL expression</p>
+     *
+     * @param value SQL expression
+     * @param reservedCharacters characters to be reserved
+     * @return exactly SQL expression
+     */
+    public static String getExactlyValue(final String value, final String reservedCharacters) {
+        if (null == value) {
+            return null;
+        }
+        String toBeExcludedCharacters = CharMatcher.anyOf(reservedCharacters).removeFrom(EXCLUDED_CHARACTERS);
+        return CharMatcher.anyOf(toBeExcludedCharacters).removeFrom(value);
     }
     
     /**
@@ -218,7 +237,7 @@ public final class SQLUtil {
     }
     
     private static boolean isReadOnly(final DALStatement sqlStatement) {
-        if (sqlStatement instanceof SetStatement
+        return !(sqlStatement instanceof SetStatement
                 | sqlStatement instanceof MySQLUseStatement
                 | sqlStatement instanceof MySQLUninstallPluginStatement
                 | sqlStatement instanceof MySQLResetStatement
@@ -229,10 +248,7 @@ public final class SQLUtil {
                 | sqlStatement instanceof MySQLInstallPluginStatement
                 | sqlStatement instanceof MySQLFlushStatement
                 | sqlStatement instanceof MySQLChecksumTableStatement
-                | sqlStatement instanceof MySQLCacheIndexStatement) {
-            return false;
-        }
-        return true;
+                | sqlStatement instanceof MySQLCacheIndexStatement);
     }
     
     /**
@@ -296,8 +312,8 @@ public final class SQLUtil {
     public static String convertLikePatternToRegex(final String pattern) {
         String result = pattern;
         if (pattern.contains("_")) {
-            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");    
-            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");    
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");
         }
         if (pattern.contains("%")) {
             result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");

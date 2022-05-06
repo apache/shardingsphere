@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.connection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.concurrent.atomic.AtomicInteger;

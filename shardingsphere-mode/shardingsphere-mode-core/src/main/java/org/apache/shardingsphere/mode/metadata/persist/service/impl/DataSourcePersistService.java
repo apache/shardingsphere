@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseBasedPersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -36,71 +36,94 @@ import java.util.stream.Collectors;
  * Data source persist service.
  */
 @RequiredArgsConstructor
-public final class DataSourcePersistService implements SchemaBasedPersistService<Map<String, DataSourceConfiguration>> {
+public final class DataSourcePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
+    
+    private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
-        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !isExisted(schemaName))) {
-            persist(schemaName, dataSourceConfigs);
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean isOverwrite) {
+        if (!dataSourcePropsMap.isEmpty() && (isOverwrite || !isExisted(databaseName))) {
+            persist(databaseName, dataSourcePropsMap);
         }
     }
     
     @Override
-    public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
+        }
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
-    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return dataSourceConfigs.entrySet().stream()
+    @Override
+    public void persist(final String databaseName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+    }
+    
+    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return dataSourcePropsMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
-    public Map<String, DataSourceConfiguration> load(final String schemaName) {
-        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+    public Map<String, DataSourceProperties> load(final String databaseName) {
+        return isExisted(databaseName) ? getDataSourceProperties(repository.get(
+                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
+    }
+    
+    @Override
+    public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
+        String yamlContent = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version));
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
+    private Map<String, DataSourceProperties> getDataSourceProperties(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
         if (yamlDataSources.isEmpty()) {
             return new LinkedHashMap<>();
         }
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
+        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
         return result;
     }
     
     @Override
-    public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName)));
+    public boolean isExisted(final String databaseName) {
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
+                getDatabaseActiveVersion(databaseName))));
     }
     
     /**
-     * Append data source configurations.
+     * Append data source properties map.
      * 
-     * @param schemaName schema name
-     * @param toBeAppendedDataSourceConfigs data source configurations to be appended
+     * @param databaseName database name
+     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
-    public void append(final String schemaName, final Map<String, DataSourceConfiguration> toBeAppendedDataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = load(schemaName);
-        dataSourceConfigs.putAll(toBeAppendedDataSourceConfigs);
-        persist(schemaName, dataSourceConfigs);
+    public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+        Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
+        dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
+        persist(databaseName, dataSourceConfigs);
     }
     
     /**
      * Drop data sources.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param toBeDroppedDataSourceNames data sources to be dropped
      */
-    public void drop(final String schemaName, final Collection<String> toBeDroppedDataSourceNames) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = load(schemaName);
+    public void drop(final String databaseName, final Collection<String> toBeDroppedDataSourceNames) {
+        Map<String, DataSourceProperties> dataSourcePropsMap = load(databaseName);
         for (String each : toBeDroppedDataSourceNames) {
-            dataSourceConfigs.remove(each);
+            dataSourcePropsMap.remove(each);
         }
-        persist(schemaName, dataSourceConfigs);
+        persist(databaseName, dataSourcePropsMap);
+    }
+    
+    private String getDatabaseActiveVersion(final String databaseName) {
+        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProvider;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPPropertyProvider;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public final class DataSourcePropertyProviderLoaderTest {
     
     @Test
     public void assertGetProviderByDefault() {
-        assertThat(DataSourcePropertyProviderLoader.getProvider(new BasicDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
+        assertThat(DataSourcePropertyProviderLoader.getProvider(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
     }
     
     @Test

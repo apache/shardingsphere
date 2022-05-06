@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -77,7 +75,7 @@ public final class PostgreSQLPreparedStatementRegistry {
      * @return prepared statement
      */
     public PostgreSQLPreparedStatement get(final int connectionId, final String statementId) {
-        return connectionPreparedStatements.get(connectionId).preparedStatements.getOrDefault(statementId, new PostgreSQLPreparedStatement("", new EmptyStatement(), Collections.emptyList()));
+        return connectionPreparedStatements.get(connectionId).preparedStatements.get(statementId);
     }
     
     /**
@@ -90,19 +88,19 @@ public final class PostgreSQLPreparedStatementRegistry {
     }
     
     /**
-     * Unregister.
+     * Close statement.
      *
      * @param connectionId connection ID
      * @param statementId statement ID
      */
-    public void unregister(final int connectionId, final String statementId) {
+    public void closeStatement(final int connectionId, final String statementId) {
         if (connectionPreparedStatements.containsKey(connectionId)) {
             connectionPreparedStatements.get(connectionId).getPreparedStatements().remove(statementId);
         }
     }
     
     @Getter
-    private final class PostgreSQLConnectionPreparedStatementRegistry {
+    private static class PostgreSQLConnectionPreparedStatementRegistry {
         
         private final ConcurrentMap<String, PostgreSQLPreparedStatement> preparedStatements = new ConcurrentHashMap<>(65535, 1);
     }

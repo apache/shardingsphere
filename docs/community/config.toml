@@ -19,9 +19,9 @@ languageName = "简体中文"
 
 [params]
 # Change default color scheme with a variant one. Can be "red", "blue", "green".
-themeVariant = "black"
+themeVariant = "white"
 # Disable search function. It will hide search bar
-disableSearch = true
+disableSearch = false
 editURL = "https://github.com/apache/shardingsphere/tree/master/docs/community/content/"
 
 [markup]

@@ -30,6 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Setter
 @ToString
 public final class MySQLCreateTableStatement extends CreateTableStatement implements MySQLStatement {
-
+    
     private boolean containsNotExistClause;
 }

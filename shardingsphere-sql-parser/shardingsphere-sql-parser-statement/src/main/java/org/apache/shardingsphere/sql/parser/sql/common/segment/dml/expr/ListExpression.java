@@ -35,4 +35,3 @@ public final class ListExpression implements ExpressionSegment {
     
     private final List<ExpressionSegment> items = new LinkedList<>();
 }
-

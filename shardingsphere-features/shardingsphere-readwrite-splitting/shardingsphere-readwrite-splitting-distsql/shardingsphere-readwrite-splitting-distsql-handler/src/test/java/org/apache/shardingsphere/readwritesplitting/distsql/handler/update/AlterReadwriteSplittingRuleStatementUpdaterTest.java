@@ -30,6 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
@@ -75,6 +76,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredLoadBalancers() throws DistSQLException {
+        when(shardingSphereMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration());
     }
     
@@ -84,8 +86,15 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = 
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null, "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", createProperties(), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_write");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
     }
 }

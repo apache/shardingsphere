@@ -13,18 +13,32 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
  - [Create](https://github.com/apache/shardingsphere/issues/new/choose) a new issue and choose the type of issue.
  - Define the issue with a clear and descriptive title.
  - Fill in necessary information according to the template.
- - Choose a label after issue created, for example: bug，enhancement，discussion.
+ - Choose a label after issue created, for example: bug, enhancement, discussion.
  - Please pay attention for your issue, you may need provide more information during discussion.
 
 ## Developer Flow
 
-**1. Fork ShardingSphere repo**
+**1. Prepare repository**
 
- - Fork a `ShardingSphere` repo to your own repo to work, then setting upstream.
+Go to [ShardingSphere GitHub Repo]( https://github.com/apache/shardingsphere ) and fork repository to your account.
 
+Clone repository to local machine.
 ```shell
-git remote add upstream https://github.com/apache/shardingsphere.git
+git clone https://github.com/(your_github_name)/shardingsphere.git
 ```
+
+Add ShardingSphere remote repository.
+```shell
+git remote add apache https://github.com/apache/shardingsphere.git
+git remote -v
+```
+
+Build and install all modules, it'll install modules into Maven local repository cache, and also generate Java class files of parser from ANTLR grammar `.g4` files to prevent from compile error of parser on IDE.
+```shell
+cd shardingsphere
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+```
+When you pull the latest code from ShardingSphere and create new branch later, you might get similar compile error of parser again, then you could run this command again.
 
 **2. Choose Issue**
 
@@ -34,15 +48,17 @@ git remote add upstream https://github.com/apache/shardingsphere.git
 
 **3. Create Branch**
 
- - Switch to forked master branch, pull codes from upstream, then create a new branch.
+ - Switch to forked master branch, update local branch, then create a new branch.
 
 ```shell
 git checkout master
-git pull upstream master
+git fetch apache
+git rebase apache/master
+git push origin master # optional
 git checkout -b issueNo
 ```
 
- **Notice** ：We will merge PR using squash, commit log will be different form upstream if you use old branch.
+ **Notice** ：We will merge PR using squash, commit log will be different with upstream if you use old branch.
 
 **4. Coding**
 
@@ -68,6 +84,7 @@ git push origin issueNo
 ```shell
 git checkout master
 git branch -d issueNo
+git remote prune origin # If you delete branch on GitHub PR page, else you could delete origin branch with following command
 git push origin --delete issueNo
 ```
 **Notice**:  Please note that in order to show your id in the contributor list, don't forget the configurations below:

@@ -24,6 +24,7 @@
     <set-transaction sql-case-id="set_transaction_read_write_with_name" />
     <set-transaction sql-case-id="set_transaction_isolation_level_serializable" />
     <set-transaction sql-case-id="set_transaction_isolation_level_read_committed" />
+    <set-transaction sql-case-id="set_transaction_isolation_level_snapshot" />
     <set-transaction sql-case-id="set_transaction_use_rollback_segment" />
     <set-transaction sql-case-id="set_transaction_with_name" />
     <set-transaction sql-case-id="set_transaction_snapshot" />

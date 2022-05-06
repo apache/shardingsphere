@@ -21,20 +21,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingRuleConstants;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,32 +43,27 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
-    private final String autoAwareDataSourceName;
-    
-    private final String writeDataSourceName;
-    
-    private final List<String> readDataSourceNames;
-    
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
+    
+    private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
-        checkConfiguration(config);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
-        autoAwareDataSourceName = config.getAutoAwareDataSourceName();
-        writeDataSourceName = config.getWriteDataSourceName();
-        readDataSourceNames = config.getReadDataSourceNames();
         this.loadBalancer = loadBalancer;
+        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
     }
     
-    private void checkConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        if (Strings.isNullOrEmpty(config.getAutoAwareDataSourceName())) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");
-            Preconditions.checkArgument(null != config.getReadDataSourceNames() && !config.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
-        }
+    /**
+     * Get write data source name.
+     *
+     * @return write data source name
+     */
+    public String getWriteDataSource() {
+        return readwriteSplittingStrategy.getWriteDataSource();
     }
     
     /**
@@ -79,7 +72,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return available read data source names
      */
     public List<String> getReadDataSourceNames() {
-        return readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+        return readwriteSplittingStrategy.getReadDataSources().stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -97,40 +90,34 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
-     * Get data source mapper.
+     * Get data sources.
      *
-     * @return data source mapper
+     * @param removeDisabled whether to remove the disabled resource
+     * @return data sources
      */
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-            actualDataSourceNames.add(writeDataSourceName);
-            actualDataSourceNames.addAll(readDataSourceNames);
-        } else {
-            Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-            if (dataSourceNameAware.isPresent()) {
-                actualDataSourceNames.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-                actualDataSourceNames.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
-            }
+    public Map<String, String> getDataSources(final boolean removeDisabled) {
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, readwriteSplittingStrategy.getWriteDataSource());
+        List<String> readDataSourceNames = readwriteSplittingStrategy.getReadDataSources();
+        if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
+            readDataSourceNames = new LinkedList<>(readDataSourceNames);
+            readDataSourceNames.removeIf(disabledDataSourceNames::contains);
         }
-        result.put(name, actualDataSourceNames);
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
         return result;
     }
-
+    
     /**
-     * Get auto aware data sources.
+     * Get enabled replica data sources.
      *
-     * @return auto aware data sources
+     * @return enabled replica data sources
      */
-    public Map<String, String> getAutoAwareDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        if (dataSourceNameAware.isPresent()) {
-            Map<String, String> result = new HashMap<>(2, 1);
-            result.put(ReadwriteSplittingRuleConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.put(ReadwriteSplittingRuleConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
-            return result;
+    public Collection<String> getEnabledReplicaDataSources() {
+        Collection<String> result = readwriteSplittingStrategy.getReadDataSources();
+        if (!disabledDataSourceNames.isEmpty()) {
+            result = new LinkedList<>(result);
+            result.removeIf(disabledDataSourceNames::contains);
         }
-        return Collections.emptyMap();
+        return result;
     }
 }

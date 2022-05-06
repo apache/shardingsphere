@@ -17,10 +17,10 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition  (COMMA shadowRuleDefinition)*
+    : CREATE SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
     ;
 
 alterShadowRule
@@ -28,9 +28,9 @@ alterShadowRule
     ;
 
 dropShadowRule
-    : DROP SHADOW RULE ruleName (COMMA ruleName)*
+    : DROP SHADOW RULE existClause? ruleName (COMMA ruleName)*
     ;
-
+   
 createShadowAlgorithm
     : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
     ;
@@ -40,11 +40,15 @@ alterShadowAlgorithm
     ;
 
 dropShadowAlgorithm
-    : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP SHADOW ALGORITHM existClause? algorithmName (COMMA algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
     : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    ;
+
+dropDefaultShadowAlgorithm
+    : DROP DEFAULT SHADOW ALGORITHM existClause?
     ;
 
 shadowRuleDefinition
@@ -53,10 +57,6 @@ shadowRuleDefinition
 
 shadowTableRule
     : tableName LP shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)* RP
-    ;
-
-ruleName
-    : IDENTIFIER
     ;
 
 source
@@ -89,4 +89,8 @@ algorithmProperties
 
 algorithmProperty
     : key = (SHADOW | IDENTIFIER | STRING) EQ value = (NUMBER | INT | STRING)
+    ;
+
+existClause
+    : IF EXISTS
     ;

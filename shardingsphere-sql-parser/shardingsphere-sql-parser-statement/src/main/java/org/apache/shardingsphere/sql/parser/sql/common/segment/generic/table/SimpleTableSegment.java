@@ -45,7 +45,10 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     @Override
     public int getStartIndex() {
-        return null == owner ? tableName.getStartIndex() : owner.getStartIndex();
+        if (null == owner) {
+            return tableName.getStartIndex();
+        }
+        return owner.getOwner().isPresent() ? owner.getOwner().get().getStartIndex() : owner.getStartIndex();
     }
     
     @Override

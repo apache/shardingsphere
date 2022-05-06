@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.route.strategy.type.none;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,8 @@ public final class NoneShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues,
+                                         final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
         return availableTargetNames;
     }
 }

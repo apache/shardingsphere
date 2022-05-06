@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatem
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Drop shadow rule statement updater.
@@ -37,18 +36,28 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = metaData.getName();
-        checkConfigurationExist(schemaName, currentRuleConfig);
-        checkRuleNames(schemaName, sqlStatement, currentRuleConfig);
+        String databaseName = metaData.getDatabaseName();
+        if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
+            return;
+        }
+        checkConfigurationExist(databaseName, currentRuleConfig);
+        checkRuleNames(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String schemaName, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShadowRuleStatementChecker.checkConfigurationExist(schemaName, currentRuleConfig);
+    private void checkConfigurationExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
-    private void checkRuleNames(final String schemaName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Set<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();
-        ShadowRuleStatementChecker.checkRulesExist(currentRuleNames, sqlStatement.getRuleNames(), different -> new RequiredRuleMissedException(SHADOW, schemaName, different));
+    private void checkRuleNames(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();
+        if (!sqlStatement.isContainsExistClause()) {
+            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getRuleNames(), currentRuleNames, different -> new RequiredRuleMissedException(SHADOW, databaseName, different));
+        }
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getRuleNames(), currentRuleConfig.getDataSources().keySet()).isEmpty();
     }
     
     @Override
@@ -66,6 +75,6 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public String getType() {
-        return DropShadowRuleStatement.class.getCanonicalName();
+        return DropShadowRuleStatement.class.getName();
     }
 }

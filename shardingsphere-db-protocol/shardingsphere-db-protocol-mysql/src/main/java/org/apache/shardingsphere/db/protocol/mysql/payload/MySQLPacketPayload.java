@@ -279,8 +279,9 @@ public final class MySQLPacketPayload implements PacketPayload {
             byteBuf.writeByte(0);
             return;
         }
-        writeIntLenenc(value.getBytes().length);
-        byteBuf.writeBytes(value.getBytes(charset));
+        byte[] valueBytes = value.getBytes(charset);
+        writeIntLenenc(valueBytes.length);
+        byteBuf.writeBytes(valueBytes);
     }
     
     /**

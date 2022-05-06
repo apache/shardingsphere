@@ -20,16 +20,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
@@ -60,7 +59,7 @@ public final class DropResourceBackendHandlerTest {
     private DropResourceStatement dropResourceStatement;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
     @Mock
     private ShardingSphereMetaData metaData;
@@ -87,14 +86,14 @@ public final class DropResourceBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
         when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaData.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
-        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, backendConnection);
+        dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     
     @Test
@@ -114,7 +113,7 @@ public final class DropResourceBackendHandlerTest {
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [test0] do not exist in schema test."));
+            assertThat(ex.getMessage(), is("Resources [test0] do not exist in database test."));
         }
     }
     
@@ -147,7 +146,7 @@ public final class DropResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertResourceNameInUseIgnoreSingleTables() throws ResourceDefinitionViolationException {
+    public void assertResourceNameInUseIgnoreSingleTables() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
@@ -158,6 +157,23 @@ public final class DropResourceBackendHandlerTest {
         ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
+    }
+    
+    @Test
+    public void assertExecuteWithIfExists() throws DistSQLException {
+        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
+        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        verify(contextManager).dropResource("test", dropResourceStatement.getNames());
+    }
+    
+    @Test(expected = DistSQLException.class)
+    public void assertResourceNameInUseWithIfExists() throws DistSQLException {
+        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
+        when(shadowRule.getType()).thenReturn("ShadowRule");
+        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
+        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
+        dropResourceBackendHandler.execute("test", dropResourceStatement);
     }
     
     private Map<String, DataSource> getDataSourceMapForSupportRemove() {
@@ -172,5 +188,9 @@ public final class DropResourceBackendHandlerTest {
     
     private DropResourceStatement createDropResourceStatementIgnoreSingleTables() {
         return new DropResourceStatement(Collections.singleton("test0"), true);
+    }
+    
+    private DropResourceStatement createDropResourceStatementWithIfExists() {
+        return new DropResourceStatement(true, Collections.singleton("test0"), true);
     }
 }

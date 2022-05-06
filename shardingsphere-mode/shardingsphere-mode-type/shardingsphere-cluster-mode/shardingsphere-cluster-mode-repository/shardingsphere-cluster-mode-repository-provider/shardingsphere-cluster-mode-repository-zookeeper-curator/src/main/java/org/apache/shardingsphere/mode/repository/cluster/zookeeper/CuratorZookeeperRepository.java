@@ -24,20 +24,20 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -51,12 +51,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of ZooKeeper.
@@ -69,7 +66,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private final Builder builder = CuratorFrameworkFactory.builder();
     
-    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
+    private ZookeeperInternalLockHolder internalLockHolder;
     
     @Getter
     @Setter
@@ -79,6 +76,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     public void init(final ClusterPersistRepositoryConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProps);
+        internalLockHolder = new ZookeeperInternalLockHolder(client);
         initCuratorClient(zookeeperProps);
     }
     
@@ -88,8 +86,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
         builder.connectString(config.getServerLists())
-            .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
-            .namespace(config.getNamespace());
+                .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
+                .namespace(config.getNamespace());
         if (0 != timeToLiveSeconds) {
             builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }
@@ -99,18 +97,18 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
-                .aclProvider(new ACLProvider() {
-                    
-                    @Override
-                    public List<ACL> getDefaultAcl() {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                    
-                    @Override
-                    public List<ACL> getAclForPath(final String path) {
-                        return ZooDefs.Ids.CREATOR_ALL_ACL;
-                    }
-                });
+                    .aclProvider(new ACLProvider() {
+                        
+                        @Override
+                        public List<ACL> getDefaultAcl() {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                        
+                        @Override
+                        public List<ACL> getAclForPath(final String path) {
+                            return ZooDefs.Ids.CREATOR_ALL_ACL;
+                        }
+                    });
         }
         return builder.build();
     }
@@ -131,19 +129,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public String get(final String key) {
-        CuratorCache cache = findTreeCache(key);
-        if (null == cache) {
-            return getDirectly(key);
-        }
-        Optional<ChildData> resultInCache = cache.get(key);
-        if (resultInCache.isPresent()) {
-            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), StandardCharsets.UTF_8);
-        }
         return getDirectly(key);
-    }
-    
-    private CuratorCache findTreeCache(final String key) {
-        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Entry::getValue).orElse(null);
     }
     
     @Override
@@ -222,6 +208,19 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
+    public String getSequentialId(final String key, final String value) {
+        try {
+            String path = client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+            return path.substring(key.length());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+        return null;
+    }
+    
+    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
@@ -236,21 +235,20 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        String path = key + PATH_SEPARATOR;
-        if (!caches.containsKey(path)) {
-            addCacheData(key);
-            CuratorCache cache = caches.get(path);
-            CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
+        if (!caches.containsKey(key)) {
+            CuratorCache curatorCache = CuratorCache.build(client, key);
+            start(curatorCache);
+            caches.put(key, curatorCache);
+        }
+        CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
                 .forTreeCache(client, (framework, treeCacheListener) -> {
                     Type changedType = getChangedType(treeCacheListener.getType());
                     if (Type.IGNORED != changedType) {
-                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(), 
+                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(),
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-            cache.listenable().addListener(curatorCacheListener);
-            start(cache);
-        }
+        caches.get(key).listenable().addListener(curatorCacheListener);
     }
     
     private void start(final CuratorCache cache) {
@@ -261,11 +259,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-    }
-    
-    private void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath);
-        caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
     private Type getChangedType(final TreeCacheEvent.Type type) {
@@ -282,41 +275,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            return getLock(key).acquire(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
-        }
+    public Lock getGlobalLock(final String lockName) {
+        return internalLockHolder.getGlobalLock(lockName);
     }
     
     @Override
-    public void releaseLock(final String key) {
-        try {
-            if (availableLock(key)) {
-                locks.get(key).release();
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    private InterProcessLock getLock(final String key) {
-        if (availableLock(key)) {
-            return locks.get(key);
-        }
-        InterProcessLock lock = new InterProcessMutex(client, key);
-        locks.put(key, lock);
-        return lock;
-    }
-    
-    private boolean availableLock(final String key) {
-        return Objects.nonNull(locks.get(key));
+    public Lock getStandardLock(final String lockName) {
+        return internalLockHolder.getStandardLock(lockName);
     }
     
     @Override
@@ -326,11 +291,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO wait 500ms, close cache before close client, or will throw exception
-     * Because of asynchronous processing, may cause client to close
-     * first and cache has not yet closed the end.
-     * Wait for new version of Curator to fix this.
-     * BUG address: https://issues.apache.org/jira/browse/CURATOR-157
+    /*
+     * TODO wait 500ms, close cache before close client, or will throw exception Because of asynchronous processing, may cause client to close first and cache has not yet closed the end. Wait for new
+     * version of Curator to fix this. BUG address: https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {
@@ -338,6 +301,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    @Override
+    public void watchSessionConnection(final InstanceContext instanceContext) {
+        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
     }
     
     @Override

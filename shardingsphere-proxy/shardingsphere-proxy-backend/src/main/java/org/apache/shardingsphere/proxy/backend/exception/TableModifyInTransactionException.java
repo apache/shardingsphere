@@ -33,6 +33,7 @@ public final class TableModifyInTransactionException extends BackendException {
     
     public TableModifyInTransactionException(final SQLStatementContext<?> sqlStatementContext) {
         tableName = sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()
-                ? ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue() : "unknown_table";
+                ? ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue()
+                : "unknown_table";
     }
 }

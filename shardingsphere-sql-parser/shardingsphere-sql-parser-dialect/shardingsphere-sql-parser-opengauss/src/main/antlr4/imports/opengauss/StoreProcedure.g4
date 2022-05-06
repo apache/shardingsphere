@@ -17,7 +17,7 @@
 
 grammar StoreProcedure;
 
-import Keyword, BaseRule;
+import BaseRule;
 
 call
     : CALL funcName LP_ callClauses? RP_

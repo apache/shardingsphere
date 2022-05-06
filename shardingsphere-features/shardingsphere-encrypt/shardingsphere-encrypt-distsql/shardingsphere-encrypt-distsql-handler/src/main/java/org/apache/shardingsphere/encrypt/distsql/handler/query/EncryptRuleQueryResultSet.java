@@ -18,22 +18,20 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,36 +41,41 @@ import java.util.stream.Collectors;
  */
 public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<Entry<String, EncryptColumnRuleConfiguration>> data;
-    
-    private Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
+    private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, ((ShowEncryptRulesStatement) sqlStatement).getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
-        encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Collections.emptyMap());
+        Optional<EncryptRuleConfiguration> ruleConfig = metaData.getRuleMetaData().findRuleConfiguration(EncryptRuleConfiguration.class).stream().findAny();
+        ruleConfig.ifPresent(optional -> data = buildData(optional, (ShowEncryptRulesStatement) sqlStatement).iterator());
     }
     
-    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfig, final String tableName) {
-        Map<String, EncryptColumnRuleConfiguration> result = new HashMap<>();
-        if (Objects.nonNull(tableName)) {
-            encryptRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
-                    .findAny().ifPresent(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
-        } else {
-            encryptRuleConfig.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
-        }
+    private Collection<Collection<Object>> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
+        return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
+                .map(each -> buildColumnData(each, ruleConfig.getEncryptors())).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+    
+    private Collection<Collection<Object>> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, ShardingSphereAlgorithmConfiguration> algorithmMap) {
+        Collection<Collection<Object>> result = new LinkedList<>();
+        tableRuleConfig.getColumns().forEach(each -> {
+            ShardingSphereAlgorithmConfiguration algorithmConfig = algorithmMap.get(each.getEncryptorName());
+            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), nullToEmptyString(each.getLogicDataType()),
+                    each.getCipherColumn(), nullToEmptyString(each.getCipherDataType()),
+                    nullToEmptyString(each.getPlainColumn()), nullToEmptyString(each.getPlainDataType()),
+                    nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(each.getAssistedQueryDataType()),
+                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()),
+                    Objects.isNull(tableRuleConfig.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfig.getQueryWithCipherColumn().toString()));
+        });
         return result;
     }
     
-    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfig) {
-        return encryptTableRuleConfig.getColumns().stream().collect(Collectors.toMap(each -> String.join(".", encryptTableRuleConfig.getName(), each.getLogicColumn()), each -> each));
+    private Object nullToEmptyString(final Object obj) {
+        return null == obj ? "" : obj;
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "cipher_column", "plain_column", "encryptor_type", "encryptor_props");
+        return Arrays.asList("table", "logic_column", "logic_data_type", "cipher_column", "cipher_data_type", "plain_column", "plain_data_type",
+                "assisted_query_column", "assisted_query_data_type", "encryptor_type", "encryptor_props", "query_with_cipher_column");
     }
     
     @Override
@@ -82,13 +85,11 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<Object> getRowData() {
-        Entry<String, EncryptColumnRuleConfiguration> entry = data.next();
-        return Arrays.asList(entry.getKey().split("\\.")[0], entry.getValue().getLogicColumn(), entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), 
-                encryptors.get(entry.getValue().getEncryptorName()).getType(), PropertiesConverter.convert(encryptors.get(entry.getValue().getEncryptorName()).getProps()));
+        return data.next();
     }
     
     @Override
     public String getType() {
-        return ShowEncryptRulesStatement.class.getCanonicalName();
+        return ShowEncryptRulesStatement.class.getName();
     }
 }

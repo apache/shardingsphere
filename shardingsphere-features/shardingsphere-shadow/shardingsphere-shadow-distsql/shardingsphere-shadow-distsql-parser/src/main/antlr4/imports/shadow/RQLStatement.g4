@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showShadowRules
     : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
@@ -33,10 +33,6 @@ showShadowAlgorithms
 
 shadowRule
     : RULE ruleName
-    ;
-
-ruleName
-    : IDENTIFIER
     ;
 
 schemaName

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DerivedColumnsContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplicitTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
@@ -230,7 +230,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
     
     @Override
-    public String visitExplicitTable(final ExplicitTableContext ctx) {
+    public String visitTableStatement(final TableStatementContext ctx) {
         formatPrint("TABLE ");
         visit(ctx.tableName());
         return result.toString();
@@ -709,14 +709,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitUserVariable(final UserVariableContext ctx) {
         formatPrint("@");
         visit(ctx.textOrIdentifier());
         return result.toString();
     }
-
+    
     @Override
     public String visitSystemVariable(final SystemVariableContext ctx) {
         formatPrint("@@");
@@ -734,7 +734,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitTerminal(final TerminalNode node) {
         if ("<EOF>".equals(node.getText())) {

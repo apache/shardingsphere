@@ -21,15 +21,21 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 /**
  * Database discovery rule statement converter.
@@ -43,19 +49,60 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      * @param ruleSegments database discovery rule segments
      * @return database discovery rule configuration
      */
-    public static DatabaseDiscoveryRuleConfiguration convert(final Collection<DatabaseDiscoveryRuleSegment> ruleSegments) {
-        Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(ruleSegments.size(), 1);
-        for (DatabaseDiscoveryRuleSegment each : ruleSegments) {
-            String type = getDatabaseDiscoveryType(each.getName(), each.getDiscoveryTypeName());
-            //TODO get real discoveryHeartbeatName
-            dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), "", type));
-            discoveryTypes.put(type, new ShardingSphereAlgorithmConfiguration(each.getDiscoveryTypeName(), each.getProps()));
-        }
-        return new DatabaseDiscoveryRuleConfiguration(dataSources, Collections.emptyMap(), discoveryTypes);
+    public static DatabaseDiscoveryRuleConfiguration convert(final Collection<AbstractDatabaseDiscoverySegment> ruleSegments) {
+        Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = ruleSegments.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
+        DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList())
+                .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
+        segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList())
+                .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryConstructionSegment) each));
+        return result;
     }
     
-    private static String getDatabaseDiscoveryType(final String ruleName, final String type) {
+    private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryDefinitionSegment segment) {
+        String discoveryTypeName = getName(segment.getName(), segment.getDiscoveryType().getName());
+        ShardingSphereAlgorithmConfiguration discoveryType = new ShardingSphereAlgorithmConfiguration(segment.getDiscoveryType().getName(), segment.getDiscoveryType().getProps());
+        String heartbeatName = getName(segment.getName(), "heartbeat");
+        DatabaseDiscoveryHeartBeatConfiguration heartbeatConfig = new DatabaseDiscoveryHeartBeatConfiguration(segment.getDiscoveryHeartbeat());
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), heartbeatName, discoveryTypeName);
+        ruleConfig.getDataSources().add(dataSourceRuleConfig);
+        ruleConfig.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
+        ruleConfig.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfig);
+    }
+    
+    private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryConstructionSegment segment) {
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
+                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
+        ruleConfig.getDataSources().add(dataSourceRuleConfig);
+    }
+    
+    private static String getName(final String ruleName, final String type) {
         return String.format("%s_%s", ruleName, type);
+    }
+    
+    /**
+     * Convert database discovery heartbeat segment to database discovery heartbeat configuration.
+     *
+     * @param heartbeatSegments database discovery heartbeat segments
+     * @return database discovery heartbeat configuration
+     */
+    public static DatabaseDiscoveryRuleConfiguration convertDiscoveryHeartbeat(final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeatSegments) {
+        DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        heartbeatSegments.forEach(each -> result.getDiscoveryHeartbeats().put(each.getHeartbeatName(), new DatabaseDiscoveryHeartBeatConfiguration(each.getProperties())));
+        return result;
+    }
+    
+    /**
+     * Convert database discovery provider algorithm segment to database discovery heartbeat configuration.
+     *
+     * @param algorithmSegments database discovery provider algorithm segments
+     * @return database discovery type configuration
+     */
+    public static DatabaseDiscoveryRuleConfiguration convertDiscoveryProviderAlgorithm(final Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments) {
+        final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        algorithmSegments.forEach(each -> result.getDiscoveryTypes().put(each.getDiscoveryProviderName(),
+                new ShardingSphereAlgorithmConfiguration(each.getAlgorithm().getName(), each.getAlgorithm().getProps())));
+        return result;
     }
 }

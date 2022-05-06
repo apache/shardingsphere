@@ -39,14 +39,14 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private final EncryptRule encryptRule;
     
-    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    protected EncryptColumnsMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
         Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }
     
     @Override
-    public final boolean next() throws SQLException { 
+    public final boolean next() throws SQLException {
         boolean hasNext = nextValue();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (hasNext && !encryptTable.isPresent()) {
@@ -79,7 +79,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         }
         return getOriginalValue(columnIndex, type);
     }
-
+    
     @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");

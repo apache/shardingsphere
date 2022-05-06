@@ -24,11 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 
 public final class ClassBasedStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
-
-    @Override
-    public void init() {
-    }
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
@@ -38,12 +34,12 @@ public final class ClassBasedStandardShardingAlgorithmFixture implements Standar
         }
         return null;
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
     public String getType() {
         return null;

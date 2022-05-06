@@ -32,7 +32,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -175,7 +175,7 @@ public final class MySQLFrontendEngineTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -187,10 +187,10 @@ public final class MySQLFrontendEngineTest {
         }
         return result;
     }
-
+    
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(authorityRuleConfiguration, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
     }
 }

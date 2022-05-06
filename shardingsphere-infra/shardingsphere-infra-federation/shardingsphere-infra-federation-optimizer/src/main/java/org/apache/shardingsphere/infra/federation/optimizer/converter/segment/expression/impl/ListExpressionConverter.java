@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,13 +47,22 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
                 left = optional.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, optional.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }
     
     @Override
     public Optional<ListExpression> convertToSQLSegment(final SqlNode sqlNode) {
+        if (null == sqlNode) {
+            return Optional.empty();
+        }
+        if (sqlNode instanceof SqlNodeList) {
+            List<SqlNode> items = ((SqlNodeList) sqlNode).getList();
+            ListExpression result = new ListExpression(getStartIndex(sqlNode), getStopIndex(sqlNode));
+            items.forEach(each -> new ExpressionConverter().convertToSQLSegment(each).ifPresent(result.getItems()::add));
+            return Optional.of(result);
+        }
         return Optional.empty();
     }
 }

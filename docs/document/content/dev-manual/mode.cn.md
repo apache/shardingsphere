@@ -14,6 +14,7 @@ chapter = true
 | *已知实现类*                    | *详细说明*                  |
 | ----------------------------- | -------------------------- |
 | FileRepository                | 基于 File 的持久化           |
+| H2Repository                  | 基于 H2 的持久化             |
 
 ## ClusterPersistRepository
 
@@ -24,7 +25,7 @@ chapter = true
 | *已知实现类*                    | *详细说明*                 |
 | ----------------------------- | ------------------------- |
 | CuratorZookeeperRepository    | 基于 ZooKeeper 的持久化     |
-| EtcdRepository                | 基于 etcd 的持久化          |
+| EtcdRepository                | 基于 Etcd 的持久化          |
 
 ## GovernanceWatcher
 
@@ -34,9 +35,10 @@ chapter = true
 
 | *已知实现类*                     | *详细说明*          |
 | -----------------------------  | ------------------ |
-| StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |
 | ComputeNodeStateChangedWatcher | 计算节点状态变化监听器 |
-| PropertiesChangedWatcher       | 属性变化监听器        |
-| PrivilegeNodeChangedWatcher    | 权限变化监听器        |
+| GlobalAckChangedWatcher        | 全局锁状态变化监听器   |
+| GlobalLocksChangedWatcher      | 全局锁变化监听器      |
 | GlobalRuleChangedWatcher       | 全局规则配置变化监听器 |
 | MetaDataChangedWatcher         | 元数据变化监听器      |
+| PropertiesChangedWatcher       | 属性变化监听器        |
+| StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |

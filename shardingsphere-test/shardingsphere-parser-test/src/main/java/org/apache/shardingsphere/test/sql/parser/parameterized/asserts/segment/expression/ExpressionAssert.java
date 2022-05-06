@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -36,14 +37,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.generic.DataTypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedBinaryOperationExpression;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedCollateExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExistsSubquery;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedInExpression;
@@ -82,7 +86,7 @@ public final class ExpressionAssert {
             assertNull(assertContext.getText("Actual parameter marker expression should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual parameter marker expression should exist."), actual);
-            assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
+            assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getParameterIndex()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
@@ -140,7 +144,7 @@ public final class ExpressionAssert {
             assertSubquery(assertContext, actual.getSubquery(), expected);
         }
     }
-
+    
     /**
      * Assert subquery.
      *
@@ -158,7 +162,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert exists subquery expression.
      *
@@ -178,7 +182,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert binary operation expression.
      * @param assertContext assert context
@@ -198,7 +202,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert in operation expression.
      * @param assertContext assert context
@@ -218,7 +222,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert not operation expression.
      * @param assertContext assert context
@@ -235,7 +239,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert list operation expression.
      * @param assertContext assert context
@@ -258,7 +262,7 @@ public final class ExpressionAssert {
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     /**
      * Assert between operation expression.
      * @param assertContext assert context
@@ -291,7 +295,8 @@ public final class ExpressionAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Function method name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
-                ? expected.getLiteralText() : expected.getText();
+                ? expected.getLiteralText()
+                : expected.getText();
         assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));
         assertThat(assertContext.getText("Function parameter size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
         Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
@@ -303,7 +308,23 @@ public final class ExpressionAssert {
             OwnerAssert.assertIs(assertContext, actual.getOwner(), expected.getOwner());
         }
     }
-
+    
+    /**
+     * Assert collate.
+     *
+     * @param assertContext assert context
+     * @param actual actual collate expression
+     * @param expected expected collate expression
+     */
+    public static void assertCollateExpression(final SQLCaseAssertContext assertContext, final CollateExpression actual, final ExpectedCollateExpression expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual collate expression should not exist."), actual);
+        } else {
+            assertExpression(assertContext, actual.getCollateName(), expected.getCollateName());
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      * @param assertContext assert context
@@ -326,8 +347,9 @@ public final class ExpressionAssert {
             assertSubqueryExpression(assertContext,
                     (SubqueryExpressionSegment) actual, expected.getSubquery());
         } else if (actual instanceof ColumnSegment) {
-            ColumnAssert.assertIs(assertContext,
-                    (ColumnSegment) actual, expected.getColumn());
+            ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
+        } else if (actual instanceof DataTypeSegment) {
+            DataTypeAssert.assertIs(assertContext, (DataTypeSegment) actual, expected.getDataType());
         } else if (actual instanceof LiteralExpressionSegment) {
             assertLiteralExpression(assertContext,
                     (LiteralExpressionSegment) actual, expected.getLiteralExpression());
@@ -360,6 +382,8 @@ public final class ExpressionAssert {
                     (AggregationProjectionSegment) actual, expected.getAggregationProjection());
         } else if (actual instanceof FunctionSegment) {
             assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
+        } else if (actual instanceof CollateExpression) {
+            assertCollateExpression(assertContext, (CollateExpression) actual, expected.getCollateExpression());
         } else {
             throw new UnsupportedOperationException(
                     String.format("Unsupported expression  : %s.", actual.getClass().getName()));

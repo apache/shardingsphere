@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import DMLStatement, TCLStatement, DCLStatement, StoreProcedure;
 
 execute
     : (select
@@ -62,5 +62,22 @@ execute
     | purge
     | rename
     | createDatabase
+    | createDatabaseLink
+    | createDimension
+    | alterDimension
+    | dropDimension
+    | createFunction
+    | dropDatabaseLink
+    | dropDirectory
+    | dropView
+    | dropTrigger
+    | alterView
+    | alterTrigger
+    | createEdition
+    | alterDatabaseLink
+    | alterDatabaseDictionary
+    | createSynonym
+    | createDirectory
+    | dropSynonym
     ) SEMI_?
     ;

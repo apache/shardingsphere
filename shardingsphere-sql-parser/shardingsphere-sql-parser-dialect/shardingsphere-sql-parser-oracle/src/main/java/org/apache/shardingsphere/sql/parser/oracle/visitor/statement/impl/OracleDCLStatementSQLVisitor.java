@@ -111,7 +111,7 @@ public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropRole(final DropRoleContext ctx) {
         return new OracleDropRoleStatement();
     }
-
+    
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
         return new OracleSetRoleStatement();

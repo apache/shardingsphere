@@ -7,7 +7,7 @@ weight = 2
 
 ### 使用 OpenTracing 协议
 
-* 方法1：通过读取系统参数注入APM系统提供的 Tracer 实现类
+* 方法1：通过读取系统参数注入 APM 系统提供的 Tracer 实现类
 
 启动时添加参数
 
@@ -27,7 +27,7 @@ ShardingTracer.init();
 ShardingTracer.init(new SkywalkingTracer());
 ```
 
-*注意：使用 SkyWalking 的 OpenTracing 探针时，应将原 Apache ShardingSphere 探针插件禁用，以防止两种插件互相冲突。*
+*注意：使用 SkyWalking 的 OpenTracing 探针时，不能同时使用 Apache ShardingSphere Agent 的 OpenTracing 插件，以防止两种插件互相冲突。*
 
 ### 使用 SkyWalking 自动探针
 
@@ -35,7 +35,7 @@ ShardingTracer.init(new SkywalkingTracer());
 
 ### 使用 OpenTelemetry
 
-在agent.yaml中填写好配置即可，例如将 Traces 数据导出到 Zipkin。
+在 agent.yaml 中填写好配置即可，例如将 Traces 数据导出到 Zipkin。
 
 ```yaml
 OpenTelemetry:
@@ -47,7 +47,7 @@ OpenTelemetry:
 
 ## 效果展示
 
-无论使用哪种方式，都可以方便的将APM信息展示在对接的系统中，以下以 SkyWalking 为例。
+无论使用哪种方式，都可以方便的将 APM 信息展示在对接的系统中，以下以 SkyWalking 为例。
 
 ### 应用架构
 

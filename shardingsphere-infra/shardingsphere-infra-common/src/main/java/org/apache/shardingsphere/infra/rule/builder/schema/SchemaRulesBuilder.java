@@ -20,25 +20,18 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
-
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -48,50 +41,28 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaRulesBuilder {
     
-    static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
-        ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
-    }
-    
-    /**
-     * Build rules.
-     * @param dataSources data source map
-     * @param schemaRuleConfigs schema rule config map
-     * @param props properties
-     * @return ShardingSphere rules
-     */
-    public static Map<String, Collection<ShardingSphereRule>> buildRules(final Map<String, Map<String, DataSource>> dataSources,
-                                                                         final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
-        Map<String, Collection<ShardingSphereRule>> result = new HashMap<>(schemaRuleConfigs.size(), 1);
-        for (String each : schemaRuleConfigs.keySet()) {
-            Map<String, DataSource> dataSourceMap = dataSources.get(each);
-            Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
-            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
-            result.put(each, buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, new ConfigurationProperties(null == props ? new Properties() : props))));
-        }
-        return result;
-    }
-    
     /**
      * Build rules.
      *
-     * @param materials rules builder materials
+     * @param databaseName database name
+     * @param databaseConfig schema configuration
+     * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final SchemaRulesBuilderMaterials materials) {
+    public static Collection<ShardingSphereRule> buildRules(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(materials).entrySet()) {
-            result.add(entry.getValue().build(materials, entry.getKey(), result));
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
+            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, props));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration databaseConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaRuleConfigs()));
-        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getDistributedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }
@@ -99,13 +70,13 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
+        return SchemaRuleBuilderFactory.newInstance(distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, enhancedRuleConfigs);
+        return SchemaRuleBuilderFactory.newInstance(enhancedRuleConfigs);
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -115,8 +86,7 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
+        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders = DefaultSchemaRuleConfigurationBuilderFactory.newInstance(getMissedDefaultRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
@@ -127,6 +97,6 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<SchemaRuleBuilder> getMissedDefaultRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return SchemaRuleBuilderFactory.newInstance().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }

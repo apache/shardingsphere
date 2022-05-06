@@ -60,7 +60,7 @@ public class UserServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             User user = new User();
             user.setUserId(i);
-            user.setUserName("test_mybatis_" + i);
+            user.setUsername("test_mybatis_" + i);
             user.setPwd("pwd_mybatis_" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());

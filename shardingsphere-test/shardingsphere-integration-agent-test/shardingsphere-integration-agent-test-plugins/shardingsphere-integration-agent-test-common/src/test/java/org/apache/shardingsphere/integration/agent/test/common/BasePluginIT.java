@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public abstract class BasePluginIT {
     }
     
     @Test
-    public void assertProxyWithAgent() {
+    public void assertProxyWithAgent() throws IOException {
         DataSource dataSource = IntegrationTestEnvironment.getInstance().getDataSource();
         List<Long> results = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {

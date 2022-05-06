@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.route.strategy;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.ComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.HintShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
@@ -40,32 +40,32 @@ import static org.mockito.Mockito.when;
 public final class ShardingStrategyFactoryTest {
     
     @Mock
-    private StandardShardingStrategyConfiguration standardShardingStrategyConfiguration;
+    private StandardShardingStrategyConfiguration standardShardingStrategyConfig;
     
     @Mock
     private StandardShardingAlgorithmFixture standardShardingAlgorithmFixture;
     
     @Mock
-    private ComplexShardingStrategyConfiguration complexShardingStrategyConfiguration;
+    private ComplexShardingStrategyConfiguration complexShardingStrategyConfig;
     
     @Mock
     private ComplexKeysShardingAlgorithmFixture complexKeysShardingAlgorithmFixture;
     
     @Mock
-    private HintShardingStrategyConfiguration hintShardingStrategyConfiguration;
+    private HintShardingStrategyConfiguration hintShardingStrategyConfig;
     
     @Mock
     private HintShardingAlgorithmFixture hintShardingAlgorithmFixture;
     
     @Test
     public void assertNewInstance() {
-        when(standardShardingStrategyConfiguration.getShardingColumn()).thenReturn("standard_sharding_column");
-        ShardingStrategy actualStandardShardingStrategy = ShardingStrategyFactory.newInstance(standardShardingStrategyConfiguration, standardShardingAlgorithmFixture, null);
+        when(standardShardingStrategyConfig.getShardingColumn()).thenReturn("standard_sharding_column");
+        ShardingStrategy actualStandardShardingStrategy = ShardingStrategyFactory.newInstance(standardShardingStrategyConfig, standardShardingAlgorithmFixture, null);
         assertTrue(actualStandardShardingStrategy instanceof StandardShardingStrategy);
-        when(complexShardingStrategyConfiguration.getShardingColumns()).thenReturn("complex_sharding_column");
-        ShardingStrategy actualComplexShardingStrategy = ShardingStrategyFactory.newInstance(complexShardingStrategyConfiguration, complexKeysShardingAlgorithmFixture, null);
+        when(complexShardingStrategyConfig.getShardingColumns()).thenReturn("complex_sharding_column");
+        ShardingStrategy actualComplexShardingStrategy = ShardingStrategyFactory.newInstance(complexShardingStrategyConfig, complexKeysShardingAlgorithmFixture, null);
         assertTrue(actualComplexShardingStrategy instanceof ComplexShardingStrategy);
-        ShardingStrategy actualHintShardingStrategy = ShardingStrategyFactory.newInstance(hintShardingStrategyConfiguration, hintShardingAlgorithmFixture, null);
+        ShardingStrategy actualHintShardingStrategy = ShardingStrategyFactory.newInstance(hintShardingStrategyConfig, hintShardingAlgorithmFixture, null);
         assertTrue(actualHintShardingStrategy instanceof HintShardingStrategy);
         ShardingStrategy actualNoneShardingStrategy = ShardingStrategyFactory.newInstance(null, null, null);
         assertTrue(actualNoneShardingStrategy instanceof NoneShardingStrategy);

@@ -19,77 +19,30 @@ package org.apache.shardingsphere.infra.context.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterIndexStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateTableStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateViewStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.AlterTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.CreateTableFederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.type.DropTableFederationMetaDataRefresher;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * ShardingSphere meta data refresher factory.
+ * Meta data refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataRefresherFactory {
     
-    private static final Map<Class<?>, Collection<MetaDataRefresher>> REGISTRY = new HashMap<>();
-    
     static {
-        REGISTRY.put(CreateTableStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(AlterTableStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(DropTableStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(CreateIndexStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(AlterIndexStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(DropIndexStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(CreateViewStatement.class, new LinkedHashSet<>());
-        REGISTRY.put(DropViewStatement.class, new LinkedHashSet<>());
-        REGISTRY.get(CreateTableStatement.class).add(new CreateTableStatementSchemaRefresher());
-        REGISTRY.get(CreateTableStatement.class).add(new CreateTableFederationMetaDataRefresher());
-        REGISTRY.get(AlterTableStatement.class).add(new AlterTableStatementSchemaRefresher());
-        REGISTRY.get(AlterTableStatement.class).add(new AlterTableFederationMetaDataRefresher());
-        REGISTRY.get(DropTableStatement.class).add(new DropTableStatementSchemaRefresher());
-        REGISTRY.get(DropTableStatement.class).add(new DropTableFederationMetaDataRefresher());
-        REGISTRY.get(CreateIndexStatement.class).add(new CreateIndexStatementSchemaRefresher());
-        REGISTRY.get(AlterIndexStatement.class).add(new AlterIndexStatementSchemaRefresher());
-        REGISTRY.get(DropIndexStatement.class).add(new DropIndexStatementSchemaRefresher());
-        REGISTRY.get(CreateViewStatement.class).add(new CreateViewStatementSchemaRefresher());
-        REGISTRY.get(DropViewStatement.class).add(new DropViewStatementSchemaRefresher());
+        ShardingSphereServiceLoader.register(MetaDataRefresher.class);
     }
     
     /**
-     * Create new instance of schema refresher.
-     *
-     * @param sqlStatement SQL statement
-     * @return instance of schema refresher
+     * Create new instance of meta data refresher.
+     * 
+     * @param sqlStatementClass SQL statement class
+     * @return new instance of meta data refresher
      */
-    public static Collection<MetaDataRefresher> newInstance(final SQLStatement sqlStatement) {
-        for (Entry<Class<?>, Collection<MetaDataRefresher>> entry : REGISTRY.entrySet()) {
-            if (entry.getKey().isAssignableFrom(sqlStatement.getClass())) {
-                return entry.getValue();
-            }
-        }
-        return Collections.emptyList();
+    @SuppressWarnings("rawtypes")
+    public static Optional<MetaDataRefresher> newInstance(final Class<? extends SQLStatement> sqlStatementClass) {
+        return TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
     }
 }

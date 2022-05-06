@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow route engine.
@@ -35,19 +36,23 @@ public interface ShadowRouteEngine {
      * Shadow route decorate.
      *
      * @param routeContext  route context
+     * @param shadowRule  shadow rule
      * @param shadowDataSourceMappings shadow data source mappings
      */
-    default void shadowRouteDecorate(final RouteContext routeContext, final Map<String, String> shadowDataSourceMappings) {
+    default void shadowRouteDecorate(final RouteContext routeContext, final ShadowRule shadowRule, final Map<String, String> shadowDataSourceMappings) {
         Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeUnits) {
             String logicName = each.getDataSourceMapper().getLogicName();
-            String actualName = each.getDataSourceMapper().getActualName();
-            String shadowDataSourceName = shadowDataSourceMappings.get(actualName);
-            if (null != shadowDataSourceName) {
+            String shadowLogicName = each.getDataSourceMapper().getActualName();
+            Optional<String> sourceDataSourceNameOptional = shadowRule.getSourceDataSourceName(shadowLogicName);
+            if (sourceDataSourceNameOptional.isPresent()) {
+                String sourceDataSourceName = sourceDataSourceNameOptional.get();
+                String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName);
                 toBeRemoved.add(each);
-                toBeAdded.add(new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
+                toBeAdded.add(null == shadowDataSourceName ? new RouteUnit(new RouteMapper(logicName, sourceDataSourceName), each.getTableMappers())
+                        : new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
             }
         }
         routeUnits.removeAll(toBeRemoved);

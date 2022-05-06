@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Schema rule builder.
@@ -34,10 +37,12 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
     /**
      * Build schema rule.
      *
-     * @param materials rules builder materials
      * @param config rule configuration
+     * @param databaseName database name
+     * @param dataSources data sources
      * @param builtRules built rules
+     * @param props configuration properties
      * @return built schema rule
      */
-    SchemaRule build(SchemaRulesBuilderMaterials materials, T config, Collection<ShardingSphereRule> builtRules);
+    SchemaRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, ConfigurationProperties props);
 }

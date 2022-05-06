@@ -31,4 +31,4 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
  - Please follow Sharding's [Development conventions](https://shardingsphere.apache.org/community/en/contribute/code-conduct/), and complete check before pull request submit.
  - Submit a pull request to master branch when finished.
  - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
- - Finally, congratulations that you have become the official contributor for Sharding!
+ - Finally, congratulations that you have become the official contributor for Apache ShardingSphere.

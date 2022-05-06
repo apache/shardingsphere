@@ -35,8 +35,8 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * Build global rule.
      *
      * @param ruleConfig rule configuration
-     * @param mataDataMap mata data map
+     * @param metaDataMap meta data map
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereMetaData> metaDataMap);
 }

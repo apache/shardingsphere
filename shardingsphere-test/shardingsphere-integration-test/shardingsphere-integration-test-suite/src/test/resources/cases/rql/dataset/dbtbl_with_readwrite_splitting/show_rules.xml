@@ -32,9 +32,9 @@
         <column name="key_generator_type" />
         <column name="key_generator_props" />
     </metadata>
-    <row values="t_order| pr_ds_${0..9}.t_order_${0..9}| | STANDARD_TEST| user_id| STANDARD_TEST| | STANDARD_TEST| order_id| STANDARD_TEST| | | | " />
-    <row values="t_order_item| pr_ds_${0..9}.t_order_item_${0..9}| | STANDARD_TEST| user_id| STANDARD_TEST| | STANDARD_TEST| order_id| STANDARD_TEST| | item_id| CONSTANT| " />
-    <row values="t_order_details| pr_ds_${0..9}.t_order_details_${0..9}| | STANDARD_TEST| user_id| STANDARD_TEST| | STANDARD_TEST| order_id| STANDARD_TEST| | | | " />
-    <row values="t_order_item_federate_sharding | pr_ds_1.t_order_item_federate_sharding_${0..1}| | | | | | INLINE| item_id| INLINE| algorithm-expression=t_order_item_federate_sharding_${item_id % 2}| | | " />
-    <row values="t_order_federate_sharding | pr_ds_1.t_order_federate_sharding_${0..1}| | | | | | INLINE| order_id_sharding| INLINE| algorithm-expression=t_order_federate_sharding_${order_id_sharding % 2}| | | " />
+    <row values="t_order| readwrite_ds_${0..9}.t_order_${0..9}| | IT.STANDARD.FIXTURE| user_id| IT.STANDARD.FIXTURE| | IT.STANDARD.FIXTURE| order_id| IT.STANDARD.FIXTURE| | | | " />
+    <row values="t_order_item| readwrite_ds_${0..9}.t_order_item_${0..9}| | IT.STANDARD.FIXTURE| user_id| IT.STANDARD.FIXTURE| | IT.STANDARD.FIXTURE| order_id| IT.STANDARD.FIXTURE| | item_id| IT.FIXTURE| " />
+    <row values="t_order_details| readwrite_ds_${0..9}.t_order_details_${0..9}| | IT.STANDARD.FIXTURE| user_id| IT.STANDARD.FIXTURE| | IT.STANDARD.FIXTURE| order_id| IT.STANDARD.FIXTURE| | | | " />
+    <row values="t_order_item_federate_sharding | readwrite_ds_1.t_order_item_federate_sharding_${0..1}| | | | | | INLINE| item_id| INLINE| algorithm-expression=t_order_item_federate_sharding_${item_id % 2}| | | " />
+    <row values="t_order_federate_sharding | readwrite_ds_1.t_order_federate_sharding_${0..1}| | | | | | INLINE| order_id_sharding| INLINE| algorithm-expression=t_order_federate_sharding_${order_id_sharding % 2}| | | " />
 </dataset>

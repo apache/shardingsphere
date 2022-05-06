@@ -23,9 +23,10 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,18 +46,27 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     private final AlterEncryptRuleStatementUpdater updater = new AlterEncryptRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("MD5"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeAlteredRules() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithIncompleteDataType() throws DistSQLException {
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
+                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()));
+        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
+        AlterEncryptRuleStatement statement = new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
+        updater.checkSQLStatement(shardingSphereMetaData, statement, createCurrentRuleConfiguration());
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {

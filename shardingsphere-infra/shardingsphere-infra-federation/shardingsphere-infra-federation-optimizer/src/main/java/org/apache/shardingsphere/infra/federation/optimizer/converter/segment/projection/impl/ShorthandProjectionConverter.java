@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection.impl;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -33,7 +35,11 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
     
     @Override
     public Optional<SqlIdentifier> convertToSQLNode(final ShorthandProjectionSegment segment) {
-        return null == segment ? Optional.empty() : Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
+        if (null == segment) {
+            return Optional.empty();
+        }
+        return segment.getOwner().map(optional -> Optional.of(SqlIdentifier.star(Arrays.asList(optional.getIdentifier().getValue(), ""),
+                SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)))).orElseGet(() -> Optional.of(SqlIdentifier.star(SqlParserPos.ZERO)));
     }
     
     @Override

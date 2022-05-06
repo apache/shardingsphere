@@ -24,23 +24,27 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +56,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -74,6 +79,8 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
     
+    private final PostgreSQLAuthenticationHandler authenticationHandler = new PostgreSQLAuthenticationHandler();
+    
     @Before
     public void init() {
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
@@ -86,28 +93,28 @@ public final class PostgreSQLAuthenticationHandlerTest {
     @Test
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         initProxyContext(new ShardingSphereUser(username, null, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
@@ -115,8 +122,15 @@ public final class PostgreSQLAuthenticationHandlerTest {
     public void assertLoginWithNonExistDatabase() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
-        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
+    }
+    
+    @Test
+    public void assertGetAuthenticator() {
+        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(username, "");
+        assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
+        assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -130,8 +144,8 @@ public final class PostgreSQLAuthenticationHandlerTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+        return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
@@ -145,23 +159,23 @@ public final class PostgreSQLAuthenticationHandlerTest {
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(metaData.getSchema()).thenReturn(schema);
+            when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;
     }
-
+    
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(authorityRuleConfiguration, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singleton(rule));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singleton(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private String md5Encode(final String username, final String password, final byte[] md5Salt) {
-        Method method = PostgreSQLAuthenticationHandler.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
+        Method method = PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
         method.setAccessible(true);
-        return (String) method.invoke(PostgreSQLAuthenticationHandler.class, username, password, md5Salt);
+        return (String) method.invoke(new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

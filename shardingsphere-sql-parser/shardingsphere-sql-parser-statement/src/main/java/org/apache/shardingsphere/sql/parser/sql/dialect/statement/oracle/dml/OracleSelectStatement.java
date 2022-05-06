@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
@@ -36,7 +37,9 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     private LockSegment lock;
     
     private ModelSegment modelSegment;
-
+    
+    private WithSegment withSegment;
+    
     /**
      * Get lock segment.
      *
@@ -53,5 +56,14 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
      */
     public Optional<ModelSegment> getModelSegment() {
         return Optional.ofNullable(modelSegment);
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
 }

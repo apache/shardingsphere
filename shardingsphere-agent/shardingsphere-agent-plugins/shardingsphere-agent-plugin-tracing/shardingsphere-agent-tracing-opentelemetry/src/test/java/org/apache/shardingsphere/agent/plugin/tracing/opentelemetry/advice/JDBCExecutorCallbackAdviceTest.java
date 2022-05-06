@@ -33,51 +33,46 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
-
+    
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
-
+    
     private JDBCExecutorCallbackAdvice advice;
-
+    
     @Before
     public void setup() {
         advice = new JDBCExecutorCallbackAdvice();
     }
-
+    
     @Test
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
         Attributes attributes = spanData.getAttributes();
-        assertNotNull(attributes);
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_INSTANCE)), is("mock.db"));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is("select 1"));
     }
-
+    
     @Test
     public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
         assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
         Attributes attributes = spanData.getAttributes();
-        assertNotNull(attributes);
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_INSTANCE)), is("mock.db"));

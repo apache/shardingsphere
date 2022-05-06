@@ -47,7 +47,7 @@ public final class DistSQLParserParameterizedTest {
     public DistSQLParserParameterizedTest(final String sqlCaseId) {
         this.sqlCaseId = sqlCaseId;
     }
-
+    
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return DIST_SQL_CASES_LOADER.getTestParameters(null);
@@ -56,8 +56,8 @@ public final class DistSQLParserParameterizedTest {
     @Test
     public void assertDistSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
-        String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), null);
         SQLStatement actual = ENGINE.parse(sql);
-        AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null), actual, expected);
+        AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null, null), actual, expected);
     }
 }

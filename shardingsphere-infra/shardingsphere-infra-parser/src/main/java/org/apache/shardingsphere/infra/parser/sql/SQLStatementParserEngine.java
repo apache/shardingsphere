@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.infra.parser.sql;
 
 import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -31,10 +30,10 @@ public final class SQLStatementParserEngine {
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
     private final LoadingCache<String, SQLStatement> sqlStatementCache;
-
-    public SQLStatementParserEngine(final String databaseType, final ConfigurationProperties props) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, props.getValue(ConfigurationPropertyKey.SQL_COMMENT_PARSE_ENABLED));
-        sqlStatementCache = SQLStatementCacheBuilder.build(props, databaseType);
+    
+    public SQLStatementParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
+        sqlStatementCache = SQLStatementCacheBuilder.build(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
     }
     
     /**

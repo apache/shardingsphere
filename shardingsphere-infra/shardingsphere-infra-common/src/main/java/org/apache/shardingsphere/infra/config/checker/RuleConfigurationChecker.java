@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
  * Rule configuration checker.
@@ -30,8 +30,8 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
     /**
      * Check rule configuration.
      * 
-     * @param schemaName schema name to be checked
+     * @param databaseName database name to be checked
      * @param config rule configuration to be checked
      */
-    void check(String schemaName, T config);
+    void check(String databaseName, T config);
 }

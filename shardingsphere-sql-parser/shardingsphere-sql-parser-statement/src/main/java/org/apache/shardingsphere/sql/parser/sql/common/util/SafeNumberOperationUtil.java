@@ -122,19 +122,19 @@ public final class SafeNumberOperationUtil {
      * Execute collection equals method by safe mode.
      *
      * @param sources source collection
-     * @param targetCollection target collection
+     * @param targets target collection
      * @return whether the element in source collection and target collection are all same
      */
-    public static boolean safeCollectionEquals(final Collection<Comparable<?>> sources, final Collection<Comparable<?>> targetCollection) {
-        List<Comparable<?>> collection = new ArrayList<>(sources);
-        collection.addAll(targetCollection);
-        Optional<Class<?>> clazz = getTargetNumericType(collection);
+    public static boolean safeCollectionEquals(final Collection<Comparable<?>> sources, final Collection<Comparable<?>> targets) {
+        List<Comparable<?>> all = new ArrayList<>(sources);
+        all.addAll(targets);
+        Optional<Class<?>> clazz = getTargetNumericType(all);
         if (!clazz.isPresent()) {
-            return sources.equals(targetCollection);
+            return sources.equals(targets);
         }
-        List<Comparable<?>> sourceClazzCollection = sources.stream().map(number -> parseNumberByClazz(number.toString(), clazz.get())).collect(Collectors.toList());
-        List<Comparable<?>> targetClazzCollection = targetCollection.stream().map(number -> parseNumberByClazz(number.toString(), clazz.get())).collect(Collectors.toList());
-        return sourceClazzCollection.equals(targetClazzCollection);
+        List<Comparable<?>> sourceClasses = sources.stream().map(each -> parseNumberByClazz(each.toString(), clazz.get())).collect(Collectors.toList());
+        List<Comparable<?>> targetClasses = targets.stream().map(each -> parseNumberByClazz(each.toString(), clazz.get())).collect(Collectors.toList());
+        return sourceClasses.equals(targetClasses);
     }
     
     private static Class<?> getRangeTargetNumericType(final Range<Comparable<?>> sourceRange, final Range<Comparable<?>> targetRange) {
@@ -163,19 +163,19 @@ public final class SafeNumberOperationUtil {
     }
     
     private static Optional<Class<?>> getTargetNumericType(final List<Comparable<?>> endpoints) {
-        Set<Class<?>> clazzSet = endpoints.stream().filter(Objects::nonNull).map(Comparable::getClass).collect(Collectors.toSet());
+        Set<Class<?>> classes = endpoints.stream().filter(Objects::nonNull).map(Comparable::getClass).collect(Collectors.toSet());
         Class<?> clazz = null;
-        if (clazzSet.contains(BigDecimal.class)) {
+        if (classes.contains(BigDecimal.class)) {
             clazz = BigDecimal.class;
-        } else if (clazzSet.contains(Double.class)) {
+        } else if (classes.contains(Double.class)) {
             clazz = Double.class;
-        } else if (clazzSet.contains(Float.class)) {
+        } else if (classes.contains(Float.class)) {
             clazz = Float.class;
-        } else if (clazzSet.contains(BigInteger.class)) {
+        } else if (classes.contains(BigInteger.class)) {
             clazz = BigInteger.class;
-        } else if (clazzSet.contains(Long.class)) {
+        } else if (classes.contains(Long.class)) {
             clazz = Long.class;
-        } else if (clazzSet.contains(Integer.class)) {
+        } else if (classes.contains(Integer.class)) {
             clazz = Integer.class;
         }
         return Optional.ofNullable(clazz);

@@ -27,6 +27,16 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_sharding_value_with_dollar_parameter_marker_for_parameters" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT * FROM t_account WHERE account_id = $1" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = $1" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_with_dollar_parameter_marker_for_literals" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT * FROM t_account WHERE account_id = 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_right_sharding_value_for_parameters">
         <input sql="SELECT * FROM t_account WHERE ? = account_id" parameters="100" />
         <output sql="SELECT * FROM t_account_0 WHERE ? = account_id" parameters="100" />
@@ -39,7 +49,7 @@
 
     <rewrite-assertion id="select_with_not_exists" db-types="MySQL">
         <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
-        <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />
+        <output sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_sum_fun">
@@ -52,6 +62,12 @@
         <output sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account_0 t WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_count_fun_and_distinct_with_group_by">
+        <input sql="SELECT COUNT(DISTINCT amount), account_id FROM t_account GROUP BY account_id" />
+        <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_0  ORDER BY account_id ASC " />
+        <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_1  ORDER BY account_id ASC " />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_having" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
@@ -62,10 +78,9 @@
         <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_schema">
-        <input sql="SELECT * FROM sharding_db.t_account" />
-        <output sql="SELECT * FROM t_account_0"/>
-        <output sql="SELECT * FROM t_account_1"/>
+    <rewrite-assertion id="select_with_schema" db-types="MySQL,Oracle,SQLServer,SQL92">
+        <input sql="SELECT * FROM logic_db.t_account" />
+        <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery" db-types="MySQL">
@@ -103,16 +118,24 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account_0 WHERE account_id = ?) AND ?"  parameters="100, 100, 1500"/>
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_without_sharding_value_for_parameters">
-        <input sql="SELECT * FROM sharding_db.t_account WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000" />
+    <rewrite-assertion id="select_without_sharding_value_for_parameters" db-types="MySQL,Oracle,SQLServer,SQL92">
+        <input sql="SELECT * FROM logic_db.t_account WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = ? UNION ALL SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000, 1000" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_without_sharding_value_for_literals">
-        <input sql="SELECT * FROM sharding_db.t_account WHERE amount = 1000" />
-        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000" />
-        <output sql="SELECT * FROM t_account_1 WHERE amount = 1000" />
+    <rewrite-assertion id="select_without_sharding_value_for_literals" db-types="MySQL,Oracle,SQLServer,SQL92">
+        <input sql="SELECT * FROM logic_db.t_account WHERE amount = 1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_parameters" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT * FROM public.t_account WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
+        <output sql="SELECT * FROM public.t_account_0 WHERE amount = $2 OR amount = $1 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_literals" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT * FROM public.t_account WHERE amount = 1000 OR amount = 900" />
+        <output sql="SELECT * FROM public.t_account_0 WHERE amount = 1000 OR amount = 900 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = 1000 OR amount = 900" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_for_literals_with_order_by" db-types="MySQL">
@@ -162,8 +185,7 @@
     
     <rewrite-assertion id="select_avg_with_multiple_route">
         <input sql="SELECT AVG(amount) FROM t_account WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_0 WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_1 WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_0 WHERE amount = ? UNION ALL SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_account_1 WHERE amount = ?" parameters="1000, 1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_distinct_with_single_route">
@@ -173,14 +195,12 @@
     
     <rewrite-assertion id="select_distinct_with_alias_with_multiple_route">
         <input sql="SELECT COUNT(DISTINCT account_id) a, SUM(DISTINCT account_id) b FROM t_account" />
-        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_0" />
-        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_1" />
+        <output sql="SELECT DISTINCT account_id a, account_id b FROM t_account_0 UNION ALL SELECT DISTINCT account_id a, account_id b FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_distinct_without_alias_with_multiple_route">
         <input sql="SELECT COUNT(DISTINCT account_id), SUM(DISTINCT account_id) FROM t_account" />
-        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_0" />
-        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_1" />
+        <output sql="SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_0 UNION ALL SELECT DISTINCT account_id AS AGGREGATION_DISTINCT_DERIVED_0, account_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_account_by_with_single_route">
@@ -498,8 +518,7 @@
 
     <rewrite-assertion id="select_with_or_and_condition">
         <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
-        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
-        <output sql="SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
+        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=? UNION ALL SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3, 1, 2, 3"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
@@ -532,5 +551,45 @@
         <input sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,5" />
         <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_0 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
         <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_1 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE BINARY account_id = ?" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE BINARY account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_literals" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE BINARY account_id = 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE BINARY account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_value_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE account_id = BINARY ?" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = BINARY ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_value_for_literals" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE account_id = BINARY 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = BINARY 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_name_in_shorthand_projection" db-types="MySQL">
+        <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT t_account_0.* FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_name_in_column_projection" db-types="MySQL">
+        <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT t_account_0.account_id FROM t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_name_in_table" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT account_id FROM public.t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_database_name_and_schema_name_in_table" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT account_id FROM public.public.t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
 </rewrite-assertions>

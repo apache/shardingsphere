@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -65,8 +66,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     private void addDefaultRow() {
-        LinkedList<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllSchemaNames().stream()
-                .filter(each -> !hasDatasource(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> !hasDatasource(each)).collect(Collectors.toList());
         schemaWithoutDataSource.forEach(each -> getRows().addLast(getDefaultRowData(each)));
     }
     
@@ -79,21 +79,21 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     @Override
-    protected List<String> getSchemaNames() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     
     @Override
-    protected void rowPostProcessing(final String schemaName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         buildColumnNames(aliasMap);
-        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource();
+        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourcesMetaData().getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         databaseNameAlias = aliasMap.getOrDefault(DATABASE_NAME, aliasMap.getOrDefault(DATNAME, aliasMap.getOrDefault(NAME, "")));
         String rowValue = rowMap.getOrDefault(databaseNameAlias, "").toString();
         isQueryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rowMap.replace(databaseNameAlias, schemaName);
+            rowMap.replace(databaseNameAlias, databaseName);
         } else {
             rowMap.clear();
         }

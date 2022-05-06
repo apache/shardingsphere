@@ -63,7 +63,7 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
         schema = new ShardingSphereSchema(tableMetaDataMap);
@@ -97,7 +97,7 @@ public final class GeneratedKeyContextEngineTest {
     private void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl1"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), 
+        assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(),
                 Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
     

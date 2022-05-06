@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * Schema changed event.
@@ -28,8 +28,12 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 @RequiredArgsConstructor
 @Getter
 public final class SchemaChangedEvent implements GovernanceEvent {
-
+    
+    private final String databaseName;
+    
     private final String schemaName;
-
-    private final ShardingSphereSchema schema;
+    
+    private final TableMetaData changedTableMetaData;
+    
+    private final String deletedTable;
 }

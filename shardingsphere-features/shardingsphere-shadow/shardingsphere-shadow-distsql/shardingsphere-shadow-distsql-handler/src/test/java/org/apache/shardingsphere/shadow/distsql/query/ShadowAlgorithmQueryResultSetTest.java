@@ -49,16 +49,16 @@ public final class ShadowAlgorithmQueryResultSetTest {
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadowAlgorithmName"));
-        assertThat(actual.get(1), is("simple_note"));
+        assertThat(actual.get(1), is("simple_hint"));
         assertThat(actual.get(2), is("foo=bar"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("foo", "bar");
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singletonList("shadowAlgorithmName")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_note", properties));
+        Properties props = new Properties();
+        props.setProperty("foo", "bar");
+        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("shadowAlgorithmName")));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", props));
         return result;
     }
 }

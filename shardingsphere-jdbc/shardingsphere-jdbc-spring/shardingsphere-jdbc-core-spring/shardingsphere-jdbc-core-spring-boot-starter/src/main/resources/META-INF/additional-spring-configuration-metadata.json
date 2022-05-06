@@ -72,8 +72,11 @@
     },
     {
       "name": "spring.shardingsphere.datasource",
-      "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
-      "sourceType": "org.apache.shardingsphere.spring.boot.util.DataSourceUtil"
+      "type": "java.util.Map<java.lang.String, java.util.Map<java.lang.String, java.lang.Object>>"
+    },
+    {
+      "name": "spring.shardingsphere.database.name",
+      "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
     },
     {
       "name": "spring.shardingsphere.schema.name",

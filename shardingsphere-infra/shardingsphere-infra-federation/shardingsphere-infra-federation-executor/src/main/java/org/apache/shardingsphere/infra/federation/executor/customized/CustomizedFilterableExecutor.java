@@ -23,12 +23,11 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -37,28 +36,29 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Customized filterable executor.
  */
 public final class CustomizedFilterableExecutor implements FederationExecutor {
     
+    private final String databaseName;
+    
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
     
-    public CustomizedFilterableExecutor(final String schemaName, final OptimizerContext context) {
+    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
+        this.databaseName = databaseName;
         this.schemaName = schemaName;
         optimizer = new ShardingSphereOptimizer(context);
     }
     
     @Override
-    public List<QueryResult> executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                                          final JDBCExecutorCallback<? extends ExecuteResult> callback, final ExecutionContext executionContext) throws SQLException {
+    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         // TODO
-        return Collections.emptyList();
+        return null;
     }
     
     @Override
@@ -68,13 +68,13 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
         // TODO
-        return execute(optimizer.optimize(schemaName, sqlStatement));
+        return execute(optimizer.optimize(databaseName, schemaName, sqlStatement));
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(schemaName).getConverter().getCluster();
+        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster();
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(schemaName, optimizer.getContext()));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(databaseName, schemaName, optimizer.getContext()));
     }
     
     @Override

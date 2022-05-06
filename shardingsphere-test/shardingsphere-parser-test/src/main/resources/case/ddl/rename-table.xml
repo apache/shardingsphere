@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <rename-table sql-case-id="rename_single_table">
+        <rename start-index="13" stop-index="31">
+            <table name="t_order" start-index="13" stop-index="19" />
+            <rename-table name="t_order1" start-index="24" stop-index="31" />
+        </rename>
+    </rename-table>
+    <rename-table sql-case-id="rename_multiple_tables">
+        <rename start-index="13" stop-index="31">
+            <table name="t_order" start-index="13" stop-index="19" />
+            <rename-table name="t_order1" start-index="24" stop-index="31" />
+        </rename>
+        <rename start-index="34" stop-index="62">
+            <table name="t_order_item" start-index="34" stop-index="45" />
+            <rename-table name="t_order_item1" start-index="50" stop-index="62" />
+        </rename>
+    </rename-table>
+    <rename-table sql-case-id="rename_by_mysql_source">
+        <rename start-index="13" stop-index="56">
+            <table name="columns_priv" start-index="13" stop-index="30">
+                <owner name="mysql" start-index="13" stop-index="17" />
+            </table>
+            <rename-table name="columns_priv_bak" start-index="35" stop-index="56">
+                <owner name="mysql" start-index="35" stop-index="39" />
+            </rename-table>
+        </rename>
+    </rename-table>
+</sql-parser-test-cases>

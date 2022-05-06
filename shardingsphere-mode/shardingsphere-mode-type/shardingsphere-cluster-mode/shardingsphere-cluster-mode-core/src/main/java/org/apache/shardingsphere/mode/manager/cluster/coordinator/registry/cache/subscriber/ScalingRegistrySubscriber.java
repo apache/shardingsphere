@@ -19,27 +19,15 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cach
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Scaling registry subscriber.
@@ -50,32 +38,30 @@ public final class ScalingRegistrySubscriber {
     
     private final ClusterPersistRepository repository;
     
-    private final SchemaRulePersistService persistService;
-    
-    private final DataSourcePersistService dataSourcePersistService;
-    
-    private final RegistryCacheManager registryCacheManager;
+    private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
-        this.persistService = new SchemaRulePersistService(repository);
-        dataSourcePersistService = new DataSourcePersistService(repository);
-        registryCacheManager = new RegistryCacheManager(repository);
+        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
-     * Rule configuration cached.
+     * Start scaling after new schema version prepared.
      *
-     * @param event rule configuration cached event
+     * @param event Schema version prepared event.
      */
     @Subscribe
-    public void ruleConfigurationCached(final RuleConfigurationCachedEvent event) {
-        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
-        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
-        String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
-        String ruleCacheId = event.getCacheId();
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
+    public void startScaling(final MetadataVersionPreparedEvent event) {
+        String databaseName = event.getDatabaseName();
+        String activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(databaseName).get();
+        String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion));
+        String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, event.getVersion()));
+        String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion));
+        String targetRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, event.getVersion()));
+        log.info("start scaling job, locked the schema name, event={}", event);
+        StartScalingEvent startScalingEvent = new StartScalingEvent(databaseName, sourceDataSource, sourceRule, targetDataSource, targetRule,
+                Integer.parseInt(activeVersion), Integer.parseInt(event.getVersion()));
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
@@ -87,29 +73,13 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
         log.info("scalingTaskFinished, event={}", event);
-        YamlRootConfiguration yamlRootConfiguration = event.getTargetRootConfig();
-        Map<String, DataSourceConfiguration> dataSourceConfigs = yamlRootConfiguration.getDataSources().entrySet().stream().collect(Collectors.toMap(
-                Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootConfiguration.getRules());
-        ClusterSwitchConfigurationEvent switchEvent = new ClusterSwitchConfigurationEvent(event.getTargetSchemaName(), dataSourceConfigs, ruleConfigs);
-        ShardingSphereEventBus.getInstance().post(switchEvent);
-        String ruleCacheId = event.getRuleCacheId();
-        if (null != ruleCacheId) {
-            log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
-            registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
+        int targetActiveVersion = event.getTargetActiveVersion();
+        Optional<String> activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(event.getTargetSchemaName());
+        if (activeVersion.isPresent() && targetActiveVersion == Integer.parseInt(activeVersion.get())) {
+            databaseVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetNewVersion() + "");
+            databaseVersionPersistService.deleteVersion(event.getTargetSchemaName(), targetActiveVersion + "");
+        } else {
+            log.error("targetActiveVersion does not match current activeVersion, targetActiveVersion={}, activeVersion={}", targetActiveVersion, activeVersion.orElse(null));
         }
-    }
-    
-    /**
-     * Cluster switch configuration.
-     *
-     * @param event cluster switch configuration event
-     */
-    @Subscribe
-    public void clusterSwitchConfiguration(final ClusterSwitchConfigurationEvent event) {
-        String schemaName = event.getTargetSchemaName();
-        log.info("clusterSwitchConfiguration, schemaName={}", schemaName);
-        dataSourcePersistService.persist(schemaName, event.getTargetDataSourceConfigs());
-        persistService.persist(schemaName, event.getTargetRuleConfigs());
     }
 }

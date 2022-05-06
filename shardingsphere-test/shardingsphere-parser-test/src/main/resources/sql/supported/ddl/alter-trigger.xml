@@ -21,4 +21,6 @@
         ON Sales.SalesPersonQuotaHistory
         AFTER INSERT
         AS INSERT INTO SalesPersonQuotaHistory VALUES(t1, 100)" db-types="SQLServer" />
+    <sql-case id="alter_trigger_disable" value="ALTER TRIGGER update_job_history DISABLE;" db-types="Oracle" />
+    <sql-case id="alter_trigger_enable" value="ALTER TRIGGER update_job_history ENABLE;" db-types="Oracle" />
 </sql-cases>

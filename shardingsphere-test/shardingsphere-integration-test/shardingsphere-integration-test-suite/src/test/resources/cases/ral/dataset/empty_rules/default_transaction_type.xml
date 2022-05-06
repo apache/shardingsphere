@@ -17,7 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="transaction_type"/>
+        <column name="variable_name"/>
+        <column name="variable_value"/>
     </metadata>
-    <row values="LOCAL"/>
+    <row values="transaction_type| LOCAL"/>
 </dataset>

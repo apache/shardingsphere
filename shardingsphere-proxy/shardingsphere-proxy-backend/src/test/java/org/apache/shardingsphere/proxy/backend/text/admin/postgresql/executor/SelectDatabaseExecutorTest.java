@@ -18,22 +18,24 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -47,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,18 +68,20 @@ public final class SelectDatabaseExecutorTest {
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
     
+    private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
+    
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
+                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }
     
-    private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
+    private void mockResultSet(final Map<String, String> mockMap) throws SQLException {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         List<String> keys = new ArrayList<>(mockMap.keySet());
         for (int i = 0; i < keys.size(); i++) {
@@ -91,52 +96,57 @@ public final class SelectDatabaseExecutorTest {
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
         return new ShardingSphereMetaData("sharding_db",
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
-                mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereSchema.class)
-        );
+                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
+                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+    }
+    
+    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
+        ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
+        when(metaData.getRules()).thenReturn(Collections.emptyList());
+        return new ShardingSphereMetaData(schemaName,
+                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
+                metaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", dataSource);
-        return dataSourceMap;
+        return Collections.singletonMap("ds_0", dataSource);
     }
     
     private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData meta = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(meta.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return meta;
+        DataSourcesMetaData result = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
+        return result;
     }
     
     @Test
-    public void assertSelectSchemataExecute() throws SQLException {
-        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner," 
-                + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
+    public void assertSelectDatabaseExecute() throws SQLException {
+        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner,"
+                + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");
-        mockResultSet(mockResultSetMap, true, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
-        metaDataMap.put("test", mock(ShardingSphereMetaData.class));
-        SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
-        assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
+        metaDataMap.put("test", getEmptyMetaData("test"));
+        SelectDatabaseExecutor selectDatabaseExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
+        selectDatabaseExecutor.execute(mock(ConnectionSession.class));
+        assertThat(selectDatabaseExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         int count = 0;
-        while (selectSchemataExecutor.getMergedResult().next()) {
+        while (selectDatabaseExecutor.getMergedResult().next()) {
             count++;
-            if ("sharding_db".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is("postgres"));
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is("-1"));
-            } else if ("test".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is(""));
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is(""));
+            if ("sharding_db".equals(selectDatabaseExecutor.getMergedResult().getValue(1, String.class))) {
+                assertThat(selectDatabaseExecutor.getMergedResult().getValue(2, String.class), is("postgres"));
+                assertThat(selectDatabaseExecutor.getMergedResult().getValue(3, String.class), is("-1"));
+            } else if ("test".equals(selectDatabaseExecutor.getMergedResult().getValue(1, String.class))) {
+                assertThat(selectDatabaseExecutor.getMergedResult().getValue(2, String.class), is(""));
+                assertThat(selectDatabaseExecutor.getMergedResult().getValue(3, String.class), is(""));
             } else {
                 fail("expected : `sharding_db` or `test`");
             }
@@ -145,54 +155,54 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectSchemataWithoutDataSourceExecute1() throws SQLException {
-        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, " 
-                + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
+    public void assertSelectDatabaseWithoutDataSourceExecute() throws SQLException {
+        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, "
+                + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
-        Map<String, String> mockResultSetMap = new HashMap<>();
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
+        Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");
-        mockResultSet(mockResultSetMap, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
-        SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
-        while (selectSchemataExecutor.getMergedResult().next()) {
-            assertThat(selectSchemataExecutor.getMergedResult().getValue(1, String.class), is("sharding_db"));
+        metaDataMap.put("sharding_db", getEmptyMetaData("sharding_db"));
+        SelectDatabaseExecutor selectDatabaseExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
+        selectDatabaseExecutor.execute(mock(ConnectionSession.class));
+        while (selectDatabaseExecutor.getMergedResult().next()) {
+            assertThat(selectDatabaseExecutor.getMergedResult().getValue(1, String.class), is("sharding_db"));
         }
     }
     
     @Test
-    public void assertSelectSchemataWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
+    public void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
-        Map<String, String> mockResultSetMap = new HashMap<>();
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
+        Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");
-        mockResultSet(mockResultSetMap, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        metaDataMap.put("sharding_db", mock(ShardingSphereMetaData.class));
-        SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
-        while (selectSchemataExecutor.getMergedResult().next()) {
-            assertThat(selectSchemataExecutor.getMergedResult().getValue(1, String.class), is(""));
-            assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is("sharding_db"));
-            assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is(""));
-            assertThat(selectSchemataExecutor.getMergedResult().getValue(4, String.class), is(""));
+        metaDataMap.put("sharding_db", getEmptyMetaData("sharding_db"));
+        SelectDatabaseExecutor selectDatabaseExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
+        selectDatabaseExecutor.execute(mock(ConnectionSession.class));
+        while (selectDatabaseExecutor.getMergedResult().next()) {
+            assertThat(selectDatabaseExecutor.getMergedResult().getValue(1, String.class), is(""));
+            assertThat(selectDatabaseExecutor.getMergedResult().getValue(2, String.class), is("sharding_db"));
+            assertThat(selectDatabaseExecutor.getMergedResult().getValue(3, String.class), is(""));
+            assertThat(selectDatabaseExecutor.getMergedResult().getValue(4, String.class), is(""));
         }
     }
     
     @Test
-    public void assertSelectSchemataInNoSchemaExecute() throws SQLException {
-        final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new ConfigurationProperties(new Properties())).parse(sql, false);
-        SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
-        assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
+    public void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
+        String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
+        SelectDatabaseExecutor selectDatabaseExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
+        selectDatabaseExecutor.execute(mock(ConnectionSession.class));
+        assertThat(selectDatabaseExecutor.getQueryResultMetaData().getColumnCount(), is(0));
     }
 }

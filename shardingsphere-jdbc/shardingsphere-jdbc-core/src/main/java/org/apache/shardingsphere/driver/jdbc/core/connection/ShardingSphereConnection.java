@@ -23,12 +23,14 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 
 /**
@@ -37,7 +39,7 @@ import java.sql.Statement;
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
-    private final String schema;
+    private final String databaseName;
     
     @Getter
     private final ContextManager contextManager;
@@ -53,10 +55,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String schema, final ContextManager contextManager) {
-        this.schema = schema;
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
+        this.databaseName = databaseName;
         this.contextManager = contextManager;
-        connectionManager = new ConnectionManager(schema, contextManager);
+        connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     
     /**
@@ -160,7 +162,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.commit();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
         }
     }
     
@@ -169,7 +173,48 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.rollback();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
+        }
+    }
+    
+    @Override
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        connectionManager.rollback(savepoint);
+    }
+    
+    @Override
+    public Savepoint setSavepoint(final String name) throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        return connectionManager.setSavepoint(name);
+    }
+    
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        return connectionManager.setSavepoint();
+    }
+    
+    @Override
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            return;
+        }
+        connectionManager.releaseSavepoint(savepoint);
+    }
+    
+    private void checkClose() throws SQLException {
+        if (isClosed()) {
+            throw new SQLException("This connection has been closed");
         }
     }
     
@@ -204,6 +249,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
         return connectionManager.getRandomConnection().createArrayOf(typeName, elements);
+    }
+    
+    @Override
+    public String getSchema() throws SQLException {
+        // TODO return databaseName for now in getSchema(), the same as before
+        return databaseName;
     }
     
     @Override

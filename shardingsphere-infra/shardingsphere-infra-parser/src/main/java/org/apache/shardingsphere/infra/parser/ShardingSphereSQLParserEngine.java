@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.parser;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -36,8 +35,9 @@ public final class ShardingSphereSQLParserEngine {
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseTypeName, final ConfigurationProperties props) {
-        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName, props);
+    public ShardingSphereSQLParserEngine(final String databaseTypeName, final ParserConfiguration config) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(
+                databaseTypeName, config.getSqlStatementCacheOption(), config.getParseTreeCacheOption(), config.isParseComment());
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
@@ -53,19 +53,7 @@ public final class ShardingSphereSQLParserEngine {
      * @param useCache whether use cache
      * @return SQL statement
      */
-    @SuppressWarnings("OverlyBroadCatchBlock")
     public SQLStatement parse(final String sql, final boolean useCache) {
-        try {
-            return parse0(sql, useCache);
-            // CHECKSTYLE:OFF
-            // TODO check whether throw SQLParsingException only
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw ex;
-        }
-    }
-    
-    private SQLStatement parse0(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);
         } catch (final SQLParsingException | ParseCancellationException | UncheckedExecutionException originalEx) {

@@ -17,16 +17,25 @@
 
 package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.Getter;
 
 import java.util.Properties;
 
 /**
  * ShardingSphere algorithm configuration.
  */
-public final class ShardingSphereAlgorithmConfiguration extends TypedSPIConfiguration {
+@Getter
+public final class ShardingSphereAlgorithmConfiguration {
+    
+    private final String type;
+    
+    private final Properties props;
     
     public ShardingSphereAlgorithmConfiguration(final String type, final Properties props) {
-        super(type, props);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.props = null == props ? new Properties() : props;
     }
 }

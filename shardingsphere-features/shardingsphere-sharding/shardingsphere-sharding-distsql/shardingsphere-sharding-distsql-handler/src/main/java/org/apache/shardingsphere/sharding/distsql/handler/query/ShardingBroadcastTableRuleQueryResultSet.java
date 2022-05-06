@@ -39,7 +39,7 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLRe
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        data = shardingRuleConfig.map(optional -> optional.getBroadcastTables().iterator()).orElse(Collections.emptyIterator());
+        data = shardingRuleConfig.map(optional -> optional.getBroadcastTables().iterator()).orElseGet(Collections::emptyIterator);
     }
     
     @Override
@@ -59,6 +59,6 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLRe
     
     @Override
     public String getType() {
-        return ShowShardingBroadcastTableRulesStatement.class.getCanonicalName();
+        return ShowShardingBroadcastTableRulesStatement.class.getName();
     }
 }

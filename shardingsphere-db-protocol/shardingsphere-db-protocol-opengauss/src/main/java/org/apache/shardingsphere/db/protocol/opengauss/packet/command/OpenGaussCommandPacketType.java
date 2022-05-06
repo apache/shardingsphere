@@ -43,4 +43,14 @@ public enum OpenGaussCommandPacketType implements CommandPacketType, OpenGaussId
     public static CommandPacketType valueOf(final int value) {
         return BATCH_BIND_COMMAND.value == value ? BATCH_BIND_COMMAND : PostgreSQLCommandPacketType.valueOf(value);
     }
+    
+    /**
+     * Check if the packet type is extended protocol packet type.
+     *
+     * @param commandPacketType command packet type
+     * @return is extended protocol packet type
+     */
+    public static boolean isExtendedProtocolPacketType(final CommandPacketType commandPacketType) {
+        return BATCH_BIND_COMMAND == commandPacketType || PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType);
+    }
 }

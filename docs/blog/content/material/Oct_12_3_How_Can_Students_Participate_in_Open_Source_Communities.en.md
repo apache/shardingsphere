@@ -4,7 +4,7 @@ weight = 19
 chapter = true
 +++
 
-![](../../static/img/Blog_19_img_1_community.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_19_img_1_community.png)
 
 Having some experience in Open-Source projects or communities is quite common for developers nowadays. Actually, not only adults but students should, and are increasingly likely to get involved in Open-Source projects.
 
@@ -74,7 +74,7 @@ After mentoring countless local and international students, this is the perspect
 
 **Juan Pan | Trista**
 
-![](../../static/img/Blog_19_img_2_Pan_Juan_Photo.jpg)
+![](https://shardingsphere.apache.org/blog/img/Blog_19_img_2_Pan_Juan_Photo.jpg)
 
 SphereEx Co-Founder, Apache Member, Apache ShardingSphere PMC, Apache brpc(Incubating) & Apache AGE(Incubating) mentor.
 

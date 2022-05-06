@@ -58,11 +58,14 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     
     private final boolean enableSeataAT;
     
+    private final int globalTXTimeout;
+    
     public SeataATShardingSphereTransactionManager() {
         FileConfiguration config = new FileConfiguration("seata.conf");
         enableSeataAT = config.getBoolean("sharding.transaction.seata.at.enable", true);
         applicationId = config.getConfig("client.application.id");
         transactionServiceGroup = config.getConfig("client.transaction.service.group", "default");
+        globalTXTimeout = config.getInt("sharding.transaction.seata.tx.timeout", 60);
     }
     
     @Override
@@ -97,17 +100,25 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    @SneakyThrows(TransactionException.class)
     public void begin() {
+        begin(globalTXTimeout);
+    }
+    
+    @Override
+    @SneakyThrows(TransactionException.class)
+    public void begin(final int timeout) {
+        if (timeout < 0) {
+            throw new TransactionException("timeout should more than 0s");
+        }
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
-        globalTransaction.begin();
+        globalTransaction.begin(timeout * 1000);
         SeataTransactionHolder.set(globalTransaction);
     }
     
     @Override
     @SneakyThrows(TransactionException.class)
-    public void commit() {
+    public void commit(final boolean rollbackOnly) {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
             SeataTransactionHolder.get().commit();

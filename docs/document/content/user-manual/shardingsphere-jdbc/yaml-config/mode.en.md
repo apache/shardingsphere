@@ -39,9 +39,9 @@ mode:
   type: Cluster
   repository:
     type: # Type of persist repository
-    namespace: # Namespace of registry center
-    serverLists: # Server lists of registry center
     props: # Properties of persist repository
+      namespace: # Namespace of registry center
+      server-lists: # Server lists of registry center
       foo_key: foo_value
       bar_key: bar_value
   overwrite: # Whether overwrite persistent configuration with local configuration

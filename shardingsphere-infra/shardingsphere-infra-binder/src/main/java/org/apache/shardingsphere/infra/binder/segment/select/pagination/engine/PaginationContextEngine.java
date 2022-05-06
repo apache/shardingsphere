@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -48,16 +47,18 @@ public final class PaginationContextEngine {
      * @param selectStatement SQL statement
      * @param projectionsContext projections context
      * @param parameters SQL parameters
+     * @param whereSegments where segments
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext,
+                                                     final List<Object> parameters, final Collection<WhereSegment> whereSegments) {
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Collection<ExpressionSegment> expressions = new LinkedList<>();
-        for (WhereSegment each : getWhereSegments(selectStatement)) {
+        for (WhereSegment each : whereSegments) {
             expressions.add(each.getExpr());
         }
         if (topProjectionSegment.isPresent()) {
@@ -67,14 +68,6 @@ public final class PaginationContextEngine {
             return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, parameters);
         }
         return new PaginationContext(null, null, parameters);
-    }
-    
-    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        selectStatement.getWhere().ifPresent(result::add);
-        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
-        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
-        return result;
     }
     
     private boolean containsRowNumberPagination(final SelectStatement selectStatement) {

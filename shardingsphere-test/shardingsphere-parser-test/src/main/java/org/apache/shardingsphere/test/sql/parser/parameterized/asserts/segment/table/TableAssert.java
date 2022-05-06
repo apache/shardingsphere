@@ -30,19 +30,19 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.e
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedJoinTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSubqueryTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
 
 import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Table assert.
@@ -69,7 +69,7 @@ public final class TableAssert {
                     String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
-
+    
     /**
      * Assert actual table segment is correct with expected table.
      *
@@ -88,7 +88,7 @@ public final class TableAssert {
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
-
+    
     /**
      * Assert subquery expression.
      *
@@ -100,7 +100,7 @@ public final class TableAssert {
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
     }
-
+    
     /**
      * Assert join table.
      *
@@ -112,15 +112,14 @@ public final class TableAssert {
         assertIs(assertContext, actual.getLeft(), expected.getLeft());
         assertIs(assertContext, actual.getRight(), expected.getRight());
         ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
-        assertThat(assertContext.getText("Column size assertion error: "),
-                actual.getUsing() != null ? actual.getUsing().size() : 0, is(expected.getUsingColumns().size()));
+        assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
         int count = 0;
         for (ExpectedColumn each : expected.getUsingColumns()) {
             ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
             count++;
         }
     }
-
+    
     /**
      * Assert actual table segments is correct with expected tables.
      *
@@ -136,7 +135,7 @@ public final class TableAssert {
             count++;
         }
     }
-
+    
     /**
      * Assert actual simple table segments with expected simple tables.
      *

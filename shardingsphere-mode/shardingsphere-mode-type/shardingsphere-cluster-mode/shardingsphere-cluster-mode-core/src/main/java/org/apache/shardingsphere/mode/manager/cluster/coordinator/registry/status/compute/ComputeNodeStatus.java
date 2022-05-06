@@ -22,5 +22,5 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
  */
 public enum ComputeNodeStatus {
     
-    ONLINE, CIRCUIT_BREAKER
+    ONLINE, CIRCUIT_BREAK
 }

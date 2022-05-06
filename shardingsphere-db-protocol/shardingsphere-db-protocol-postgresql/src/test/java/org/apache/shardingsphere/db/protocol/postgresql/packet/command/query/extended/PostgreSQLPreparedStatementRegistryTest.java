@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
-
 import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -41,25 +39,27 @@ public final class PostgreSQLPreparedStatementRegistryTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(1, statementId);
         assertThat(preparedStatement.getSql(), is(sql));
-        assertTrue(preparedStatement.getColumnTypes().isEmpty());
+        assertTrue(preparedStatement.getParameterTypes().isEmpty());
     }
     
     @Test
-    public void assertGetNotExists() {
-        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(1, "stat-no-exists");
-        assertThat(preparedStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
-    
+    public void assertCloseStatement() {
+        final int connectionId = 2;
+        final String statementId = "S_2";
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statementId, "", mock(SQLStatement.class), Collections.emptyList());
+        assertNotNull(PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId));
+        PostgreSQLPreparedStatementRegistry.getInstance().closeStatement(connectionId, statementId);
+        assertNull(PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId));
     }
     
-    @Test
+    @Test(expected = NullPointerException.class)
     public void assertUnregister() {
-        String statementId = "stat-id";
-        String sql = "select * from t_order";
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
-        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(1, statementId);
-        assertNotNull(preparedStatement);
-        PostgreSQLPreparedStatementRegistry.getInstance().unregister(1, statementId);
-        preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(1, "stat-no-exists");
-        assertThat(preparedStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
+        final int connectionId = 3;
+        final String statementId = "";
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
+        PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId);
+        PostgreSQLPreparedStatementRegistry.getInstance().unregister(connectionId);
+        PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId);
     }
 }

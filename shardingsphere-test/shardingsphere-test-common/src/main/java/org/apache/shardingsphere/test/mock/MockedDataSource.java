@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.mock;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.sql.DataSource;
@@ -25,6 +27,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,25 +38,53 @@ import static org.mockito.Mockito.when;
 /**
  * Mocked data source.
  */
+@NoArgsConstructor
 @Getter
 @Setter
-public final class MockedDataSource implements DataSource {
+public final class MockedDataSource implements DataSource, AutoCloseable {
+    
+    private String url = "jdbc:mock://127.0.0.1/foo_ds";
     
     private String driverClassName;
     
-    private String url;
+    private String username = "root";
     
-    private String username;
+    private String password = "root";
     
-    private String password;
+    private Integer maxPoolSize;
+    
+    private Integer minPoolSize;
     
     private List<String> connectionInitSqls;
+    
+    private Properties jdbcUrlProperties;
+    
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Connection connection;
+    
+    @Setter(AccessLevel.NONE)
+    private Boolean closed;
+    
+    public MockedDataSource(final String url, final String username, final String password) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+    
+    public MockedDataSource(final Connection connection) {
+        this.connection = connection;
+    }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public Connection getConnection() throws SQLException {
+        if (null != connection) {
+            return connection;
+        }
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:mock");
+        when(result.getMetaData().getURL()).thenReturn(url);
+        when(result.getMetaData().getUserName()).thenReturn(username);
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
         return result;
     }
@@ -97,5 +128,10 @@ public final class MockedDataSource implements DataSource {
     @Override
     public Logger getParentLogger() {
         return null;
+    }
+    
+    @Override
+    public void close() {
+        closed = true;
     }
 }

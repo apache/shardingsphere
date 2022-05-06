@@ -17,7 +17,7 @@ The rewrite tests are in the test folder under `sharding-core/sharding-core-rewr
 
 Test engine is the entrance of rewrite tests, just like other test engines, through Junit [Parameterized](https://github.com/junit-team/junit4/wiki/Parameterized-tests), read every and each data in the xml file under the target test type in `test\resources`, and then assert by the engine one by one
 
-Environment configuration is the yaml file under test type under `test\resources\yaml`. The configuration file contains dataSources，shardingRule，encryptRule and other info. for example:
+Environment configuration is the yaml file under test type under `test\resources\yaml`. The configuration file contains dataSources, shardingRule, encryptRule and other info. for example:
 
 ```yaml
 dataSources:
@@ -60,8 +60,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 Assert data are in the xml under test type in `test\resources`. In the xml file, `yaml-rule` means the environment configuration file path, `input` contains the target SQL and parameters, `output` contains the expected SQL and parameters.

@@ -18,7 +18,7 @@ Following the article’s publication, we received many messages from our reader
 
 **Figure 1:** Sharding Workflow
 
-![](../../static/img/Blog_22_img_1_sharding_workflow_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_1_sharding_workflow_en.png)
 
 In such workflow, you have to clearly know your sharding strategies, and the actual table names and their datasources. Then, you base your sharding rules on such information.
 
@@ -26,7 +26,7 @@ One of the table distribution results may be 8 sharding databases each containin
 
 **Figure 2:** 8 Databases * 4 Tables Distribution
 
-![](../../static/img/Blog_22_img_2_8_Databases_4_Tables_Distribution.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_2_8_Databases_4_Tables_Distribution.png)
 
 ## Problem
 
@@ -65,7 +65,7 @@ ShardingSphere actually has very user-friendly configuration rules. However, use
 
 *We always pay attention to user issues. For example, we have noticed one of our users found the following issue:*
 
-![](../../static/img/Blog_22_img_3_Question_Comment.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_3_Question_Comment.png)
 
 ## Why You Need AutoTable？
 
@@ -176,7 +176,7 @@ For more information, please read: [https://github.com/apache/shardingsphere/blo
 
 @CatYangWei was the first GitHub user to ask about `AutoTable`.
 
-![](../../static/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
 
 We’d like to thank him for helping us find the problem. We do appreciate that. In order to express our gratitude, we will contact you later and send you a gift. as a token of appreciation from the community👏👏👏
 
@@ -196,6 +196,6 @@ Contributor Guide：[https://shardingsphere.apache.org/community/en/contribute/]
 
 Longtao Jiang
 
-![](../../static/img/Blog_22_img_5_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Jiang_Longtao_Photo.png)
 
 > SphereEx Middleware Development Engineer & Apache ShardingSphere Contributor.

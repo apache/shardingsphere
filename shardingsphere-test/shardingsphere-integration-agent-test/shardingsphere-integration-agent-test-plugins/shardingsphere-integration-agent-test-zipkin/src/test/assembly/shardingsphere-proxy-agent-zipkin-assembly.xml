@@ -22,10 +22,10 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-
+    
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-distribution/target/shardingsphere-agent/plugins</directory>
+            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-zipkin-*.jar</include>

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFie
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
@@ -86,5 +86,14 @@ public final class ResponsePacketBuilder {
      */
     public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader) {
         return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId()));
+    }
+    
+    /**
+     * Build client encoding response packets.
+     *
+     * @return client encoding response packets
+     */
+    public static Collection<DatabasePacket<?>> buildClientEncodingResponsePackets() {
+        return Collections.singletonList(new MySQLOKPacket(1, 0, 0));
     }
 }

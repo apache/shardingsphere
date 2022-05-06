@@ -29,6 +29,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression {
     
-    @XmlAttribute
-    private int value;
+    @XmlAttribute(name = "parameter-index")
+    private int parameterIndex;
 }

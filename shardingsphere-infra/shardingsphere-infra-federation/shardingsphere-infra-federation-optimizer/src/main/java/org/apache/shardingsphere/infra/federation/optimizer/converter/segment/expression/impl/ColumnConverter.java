@@ -37,8 +37,8 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     public Optional<SqlIdentifier> convertToSQLNode(final ColumnSegment segment) {
         Optional<OwnerSegment> owner = segment.getOwner();
         String columnName = segment.getIdentifier().getValue();
-        SqlIdentifier sqlIdentifier = owner.map(optional 
-            -> new SqlIdentifier(Arrays.asList(optional.getIdentifier().getValue(), columnName), SqlParserPos.ZERO)).orElseGet(() -> new SqlIdentifier(columnName, SqlParserPos.ZERO));
+        SqlIdentifier sqlIdentifier = owner.map(optional -> new SqlIdentifier(Arrays.asList(optional.getIdentifier().getValue(), columnName), SqlParserPos.ZERO))
+                .orElseGet(() -> new SqlIdentifier(columnName, SqlParserPos.ZERO));
         return Optional.of(sqlIdentifier);
     }
     

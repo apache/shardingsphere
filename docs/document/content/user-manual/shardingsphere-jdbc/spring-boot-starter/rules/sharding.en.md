@@ -31,7 +31,7 @@ spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # O
 spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.actual-data-sources= # data source names
 
 spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-strategy.standard.sharding-column= # Sharding column name
-spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-strategy.standard.sharding-algorithm= # Auto sharding algorithm name
+spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-strategy.standard.sharding-algorithm-name= # Auto sharding algorithm name
 
 # Key generator strategy configuration
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # Column name of key generator

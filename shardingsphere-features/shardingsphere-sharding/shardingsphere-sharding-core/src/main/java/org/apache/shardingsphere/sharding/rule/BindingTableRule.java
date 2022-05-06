@@ -52,17 +52,13 @@ public final class BindingTableRule {
      * 
      * @param dataSource data source name
      * @param logicTable logic table name
+     * @param otherLogicTable other logic table name in same binding table rule
      * @param otherActualTable other actual table name in same binding table rule
      * @return actual table name
      */
-    public String getBindingActualTable(final String dataSource, final String logicTable, final String otherActualTable) {
-        int index = -1;
-        for (TableRule each : tableRules.values()) {
-            index = each.findActualTableIndex(dataSource, otherActualTable);
-            if (-1 != index) {
-                break;
-            }
-        }
+    public String getBindingActualTable(final String dataSource, final String logicTable, final String otherLogicTable, final String otherActualTable) {
+        Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable.toLowerCase()));
+        int index = otherLogicTableRule.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
         if (-1 == index) {
             throw new ShardingSphereConfigurationException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
         }
@@ -87,7 +83,7 @@ public final class BindingTableRule {
         for (String each : availableLogicBindingTables) {
             String availableLogicTable = each.toLowerCase();
             if (!availableLogicTable.equalsIgnoreCase(logicTable) && hasLogicTable(availableLogicTable)) {
-                result.put(availableLogicTable, getBindingActualTable(dataSource, availableLogicTable, actualTable));
+                result.put(availableLogicTable, getBindingActualTable(dataSource, availableLogicTable, logicTable, actualTable));
             }
         }
         return result;

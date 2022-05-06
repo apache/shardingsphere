@@ -11,7 +11,6 @@ Attributes:
 
 | *Name*                     | *DataType*                                          | *Description*                                     | *Default Value* |
 | -------------------------- | --------------------------------------------------- | ------------------------------------------------- | --------------- |
-| enable                     | boolean                                             | Shadow DB switch                            | false           |
 | dataSources                | Map\<String, ShadowDataSourceConfiguration\>        | Shadow data source mapping name and configuration |                 |
 | tables                     | Map\<String, ShadowTableConfiguration\>             | Shadow table name and configuration               |                 |
 | defaultShadowAlgorithmName | String                                              | Default shadow algorithm name                     |                 |

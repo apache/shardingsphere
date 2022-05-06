@@ -23,10 +23,14 @@ import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.SqlUnresolvedFunction;
 import org.apache.calcite.sql.fun.SqlBetweenOperator;
+import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.fun.SqlInOperator;
+import org.apache.calcite.sql.fun.SqlLikeOperator;
 import org.apache.calcite.sql.fun.SqlPositionFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -68,10 +72,10 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (segment instanceof LiteralExpressionSegment) {
             return new LiteralExpressionConverter().convertToSQLNode((LiteralExpressionSegment) segment);
         } else if (segment instanceof CommonExpressionSegment) {
-            // TODO 
+            // TODO
             throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
         } else if (segment instanceof ListExpression) {
-            return new ListExpressionConverter().convertToSQLNode((ListExpression) segment);
+            return new ListExpressionConverter().convertToSQLNode((ListExpression) segment).map(optional -> optional);
         } else if (segment instanceof BinaryOperationExpression) {
             return new BinaryOperationExpressionConverter().convertToSQLNode((BinaryOperationExpression) segment).map(optional -> optional);
         } else if (segment instanceof ColumnSegment) {
@@ -95,7 +99,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
     @Override
     public Optional<ExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (null == sqlNode) {
-            return Optional.empty(); 
+            return Optional.empty();
         }
         if (sqlNode instanceof SqlIdentifier) {
             return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(optional -> optional);
@@ -111,6 +115,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (sqlNode instanceof SqlDynamicParam) {
             return new ParameterMarkerExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
+        }
+        if (sqlNode instanceof SqlNodeList) {
+            return new ListExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
         }
         return Optional.empty();
     }
@@ -132,10 +139,10 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (operator.getName().equals(SqlStdOperatorTable.EXISTS.getName())) {
             return new ExistsSubqueryExpressionConverter(not).convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
-        if (operator instanceof SqlBinaryOperator) {
+        if (operator instanceof SqlBinaryOperator || operator instanceof SqlLikeOperator) {
             return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
-        if (operator instanceof SqlPositionFunction) {
+        if (operator instanceof SqlPositionFunction || operator instanceof SqlCastFunction || operator instanceof SqlUnresolvedFunction) {
             return new FunctionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
         return Optional.empty();

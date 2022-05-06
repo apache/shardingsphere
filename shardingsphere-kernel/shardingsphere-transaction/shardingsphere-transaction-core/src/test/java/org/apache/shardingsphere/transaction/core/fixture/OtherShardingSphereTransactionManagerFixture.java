@@ -52,7 +52,11 @@ public final class OtherShardingSphereTransactionManagerFixture implements Shard
     }
     
     @Override
-    public void commit() {
+    public void begin(final int timeout) {
+    }
+    
+    @Override
+    public void commit(final boolean rollbackOnly) {
     }
     
     @Override

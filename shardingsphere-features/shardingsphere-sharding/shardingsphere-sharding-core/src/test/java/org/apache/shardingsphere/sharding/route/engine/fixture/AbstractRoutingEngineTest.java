@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.fixture;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -111,17 +112,17 @@ public abstract class AbstractRoutingEngineTest {
     protected final ShardingRule createHintShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
-        shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
+        shardingRuleConfig.getShardingAlgorithms().put("hint_fixture", new ShardingSphereAlgorithmConfiguration("HINT.FIXTURE", new Properties()));
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     protected final ShardingRule createMixedShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfig("t_hint_ds_test", "ds_${0..1}.t_hint_ds_test_${0..1}",
-            new HintShardingStrategyConfiguration("hint_test"), createStandardShardingStrategyConfiguration("t_hint_ds_test_inline", "t_hint_ds_test_${order_id % 2}")));
+                new HintShardingStrategyConfiguration("hint_fixture"), createStandardShardingStrategyConfiguration("t_hint_ds_test_inline", "t_hint_ds_test_${order_id % 2}")));
         shardingRuleConfig.getTables().add(createTableRuleConfig("t_hint_table_test", "ds_${0..1}.t_hint_table_test_${0..1}",
-            createStandardShardingStrategyConfiguration("ds_inline", "ds_${user_id % 2}"), new HintShardingStrategyConfiguration("hint_test")));
-        shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
+                createStandardShardingStrategyConfiguration("ds_inline", "ds_${user_id % 2}"), new HintShardingStrategyConfiguration("hint_fixture")));
+        shardingRuleConfig.getShardingAlgorithms().put("hint_fixture", new ShardingSphereAlgorithmConfiguration("HINT.FIXTURE", new Properties()));
         Properties props0 = new Properties();
         props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
@@ -152,7 +153,7 @@ public abstract class AbstractRoutingEngineTest {
         Properties props3 = new Properties();
         props3.setProperty("algorithm-expression", "t_user_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props3));
-        shardingRuleConfig.getShardingAlgorithms().put("hint_test", new ShardingSphereAlgorithmConfiguration("HINT_TEST", new Properties()));
+        shardingRuleConfig.getShardingAlgorithms().put("hint_fixture", new ShardingSphereAlgorithmConfiguration("HINT.FIXTURE", new Properties()));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
     }
     
@@ -173,7 +174,7 @@ public abstract class AbstractRoutingEngineTest {
     
     private ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
-            createStandardShardingStrategyConfiguration("ds_inline", dsAlgorithmExpression), createStandardShardingStrategyConfiguration(tableName + "_inline", algorithmExpression));
+                createStandardShardingStrategyConfiguration("ds_inline", dsAlgorithmExpression), createStandardShardingStrategyConfiguration(tableName + "_inline", algorithmExpression));
     }
     
     private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final String algorithmName, final String algorithmExpression) {
@@ -185,12 +186,12 @@ public abstract class AbstractRoutingEngineTest {
     
     private ShardingTableRuleConfiguration createTableRuleWithHintConfig() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_hint_test", "ds_${0..1}.t_hint_test_${0..1}");
-        result.setTableShardingStrategy(new HintShardingStrategyConfiguration("hint_test"));
-        result.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration("hint_test"));
+        result.setTableShardingStrategy(new HintShardingStrategyConfiguration("hint_fixture"));
+        result.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration("hint_fixture"));
         return result;
     }
     
-    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, 
+    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
                                                                  final ShardingStrategyConfiguration dsShardingStrategyConfig, final ShardingStrategyConfiguration tableShardingStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfig);
@@ -241,10 +242,17 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
+    /**
+     * Create single table rule.
+     * 
+     * @param rules rules
+     * @return single table rule
+     */
+    protected SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        singleTableRule.put("t_category", dataSourceMap.keySet().iterator().next());
-        return singleTableRule;
+        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        result.put(dataSourceMap.keySet().iterator().next(), DefaultSchema.LOGIC_NAME, "t_category");
+        return result;
     }
 }

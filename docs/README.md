@@ -24,7 +24,7 @@ Follow the steps below to deploy ShardingSphere website,
 
 #### HOW to insert a video of Bilibili or YouTube ?
 
-1. First please make sure you get the corret url of the video you wanna add.
+1. First please make sure you get the correct url of the video you wanna add.
 
 2. - DO REMEMBER use the `bvid argument` of bilibili url :
 
@@ -32,7 +32,7 @@ Follow the steps below to deploy ShardingSphere website,
 
    - YouTube url is much easier to recognize : https://www.youtube.com/watch?v=2MsN8gpT6jY , the argument you needed is `2MsN8gpT6jY` at the end of the url.
 
-3. use the shortcodes at wherever you want to place :
+3. Use the shortcodes at wherever you want to place :
 
    - `{{< bilibili BV1aE411X7kQ >}}`
 

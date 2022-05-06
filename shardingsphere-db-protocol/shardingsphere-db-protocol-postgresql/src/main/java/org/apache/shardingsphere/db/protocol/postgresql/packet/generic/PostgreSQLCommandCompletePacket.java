@@ -46,7 +46,7 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
             return;
         }
         String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
-        payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
+        payload.writeStringNul(sqlCommand + delimiter + rowCount);
     }
     
     @Override

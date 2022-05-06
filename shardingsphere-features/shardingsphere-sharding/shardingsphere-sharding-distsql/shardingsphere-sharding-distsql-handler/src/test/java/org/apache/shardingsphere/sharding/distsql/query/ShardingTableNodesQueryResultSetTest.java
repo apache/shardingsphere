@@ -66,9 +66,8 @@ public final class ShardingTableNodesQueryResultSetTest {
         result.getTables().add(createShardingTableRuleConfiguration());
         result.getAutoTables().add(createProductAutoTableConfiguration());
         result.getAutoTables().add(createUserAutoTableConfiguration());
-        Properties properties = new Properties();
-        properties.put("sharding-count", 2);
-        result.getShardingAlgorithms().put("t_product_algorithm", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
+        result.getShardingAlgorithms().put("t_product_algorithm", new ShardingSphereAlgorithmConfiguration("FOO.DISTSQL.FIXTURE", newProperties("sharding-count", 2)));
+        result.getShardingAlgorithms().put("t_user_algorithm", new ShardingSphereAlgorithmConfiguration("BAR.DISTSQL.FIXTURE", newProperties("sharding-ranges", "10,20,30")));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         return result;
@@ -79,14 +78,20 @@ public final class ShardingTableNodesQueryResultSetTest {
     }
     
     private ShardingAutoTableRuleConfiguration createProductAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_product", "ds_2,ds_3");
-        shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
-        return shardingAutoTableRuleConfiguration;
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_product", "ds_2,ds_3");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
+        return result;
     }
     
     private ShardingAutoTableRuleConfiguration createUserAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_user", "ds_2,ds_3");
-        shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", ""));
-        return shardingAutoTableRuleConfiguration;
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_user", "ds_2,ds_3");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_user_algorithm"));
+        return result;
+    }
+    
+    private Properties newProperties(final String key, final Object value) {
+        Properties result = new Properties();
+        result.put(key, value);
+        return result;
     }
 }

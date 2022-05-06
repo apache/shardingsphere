@@ -5,14 +5,13 @@ weight = 5
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow-5.1.1.xsd)
 
 \<shadow:rule />
 
 | *名称* | *类型*  | *说明* |
 | ----- | ------ | ------ |
 | id    | 属性    | Spring Bean Id |
-| enable | 属性   | 影子库开关。 可选值：true/false，默认为false |
 | data-source(?)  | 标签  | 影子数据源配置 |
 | default-shadow-algorithm-name(?)  | 标签  | 默认影子算法配置 |
 | shadow-table(?) | 标签  | 影子表配置 |
@@ -26,6 +25,7 @@ weight = 5
 | shadow-data-source-name | 属性 | 影子数据源名称 |
 
 \<shadow:default-shadow-algorithm-name />
+
 | *名称* | *类型*  | *说明* |
 | ----- | ------ | ------ |
 | name | 属性 | 默认影子算法名称 |

@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class SimpleHintShadowAlgorithmTest {
     
@@ -35,47 +36,29 @@ public final class SimpleHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = new SimpleHintShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        shadowAlgorithm.setProps(properties);
-        shadowAlgorithm.init();
+        shadowAlgorithm = (SimpleHintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("shadow", Boolean.TRUE.toString());
+        return result;
     }
     
     @Test
     public void assertIsShadow() {
-        assertTrueCase();
-        assertFalseCase();
-    }
-    
-    private void assertFalseCase() {
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, "/*shadow:true*/")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/**/")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/*")), is(false));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("aaa  = bbb")), is(false));
-    }
-    
-    private void assertTrueCase() {
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow: true */")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow :true */")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue("/* shadow : true ")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow:true ")), is(true));
-        assertThat(shadowAlgorithm.isShadow(createShadowTableNames(), createNoteShadowValue(" shadow:true, aaa:bbb ")), is(true));
+        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, "/*shadow:true*/")));
+        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/**/")));
+        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/*")));
+        assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("aaa  = bbb")));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/* shadow: true */")));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" shadow :true */")));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/* shadow : true ")));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" shadow:true ")));
+        assertTrue(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue(" shadow:true, aaa:bbb ")));
     }
     
     private PreciseHintShadowValue<String> createNoteShadowValue(final String sqlNote) {
         return new PreciseHintShadowValue<>("t_user", ShadowOperationType.HINT_MATCH, sqlNote);
-    }
-    
-    private Collection<String> createShadowTableNames() {
-        Collection<String> shadowTableNames = new LinkedList<>();
-        shadowTableNames.add("t_user");
-        shadowTableNames.add("t_order");
-        return shadowTableNames;
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(shadowAlgorithm.getType(), is("SIMPLE_HINT"));
     }
 }

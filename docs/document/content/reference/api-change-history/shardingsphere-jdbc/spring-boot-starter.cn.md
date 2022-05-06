@@ -162,7 +162,7 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= # �
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= # 自增列名称，缺省表示不使用自增主键生成器
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= # 自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= # 属性配置, 注意：使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= # 属性配置，注意：使用 SNOWFLAKE 算法，需要配置 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
 
 spring.shardingsphere.sharding.binding-tables[0]= # 绑定表规则列表
 spring.shardingsphere.sharding.binding-tables[1]= # 绑定表规则列表
@@ -176,7 +176,7 @@ spring.shardingsphere.sharding.default-data-source-name= # 未配置分片规则
 spring.shardingsphere.sharding.default-database-strategy.xxx= # 默认数据库分片策略，同分库策略
 spring.shardingsphere.sharding.default-table-strategy.xxx= # 默认表分片策略，同分表策略
 spring.shardingsphere.sharding.default-key-generator.type= # 默认自增列值生成器类型，缺省将使用 org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-spring.shardingsphere.sharding.default-key-generator.props.<property-name>= # 自增列值生成器属性配置, 比如 SNOWFLAKE 算法的 worker.id 与 max.tolerate.time.difference.milliseconds
+spring.shardingsphere.sharding.default-key-generator.props.<property-name>= # 自增列值生成器属性配置，比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= # 详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= # 详见读写分离部分
@@ -216,7 +216,7 @@ spring.shardingsphere.props.check.table.metadata.enabled= # 是否在启动时�
 # 省略数据源配置，与数据分片一致
 
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= # 加解密器类型，可自定义或选择内置类型：MD5/AES
-spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= # 属性配置, 注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
+spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= # 属性配置，注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= # 存储明文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipherColumn= # 存储密文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assistedQueryColumn= # 辅助查询字段，针对 ShardingQueryAssistedEncryptor 类型的加解密器进行辅助查询

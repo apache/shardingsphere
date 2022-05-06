@@ -53,12 +53,12 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
     }
     
     private void writeBinaryValue(final PostgreSQLPacketPayload payload, final BinaryCell each) {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
         Object value = each.getData();
         if (null == value) {
             payload.writeInt4(0xFFFFFFFF);
             return;
         }
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
         payload.writeInt4(binaryProtocolValue.getColumnLength(value));
         binaryProtocolValue.write(payload, value);
     }
@@ -72,16 +72,17 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
         } else if (each instanceof SQLXML) {
             writeSQLXMLData(payload, each);
         } else {
-            String columnData = each.toString();
-            payload.writeInt4(columnData.getBytes().length);
-            payload.writeStringEOF(columnData);
+            byte[] columnData = each.toString().getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
         }
     }
     
     private void writeSQLXMLData(final PostgreSQLPacketPayload payload, final Object data) {
         try {
-            payload.writeInt4(((SQLXML) data).getString().getBytes().length);
-            payload.writeStringEOF(((SQLXML) data).getString());
+            byte[] dataBytes = ((SQLXML) data).getString().getBytes(payload.getCharset());
+            payload.writeInt4(dataBytes.length);
+            payload.writeBytes(dataBytes);
         } catch (final SQLException ex) {
             throw new RuntimeException(ex.getMessage());
         }

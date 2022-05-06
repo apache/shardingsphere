@@ -19,11 +19,13 @@ package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Counter;
 import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
-public final class CounterWrapperTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
+public final class CounterWrapperTest {
+    
     @Test
     public void assertCreate() {
         Counter counter = Counter.build().name("a").help("help").create();
@@ -31,6 +33,6 @@ public final class CounterWrapperTest {
         counterWrapper.inc();
         counterWrapper.inc(1);
         counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
-        org.hamcrest.MatcherAssert.assertThat(counter.get(), Matchers.is(2.0));
+        assertThat(counter.get(), is(2.0));
     }
 }

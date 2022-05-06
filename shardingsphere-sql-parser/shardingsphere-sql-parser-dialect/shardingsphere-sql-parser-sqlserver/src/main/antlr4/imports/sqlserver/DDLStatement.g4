@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule, DMLStatement, DCLStatement;
+import DMLStatement, DCLStatement;
 
 createTable
     : createTableClause | createTableAsSelectClause

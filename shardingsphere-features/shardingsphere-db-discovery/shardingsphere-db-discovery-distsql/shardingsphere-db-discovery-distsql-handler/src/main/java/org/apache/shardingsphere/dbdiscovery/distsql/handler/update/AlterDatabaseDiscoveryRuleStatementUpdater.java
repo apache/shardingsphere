@@ -21,25 +21,27 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -47,46 +49,34 @@ import java.util.stream.Collectors;
  */
 public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
-    static {
-        // TODO consider about register once only
-        ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
-    }
-    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(schemaName, sqlStatement, shardingSphereMetaData.getResource());
-        checkToBeAlteredDiscoveryType(sqlStatement);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
+        checkDiscoverTypeAndHeartbeat(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Database discovery", schemaName);
-        }
+    private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("database discovery", databaseName));
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
-                                       final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+    private void checkToBeAlteredRules(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
+                                       final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedRuleNames.isEmpty()) {
-            throw new RequiredRuleMissedException("Database discovery", schemaName, notExistedRuleNames);
-        }
+        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException("database discovery", databaseName, notExistedRuleNames));
     }
     
     private Collection<String> getToBeAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
+        return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String schemaName,
-                                           final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws DistSQLException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
-        if (!notExistedResources.isEmpty()) {
-            throw new RequiredResourceMissedException(schemaName, notExistedResources);
-        }
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -95,16 +85,22 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         return result;
     }
     
-    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
-        Collection<String> notExistedDiscoveryTypes = getToBeAlteredDiscoveryTypeNames(sqlStatement).stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!notExistedDiscoveryTypes.isEmpty()) {
-            throw new InvalidAlgorithmConfigurationException("database discover", notExistedDiscoveryTypes);
-        }
-    }
-    
-    private Collection<String> getToBeAlteredDiscoveryTypeNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).collect(Collectors.toSet());
+    private void checkDiscoverTypeAndHeartbeat(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
+        Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
+                .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
+                .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
+        segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList()).stream().map(each -> (DatabaseDiscoveryConstructionSegment) each)
+                .forEach(each -> {
+                    if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {
+                        invalidInput.add(each.getDiscoveryTypeName());
+                    }
+                    if (!currentRuleConfig.getDiscoveryHeartbeats().containsKey(each.getDiscoveryHeartbeatName())) {
+                        invalidInput.add(each.getDiscoveryHeartbeatName());
+                    }
+                });
+        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException("database discovery", invalidInput));
     }
     
     @Override
@@ -116,34 +112,26 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        updateProperties(toBeAlteredRuleConfig);
+        // TODO DistSQL update rule config need to sync scheduler module cron.
     }
     
     private void dropRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : toBeAlteredRuleConfig.getDataSources()) {
-            dropDataSourceRuleConfiguration(currentRuleConfig, each.getName());
+            dropDataSourceRuleConfiguration(currentRuleConfig, each.getGroupName());
         }
     }
     
     private void dropDataSourceRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedRuleNames) {
-        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> toBeDroppedDataSourceRuleConfig
-                = currentRuleConfig.getDataSources().stream().filter(each -> each.getName().equals(toBeDroppedRuleNames)).findAny();
+        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> toBeDroppedDataSourceRuleConfig = currentRuleConfig.getDataSources().stream()
+                .filter(each -> each.getGroupName().equals(toBeDroppedRuleNames)).findAny();
         Preconditions.checkState(toBeDroppedDataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(toBeDroppedDataSourceRuleConfig.get());
-        currentRuleConfig.getDiscoveryTypes().remove(toBeDroppedDataSourceRuleConfig.get().getDiscoveryTypeName());
     }
     
     private void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getDataSources().addAll(toBeAlteredRuleConfig.getDataSources());
         currentRuleConfig.getDiscoveryTypes().putAll(toBeAlteredRuleConfig.getDiscoveryTypes());
-    }
-    
-    private void updateProperties(final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> {
-            ShardingSphereAlgorithmConfiguration configuration = ruleConfiguration.getDiscoveryTypes().get(each.getDiscoveryTypeName());
-            TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, configuration.getType(),
-                    new Properties()).ifPresent(databaseDiscoveryType -> databaseDiscoveryType.updateProperties(each.getName(), configuration.getProps()));
-        });
+        currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeAlteredRuleConfig.getDiscoveryHeartbeats());
     }
     
     @Override
@@ -153,6 +141,6 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     
     @Override
     public String getType() {
-        return AlterDatabaseDiscoveryRuleStatement.class.getCanonicalName();
+        return AlterDatabaseDiscoveryRuleStatement.class.getName();
     }
 }

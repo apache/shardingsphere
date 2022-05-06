@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,35 +56,51 @@ public final class EncryptMergedResultTest {
     }
     
     @Test
+    public void assertGetValueWithoutEncryptContext() throws SQLException {
+        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
+        when(metaData.findEncryptContext(1)).thenReturn(Optional.empty());
+        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
+    }
+    
+    @Test
     public void assertGetValueWithQueryWithPlainColumn() throws SQLException {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        when(metaData.isQueryWithCipherColumn(1)).thenReturn(false);
+        EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
+        when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMismatchedEncryptor() throws SQLException {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        when(metaData.findEncryptor(1)).thenReturn(Optional.empty());
-        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
+        when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
+        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.empty());
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNotNullCiphertext() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(encryptAlgorithm.decrypt("VALUE")).thenReturn("ORIGINAL_VALUE");
-        when(metaData.findEncryptor(1)).thenReturn(Optional.of(encryptAlgorithm));
-        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
+        when(encryptAlgorithm.decrypt("VALUE", encryptContext)).thenReturn("ORIGINAL_VALUE");
+        when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
+        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.of(encryptAlgorithm));
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("ORIGINAL_VALUE"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNullCiphertext() throws SQLException {
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(metaData.findEncryptor(1)).thenReturn(Optional.of(encryptAlgorithm));
-        when(metaData.isQueryWithCipherColumn(1)).thenReturn(true);
+        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptContext encryptContext = EncryptContextBuilder.build(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
+        when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
+        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.of(encryptAlgorithm));
         assertNull(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class));
     }
     

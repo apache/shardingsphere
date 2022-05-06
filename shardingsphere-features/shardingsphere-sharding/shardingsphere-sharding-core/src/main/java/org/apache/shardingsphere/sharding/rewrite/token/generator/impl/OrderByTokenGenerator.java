@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
     }
     

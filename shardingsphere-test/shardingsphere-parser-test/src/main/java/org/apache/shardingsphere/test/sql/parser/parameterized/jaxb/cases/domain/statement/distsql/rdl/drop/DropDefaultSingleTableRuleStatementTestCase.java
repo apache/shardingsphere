@@ -21,10 +21,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * Drop default single table rule statement test case.
  */
 @Getter
 @Setter
 public final class DropDefaultSingleTableRuleStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "contains-exist-clause")
+    private boolean containsExistClause;
+    
 }

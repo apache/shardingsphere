@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
@@ -55,22 +56,29 @@ import java.util.function.BiPredicate;
 public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
-    public boolean check(final String schemaName, final Grantee grantee, final AuthorityRule authorityRule) {
+    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return true;
         }
-        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
+        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee, 
-                                final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
+    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
+                                final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee);
-        // TODO add error msg
-        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
+        if (!privileges.isPresent()) {
+            return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
+        }
+        if (null != currentDatabase && !privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent()) {
+            return new SQLCheckResult(false, String.format("Unknown database '%s'", currentDatabase));
+        }
+        PrivilegeType privilegeType = getPrivilege(sqlStatement);
+        String errorMessage = Objects.isNull(privilegeType) ? "" : String.format("Access denied for operation %s", privilegeType.name());
+        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(privilegeType)), errorMessage)).orElseGet(() -> new SQLCheckResult(false, ""));
     }
     
     @Override
@@ -81,7 +89,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     @Override
     public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule authorityRule) {
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
-        return user.filter(shardingSphereUser -> validator.test(shardingSphereUser, cipher)).isPresent();
+        return user.filter(each -> validator.test(each, cipher)).isPresent();
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {
@@ -97,7 +105,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         // TODO add more Privilege and SQL statement mapping
         return null;
     }
-
+    
     private PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return PrivilegeType.SELECT;
@@ -113,7 +121,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         }
         return null;
     }
-
+    
     private PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof AlterDatabaseStatement) {
             return PrivilegeType.ALTER_ANY_DATABASE;

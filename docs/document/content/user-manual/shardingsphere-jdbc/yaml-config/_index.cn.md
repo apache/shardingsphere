@@ -47,11 +47,11 @@ props:
   key_2: value_2
 ```
 
-模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml/mode)。
+模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode)。
 
-数据源详情请参见[数据源配置](/cn/user-manual/shardingsphere-jdbc/yaml/data-source)。
+数据源详情请参见[数据源配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/data-source)。
 
-规则详情请参见[规则配置](/cn/user-manual/shardingsphere-jdbc/yaml/rules)。
+规则详情请参见[规则配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules)。
 
 
 ### 构建数据源

@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.StatementExecutionUnitBuilder
 org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.PreparedStatementExecutionUnitBuilder
+org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.builder.PreparedQueryExecutionUnitBuilder

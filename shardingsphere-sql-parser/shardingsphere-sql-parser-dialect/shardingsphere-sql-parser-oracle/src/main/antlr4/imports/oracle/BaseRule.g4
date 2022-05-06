@@ -96,7 +96,8 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
+    | LENGTH | SINGLE_C | capacityUnit | TARGET
     ;
 
 schemaName
@@ -108,6 +109,10 @@ tableName
     ;
 
 viewName
+    : (owner DOT_)? name
+    ;
+
+triggerName
     : (owner DOT_)? name
     ;
 
@@ -159,6 +164,14 @@ operatorName
     : (owner DOT_)? name
     ;
 
+dimensionName
+    : (owner DOT_)? name
+    ;
+
+directoryName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -204,7 +217,7 @@ functionName
     ;
 
 dbLink
-    : identifier
+    : identifier (DOT_ identifier)*
     ;
 
 parameterValue
@@ -303,7 +316,7 @@ roleName
     : identifier
     ;
 
-userName
+username
     : identifier
     ;
 
@@ -1004,6 +1017,10 @@ underPathCondition
     : UNDER_PATH LP_ columnName (COMMA_ levels)? COMMA_ pathString (COMMA_ correlationInteger)? RP_
     ;
 
+level
+    : identifier
+    ;
+
 levels
     : INTEGER_
     ;
@@ -1199,4 +1216,40 @@ nationalCharset
 
 filenamePattern
     : STRING_
+    ;
+
+connectString
+    : STRING_
+    ;
+
+argument
+    : identifier
+    ;
+
+dataSource
+    : identifier
+    ;
+
+implementationType
+    : (owner DOT_)? name
+    ;
+
+implementationPackage
+    : (owner DOT_)? name
+    ;
+
+label
+    : identifier
+    ;
+
+libName
+    : identifier
+    ;
+
+externalDatatype
+    : dataType
+    ;
+    
+capacityUnit
+    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
     ;

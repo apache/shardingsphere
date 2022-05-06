@@ -343,7 +343,6 @@ SNOWFLAKE
 
 | *Name*                             | *Data Type* | *Explanation*                                                |
 | :--------------------------------- | :---------- | :----------------------------------------------------------- |
-| worker.id (?)                      | long	       | The unique id for working machine, the default value is `0` |
 | max.tolerate.time.difference.milliseconds (?) | long | The max tolerate time for different server’s time difference in milliseconds, the default value is `10` |
 | max.vibration.offset (?) | int | The max upper limit value of vibrate number, range `[0, 4096)`, the default value is `1`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1` |
 
@@ -437,7 +436,7 @@ Property configuration items, can be of the following properties.
 
 | *Name*                | *DataType*                   | *Explanation*                       |
 | :-------------------- | :--------------------------- | :---------------------------------- |
-| instanceConfigurationMap	| Map<String, CenterConfiguration>	| config map of config-center&registry-center，the key is center’s name，the value is the config-center/registry-center |
+| instanceConfigurationMap	| Map<String, CenterConfiguration>	| config map of config-center&registry-center, the key is center’s name, the value is the config-center/registry-center |
 
 #### CenterConfiguration
 

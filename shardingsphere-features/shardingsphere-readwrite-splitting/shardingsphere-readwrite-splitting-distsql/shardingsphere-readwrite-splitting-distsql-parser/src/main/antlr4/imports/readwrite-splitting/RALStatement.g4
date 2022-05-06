@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 setReadwriteSplittingHintSource
     : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
@@ -32,11 +32,11 @@ clearReadwriteSplittingHint
     ;
 
 enableReadDataSource
-    : ENABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
     ;
 
 disableReadDataSource
-    : DISABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
     ;
 
 showReadwriteSplittingReadResources
@@ -44,13 +44,5 @@ showReadwriteSplittingReadResources
     ;
 
 sourceValue
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
-
-schemaName
     : IDENTIFIER
     ;

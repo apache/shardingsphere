@@ -15,9 +15,7 @@ route to production DB or shadow DB.
 
 Shadow rules include shadow data source mapping, shadow tables, and shadow algorithms.
 
-![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_en.png)
-
-**enable**：Shadow DB switch. Optional value `true`/`false`, default value is `false`.
+![Shadow Rule](https://shardingsphere.apache.org/document/current/img/shadow/rule_v5.1.0_en.png)
 
 **data-sources**：Production data source name and shadow data source name mappings.
 
@@ -38,7 +36,7 @@ It determined that the execution of SQL satisfies the configuration of the shado
 
 ## Shadow Judgment Process
 
-When the shadow DB switch turned on, shadow judgment will be made on the executed SQL statements.
+The Shadow DB performs shadow judgment on the executed SQL statements.
 
 Shadow judgment supports two types of algorithms, users can choose one or combine them according to actual business needs.
 
@@ -48,7 +46,7 @@ Support two type shadow algorithms.
 
 The shadow judgment first judges whether there is an intersection between SQL related tables and configured shadow tables.
 
-If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn，and any one of them was successful. SQL statement executed shadow DB.
+If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn, and any one of them was successful. SQL statement executed shadow DB.
 
 If shadow tables have no intersection, or shadow algorithms are unsuccessful, SQL statement executed production DB.
 
@@ -74,18 +72,17 @@ Shadow algorithm details, please refer to [List of built-in shadow algorithms](/
 
 Assume that the e-commerce website wants to perform pressure testing on the order business,
 
-the pressure testing related table `t_order` is a shadow table，the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
+the pressure testing related table `t_order` is a shadow table, the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
 
 ### Shadow DB configuration
 
 The shadow configuration for example(YAML)：
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -96,7 +93,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
   user-id-value-match-algorithm:
     type: VALUE_MATCH
@@ -105,24 +101,46 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
-**Note**: If you use the annotation shadow algorithm, the parse SQL comment configuration item `sql-comment-parse-enabled: true` need to be turned on. turned off by default.
-please refer to [Configuration Props]( https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/configuration/props/) 
+**Note**: If you use the Hint shadow algorithm, the parse SQL comment configuration item `sql-comment-parse-enabled: true` need to be turned on. turned off by default.
+please refer to [SQL-PARSER Configuration](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/) 
 
 ### Shadow DB environment
 
 * Create the shadow DB `ds_shadow`.
 
 * Create shadow tables, tables structure must be consistent with the production environment. 
-  Assume that the `t_order` table created in the shadow DB. Create table statement need to add SQL note `/*shadow:true,foo:bar,.. .*/`.
+  Assume that the `t_order` table created in the shadow DB. Create table statement need to add SQL comment `/*foo:bar,.. .*/`.
 
 ```sql
-CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*shadow:true,foo:bar,...*/
+CREATE TABLE t_order (order_id INT(11) primary key, user_id int(11) not null, ...) /*foo:bar,...*/
 ``` 
 Execute to the shadow DB.
+
+**Note**: If use the MySQL client for testing, the link needs to use the parameter `-c`, for example:
+
+```sql
+mysql> mysql -u root -h127.0.0.1 -P3306 -proot -c
+```
+
+Parameter description: keep the comment, send the comment to the server
+
+Execute SQL containing annotations, for example:
+
+```sql
+SELECT * FROM table_name /*shadow:true,foo:bar*/;
+```
+
+Comment statement will be intercepted by the MySQL client if parameter `-c` not be used, for example:
+
+```sql
+SELECT * FROM table_name;
+```
+
+Affect test results.
 
 ### Shadow algorithm example
 
@@ -153,10 +171,10 @@ shadow-algorithms:
 
 2. Hint shadow algorithm example
 
-Assume that the `t_order` table does not contain columns that can matching. Executed SQL statement need to add SQL note `/*shadow:true,foo:bar,.. .*/`
+Assume that the `t_order` table does not contain columns that can matching. Executed SQL statement need to add SQL note `/*foo:bar,.. .*/`
 
 ```sql
-SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/ 
+SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/ 
 ```
 SQL executed to shadow DB, other data executed to production DB.
 
@@ -167,7 +185,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
 ```
 
@@ -178,7 +195,7 @@ Assume that the pressure testing of the `t_order` gauge needs to cover the above
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
-SELECT * FROM t_order WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/;
 ```
 
 Both will be executed to shadow DB, other data executed to production DB.
@@ -196,7 +213,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
 ```
 
@@ -207,11 +223,11 @@ Assume that the column shadow algorithm used for the `t_order`, all other shadow
 ```sql
 INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...);
 
-INSERT INTO t_xxx_1 (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*shadow:true,foo:bar,...*/;
+INSERT INTO t_xxx_1 (order_item_id, order_id, ...) VALUES (xxx..., xxx..., ...) /*foo:bar,...*/;
 
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar,...*/;
 
-SELECT * FROM t_xxx_3 WHERE order_id = xxx /*shadow:true,foo:bar,...*/;
+SELECT * FROM t_xxx_3 WHERE order_id = xxx /*foo:bar,...*/;
 ```
 
 Both will be executed to shadow DB, other data executed to production DB.
@@ -219,11 +235,10 @@ Both will be executed to shadow DB, other data executed to production DB.
 Default shadow algorithm configuration (YAML):
 
 ```yaml
-enable: true
-  data-sources:
-    shadow-data-source:
-      source-data-source-name: ds
-      shadow-data-source-name: ds-shadow
+data-sources:
+  shadow-data-source:
+    source-data-source-name: ds
+    shadow-data-source-name: ds-shadow
 tables:
   t_order:
     data-source-names: shadow-data-source
@@ -235,7 +250,6 @@ shadow-algorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
-      shadow: true
       foo: bar
   user-id-value-match-algorithm:
     type: VALUE_MATCH
@@ -244,39 +258,44 @@ shadow-algorithms:
       column: user_id
       value: 0
       
-props:
+sql-parser:
   sql-comment-parse-enabled: true
 ```
 
 **Note**:
-The default shadow algorithm only supports note shadow algorithm.
-When using HINT, ensure that the configuration items of `props` in the configuration file are less than or equal to those in the SQL comment, and that the configuration items in the configuration file are the same as those in the SQL comment. The fewer the configuration items in the configuration file, the looser the matching conditions are
+The default shadow algorithm only supports Hint shadow algorithm.
+When using ensure that the configuration items of `props` in the configuration file are less than or equal to those in the SQL comment, And the specific configuration of the configuration file 
+should same as the configuration written in the SQL comment. The fewer configuration items in the configuration file, the looser the matching conditions
 
 ```yaml
 simple-note-algorithm:
   type: SIMPLE_HINT
   props:
-    shadow: true
-    user_id: 2
+    foo: bar
+    foo1: bar1
 ```
+
 For example, the 'props' item have `2` configure, the following syntax can be used in SQL:
+
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2*/、
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1*/
 ```
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:true,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1, foo2:bar2, ...*/
 ```
 
 ```yaml
-simple-note-algorithm: 
+simple-note-algorithm:
   type: SIMPLE_HINT
   props:
-    shadow: false
+    foo: bar
 ```
+
 For example, the 'props' item have `1` configure, the following syntax can be used in SQL:
+
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false*/、
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:foo*/
 ```
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*shadow:false,user_id:2,foo:bar,.....*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:foo, foo1:bar1, ...*/
 ```

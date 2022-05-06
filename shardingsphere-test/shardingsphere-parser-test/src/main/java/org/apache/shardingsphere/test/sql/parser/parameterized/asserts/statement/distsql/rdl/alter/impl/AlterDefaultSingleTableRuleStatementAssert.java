@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultSingleTableRuleStatementTestCase;
 
@@ -41,13 +41,13 @@ public final class AlterDefaultSingleTableRuleStatementAssert {
      * @param actual actual alter default single table rule statement
      * @param expected expected alter default single table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultSingleTableRuleStatement actual, 
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultSingleTableRuleStatement actual,
                                 final AlterDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())), 
+            assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDefaultResource(), is(expected.getDefaultDataSource()));
         }
     }

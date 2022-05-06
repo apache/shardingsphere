@@ -17,10 +17,14 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import BaseRule;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
+    ;
+
+createEdition
+    : CREATE EDITION editionName (AS CHILD OF editionName)?
     ;
 
 createIndex
@@ -35,12 +39,37 @@ alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
     ;
 
+alterTrigger
+    : ALTER TRIGGER triggerName (
+    | triggerCompileClause
+    | ( ENABLE | DISABLE)
+    | RENAME TO name
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;    
+
+triggerCompileClause
+    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterValue
+    ;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
+    ;
+
+dropTrigger
+    : DROP TRIGGER triggerName
     ;
  
 dropIndex
     : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
+    ;
+
+dropView
+    : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
 truncateTable
@@ -291,6 +320,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
@@ -482,6 +515,10 @@ collationClause
     : DEFAULT COLLATION collationName
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
+    ;
+
 commitClause
     : (ON COMMIT (DROP | PRESERVE) ROWS)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
@@ -529,7 +566,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
+    : (NUMBER_ | INTEGER_) capacityUnit?
     ;
 
 maxsizeClause
@@ -931,6 +968,10 @@ clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
+    ;
+
 clusteringColumns
     : LP_? clusteringColumnGroup (COMMA_ clusteringColumnGroup)* RP_?
     ;
@@ -1024,6 +1065,17 @@ allowDisallowClustering
 
 alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
+    ;
+
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
     ;
 
 deallocateUnusedClause
@@ -1247,6 +1299,14 @@ defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
 
+alterDatabaseDictionary
+    : ALTER DATABASE DICTIONARY (
+    | ENCRYPT CREDENTIALS
+    | REKEY CREDENTIALS
+    | DELETE CREDENTIALS KEY
+    )
+    ;
+    
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses
@@ -1862,11 +1922,11 @@ noAudit
     ;
 
 auditPolicyClause
-    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 noAuditPolicyClause
-    : POLICY policyName (byUsersWithRoles | BY userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    : POLICY policyName (byUsersWithRoles | BY username (COMMA_ username)*)? (WHENEVER NOT? SUCCESSFUL)?
     ;
 
 byUsersWithRoles
@@ -1874,7 +1934,7 @@ byUsersWithRoles
     ;
 
 contextClause
-    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY userName (COMMA_ userName)*)?
+    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY username (COMMA_ username)*)?
     ;
 
 contextNamespaceAttributesClause
@@ -1921,8 +1981,8 @@ renameToTable
 purge
     : PURGE (TABLE tableName
     | INDEX indexName
-    | TABLESPACE tablespaceName (USER userName)?
-    | TABLESPACE SET tablespaceSetName (USER userName)?
+    | TABLESPACE tablespaceName (USER username)?
+    | TABLESPACE SET tablespaceSetName (USER username)?
     | RECYCLEBIN
     | DBA_RECYCLEBIN)
     ;
@@ -2008,4 +2068,181 @@ replaceFileNamePattern
 
 tablespaceDatafileClauses
     : DATAFILES (SIZE sizeClause | autoextendClause)+
+    ;
+
+createDatabaseLink
+    : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
+    (connectToClause | dbLinkAuthentication)* (USING connectString)?
+    ;
+    
+alterDatabaseLink
+    : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
+    | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
+    | dbLinkAuthentication
+    )
+    ;
+
+dropDatabaseLink
+    : DROP PUBLIC? DATABASE LINK dbLink 
+    ;
+
+connectToClause
+    : CONNECT TO (CURRENT_USER | username IDENTIFIED BY password dbLinkAuthentication?)
+    ;
+
+dbLinkAuthentication
+    : AUTHENTICATED BY username IDENTIFIED BY password
+    ;
+
+createDimension
+    : CREATE DIMENSION dimensionName levelClause+ (hierarchyClause | attributeClause+ | extendedAttrbuteClause)+
+    ;
+
+levelClause
+    : LEVEL level IS (columnName | LP_ columnName (COMMA_ columnName)* RP_) (SKIP_SYMBOL WHEN NULL)?
+    ;
+
+hierarchyClause
+    : HIERARCHY hierarchyName LP_ level (CHILD OF level)+ dimensionJoinClause* RP_
+    ;
+
+dimensionJoinClause
+    : JOIN KEY (columnName | LP_ columnName (COMMA_ columnName)* RP_) REFERENCES level
+    ;
+
+attributeClause
+    : ATTRIBUTE level DETERMINES (columnName | LP_ columnName (COMMA_ columnName)* RP_)
+    ;
+
+extendedAttrbuteClause
+    : ATTRIBUTE attributeName (LEVEL level DETERMINES (columnName | LP_ columnName (COMMA_ columnName)* RP_))+
+    ;
+
+alterDimension
+    : ALTER DIMENSION dimensionName (alterDimensionAddClause* | alterDimensionDropClause* | COMPILE)
+    ;
+
+alterDimensionAddClause
+    : ADD (levelClause | hierarchyClause | attributeClause | extendedAttrbuteClause)
+    ;
+
+alterDimensionDropClause
+    : DROP (LEVEL level (RESTRICT | CASCADE)? 
+    | HIERARCHY hierarchyName 
+    | ATTRIBUTE attributeName (LEVEL level (COLUMN columnName (COMMA_ COLUMN columnName)*)?)?)
+    ;
+
+dropDimension
+    : DROP DIMENSION dimensionName
+    ;
+
+dropDirectory
+    : DROP DIRECTORY directoryName
+    ;
+
+createFunction
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
+    ;
+
+plsqlFunctionSource
+    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
+    sharingClause? (invokerRightsClause
+    | accessibleByClause 
+    | defaultCollationoOptionClause
+    | deterministicClause
+    | parallelEnableClause
+    | resultCacheClause
+    | aggregateClause
+    | pipelinedClause
+    | sqlMacroClause)* 
+    (IS | AS) callSpec
+    ;
+
+parameterDeclaration
+    : parameterName (IN? dataType ((COLON_ EQ_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
+    ;
+
+sharingClause
+    : SHARING EQ_ (METADATA | NONE)
+    ;
+
+invokerRightsClause
+    : AUTHID (CURRENT_USER DEFINER)
+    ;
+
+accessibleByClause
+    : ACCESSIBLE BY LP_ accessor (COMMA_ accessor)* RP_
+    ;
+
+accessor
+    : unitKind unitName
+    ;
+
+unitKind
+    : FUNCTION | PROCEDURE | PACKAGE | TRIGGER | TYPE
+    ;
+
+defaultCollationoOptionClause
+    : DEFAULT COLLATION collationOption
+    ;
+
+collationOption
+    : USING_NLS_COMP
+    ;
+
+deterministicClause
+    : DETERMINISTIC
+    ;
+
+parallelEnableClause
+    : PARALLEL_ENABLE (LP_ PARTITION argument BY (ANY 
+    | (HASH | RANGE) LP_ columnName (COMMA_ columnName)* RP_ streamingCluase?
+    | VALUE LP_ columnName RP_) RP_)?
+    ;
+
+streamingCluase
+    : (ORDER | CLUSTER) expr BY LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+resultCacheClause
+    : RESULT_CACHE (RELIES_ON LP_ (dataSource (COMMA_ dataSource)*)? RP_)?
+    ;
+
+aggregateClause
+    : AGGREGATE USING implementationType
+    ;
+
+pipelinedClause
+    : PIPELINED ((USING implementationType)? 
+    | (ROW | TABLE) POLYMORPHIC (USING implementationPackage)?)
+    ;
+
+sqlMacroClause
+    : SQL_MARCO
+    ;
+
+callSpec
+    : javaDeclaration | cDeclaration
+    ;
+
+javaDeclaration
+    : LANGUAGE JAVA NAME STRING_
+    ;
+
+cDeclaration
+    : (LANGUAGE SINGLE_C | EXTERNAL) 
+    ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?) 
+    (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
+    (WITH CONTEXT)?
+    (PARAMETERS LP_ externalParameter (COMMA_ externalParameter)* RP_)?
+    ;
+
+externalParameter
+    : (CONTEXT 
+    | SELF (TDO | property)?
+    | (parameterName | RETURN) property? (BY REFERENCE)? externalDatatype)
+    ;
+
+property
+    : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
     ;

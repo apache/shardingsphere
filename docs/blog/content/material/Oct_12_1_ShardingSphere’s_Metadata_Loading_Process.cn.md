@@ -10,7 +10,7 @@ chapter = true
 
 而对于 ShardingSphere 元数据的加载过程，首先需要弄清楚在 ShardingSphere 中元数据的类型以及分级。在 ShardingSphere 中元数据主要围绕着 `ShardingSphereMetaData` 来进行展开，其中较为核心的是 `ShardingSphereSchema`。该结构是数据库的元数据，同时也为数据源元数据的顶层对象，在 ShardingSphere 中数据库元数据的结构如下图。对于每一层来说，上层数据来源于下层数据的组装，所以下面我们采用从下往上的分层方式进行逐一剖析。
 
-![](../../static/img/Blog_17_img_1_a.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_17_img_1_a.png)
 
 **二、ColumMetaData 和 IndexMetaData**
 

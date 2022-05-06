@@ -37,14 +37,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowColumnsStatementContextTest {
-
+    
     @Test
     public void assertNewInstance() {
         MySQLShowColumnsStatement mySQLShowColumnsStatement = mock(MySQLShowColumnsStatement.class);
         String tableName = "tbl_1";
-        String schemaName = "sharding_db";
+        String databaseName = "sharding_db";
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
-        FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new SchemaSegment(0, 0, new IdentifierValue(schemaName)));
+        FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new SchemaSegment(0, 0, new IdentifierValue(databaseName)));
         when(mySQLShowColumnsStatement.getTable()).thenReturn(table);
         when(mySQLShowColumnsStatement.getFromSchema()).thenReturn(Optional.of(fromSchema));
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mySQLShowColumnsStatement);

@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -41,41 +41,32 @@ import java.util.stream.Collectors;
  */
 public final class SchemaLoader {
     
-    private final Map<String, Map<String, DataSource>> dataSources;
-    
-    private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
-    
-    private final Map<String, Collection<ShardingSphereRule>> rules;
-    
-    private final ConfigurationProperties props;
-    
-    public SchemaLoader(final Map<String, Map<String, DataSource>> dataSources,
-                        final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
-        this.dataSources = dataSources;
-        this.schemaRuleConfigs = schemaRuleConfigs;
-        this.rules = rules;
-        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
-    }
-    
     /**
      * Load schema.
-     *
-     * @return schema
+     * 
+     * @param defaultSchemaName default schema name
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     * @param rules rules
+     * @param props properties
+     * @return loaded schema
      * @throws SQLException SQL exception
      */
-    public Map<String, ShardingSphereSchema> load() throws SQLException {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(schemaRuleConfigs.size(), 1);
-        for (String each : schemaRuleConfigs.keySet()) {
-            Map<String, DataSource> dataSourceMap = dataSources.get(each);
-            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
-            Map<String, TableMetaData> tableMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules.get(each)), new SchemaBuilderMaterials(databaseType, dataSourceMap, rules.get(each), props));
-            result.put(each, new ShardingSphereSchema(tableMetaDataMap));
+    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                         final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
+                new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, new ConfigurationProperties(null == props ? new Properties() : props), defaultSchemaName));
+        if (schemaMetaDataMap.isEmpty()) {
+            return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
+        }
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables()));
         }
         return result;
     }
     
-    private Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(rule -> rule instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+    private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
+        return rules.stream().filter(each -> each instanceof TableContainedRule).flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
     }
 }

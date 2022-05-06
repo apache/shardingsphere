@@ -26,15 +26,15 @@ mode:
 
 dataSources:
   write_ds:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:write_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:write_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
   read_ds:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:read_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:read_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
 
@@ -42,7 +42,7 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: pr_ds.t_order_${0..1}
+      actualDataNodes: readwrite_ds.t_order_${0..1}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -55,7 +55,7 @@ rules:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
-      actualDataNodes: pr_ds.t_order_item_${0..1}
+      actualDataNodes: readwrite_ds.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
@@ -76,7 +76,7 @@ rules:
     default_database_inline:
       type: INLINE
       props:
-        algorithm-expression: pr_ds_${user_id % 2}
+        algorithm-expression: readwrite_ds_${user_id % 2}
     t_order_database_inline:
       type: INLINE
       props:
@@ -93,14 +93,13 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: write_ds
+        read-data-source-names: read_ds
 props:
   sql-show: false

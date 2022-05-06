@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -36,13 +36,13 @@ import java.util.stream.Collectors;
 public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator<PrepareStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext,
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters, 
-                             final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters,
+                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().isEmpty()) {
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
         }

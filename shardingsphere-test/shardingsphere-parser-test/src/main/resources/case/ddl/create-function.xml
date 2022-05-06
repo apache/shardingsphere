@@ -23,4 +23,8 @@
     <create-function sql-case-id="create_function_return_table" />
     <create-function sql-case-id="create_function_with_execute" />
     <create-function sql-case-id="create_function_inline_table" />
+    <create-function sql-case-id="create_function_declare_without_at" />
+    <create-function sql-case-id="create_function_call_spec_java" />
+    <create-function sql-case-id="create_function_call_spec_c" />
+    <create-function sql-case-id="create_function_with_set_var" />
 </sql-parser-test-cases>

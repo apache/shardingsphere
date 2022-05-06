@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -98,13 +99,13 @@ public final class ShardingRouteEngineFactoryTest {
     private ShardingConditions shardingConditions;
     
     private Collection<String> tableNames;
-
+    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Before
     public void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }
@@ -154,7 +155,7 @@ public final class ShardingRouteEngineFactoryTest {
     public void assertNewInstanceForDALSetForMySQL() {
         assertNewInstanceForDALSet(mock(MySQLSetStatement.class));
     }
-
+    
     @Test
     public void assertNewInstanceForDALSetForPostgreSQL() {
         assertNewInstanceForDALSet(mock(PostgreSQLSetStatement.class));

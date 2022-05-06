@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createEncryptRule
     : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
@@ -28,35 +28,55 @@ alterEncryptRule
     ;
 
 dropEncryptRule
-    : DROP ENCRYPT RULE tableName (COMMA tableName)*
+    : DROP ENCRYPT RULE existClause? tableName (COMMA tableName)*
     ;
 
 encryptRuleDefinition
-    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)* RP (COMMA QUERY_WITH_CIPHER_COLUMN EQ queryWithCipherColumn)? RP
+    : tableName LP (resourceDefinition COMMA)? COLUMNS LP encryptColumnDefinition (COMMA encryptColumnDefinition)* RP (COMMA QUERY_WITH_CIPHER_COLUMN EQ queryWithCipherColumn)? RP
     ;
 
-tableName
-    : IDENTIFIER
+resourceDefinition
+    : RESOURCE EQ resourceName 
     ;
 
 resourceName
     : IDENTIFIER
     ;
 
+encryptColumnDefinition
+    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? COMMA algorithmDefinition RP
+    ;
+
 columnDefinition
-    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName (COMMA ASSISTED_QUERY_COLUMN EQ assistedQueryColumnName)? COMMA algorithmDefinition RP
+    : NAME EQ columnName (COMMA DATA_TYPE EQ dataType)?
     ;
 
 columnName
     : IDENTIFIER
     ;
 
+dataType
+    : STRING 
+    ;
+
+plainColumnDefinition
+    : PLAIN EQ plainColumnName (COMMA PLAIN_DATA_TYPE EQ dataType)?
+    ;
+
 plainColumnName
     : IDENTIFIER
     ;
 
+cipherColumnDefinition
+    :  CIPHER EQ cipherColumnName (COMMA CIPHER_DATA_TYPE EQ dataType)?
+    ;
+
 cipherColumnName
     : IDENTIFIER
+    ;
+
+assistedQueryColumnDefinition
+    : ASSISTED_QUERY_COLUMN EQ assistedQueryColumnName (COMMA ASSISTED_QUERY_DATA_TYPE EQ dataType)?
     ;
 
 assistedQueryColumnName
@@ -81,4 +101,8 @@ algorithmProperty
     
 queryWithCipherColumn
     : TRUE | FALSE
+    ;
+
+existClause
+    : IF EXISTS
     ;

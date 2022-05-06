@@ -50,7 +50,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
     
     protected abstract String getSQLTokenText(SQLToken sqlToken);
-
+    
     private String getComposableSQLTokenText(final ComposableSQLToken composableSQLToken) {
         StringBuilder result = new StringBuilder();
         for (SQLToken each : composableSQLToken.getSqlTokens()) {
@@ -59,7 +59,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         }
         return result.toString();
     }
-
+    
     private String getConjunctionText(final SQLToken sqlToken) {
         return context.getSql().substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
     }

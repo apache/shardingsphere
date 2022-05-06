@@ -38,7 +38,7 @@ public final class GlobalRuleChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("/rules", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
     }

@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class EncryptTableRuleConfigurationYamlSwapperTest {
@@ -40,14 +39,12 @@ public final class EncryptTableRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs = Arrays.asList(
-                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"), 
-                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"), 
+                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"),
+                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"),
                 new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "test_encryptor_3"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs, null);
         YamlEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = tableRuleConfigYamlSwapper.swapToYamlConfiguration(encryptTableRuleConfig);
-        assertNotNull(actualYamlEncryptTableRuleConfig);
         Map<String, YamlEncryptColumnRuleConfiguration> actualColumns = actualYamlEncryptTableRuleConfig.getColumns();
-        assertFalse(actualColumns.isEmpty());
         assertThat(actualColumns.size(), is(3));
         YamlEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigFirst = actualColumns.get("encrypt_column_1");
         assertThat(actualYamlEncryptColumnRuleConfigFirst.getCipherColumn(), is("encrypt_cipher_1"));
@@ -74,7 +71,6 @@ public final class EncryptTableRuleConfigurationYamlSwapperTest {
         yamlEncryptTableRuleConfig.setName("test_table");
         yamlEncryptTableRuleConfig.setColumns(columns);
         EncryptTableRuleConfiguration actualEncryptTableRuleConfig = tableRuleConfigYamlSwapper.swapToObject(yamlEncryptTableRuleConfig);
-        assertNotNull(actualEncryptTableRuleConfig);
         assertThat(actualEncryptTableRuleConfig.getName(), is("test_table"));
         Collection<EncryptColumnRuleConfiguration> actualColumns = actualEncryptTableRuleConfig.getColumns();
         assertFalse(actualColumns.isEmpty());

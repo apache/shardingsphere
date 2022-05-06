@@ -12,7 +12,7 @@ Recently, the ShardingSphere community has redesigned the SCTL grammar and the e
 
 ## Review: What's RAL?
 
-RAL is a subtype of DistSQL. DistSQL contains three types:  RDL、RQL and RAL.
+RAL is a subtype of DistSQL. DistSQL contains three types:  RDL, RQL and RAL.
 
 - Resource & Rule Definition Language (RDL)：to create, modify or delete resources and rules.
 
@@ -37,7 +37,7 @@ SCTL is made of the below commands：
 | sctl:hint addDatabaseShardingValue xx=yy    |  For the current connection. Add database sharding value yy to the logical table xx.|
 | sctl:hint addTableShardingValue xx=yy   | For the current connection. Add table sharding value yy to the logical table xx.|
 | sctl:hint clear    | For the current connection only. Clear all hint setting.|
-| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false，sharding_type:databases_only/databases_tables`|
+| sctl:hint show status   | For the current connection only. Query hint status: `primary_only:true/false, sharding_type:databases_only/databases_tables`|
 | sctl:hint show table status    | For the current connection only. Query hint database sharding value of the logical table.|
 
 ## Why Integrate SCTL Now?
@@ -94,7 +94,7 @@ Input command
 
 Output
 
-a. If successful, display "Query OK, 0 rows affected"；
+a. If successful, display "Query OK, 0 rows affected";
 
 b. Execute `show variable transaction_type` again and the type is XA now.
 
@@ -179,7 +179,7 @@ Output
 - `set readwrite_splitting hint source`
 
 >For the current connection only. Set read-write splitting hint strategy (AUTO or WRITE).
-Supported source types include：AUTO and WRITE（case insensitive）.
+Supported source types include：AUTO and WRITE (case insensitive) .
 > - AUTO： automated readwrite splitting hint
 > - WRITE：compulsory hint at the master library
 
@@ -189,8 +189,8 @@ Input command
 
 Output
 
-a. If sucessful，show "Query OK, 0 rows affected"；
-b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write；
+a. If sucessful, show "Query OK, 0 rows affected";
+b. Re-execute `show readwrite_splitting hint status`; show the ource is changed into Write;
 c. Execute `preview select * from t_order`and see the queried SQL will go to the master database.
 
     mysql> preview select * from t_order;
@@ -248,7 +248,7 @@ Input command
 Output
 
 The initial status output is ：
-![](../../static/img/Blog_27_img_1_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_1_codes.png)
 
 Verify the hint and input the command:
 
@@ -257,7 +257,7 @@ Verify the hint and input the command:
 Output
 No hint value now. Query is fully dependent on the hint. 
 
-![](../../static/img/Blog_27_img_2_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_2_codes.png)
 
 -`set sharding hint database_value;`
 
@@ -269,14 +269,14 @@ Input command
     
 Output
 
-a. If successful, show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show  `t_order_item`'s `database_sharding_values` as 1. Update `sharding_type value` as `databases_only`.
 
-![](../../static/img/Blog_27_img_3_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_3_codes.png)
 
 c. Execute `preview select * from t_order_item`; SQL all hinted to ds_1：
 
-![](../../static/img/Blog_27_img_4_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_4_codes.png)
 
 ***Note: According to the sharding rules of YAML configuration, when database_value is an odd number, hint at ds_1; when database_value is an even number, hint at ds_0.**
 
@@ -290,14 +290,14 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
-b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`；
+a. If successful, show "Query OK, 0 rows affected";
+b. Execute `show sharding hint status`; Show `t_order_item`'s `database_sharding_values` as 5; update `sharding_type value` as `databases_tables`;
 
-![](../../static/img/Blog_27_img_5_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_5_codes.png)
 
 c. Execute `preview select * from t_order_item`; SQL commands are all hinted to ds_1：
 
-![](../../static/img/Blog_27_img_6_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_6_codes.png)
 
 Enter the add command again to add an even value.
 
@@ -305,14 +305,14 @@ Enter the add command again to add an even value.
 
 Output：
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values` = '5,10'：
 
-![](../../static/img/Blog_27_img_7_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_7_codes.png)
 
-c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1：（ Because the hint values include both odd and even number so it contains all target data sources）
+c. Execute `preview select * from t_order_item`; SQL hint contains ds_0 and ds_1： ( Because the hint values include both odd and even number so it contains all target data sources) 
 
-![](../../static/img/Blog_27_img_8_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_8_codes.png)
 
 -`add sharding hint table_value;`
 
@@ -324,14 +324,14 @@ Input command
     
 Output
 
-a. If successful，show "Query OK, 0 rows affected"；
+a. If successful, show "Query OK, 0 rows affected";
 b. Execute `show sharding hint status`; show `t_order_item`'s `database_sharding_values`  as '5,10' while `table_sharding_values` is '0'：
 
-![](../../static/img/Blog_27_img_9_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_9_codes.png)
 
 c. Execute `preview select * from t_order_item`; the Hint condition is shown in the figure below; Every database only queries `t_order_item_0`:
 
-![](../../static/img/Blog_27_img_10_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_10_codes.png)
 
 **Note: According to the sharding rules of YAML configuration, when `table_value` is an odd number, hint `t_order_item_1`; when `database_value` is an even number, hint `t_order_item_0`.
 It's quite similar to `add sharding hint database_value`; you can set more than one hint values in `add sharding hint database_value`, to cover more shards.**
@@ -348,7 +348,7 @@ Output
 a. If successful, show "Query OK, 0 rows affected";
 b. Clear sharding hint and recover default; use `show sharding hint status`; to see the result. The initial status is: 
 
-![](../../static/img/Blog_27_img_11_codes.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img_11_codes.png)
 
 `clear hint`
 
@@ -360,7 +360,7 @@ Set hint value and then execute the command;
 
 Output
 
-a. If successful，show "Query OK, 0 rows affected";
+a. If successful, show "Query OK, 0 rows affected";
 b. Get readwrite_splitting hint default and sharding hint default; use `show readwrite_splitting hint status ;` or `show sharding hint status;` command to see the result.
 
 **Note: Please remember: if you need to use DistSQL Hint, you need to enable the configuration`proxy-hint-enabled`of ShardingSphere-Proxy. For more information, please read:**
@@ -373,7 +373,7 @@ RAL not only contains all the SCTL functions, but also provides other useful adm
 For more details about RAL, please consult the relevant documentation: 
 [https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/]()
 
-###Conclusion
+### Conclusion
 
 That's all folks. If you have any questions or suggestions, feel free to comment on our GitHub Issues or Discussions sections. You're welcome to submit your pull request and start contributing to the open source community, too. We've also set up a Slack channel, where you can connect with other members of our community and discuss technology with us.
 
@@ -401,13 +401,13 @@ That's all folks. If you have any questions or suggestions, feel free to comment
 
 Jiang Longtao
 
-![](../../static/img/Blog_22_img_5_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Jiang_Longtao_Photo.png)
 
 >SphereEx Middleware Development Engineer & Apache ShardingSphere Committer. Currently, he is in charge of DistSQL and permission control development.
 
 Lan Chengxiang
 
-![](../../static/img/Blog_27_img__Lan_Chengxiang_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_27_img__Lan_Chengxiang_Photo.png)
 
 >SphereEx Middleware Development Engineer & Apache ShardingSphere Contributor. He focuses on DisSQL design and development. 
 

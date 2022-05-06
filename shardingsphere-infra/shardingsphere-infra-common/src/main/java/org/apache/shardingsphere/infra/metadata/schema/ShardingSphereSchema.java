@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.schema;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +58,7 @@ public final class ShardingSphereSchema {
      * Get table meta data via table name.
      * 
      * @param tableName tableName table name
-     * @return table mata data
+     * @return table meta data
      */
     public TableMetaData get(final String tableName) {
         return tables.get(tableName.toLowerCase());
@@ -123,6 +122,6 @@ public final class ShardingSphereSchema {
      * @return column names
      */
     public List<String> getAllColumnNames(final String tableName) {
-        return containsTable(tableName) ? new ArrayList<>(get(tableName).getColumns().keySet()) : Collections.emptyList();
+        return containsTable(tableName) ? get(tableName).getColumnNames() : Collections.emptyList();
     }
 }

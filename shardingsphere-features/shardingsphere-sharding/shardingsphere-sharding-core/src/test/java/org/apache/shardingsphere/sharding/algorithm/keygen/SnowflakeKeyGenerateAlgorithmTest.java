@@ -18,7 +18,13 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
+import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -36,6 +42,7 @@ import java.util.concurrent.Executors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class SnowflakeKeyGenerateAlgorithmTest {
     
@@ -43,14 +50,15 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
+    private final SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+    
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        int threadNumber = Runtime.getRuntime().availableProcessors() * 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        int taskNumber = threadNumber << 2;
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        int taskNumber = threadNumber * 4;
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit((Callable<Comparable<?>>) keyGenerateAlgorithm::generateKey).get());
@@ -60,10 +68,9 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyWithSingleThread() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -74,12 +81,11 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertLastDigitalOfGenerateKeySameMillisecond() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", "3");
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         assertThat(keyGenerateAlgorithm.generateKey(), is(0L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
@@ -89,12 +95,11 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         props.setProperty("max-vibration-offset", String.valueOf(3));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
         Thread.sleep(2L);
@@ -113,11 +118,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyWithClockCallBack() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -129,13 +133,12 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(0));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -146,11 +149,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.setProps(new Properties());
-        keyGenerateAlgorithm.init();
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis());
         setSequence(keyGenerateAlgorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
@@ -177,65 +179,52 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(-1L));
-        keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1L),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
+        clearInstanceContext();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", String.valueOf(-1));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(Long.MIN_VALUE));
-        keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        keyGenerateAlgorithm.init(new Properties());
         keyGenerateAlgorithm.generateKey();
+        clearInstanceContext();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", String.valueOf(4096));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
     }
     
     @Test
-    public void assertSetWorkerIdSuccess() throws NoSuchFieldException, IllegalAccessException {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(1L));
-        keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
-        Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
-        field.setAccessible(true);
-        assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("worker-id"), is("1"));
-    }
-    
-    @Test
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException, IllegalAccessException {
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));
+        keyGenerateAlgorithm.init(props);
         keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
         Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
         field.setAccessible(true);
         assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
+    }
+    
+    private void clearInstanceContext() {
+        keyGenerateAlgorithm.setInstanceContext(null);
     }
 }

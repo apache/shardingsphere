@@ -17,31 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Optional;
 
 /**
  * Database admin executor factory.
  */
-public interface DatabaseAdminExecutorFactory extends TypedSPI {
+public interface DatabaseAdminExecutorFactory extends StatelessTypedSPI {
     
     /**
      * Create an instance of database admin executor,
      * and this executor requires a connection containing a schema to be used.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @return instance of database admin executor
      */
-    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement);
+    Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext);
     
     /**
      * Create an executor of database admin executor.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param sql SQL
+     * @param schemaName schema name
      * @return instance of database admin executor
      */
-    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement, String sql);
+    Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext, String sql, String schemaName);
 }

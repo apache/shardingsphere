@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.event.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 @Getter
 public final class DataSourceNameDisabledEvent implements DataSourceStatusChangedEvent {
     
-    private final String dataSourceName;
+    private final QualifiedDatabase qualifiedDatabase;
     
     private final boolean isDisabled;
 }

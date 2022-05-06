@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
@@ -26,13 +27,16 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -40,11 +44,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TableRuleTest {
-    
-    @BeforeClass
-    public static void beforeClass() {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
-    }
     
     @Test
     public void assertCreateMinTableRule() {
@@ -78,12 +77,9 @@ public final class TableRuleTest {
     
     @Test
     public void assertCreateAutoTableRuleWithModAlgorithm() {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
-        shardingAlgorithm.init();
+        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -95,12 +91,9 @@ public final class TableRuleTest {
     
     @Test
     public void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
-        shardingAlgorithm.init();
+        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -108,6 +101,12 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", "logic_table_2")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_3")));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("sharding-count", "4");
+        return result;
     }
     
     @Test
@@ -153,5 +152,30 @@ public final class TableRuleTest {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
+    }
+    
+    @Test
+    public void assertDatNodeGroups() {
+        Collection<String> dataSourceNames = new LinkedList<>();
+        String logicTableName = "table_0";
+        dataSourceNames.add("ds0");
+        dataSourceNames.add("ds1");
+        TableRule tableRule = new TableRule(dataSourceNames, logicTableName);
+        Map<String, List<DataNode>> actual = tableRule.getDataNodeGroups();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.get("ds0").contains(new DataNode("ds0", "table_0")));
+        assertTrue(actual.get("ds1").contains(new DataNode("ds1", "table_0")));
+    }
+    
+    @Test
+    public void assertCreateTableRuleWithDataSourceNames() {
+        Collection<String> dataSourceNames = new LinkedList<>();
+        String logicTableName = "table_0";
+        dataSourceNames.add("ds0");
+        dataSourceNames.add("ds1");
+        TableRule actual = new TableRule(dataSourceNames, logicTableName);
+        assertThat(actual.getActualDataNodes().size(), is(2));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "table_0")));
     }
 }

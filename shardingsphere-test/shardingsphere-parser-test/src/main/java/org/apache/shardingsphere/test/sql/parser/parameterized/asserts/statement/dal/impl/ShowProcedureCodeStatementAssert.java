@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureCodeStatementTestCase;
 
-
 /**
  * Show procedure code statement assert.
  */

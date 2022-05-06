@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,32 +34,20 @@ public final class ScalingRegistrySubscriberTest {
     private ClusterPersistRepository repository;
     
     @Mock
-    private SchemaRulePersistService persistService;
-    
-    @Mock
-    private RegistryCacheManager registryCacheManager;
+    private DatabaseVersionPersistService databaseVersionPersistService;
     
     private ScalingRegistrySubscriber scalingRegistrySubscriber;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
         scalingRegistrySubscriber = new ScalingRegistrySubscriber(repository);
-        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("persistService");
+        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("databaseVersionPersistService");
         persistServiceField.setAccessible(true);
-        persistServiceField.set(scalingRegistrySubscriber, persistService);
-        Field registryCacheManagerField = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
-        registryCacheManagerField.setAccessible(true);
-        registryCacheManagerField.set(scalingRegistrySubscriber, registryCacheManager);
+        persistServiceField.set(scalingRegistrySubscriber, databaseVersionPersistService);
     }
     
     @Test
     public void assertCacheRuleConfiguration() {
         // TODO finish test case
     }
-    
-//    @SneakyThrows({IOException.class, URISyntaxException.class})
-//    private String readYAML() {
-//        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
-//                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-//    }
 }

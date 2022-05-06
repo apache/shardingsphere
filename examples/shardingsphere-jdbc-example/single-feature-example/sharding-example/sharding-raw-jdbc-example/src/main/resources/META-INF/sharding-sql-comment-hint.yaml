@@ -55,8 +55,7 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 props:
   sql-show: true
-  sql-comment-parse-enabled: true

@@ -20,8 +20,8 @@
     <alter-user sql-case-id="alter_user_identified_without_hostname" />
     <alter-user sql-case-id="alter_user_identified_with_hostname" />
     <alter-user sql-case-id="alter_user_account" />
-    <alter-user sql-case-id="alter_user_name_with_name" />
-    <alter-user sql-case-id="alter_user_name_rename" />
+    <alter-user sql-case-id="alter_username_with_name" />
+    <alter-user sql-case-id="alter_username_rename" />
     <alter-user sql-case-id="alter_user_passwd_with_equality" />
     <alter-user sql-case-id="alter_user_passwd_without_equality" />
     <alter-user sql-case-id="alter_user" />
@@ -63,4 +63,8 @@
     <alter-user sql-case-id="alter_user_set_default_schema" />
     <alter-user sql-case-id="alter_user_rename" />
     <alter-user sql-case-id="alter_user_in_database" />
+    <alter-user sql-case-id="alter_user_set_schema_password_language" />
+    <alter-user sql-case-id="alter_azure_ad_user_with_login" />
+    <alter-user sql-case-id="alter_azure_ad_user_without_login" />
+    <alter-user sql-case-id="alter_user_alias_to_existing_azure_id" />
 </sql-parser-test-cases>

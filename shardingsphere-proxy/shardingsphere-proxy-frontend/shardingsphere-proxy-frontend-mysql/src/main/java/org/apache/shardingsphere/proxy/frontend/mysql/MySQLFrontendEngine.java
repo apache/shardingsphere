@@ -20,9 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
@@ -36,7 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false, true);
+    private final FrontendContext frontendContext = new FrontendContext(false);
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
@@ -44,13 +47,27 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
     
-    @Override
-    public void release(final BackendConnection backendConnection) {
-        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(backendConnection.getConnectionId());
+    public MySQLFrontendEngine() {
+        MySQLServerInfo.setDefualtMysqlVersion(ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+                .getProps().<String>getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
     }
     
     @Override
-    public String getDatabaseType() {
+    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(schemaName, databaseVersion);
+    }
+    
+    @Override
+    public void release(final ConnectionSession connectionSession) {
+        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+    }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
+    public String getType() {
         return "MySQL";
     }
 }

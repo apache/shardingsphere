@@ -54,9 +54,6 @@ public class ShardingSpringBootStarterTest {
     private InlineShardingAlgorithm orderItemTableShardingAlgorithm;
     
     @Resource
-    private SnowflakeKeyGenerateAlgorithm keyGenerator;
-    
-    @Resource
     private AlgorithmProvidedShardingRuleConfiguration shardingRuleConfig;
     
     @Test
@@ -64,11 +61,6 @@ public class ShardingSpringBootStarterTest {
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
         assertThat(orderTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
         assertThat(orderItemTableShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("t_order_item_$->{order_id % 2}"));
-    }
-    
-    @Test
-    public void assertKeyGenerateAlgorithm() {
-        assertThat(keyGenerator.getProps().getProperty("worker-id"), is("123"));
     }
     
     @Test
@@ -109,8 +101,8 @@ public class ShardingSpringBootStarterTest {
     
     private void assertShardingConfigurationBindingTableGroups() {
         assertThat(shardingRuleConfig.getBindingTableGroups().size(), is(1));
-        List<String> bindingTableGroupsList = new ArrayList<>(shardingRuleConfig.getBindingTableGroups());
-        assertThat(bindingTableGroupsList.get(0), is("t_order,t_order_item"));
+        List<String> bindingTableGroups = new ArrayList<>(shardingRuleConfig.getBindingTableGroups());
+        assertThat(bindingTableGroups.get(0), is("t_order,t_order_item"));
     }
     
     private void assertShardingConfigurationBroadcastTables() {
@@ -140,6 +132,5 @@ public class ShardingSpringBootStarterTest {
     private void assertShardingConfigurationKeyGenerators() {
         assertThat(shardingRuleConfig.getKeyGenerators().size(), is(1));
         assertThat(shardingRuleConfig.getKeyGenerators().get("keyGenerator"), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
-        assertThat(shardingRuleConfig.getKeyGenerators().get("keyGenerator").getProps().getProperty("worker-id"), is("123"));
     }
 }

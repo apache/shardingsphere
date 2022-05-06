@@ -78,8 +78,7 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 grantees.add(new Grantee(resultSet.getString("GRANTEE"), ""));
             }
@@ -129,7 +128,7 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new NativePrivileges()));
+        users.forEach(each -> result.put(each, new NativePrivileges()));
         fillGlobalPrivileges(result, dataSource, users);
         fillSchemaPrivileges(result, dataSource, users);
         fillTablePrivileges(result, dataSource, users);
@@ -141,8 +140,7 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 fillGlobalPrivileges(userPrivilegeMap, resultSet);
             }
@@ -160,8 +158,7 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 fillSchemaPrivileges(userPrivilegeMap, resultSet);
             }
@@ -183,8 +180,7 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
             while (resultSet.next()) {
                 collectPrivileges(privilegeCache, resultSet);
             }

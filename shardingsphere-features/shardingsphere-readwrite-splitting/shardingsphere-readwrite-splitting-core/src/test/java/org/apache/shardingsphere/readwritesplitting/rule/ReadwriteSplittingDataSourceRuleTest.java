@@ -17,46 +17,43 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ReadwriteSplittingDataSourceRuleTest {
     
-    private final ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
-            new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), new RandomReplicaLoadBalanceAlgorithm());
+    private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
+    
+    @Before
+    public void setUp() {
+        readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), ""), new RandomReplicaLoadBalanceAlgorithm());
+    }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "", "write_ds", Collections.singletonList("read_ds"), null), 
-                new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithoutPrimaryDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "", Collections.singletonList("read_ds"), null), 
+    public void assertNewReadwriteSplittingDataSourceRuleWithoutWriteDataSourceName() {
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("", "read_ds"), null),
                 new RoundRobinReplicaLoadBalanceAlgorithm());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithNullReadDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", Collections.emptyList(), null), 
-                new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", ""), ""), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test
@@ -84,9 +81,21 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     }
     
     @Test
-    public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = readwriteSplittingDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
-        assertThat(actual, is(expected));
+    public void assertGetWriteDataSource() {
+        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        assertThat(writeDataSourceName, is("write_ds"));
+    }
+    
+    @Test
+    public void assertGetEnabledReplicaDataSources() {
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
+    }
+    
+    private Properties getProperties(final String writeDataSource, final String readDataSources) {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", writeDataSource);
+        result.setProperty("read-data-source-names", readDataSources);
+        return result;
     }
 }

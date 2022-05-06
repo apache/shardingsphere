@@ -22,6 +22,8 @@ import org.apache.shardingsphere.transaction.constant.TransactionOrder;
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Properties;
+
 /**
  * Default transaction rule configuration builder.
  */
@@ -29,7 +31,7 @@ public final class DefaultTransactionRuleConfigurationBuilder implements Default
     
     @Override
     public TransactionRuleConfiguration build() {
-        return new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null);
+        return new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
     }
     
     @Override

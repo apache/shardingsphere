@@ -49,14 +49,14 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 
 **说明**
 
-* 如需使用外部 jar 包，可将其所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
+* 如需使用外部 jar 包（例如 MySQL/openGauss JDBC 驱动、自定义算法等），可将其所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
 
 ## 访问 ShardingSphere-Proxy
 
 与连接 PostgreSQL 的方式相同。
 
 ```bash
-psql -U ${your_user_name} -h ${your_host} -p 13308
+psql -U ${your_username} -h ${your_host} -p 13308
 ```
 
 ## FAQ

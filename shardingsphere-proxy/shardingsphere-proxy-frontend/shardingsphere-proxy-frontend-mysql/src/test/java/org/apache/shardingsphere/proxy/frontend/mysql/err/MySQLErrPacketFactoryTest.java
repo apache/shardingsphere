@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -54,7 +54,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullSQLState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(new RuntimeException("No reason")));
@@ -63,7 +63,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("HY000"));
         assertThat(actual.getErrorMessage(), endsWith("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullParam() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(""));
@@ -77,8 +77,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithUnsupportedVariableExceptionException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedVariableException("test"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11002));
-        assertThat(actual.getSqlState(), is("S11002"));
+        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getSqlState(), is("11001"));
         assertThat(actual.getErrorMessage(), is("Could not support variable [test]."));
     }
     
@@ -122,7 +122,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBDropExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropNotExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1008));
         assertThat(actual.getSqlState(), is("HY000"));

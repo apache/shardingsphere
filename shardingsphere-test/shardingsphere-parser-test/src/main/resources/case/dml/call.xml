@@ -38,10 +38,10 @@
         <procedure-name name="p" start-index="5" stop-index="6"/>
         <parameters>
             <parameter>
-                <parameter-marker-expression value="0" start-index="7" stop-index="7"/>
+                <parameter-marker-expression parameter-index="0" start-index="7" stop-index="7"/>
             </parameter>
             <parameter>
-                <parameter-marker-expression value="1" start-index="10" stop-index="10"/>
+                <parameter-marker-expression parameter-index="1" start-index="10" stop-index="10"/>
             </parameter>
         </parameters>
     </call>
@@ -68,7 +68,7 @@
                 <literal-expression value="user" start-index="18" stop-index="23"/>
             </parameter>
             <parameter>
-                <parameter-marker-expression value="0" start-index="26" stop-index="26"/>
+                <parameter-marker-expression parameter-index="0" start-index="26" stop-index="26"/>
             </parameter>
         </parameters>
     </call>

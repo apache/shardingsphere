@@ -42,7 +42,7 @@ chapter = true
 
 围绕上述的一些诉求，葫芦团队用了 2 周左右时间对 ShardingSphere 及同类解决方案进行了全面评估，综合考虑了如产品功能、成熟度、稳定性、性能等多方面评估指标，最终 ShardingSphere 凭借完善的功能支持程度以及高成熟度，充分满足了葫芦团队的业务诉求。
 
-![](../../static/img/Blog_21_img_1_a_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_21_img_1_a_Photo.png)
 
 从上图中可以看出，葫芦团队将 ShardingSphere 部署在了阿里云的 RDS 之上，相较于对本体数据库做调整，葫芦团队更倾向于在数据库之上来进行数据治理。而 ShardingSphere 能够从可插拔架构所带来高扩展性、距离业务更紧密的贴合性以及对于业务架构的零侵入性这三个层面对葫芦的后台数据架构进行有效改进，并带来了明显的效果提升：
 

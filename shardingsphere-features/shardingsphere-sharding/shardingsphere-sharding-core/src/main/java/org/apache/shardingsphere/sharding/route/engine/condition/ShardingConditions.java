@@ -90,7 +90,7 @@ public final class ShardingConditions {
         if (conditions.size() > 1) {
             List<ShardingCondition> result = new ArrayList<>();
             result.add(conditions.remove(conditions.size() - 1));
-            while (conditions.size() > 0) {
+            while (!conditions.isEmpty()) {
                 findUniqueShardingCondition(result, conditions.remove(conditions.size() - 1)).ifPresent(result::add);
             }
             conditions.addAll(result);
@@ -113,7 +113,7 @@ public final class ShardingConditions {
      */
     public boolean isNeedMerge() {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext() 
+        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
         return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
@@ -177,7 +177,7 @@ public final class ShardingConditions {
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return shardingValue1.getTableName().equals(shardingValue2.getTableName()) 
+        return shardingValue1.getTableName().equals(shardingValue2.getTableName())
                 && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
     }
     

@@ -17,22 +17,33 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Parse complete packet for PostgreSQL.
  */
-public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifierPacket {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
     
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.PARSE_COMPLETE.getValue(), 0, 0, 0, 4};
+    
+    private static final PostgreSQLParseCompletePacket INSTANCE = new PostgreSQLParseCompletePacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLParseCompletePacket}.
+     *
+     * @return instance of {@link PostgreSQLParseCompletePacket}
+     */
+    public static PostgreSQLParseCompletePacket getInstance() {
+        return INSTANCE;
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.PARSE_COMPLETE;
+    public void write(final PostgreSQLPacketPayload payload) {
+        payload.getByteBuf().writeBytes(VALUE);
     }
 }

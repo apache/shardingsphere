@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Cluster persist repository.
@@ -43,6 +44,15 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistEphemeral(String key, String value);
     
     /**
+     * Get sequential id.
+     * 
+     * @param key key of data
+     * @param value value of data
+     * @return sequential id
+     */
+    String getSequentialId(String key, String value);
+    
+    /**
      * Watch key or path of governance server.
      *
      * @param key key of data
@@ -51,19 +61,25 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watch(String key, DataChangedEventListener listener);
     
     /**
-     * Try to get lock under the lock key.
+     * Watch session connection.
      *
-     * @param key lock key
-     * @param time time to wait
-     * @param unit time unit
-     * @return true if get the lock, false if not
+     * @param instanceContext instance context
      */
-    boolean tryLock(String key, long time, TimeUnit unit);
+    void watchSessionConnection(InstanceContext instanceContext);
     
     /**
-     * Release lock.
+     * Get global lock.
      *
-     * @param key lock key
+     * @param lockName lock name
+     * @return internal lock
      */
-    void releaseLock(String key);
+    Lock getGlobalLock(String lockName);
+    
+    /**
+     * Get standard lock.
+     *
+     * @param lockName lock name
+     * @return internal lock
+     */
+    Lock getStandardLock(String lockName);
 }

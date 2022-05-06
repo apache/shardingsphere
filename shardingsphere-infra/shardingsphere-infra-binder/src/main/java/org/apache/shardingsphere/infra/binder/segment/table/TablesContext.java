@@ -24,7 +24,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.segment.select.subquery.engine.SubqueryTableContextEngine;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
@@ -34,13 +39,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
 
 /**
  * Tables context.
@@ -55,44 +58,52 @@ public final class TablesContext {
     
     private final Collection<String> schemaNames = new HashSet<>();
     
+    private final Collection<String> databaseNames = new HashSet<>();
+    
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
-    public TablesContext(final SimpleTableSegment tableSegment) {
-        this(Collections.singletonList(tableSegment));
+    public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
+        this(Collections.singletonList(tableSegment), databaseType);
     }
     
-    public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
-        this(tableSegments, Collections.emptyMap());
+    public TablesContext(final Collection<SimpleTableSegment> tableSegments, final DatabaseType databaseType) {
+        this(tableSegments, Collections.emptyMap(), databaseType);
     }
     
-    public TablesContext(final Collection<? extends TableSegment> tableSegments, final Map<Integer, SelectStatementContext> subqueryContexts) {
+    public TablesContext(final Collection<? extends TableSegment> tableSegments, final Map<Integer, SelectStatementContext> subqueryContexts, final DatabaseType databaseType) {
         if (tableSegments.isEmpty()) {
             return;
         }
         for (TableSegment each : tableSegments) {
-            if (!(each instanceof SimpleTableSegment)) {
-                continue;
+            if (each instanceof SimpleTableSegment) {
+                SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
+                tables.add(simpleTableSegment);
+                tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
+                simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));
+                findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
             }
-            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
-            tables.add(simpleTableSegment);
-            tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-            simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));
+            if (each instanceof SubqueryTableSegment) {
+                subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));
+            }
         }
-        for (TableSegment each : tableSegments) {
-            if (!(each instanceof SubqueryTableSegment)) {
-                continue;
+    }
+    
+    private Optional<String> findDatabaseName(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
+        Optional<OwnerSegment> owner = databaseType instanceof PostgreSQLDatabaseType
+                || databaseType instanceof OpenGaussDatabaseType ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
+        return owner.map(optional -> optional.getIdentifier().getValue());
+    }
+    
+    private Map<String, Collection<SubqueryTableContext>> createSubqueryTables(final Map<Integer, SelectStatementContext> subqueryContexts, final SubqueryTableSegment subqueryTable) {
+        SelectStatementContext subqueryContext = subqueryContexts.get(subqueryTable.getSubquery().getStartIndex());
+        Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, subqueryTable.getAlias().orElse(null));
+        Map<String, Collection<SubqueryTableContext>> result = new HashMap<>();
+        for (SubqueryTableContext subQuery : subqueryTableContexts) {
+            if (null != subQuery.getAlias()) {
+                result.computeIfAbsent(subQuery.getAlias(), unused -> new LinkedList<>()).add(subQuery);
             }
-            SubqueryTableSegment subqueryTableSegment = (SubqueryTableSegment) each;
-            SelectStatementContext subqueryContext = subqueryContexts.get(subqueryTableSegment.getSubquery().getStartIndex());
-            Collection<SubqueryTableContext> subqueryTableContexts = new SubqueryTableContextEngine().createSubqueryTableContexts(subqueryContext, each.getAlias().orElse(null));
-            Map<String, List<SubqueryTableContext>> result = new HashMap<>();
-            for (SubqueryTableContext subQuery : subqueryTableContexts) {
-                if (null != subQuery.getAlias()) {
-                    result.computeIfAbsent(subQuery.getAlias(), unused -> new LinkedList<>()).add(subQuery);
-                }
-            }
-            subqueryTables.putAll(result);
         }
+        return result;
     }
     
     /**
@@ -105,52 +116,120 @@ public final class TablesContext {
     }
     
     /**
-     * Find table name.
+     * Find expression table name map by column segment.
      *
-     * @param columns column projection collection
+     * @param columns column segment collection
      * @param schema schema meta data
-     * @return table name map
+     * @return expression table name map
      */
-    public Map<String, String> findTableName(final Collection<ColumnProjection> columns, final ShardingSphereSchema schema) {
+    public Map<String, String> findTableNamesByColumnSegment(final Collection<ColumnSegment> columns, final ShardingSphereSchema schema) {
         if (1 == tables.size()) {
-            String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
-            Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
-            for (ColumnProjection each : columns) {
-                result.putIfAbsent(each.getExpression(), tableName);
-            }
-            return result;
+            return findTableNameFromSingleTableByColumnSegment(columns);
         }
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
-        result.putAll(findTableNameFromSQL(getOwnerColumnNames(columns)));
-        Collection<String> columnNames = new LinkedHashSet<>();
-        for (ColumnProjection each : columns) {
-            if (null == each.getOwner()) {
-                columnNames.add(each.getName());
-            }
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Collection<String>> ownerColumnNames = getOwnerColumnNamesByColumnSegment(columns);
+        result.putAll(findTableNameFromSQL(ownerColumnNames));
+        Collection<String> noOwnerColumnNames = getNoOwnerColumnNamesByColumnSegment(columns);
+        result.putAll(findTableNameFromMetaData(noOwnerColumnNames, schema));
+        result.putAll(findTableNameFromSubqueryByColumnSegment(columns, result));
+        return result;
+    }
+    
+    /**
+     * Find expression table name map by column projection.
+     *
+     * @param columns column segment collection
+     * @param schema schema meta data
+     * @return expression table name map
+     */
+    public Map<String, String> findTableNamesByColumnProjection(final Collection<ColumnProjection> columns, final ShardingSphereSchema schema) {
+        if (1 == tables.size()) {
+            return findTableNameFromSingleTableByColumnProjection(columns);
         }
-        result.putAll(findTableNameFromMetaData(columnNames, schema));
-        if (result.size() < columns.size() && !subqueryTables.isEmpty()) {
-            appendRemainingResult(columns, result);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Collection<String>> ownerColumnNames = getOwnerColumnNamesByColumnProjection(columns);
+        result.putAll(findTableNameFromSQL(ownerColumnNames));
+        Collection<String> noOwnerColumnNames = getNoOwnerColumnNamesByColumnProjection(columns);
+        result.putAll(findTableNameFromMetaData(noOwnerColumnNames, schema));
+        result.putAll(findTableNameFromSubqueryByColumnProjection(columns, result));
+        return result;
+    }
+    
+    private Map<String, String> findTableNameFromSubqueryByColumnSegment(final Collection<ColumnSegment> columns, final Map<String, String> ownerTableNames) {
+        if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
+        for (ColumnSegment each : columns) {
+            if (ownerTableNames.containsKey(each.getExpression())) {
+                continue;
+            }
+            String owner = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse("");
+            Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.getOrDefault(owner, Collections.emptyList());
+            for (SubqueryTableContext subqueryTableContext : subqueryTableContexts) {
+                if (subqueryTableContext.getColumnNames().contains(each.getIdentifier().getValue())) {
+                    result.put(each.getExpression(), subqueryTableContext.getTableName());
+                }
+            }
         }
         return result;
     }
     
-    private void appendRemainingResult(final Collection<ColumnProjection> columns, final Map<String, String> result) {
-        Collection<ColumnProjection> remainingColumns = columns.stream().filter(each -> !result.containsKey(each.getExpression())).collect(Collectors.toList());
-        for (ColumnProjection each : remainingColumns) {
-            findTableNameFromSubquery(each.getName(), each.getOwner()).ifPresent(optional -> result.put(each.getExpression(), optional));
+    private Map<String, String> findTableNameFromSubqueryByColumnProjection(final Collection<ColumnProjection> columns, final Map<String, String> ownerTableNames) {
+        if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
+            return Collections.emptyMap();
         }
+        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
+        for (ColumnProjection each : columns) {
+            if (ownerTableNames.containsKey(each.getExpression())) {
+                continue;
+            }
+            Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.getOrDefault(each.getOwner(), Collections.emptyList());
+            for (SubqueryTableContext subqueryTableContext : subqueryTableContexts) {
+                if (subqueryTableContext.getColumnNames().contains(each.getName())) {
+                    result.put(each.getExpression(), subqueryTableContext.getTableName());
+                }
+            }
+        }
+        return result;
     }
     
-    private Map<String, Collection<String>> getOwnerColumnNames(final Collection<ColumnProjection> columns) {
+    private Map<String, String> findTableNameFromSingleTableByColumnSegment(final Collection<ColumnSegment> columns) {
+        String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (ColumnSegment each : columns) {
+            result.putIfAbsent(each.getExpression(), tableName);
+        }
+        return result;
+    }
+    
+    private Map<String, String> findTableNameFromSingleTableByColumnProjection(final Collection<ColumnProjection> columns) {
+        String tableName = tables.iterator().next().getTableName().getIdentifier().getValue();
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (ColumnProjection each : columns) {
+            result.putIfAbsent(each.getExpression(), tableName);
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<String>> getOwnerColumnNamesByColumnSegment(final Collection<ColumnSegment> columns) {
+        Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (ColumnSegment each : columns) {
+            if (!each.getOwner().isPresent()) {
+                continue;
+            }
+            result.computeIfAbsent(each.getOwner().get().getIdentifier().getValue(), unused -> new LinkedList<>()).add(each.getExpression());
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<String>> getOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
         Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnProjection each : columns) {
             if (null == each.getOwner()) {
                 continue;
             }
-            Collection<String> columnExpressions = result.getOrDefault(each.getOwner(), new LinkedList<>());
-            columnExpressions.add(each.getExpression());
-            result.put(each.getOwner(), columnExpressions);
+            result.computeIfAbsent(each.getOwner(), unused -> new LinkedList<>()).add(each.getExpression());
         }
         return result;
     }
@@ -159,7 +238,7 @@ public final class TablesContext {
         if (ownerColumnNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>();
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (ownerColumnNames.containsKey(tableName)) {
@@ -173,31 +252,50 @@ public final class TablesContext {
         return result;
     }
     
-    private Map<String, String> findTableNameFromMetaData(final Collection<String> columnNames, final ShardingSphereSchema schema) {
-        if (columnNames.isEmpty()) {
+    private Map<String, String> findTableNameFromMetaData(final Collection<String> noOwnerColumnNames, final ShardingSphereSchema schema) {
+        if (noOwnerColumnNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(noOwnerColumnNames.size(), 1);
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            Collection<String> tableColumnNames = schema.getAllColumnNames(tableName);
-            if (tableColumnNames.isEmpty()) {
-                continue;
-            }
-            Collection<String> intersectColumnNames = tableColumnNames.stream().filter(columnNames::contains).collect(Collectors.toList());
-            for (String columnName : intersectColumnNames) {
-                result.put(columnName, tableName);
+            for (String columnName : schema.getAllColumnNames(tableName)) {
+                if (noOwnerColumnNames.contains(columnName)) {
+                    result.put(columnName, tableName);
+                }
             }
         }
         return result;
     }
     
-    private Optional<String> findTableNameFromSubquery(final String columnName, final String owner) {
-        Collection<SubqueryTableContext> subqueryTableContexts = subqueryTables.get(owner);
-        if (null != subqueryTableContexts) {
-            return subqueryTableContexts.stream().filter(each -> each.getColumnNames().contains(columnName)).map(SubqueryTableContext::getTableName).findFirst();
+    private Collection<String> getNoOwnerColumnNamesByColumnSegment(final Collection<ColumnSegment> columns) {
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (ColumnSegment each : columns) {
+            if (!each.getOwner().isPresent()) {
+                result.add(each.getIdentifier().getValue());
+            }
         }
-        return Optional.empty();
+        return result;
+    }
+    
+    private Collection<String> getNoOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (ColumnProjection each : columns) {
+            if (null == each.getOwner()) {
+                result.add(each.getName());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    public Optional<String> getDatabaseName() {
+        Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database.");
+        return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
     
     /**
@@ -206,10 +304,6 @@ public final class TablesContext {
      * @return schema name
      */
     public Optional<String> getSchemaName() {
-        Preconditions.checkState(schemaNames.size() <= 1, "Can not support multiple different schema.");
-        for (String each : schemaNames) {
-            return Optional.of(each);
-        }
-        return Optional.empty();
+        return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
     }
 }

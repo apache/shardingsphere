@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
@@ -42,28 +42,28 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> imple
     
     private final T sqlStatement;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     @Override
     public final ResponseHeader execute() throws SQLException {
-        String schemaName = getSchemaName(backendConnection, sqlStatement);
-        checkSchema(schemaName);
-        return execute(schemaName, sqlStatement);
+        String databaseName = getDatabaseName(connectionSession, sqlStatement);
+        checkDatabase(databaseName);
+        return execute(databaseName, sqlStatement);
     }
     
-    protected abstract ResponseHeader execute(String schemaName, T sqlStatement) throws SQLException;
+    protected abstract ResponseHeader execute(String databaseName, T sqlStatement) throws SQLException;
     
-    private String getSchemaName(final BackendConnection backendConnection, final T sqlStatement) {
+    private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
         Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
-        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : backendConnection.getSchemaName();
+        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
-    private void checkSchema(final String schemaName) {
-        if (null == schemaName) {
+    private void checkDatabase(final String databaseName) {
+        if (null == databaseName) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new UnknownDatabaseException(schemaName);
+        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
+            throw new UnknownDatabaseException(databaseName);
         }
     }
 }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionP
 public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
     }
     

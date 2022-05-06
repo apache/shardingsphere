@@ -16,22 +16,21 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-integration-agent-test-plugins</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-integration-agent-test-zipkin</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -49,23 +48,52 @@
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <outputDirectory>target/test-classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/test/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
     <profiles>
         <profile>
             <id>it.env.zipkin</id>
@@ -85,24 +113,16 @@
                         <executions>
                             <execution>
                                 <id>assembly</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
+                                <phase>package</phase>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>shardingsphere-proxy-bin</id>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                         <configuration>
                             <repository>apache/shardingsphere-proxy-agent-zipkin-test</repository>
                             <tag>${project.version}</tag>
@@ -111,48 +131,17 @@
                                 <APP_NAME>${project.build.finalName}</APP_NAME>
                             </buildArgs>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-proxy-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>integration-tests</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/test-classes</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/resources</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -35,7 +35,8 @@ import java.util.stream.Collectors;
  * Readwrite-splitting rule configuration YAML swapper.
  */
 public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper
-        implements YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
+        implements
+            YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
     public YamlReadwriteSplittingRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedReadwriteSplittingRuleConfiguration data) {
@@ -50,9 +51,8 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-        result.setAutoAwareDataSourceName(dataSourceRuleConfig.getAutoAwareDataSourceName());
-        result.setWriteDataSourceName(dataSourceRuleConfig.getWriteDataSourceName());
-        result.setReadDataSourceNames(dataSourceRuleConfig.getReadDataSourceNames());
+        result.setType(dataSourceRuleConfig.getType());
+        result.setProps(dataSourceRuleConfig.getProps());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
         return result;
     }
@@ -69,8 +69,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getAutoAwareDataSourceName(),
-                yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getType(), yamlDataSourceRuleConfig.getProps(), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
     @Override

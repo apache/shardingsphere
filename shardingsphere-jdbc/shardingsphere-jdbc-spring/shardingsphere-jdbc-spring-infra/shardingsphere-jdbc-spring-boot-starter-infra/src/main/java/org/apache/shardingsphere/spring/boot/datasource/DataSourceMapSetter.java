@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.spring.boot.datasource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
-import org.apache.shardingsphere.spring.boot.datasource.prop.impl.DataSourcePropertiesSetterHolder;
-import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.util.StringUtils;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -76,7 +76,7 @@ public final class DataSourceMapSetter {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
         String dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAME);
-        if (StringUtils.isEmpty(dataSourceNames)) {
+        if (Strings.isNullOrEmpty(dataSourceNames)) {
             dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAMES);
         }
         return new InlineExpressionParser(dataSourceNames).splitAndEvaluate();
@@ -89,10 +89,7 @@ public final class DataSourceMapSetter {
         if (dataSourceProps.containsKey(JNDI_NAME)) {
             return getJNDIDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }
-        DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get(DATA_SOURCE_TYPE).toString(), dataSourceProps);
-        DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get(DATA_SOURCE_TYPE).toString()).ifPresent(
-            propsSetter -> propsSetter.propertiesSet(environment, PREFIX, dataSourceName, result));
-        return result;
+        return DataSourcePoolCreator.create(new DataSourceProperties(dataSourceProps.get(DATA_SOURCE_TYPE).toString(), PropertyUtil.getCamelCaseKeys(dataSourceProps)));
     }
     
     private static DataSource getJNDIDataSource(final String jndiName) throws NamingException {
@@ -101,6 +98,6 @@ public final class DataSourceMapSetter {
         bean.setJndiName(jndiName);
         bean.setProxyInterface(DataSource.class);
         bean.afterPropertiesSet();
-        return (DataSource) bean.getObject();
+        return (DataSource) AopProxyUtils.getTarget(bean.getObject());
     }
 }

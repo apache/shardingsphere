@@ -57,7 +57,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
         getMetaDataMethod.setAccessible(true);
         DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
         span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
-        span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
+        span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostname());
         span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
         span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
         span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());

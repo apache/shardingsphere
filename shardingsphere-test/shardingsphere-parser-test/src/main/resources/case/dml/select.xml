@@ -124,7 +124,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="54" stop-index="54" />
-                                <parameter-marker-expression value="0" start-index="54" stop-index="54" />
+                                <parameter-marker-expression parameter-index="0" start-index="54" stop-index="54" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -137,7 +137,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="71" stop-index="71" />
-                                <parameter-marker-expression value="1" start-index="71" stop-index="71" />
+                                <parameter-marker-expression parameter-index="1" start-index="71" stop-index="71" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -172,7 +172,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="92" stop-index="92" />
-                                <parameter-marker-expression value="0" start-index="92" stop-index="92" />
+                                <parameter-marker-expression parameter-index="0" start-index="92" stop-index="92" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -185,7 +185,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="109" stop-index="109" />
-                                <parameter-marker-expression value="1" start-index="109" stop-index="109" />
+                                <parameter-marker-expression parameter-index="1" start-index="109" stop-index="109" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -210,7 +210,7 @@
                     <operator>&lt;&gt;</operator>
                     <right>
                         <literal-expression value="1" start-index="44" stop-index="44" />
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -236,7 +236,7 @@
                     <operator>!=</operator>
                     <right>
                         <literal-expression value="1" start-index="44" stop-index="44" />
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -279,11 +279,11 @@
                                 <list-expression start-index="72" stop-index="77" literal-stop-index="87">
                                     <items>
                                         <literal-expression value="100000" start-index="73" stop-index="78" />
-                                        <parameter-marker-expression value="0" start-index="73" stop-index="73" />
+                                        <parameter-marker-expression parameter-index="0" start-index="73" stop-index="73" />
                                     </items>
                                     <items>
                                         <literal-expression value="100001" start-index="81" stop-index="86" />
-                                        <parameter-marker-expression value="1" start-index="76" stop-index="76" />
+                                        <parameter-marker-expression parameter-index="1" start-index="76" stop-index="76" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -329,11 +329,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="100000" start-index="77" stop-index="82" />
-                                <parameter-marker-expression value="0" start-index="77" stop-index="77" />
+                                <parameter-marker-expression parameter-index="0" start-index="77" stop-index="77" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="100001" start-index="88" stop-index="93" />
-                                <parameter-marker-expression value="1" start-index="83" stop-index="83" />
+                                <parameter-marker-expression parameter-index="1" start-index="83" stop-index="83" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -363,7 +363,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="38" stop-index="38" />
-                                <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                                <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -376,7 +376,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="55" stop-index="55" />
-                                <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                                <parameter-marker-expression parameter-index="1" start-index="55" stop-index="55" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -403,7 +403,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="38" stop-index="38" />
-                                <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                                <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -416,7 +416,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="55" stop-index="55" />
-                                <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                                <parameter-marker-expression parameter-index="1" start-index="55" stop-index="55" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -443,7 +443,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="39" stop-index="39" />
-                                <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                                <parameter-marker-expression parameter-index="0" start-index="39" stop-index="39" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -456,7 +456,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="2" start-index="56" stop-index="56" />
-                                <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -483,11 +483,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="1" start-index="44" stop-index="44" />
-                                <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                                <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="50" stop-index="51" />
-                                <parameter-marker-expression value="1" start-index="50" stop-index="50" />
+                                <parameter-marker-expression parameter-index="1" start-index="50" stop-index="50" />
                             </and-expr>
                         </between-expression>
                     </left>
@@ -500,11 +500,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="2" start-index="74" stop-index="74" />
-                                <parameter-marker-expression value="2" start-index="73" stop-index="73" />
+                                <parameter-marker-expression parameter-index="2" start-index="73" stop-index="73" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="5" start-index="80" stop-index="80" />
-                                <parameter-marker-expression value="3" start-index="79" stop-index="79" />
+                                <parameter-marker-expression parameter-index="3" start-index="79" stop-index="79" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -539,7 +539,7 @@
                                             <operator>&gt;=</operator>
                                             <right>
                                                 <literal-expression value="1" start-index="39" stop-index="39" />
-                                                <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                                                <parameter-marker-expression parameter-index="0" start-index="39" stop-index="39" />
                                             </right>
                                         </binary-operation-expression>
                                     </left>
@@ -552,7 +552,7 @@
                                             <operator>&lt;=</operator>
                                             <right>
                                                 <literal-expression value="10" start-index="56" stop-index="57" />
-                                                <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -567,7 +567,7 @@
                                     <operator>&gt;=</operator>
                                     <right>
                                         <literal-expression value="2" start-index="75" stop-index="75" />
-                                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -582,7 +582,7 @@
                             <operator>&lt;=</operator>
                             <right>
                                 <literal-expression value="5" start-index="93" stop-index="93" />
-                                <parameter-marker-expression value="3" start-index="92" stop-index="92" />
+                                <parameter-marker-expression parameter-index="3" start-index="92" stop-index="92" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -615,15 +615,15 @@
                                 <list-expression start-index="39" stop-index="47">
                                     <items>
                                         <literal-expression value="1" start-index="40" stop-index="40" />
-                                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                                        <parameter-marker-expression parameter-index="0" start-index="40" stop-index="40" />
                                     </items>
                                     <items>
                                         <literal-expression value="2" start-index="43" stop-index="43" />
-                                        <parameter-marker-expression value="1" start-index="43" stop-index="43" />
+                                        <parameter-marker-expression parameter-index="1" start-index="43" stop-index="43" />
                                     </items>
                                     <items>
                                         <literal-expression value="3" start-index="46" stop-index="46" />
-                                        <parameter-marker-expression value="2" start-index="46" stop-index="46" />
+                                        <parameter-marker-expression parameter-index="2" start-index="46" stop-index="46" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -640,11 +640,11 @@
                                 <list-expression start-index="65" stop-index="70" literal-stop-index="71">
                                     <items>
                                         <literal-expression value="9" start-index="66" stop-index="66" />
-                                        <parameter-marker-expression value="3" start-index="66" stop-index="66" />
+                                        <parameter-marker-expression parameter-index="3" start-index="66" stop-index="66" />
                                     </items>
                                     <items>
                                         <literal-expression value="10" start-index="69" stop-index="70" />
-                                        <parameter-marker-expression value="4" start-index="69" stop-index="69" />
+                                        <parameter-marker-expression parameter-index="4" start-index="69" stop-index="69" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -679,11 +679,11 @@
                                 <list-expression start-index="40" stop-index="45" literal-stop-index="51">
                                     <items>
                                         <literal-expression value="1000" start-index="41" stop-index="44" />
-                                        <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                                     </items>
                                     <items>
                                         <literal-expression value="1001" start-index="47" stop-index="50" />
-                                        <parameter-marker-expression value="1" start-index="44" stop-index="44" />
+                                        <parameter-marker-expression parameter-index="1" start-index="44" stop-index="44" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -700,11 +700,11 @@
                                 <list-expression start-index="63" stop-index="68" literal-start-index="69" literal-stop-index="80">
                                     <items>
                                         <literal-expression value="1001" start-index="70" stop-index="73" />
-                                        <parameter-marker-expression value="2" start-index="64" stop-index="64" />
+                                        <parameter-marker-expression parameter-index="2" start-index="64" stop-index="64" />
                                     </items>
                                     <items>
                                         <literal-expression value="1002" start-index="76" stop-index="79" />
-                                        <parameter-marker-expression value="3" start-index="67" stop-index="67" />
+                                        <parameter-marker-expression parameter-index="3" start-index="67" stop-index="67" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -758,7 +758,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="46" stop-index="46" />
-                                <parameter-marker-expression value="0" start-index="46" stop-index="46" />
+                                <parameter-marker-expression parameter-index="0" start-index="46" stop-index="46" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -773,7 +773,7 @@
                                 <list-expression start-index="64" stop-index="64" literal-stop-index="69">
                                     <items>
                                         <literal-expression value="init" start-index="64" stop-index="69" />
-                                        <parameter-marker-expression value="1" start-index="64" stop-index="64" />
+                                        <parameter-marker-expression parameter-index="1" start-index="64" stop-index="64" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -813,7 +813,7 @@
                                                     </parameter>
                                                     <parameter>
                                                         <literal-expression value="init" start-index="80" stop-index="80" literal-start-index="80" literal-stop-index="85" />
-                                                        <parameter-marker-expression value="0" start-index="80" stop-index="80" />
+                                                        <parameter-marker-expression parameter-index="0" start-index="80" stop-index="80" />
                                                     </parameter>
                                                     <parameter>
                                                         <literal-expression value="%%" start-index="83" stop-index="86" literal-start-index="88" literal-stop-index="91" />
@@ -838,11 +838,11 @@
                                         <list-expression start-index="106" stop-index="111" literal-start-index="111" literal-stop-index="116">
                                             <items>
                                                 <literal-expression value="1" start-index="112" stop-index="112" />
-                                                <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                                                <parameter-marker-expression parameter-index="1" start-index="107" stop-index="107" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="115" stop-index="115" />
-                                                <parameter-marker-expression value="2" start-index="110" stop-index="110" />
+                                                <parameter-marker-expression parameter-index="2" start-index="110" stop-index="110" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -861,11 +861,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="141" stop-index="141" />
-                                <parameter-marker-expression value="3" start-index="136" stop-index="136" />
+                                <parameter-marker-expression parameter-index="3" start-index="136" stop-index="136" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="147" stop-index="148" />
-                                <parameter-marker-expression value="4" start-index="142" stop-index="142" />
+                                <parameter-marker-expression parameter-index="4" start-index="142" stop-index="142" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -873,7 +873,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_count_like_concat_postgres" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -897,7 +897,18 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
-                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')" />
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')">
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="74" literal-stop-index="77" start-index="74" stop-index="77"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" literal-start-index="80" literal-stop-index="85"/>
+                                                        <parameter-marker-expression parameter-index="0" start-index="80" stop-index="80"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="88" literal-stop-index="91" start-index="83" stop-index="86"/>
+                                                    </parameter>
+                                                </function>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -916,11 +927,11 @@
                                         <list-expression start-index="106" stop-index="111" literal-start-index="111" literal-stop-index="116">
                                             <items>
                                                 <literal-expression value="1" start-index="112" stop-index="112" />
-                                                <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                                                <parameter-marker-expression parameter-index="1" start-index="107" stop-index="107" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="115" stop-index="115" />
-                                                <parameter-marker-expression value="2" start-index="110" stop-index="110" />
+                                                <parameter-marker-expression parameter-index="2" start-index="110" stop-index="110" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -939,11 +950,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="141" stop-index="141" />
-                                <parameter-marker-expression value="3" start-index="136" stop-index="136" />
+                                <parameter-marker-expression parameter-index="3" start-index="136" stop-index="136" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="147" stop-index="148" />
-                                <parameter-marker-expression value="4" start-index="142" stop-index="142" />
+                                <parameter-marker-expression parameter-index="4" start-index="142" stop-index="142" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -951,7 +962,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_like_with_single_quotes" >
         <from>
             <simple-table name="admin" start-index="15" stop-index="19" />
@@ -977,7 +988,7 @@
             </expr>
         </where>
     </select>
-
+    
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -1001,7 +1012,18 @@
                                     <right>
                                         <list-expression start-index="65" stop-index="85" literal-stop-index="90">
                                             <items>
-                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90">
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="72" literal-stop-index="75" start-index="72" stop-index="75"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" literal-start-index="78" literal-stop-index="83"/>
+                                                        <parameter-marker-expression parameter-index="0" start-index="78" stop-index="78"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="86" literal-stop-index="89" start-index="81" stop-index="84"/>
+                                                    </parameter>
+                                                </function>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1020,11 +1042,11 @@
                                         <list-expression start-index="104" stop-index="109" literal-start-index="109" literal-stop-index="114">
                                             <items>
                                                 <literal-expression value="1" start-index="110" stop-index="110" />
-                                                <parameter-marker-expression value="1" start-index="105" stop-index="105" />
+                                                <parameter-marker-expression parameter-index="1" start-index="105" stop-index="105" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="113" stop-index="113" />
-                                                <parameter-marker-expression value="2" start-index="108" stop-index="108" />
+                                                <parameter-marker-expression parameter-index="2" start-index="108" stop-index="108" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1043,11 +1065,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="139" stop-index="139" />
-                                <parameter-marker-expression value="3" start-index="134" stop-index="134" />
+                                <parameter-marker-expression parameter-index="3" start-index="134" stop-index="134" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="145" stop-index="146" />
-                                <parameter-marker-expression value="4" start-index="140" stop-index="140" />
+                                <parameter-marker-expression parameter-index="4" start-index="140" stop-index="140" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -1122,11 +1144,11 @@
                                 <list-expression start-index="118" stop-index="123">
                                     <items>
                                         <literal-expression value="1" start-index="119" stop-index="119" />
-                                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                                        <parameter-marker-expression parameter-index="0" start-index="119" stop-index="119" />
                                     </items>
                                     <items>
                                         <literal-expression value="2" start-index="122" stop-index="122" />
-                                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
+                                        <parameter-marker-expression parameter-index="1" start-index="122" stop-index="122" />
                                     </items>
                                 </list-expression>
                             </right>
@@ -1143,11 +1165,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="148" stop-index="148" />
-                                <parameter-marker-expression value="2" start-index="148" stop-index="148" />
+                                <parameter-marker-expression parameter-index="2" start-index="148" stop-index="148" />
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="154" stop-index="155" />
-                                <parameter-marker-expression value="3" start-index="154" stop-index="154" />
+                                <parameter-marker-expression parameter-index="3" start-index="154" stop-index="154" />
                             </and-expr>
                         </between-expression>
                     </right>
@@ -1309,11 +1331,11 @@
                                         <list-expression start-index="166" stop-index="171">
                                             <items>
                                                 <literal-expression value="1" start-index="167" stop-index="167" />
-                                                <parameter-marker-expression value="0" start-index="167" stop-index="167" />
+                                                <parameter-marker-expression parameter-index="0" start-index="167" stop-index="167" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="170" stop-index="170" />
-                                                <parameter-marker-expression value="1" start-index="170" stop-index="170" />
+                                                <parameter-marker-expression parameter-index="1" start-index="170" stop-index="170" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1330,11 +1352,11 @@
                                     </left>
                                     <between-expr>
                                         <literal-expression value="9" start-index="196" stop-index="196" />
-                                        <parameter-marker-expression value="2" start-index="196" stop-index="196" />
+                                        <parameter-marker-expression parameter-index="2" start-index="196" stop-index="196" />
                                     </between-expr>
                                     <and-expr>
                                         <literal-expression value="10" start-index="202" stop-index="203" />
-                                        <parameter-marker-expression value="3" start-index="202" stop-index="202" />
+                                        <parameter-marker-expression parameter-index="3" start-index="202" stop-index="202" />
                                     </and-expr>
                                 </between-expression>
                             </right>
@@ -1351,7 +1373,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="init" start-index="220" stop-index="225" />
-                                <parameter-marker-expression value="4" start-index="219" stop-index="219" />
+                                <parameter-marker-expression parameter-index="4" start-index="219" stop-index="219" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1455,11 +1477,11 @@
                                         <list-expression start-index="157" stop-index="162">
                                             <items>
                                                 <literal-expression value="1" start-index="158" stop-index="158" />
-                                                <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                                                <parameter-marker-expression parameter-index="0" start-index="158" stop-index="158" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="161" stop-index="161" />
-                                                <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                                                <parameter-marker-expression parameter-index="1" start-index="161" stop-index="161" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1476,11 +1498,11 @@
                                     </left>
                                     <between-expr>
                                         <literal-expression value="9" start-index="187" stop-index="187" />
-                                        <parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                                        <parameter-marker-expression parameter-index="2" start-index="187" stop-index="187" />
                                     </between-expr>
                                     <and-expr>
                                         <literal-expression value="10" start-index="193" stop-index="194" />
-                                        <parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                                        <parameter-marker-expression parameter-index="3" start-index="193" stop-index="193" />
                                     </and-expr>
                                 </between-expression>
                             </right>
@@ -1497,7 +1519,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="init" start-index="211" stop-index="216" />
-                                <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                                <parameter-marker-expression parameter-index="4" start-index="210" stop-index="210" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1601,11 +1623,11 @@
                                         <list-expression start-index="157" stop-index="162">
                                             <items>
                                                 <literal-expression value="1" start-index="158" stop-index="158" />
-                                                <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                                                <parameter-marker-expression parameter-index="0" start-index="158" stop-index="158" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="161" stop-index="161" />
-                                                <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                                                <parameter-marker-expression parameter-index="1" start-index="161" stop-index="161" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1622,11 +1644,11 @@
                                     </left>
                                     <between-expr>
                                         <literal-expression value="9" start-index="187" stop-index="187" />
-                                        <parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                                        <parameter-marker-expression parameter-index="2" start-index="187" stop-index="187" />
                                     </between-expr>
                                     <and-expr>
                                         <literal-expression value="10" start-index="193" stop-index="194" />
-                                        <parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                                        <parameter-marker-expression parameter-index="3" start-index="193" stop-index="193" />
                                     </and-expr>
                                 </between-expression>
                             </right>
@@ -1643,7 +1665,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="init" start-index="211" stop-index="216" />
-                                <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                                <parameter-marker-expression parameter-index="4" start-index="210" stop-index="210" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1747,11 +1769,11 @@
                                         <list-expression start-index="157" stop-index="162">
                                             <items>
                                                 <literal-expression value="1" start-index="158" stop-index="158" />
-                                                <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                                                <parameter-marker-expression parameter-index="0" start-index="158" stop-index="158" />
                                             </items>
                                             <items>
                                                 <literal-expression value="2" start-index="161" stop-index="161" />
-                                                <parameter-marker-expression value="1" start-index="161" stop-index="161" />
+                                                <parameter-marker-expression parameter-index="1" start-index="161" stop-index="161" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1768,11 +1790,11 @@
                                     </left>
                                     <between-expr>
                                         <literal-expression value="9" start-index="187" stop-index="187" />
-                                        <parameter-marker-expression value="2" start-index="187" stop-index="187" />
+                                        <parameter-marker-expression parameter-index="2" start-index="187" stop-index="187" />
                                     </between-expr>
                                     <and-expr>
                                         <literal-expression value="10" start-index="193" stop-index="194" />
-                                        <parameter-marker-expression value="3" start-index="193" stop-index="193" />
+                                        <parameter-marker-expression parameter-index="3" start-index="193" stop-index="193" />
                                     </and-expr>
                                 </between-expression>
                             </right>
@@ -1789,7 +1811,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="init" start-index="211" stop-index="216" />
-                                <parameter-marker-expression value="4" start-index="210" stop-index="210" />
+                                <parameter-marker-expression parameter-index="4" start-index="210" stop-index="210" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1823,7 +1845,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="79" stop-index="79" />
-                        <parameter-marker-expression value="0" start-index="79" stop-index="79" />
+                        <parameter-marker-expression parameter-index="0" start-index="79" stop-index="79" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1872,7 +1894,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1000" start-index="115" stop-index="118" />
-                        <parameter-marker-expression value="0" start-index="115" stop-index="115" />
+                        <parameter-marker-expression parameter-index="0" start-index="115" stop-index="115" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1901,7 +1923,7 @@
                                             <operator>=</operator>
                                             <right>
                                                 <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
-                                                <parameter-marker-expression value="0" start-index="35" stop-index="42" />
+                                                <parameter-marker-expression parameter-index="0" start-index="35" stop-index="42" />
                                             </right>
                                         </binary-operation-expression>
                                     </left>
@@ -1913,7 +1935,25 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137">
+                                                    <parameter>
+                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="99" start-index="81" literal-stop-index="116" stop-index="98"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="100" literal-start-index="119" literal-stop-index="121"/>
+                                                        <parameter-marker-expression parameter-index="1" start-index="101" stop-index="101"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=" " literal-start-index="124" literal-stop-index="126" start-index="104" stop-index="106"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="200" literal-start-index="129" literal-stop-index="131"/>
+                                                        <parameter-marker-expression parameter-index="2" start-index="109" stop-index="109"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=")" literal-start-index="134" literal-stop-index="136" start-index="112" stop-index="114"/>
+                                                    </parameter>
+                                                </function>
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1928,7 +1968,7 @@
                                     <operator>=</operator>
                                     <right>
                                         <literal-expression value="1" start-index="153" stop-index="153" />
-                                        <parameter-marker-expression value="3" start-index="131" stop-index="131" />
+                                        <parameter-marker-expression parameter-index="3" start-index="131" stop-index="131" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -1943,7 +1983,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="2" start-index="170" stop-index="170" />
-                                <parameter-marker-expression value="4" start-index="148" stop-index="148" />
+                                <parameter-marker-expression parameter-index="4" start-index="148" stop-index="148" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -1976,11 +2016,11 @@
                                                 <list-expression start-index="36" stop-index="55" literal-stop-index="91">
                                                     <items>
                                                         <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="37" stop-index="62" />
-                                                        <parameter-marker-expression value="0" start-index="37" stop-index="44" />
+                                                        <parameter-marker-expression parameter-index="0" start-index="37" stop-index="44" />
                                                     </items>
                                                     <items>
                                                         <common-expression text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="65" stop-index="90" />
-                                                        <parameter-marker-expression value="1" start-index="47" stop-index="54" />
+                                                        <parameter-marker-expression parameter-index="1" start-index="47" stop-index="54" />
                                                     </items>
                                                 </list-expression>
                                             </right>
@@ -1994,7 +2034,25 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168">
+                                                    <parameter>
+                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="130" start-index="94" literal-stop-index="147" stop-index="111"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="100" literal-start-index="150" literal-stop-index="152"/>
+                                                        <parameter-marker-expression parameter-index="2" start-index="114" stop-index="114"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=" " literal-start-index="155" literal-stop-index="157" start-index="117" stop-index="119"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="200" literal-start-index="160" literal-stop-index="162"/>
+                                                        <parameter-marker-expression parameter-index="3" start-index="122" stop-index="122"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=")" literal-start-index="165" literal-stop-index="167" start-index="125" stop-index="127"/>
+                                                    </parameter>
+                                                </function>
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -2009,7 +2067,7 @@
                                     <operator>=</operator>
                                     <right>
                                         <literal-expression value="1" start-index="184" stop-index="184" />
-                                        <parameter-marker-expression value="4" start-index="144" stop-index="144" />
+                                        <parameter-marker-expression parameter-index="4" start-index="144" stop-index="144" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2024,7 +2082,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="2" start-index="201" stop-index="201" />
-                                <parameter-marker-expression value="5" start-index="161" stop-index="161" />
+                                <parameter-marker-expression parameter-index="5" start-index="161" stop-index="161" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -2052,7 +2110,7 @@
                                         <column name="rule" start-index="28" stop-index="31" />
                                     </left>
                                     <between-expr>
-                                        <parameter-marker-expression value="0" start-index="41" stop-index="48" />
+                                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="48" />
                                         <binary-operation-expression start-index="41" stop-index="66">
                                             <left>
                                                 <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="41" stop-index="59" />
@@ -2065,7 +2123,7 @@
                                     </between-expr>
                                     <and-expr>
                                         <common-expression text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
-                                        <parameter-marker-expression value="1" start-index="54" stop-index="61" />
+                                        <parameter-marker-expression parameter-index="1" start-index="54" stop-index="61" />
                                     </and-expr>
                                 </between-expression>
                             </left>
@@ -2077,7 +2135,25 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174">
+                                            <parameter>
+                                                <literal-expression value="SRID=4326;POINT(" literal-start-index="136" start-index="100" literal-stop-index="153" stop-index="117"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="100" literal-start-index="156" literal-stop-index="158"/>
+                                                <parameter-marker-expression parameter-index="2" start-index="120" stop-index="120"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value=" " literal-start-index="161" literal-stop-index="163" start-index="123" stop-index="125"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="200" literal-start-index="166" literal-stop-index="168"/>
+                                                <parameter-marker-expression parameter-index="3" start-index="128" stop-index="128"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value=")" literal-start-index="171" literal-stop-index="173" start-index="131" stop-index="133"/>
+                                            </parameter>
+                                        </function>
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2092,7 +2168,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="191" stop-index="191" />
-                                <parameter-marker-expression value="4" start-index="151" stop-index="151" />
+                                <parameter-marker-expression parameter-index="4" start-index="151" stop-index="151" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -2117,7 +2193,7 @@
                     <operator>!=</operator>
                     <right>
                         <literal-expression value="1" start-index="48" stop-index="48" />
-                        <parameter-marker-expression value="0" start-index="48" stop-index="48" />
+                        <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -2700,7 +2776,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="12" start-index="72" stop-index="73" />
-                                <parameter-marker-expression value="0" start-index="72" stop-index="72" />
+                                <parameter-marker-expression parameter-index="0" start-index="72" stop-index="72" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -2713,7 +2789,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1000" start-index="90" stop-index="93" />
-                                <parameter-marker-expression value="1" start-index="89" stop-index="89" />
+                                <parameter-marker-expression parameter-index="1" start-index="89" stop-index="89" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -2754,7 +2830,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="12" start-index="69" stop-index="70" />
-                                <parameter-marker-expression value="0" start-index="69" stop-index="69" />
+                                <parameter-marker-expression parameter-index="0" start-index="69" stop-index="69" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -2767,7 +2843,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1000" start-index="87" stop-index="90" />
-                                <parameter-marker-expression value="1" start-index="86" stop-index="86" />
+                                <parameter-marker-expression parameter-index="1" start-index="86" stop-index="86" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -2955,7 +3031,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="10" start-index="122" stop-index="123" />
-                                <parameter-marker-expression value="1" start-index="116" stop-index="116" />
+                                <parameter-marker-expression parameter-index="1" start-index="116" stop-index="116" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -2983,6 +3059,35 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="119" stop-index="119" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_value_return_type">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="86">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="86">
+                    <left>
+                        <function start-index="28" stop-index="77" function-name="JSON_VALUE" text="JSON_VALUE(items, '$.name' RETURNING VARCHAR(100))">
+                            <parameter>
+                                <column name="items" start-index="39" stop-index="43"/>
+                            </parameter>
+                            <parameter>
+                                <common-expression text="'$.name' RETURNING VARCHAR(100)" start-index="46" stop-index="76" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="jack" start-index="81" stop-index="86" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -3178,6 +3283,16 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_assignment_operator_and_keyword">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="@KEY := ''" start-index="7" stop-index="16" />
+            <expression-projection text="@num := 123" start-index="19" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="36" stop-index="42" />
+        </from>
+    </select>
+
     <select sql-case-id="select_from_dual" >
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7" />
@@ -3192,7 +3307,14 @@
             <column-projection name="user_id" start-index="7" stop-index="13"/>
             <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38">
                 <expr>
-                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" />
+                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="37"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -3205,13 +3327,104 @@
         <projections start-index="7" stop-index="40">
             <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" />
+                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="31"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
             <column-projection name="user_id" start-index="34" stop-index="40"/>
         </projections>
     </select>
 
+    <select sql-case-id="select_with_cast_as_signed_int">
+        <from>
+            <simple-table name="t_order" start-index="49" stop-index="55" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <column-projection name="user_id" start-index="7" stop-index="13"/>
+            <expression-projection text="CAST(order_id AS SIGNED INT)" start-index="15" stop-index="42">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="42" text="CAST(order_id AS SIGNED INT)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="41"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_cast_as_unsigned_int">
+        <from>
+            <simple-table name="t_order" start-index="51" stop-index="57"/>
+        </from>
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CAST(order_id AS UNSIGNED INT)" start-index="7" stop-index="36">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="36" text="CAST(order_id AS UNSIGNED INT)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="35"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="user_id" start-index="38" stop-index="44"/>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_cast_as_signed_integer">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <column-projection name="user_id" start-index="7" stop-index="13"/>
+            <expression-projection text="CAST(order_id AS SIGNED INTEGER)" start-index="15" stop-index="46">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="46" text="CAST(order_id AS SIGNED INTEGER)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="45"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_cast_as_unsigned_integer">
+        <from>
+            <simple-table name="t_order" start-index="55" stop-index="61"/>
+        </from>
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="CAST(order_id AS UNSIGNED INTEGER)" start-index="7" stop-index="40">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="40" text="CAST(order_id AS UNSIGNED INTEGER)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="39"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="user_id" start-index="42" stop-index="48"/>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_simple_table" >
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -3783,6 +3996,376 @@
         <projections start-index="7" stop-index="40">
             <column-projection name="order_id_value" start-index="7" stop-index="20"/>
             <column-projection name="order_item_id_value" start-index="22" stop-index="40"/>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_dollar_parameter_for_postgresql" parameters="1, 12" >
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="80" literal-stop-index="79">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="80" literal-stop-index="79">
+                    <left>
+                        <binary-operation-expression start-index="35" stop-index="64" literal-stop-index="63">
+                            <left>
+                                <binary-operation-expression start-index="35" stop-index="46">
+                                    <left>
+                                        <column name="user_id" start-index="35" stop-index="41" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <parameter-marker-expression parameter-index="1" start-index="45" stop-index="46" />
+                                        <literal-expression value="12" start-index="45" stop-index="46" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="52" stop-index="64" literal-stop-index="63">
+                                    <left>
+                                        <column name="order_id" start-index="52" stop-index="59" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <parameter-marker-expression parameter-index="0" start-index="63" stop-index="64" literal-stop-index="63" />
+                                        <literal-expression value="1" start-index="63" stop-index="63" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>    
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="69" stop-index="80" literal-start-index="68" literal-stop-index="79">
+                            <left>
+                                <column name="user_id" start-index="69" stop-index="75" literal-start-index="68" literal-stop-index="74" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <parameter-marker-expression parameter-index="1" start-index="79" stop-index="80" literal-start-index="78" literal-stop-index="79" />
+                                <literal-expression value="12" start-index="78" stop-index="79" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_binary_keyword" >
+        <projections start-index="7" stop-index="70">
+            <!-- TODO parse position function in projection -->
+            <expression-projection text="position(binary 'll' in 'hello')" start-index="7" stop-index="38" />
+            <expression-projection text="position('a' in binary 'hello')" start-index="40" stop-index="70" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_shorthand_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="34" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <shorthand-projection start-index="7" stop-index="27">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </shorthand-projection>
+        </projections>
+        <where start-index="42" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="75">
+                    <left>
+                        <binary-operation-expression start-index="48" stop-index="58">
+                            <left>
+                                <column name="user_id" start-index="48" stop-index="54" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="58" stop-index="58" />
+                                <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="64" stop-index="75">
+                            <left>
+                                <column name="order_id" start-index="64" stop-index="71" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="75" stop-index="75" />
+                                <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_column_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="41" stop-index="47" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <column-projection name="order_id" start-index="7" stop-index="34">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </column-projection>
+        </projections>
+        <where start-index="49" stop-index="82">
+            <expr>
+                <binary-operation-expression start-index="55" stop-index="82">
+                    <left>
+                        <binary-operation-expression start-index="55" stop-index="65">
+                            <left>
+                                <column name="user_id" start-index="55" stop-index="61" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="65" stop-index="65" />
+                                <parameter-marker-expression parameter-index="0" start-index="65" stop-index="65" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="71" stop-index="82">
+                            <left>
+                                <column name="order_id" start-index="71" stop-index="78" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="82" stop-index="82" />
+                                <parameter-marker-expression parameter-index="1" start-index="82" stop-index="82" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_table" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="34">
+                <owner name="public" start-index="21" stop-index="26" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />             
+        </projections>
+        <where start-index="36" stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="42" stop-index="69">
+                    <left>
+                        <binary-operation-expression start-index="42" stop-index="52">
+                            <left>
+                                <column name="user_id" start-index="42" stop-index="48" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="52" stop-index="52" />
+                                <parameter-marker-expression parameter-index="0" start-index="52" stop-index="52" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="58" stop-index="69">
+                            <left>
+                                <column name="order_id" start-index="58" stop-index="65" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="69" stop-index="69" />
+                                <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_database_name_and_schema_name_in_table" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="46">
+                <owner name="public" start-index="33" stop-index="38">
+                    <owner name="sharding_db" start-index="21" stop-index="31" />
+                </owner>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="48" stop-index="81">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="81">
+                    <left>
+                        <binary-operation-expression start-index="54" stop-index="64">
+                            <left>
+                                <column name="user_id" start-index="54" stop-index="60" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="64" stop-index="64" />
+                                <parameter-marker-expression parameter-index="0" start-index="64" stop-index="64" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="70" stop-index="81">
+                            <left>
+                                <column name="order_id" start-index="70" stop-index="77" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="81" stop-index="81" />
+                                <parameter-marker-expression parameter-index="1" start-index="81" stop-index="81" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_underscore_charset" >
+        <projections start-index="7" stop-index="14">
+            <column-projection name="_code" start-index="7" stop-index="11"/>
+            <column-projection name="_a" start-index="13" stop-index="14"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_with_capacity_unit_charset">
+        <from>
+            <simple-table name="T_RATION_INFO" alias="T" start-index="22" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="15">
+            <column-projection name="USER_NO" start-index="7" stop-index="15">
+                <owner name="T" start-index="7" stop-index="7" />
+            </column-projection>>
+         </projections>
+    </select>
+
+    <select sql-case-id="select_with_character_charset">
+        <projections start-index="7" stop-index="24">
+    <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
+            <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_for_xml_clause">
+        <from>
+            <join-table>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="44" stop-index="52" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="65" stop-index="78" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="83" stop-index="103">
+                        <left>
+                            <column name="user_id" start-index="83" stop-index="91">
+                                <owner name="o" start-index="83" stop-index="83" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="95" stop-index="103">
+                                <owner name="i" start-index="95" stop-index="95" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="37">
+            <column-projection name="order_id" start-index="7" stop-index="16">
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>
+            <column-projection name="status" start-index="19" stop-index="26">
+                <owner name="o" start-index="19" stop-index="19" />
+            </column-projection>
+            <column-projection name="item_id" start-index="29" stop-index="37">
+                <owner name="i" start-index="29" stop-index="29" />
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_for_xml_clause_with_directive">
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name="user_id" start-index="7" stop-index="13"/>
+            <column-projection name="status" start-index="16" stop-index="21"/>
+        </projections>
+        <where start-index="36" stop-index="53">
+            <expr>
+                <binary-operation-expression start-index="42" stop-index="53">
+                    <left>
+                        <column name="order_id" start-index="42" stop-index="49" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="53" stop-index="53" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_for_json_clause">
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <column-projection name="order_id" start-index="7" stop-index="14"/>
+            <column-projection name="status" start-index="17" stop-index="22"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_keyword_target">
+        <from>
+            <simple-table name="sys_menu" start-index="21" stop-index="30" alias="m" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <column-projection name="target" start-index="7" stop-index="14">
+                <owner name="m" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_xml_namespaces_clause">
+        <from>
+            <simple-table name="t_order" start-index="97" stop-index="103" />
+        </from>
+        <projections start-index="41" stop-index="90">
+            <column-projection name="order_id" alias="ns1:order_id" start-index="41" stop-index="66"/>
+            <column-projection name="status" alias="ns1:status" start-index="69" stop-index="90"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_xml_default_namespaces_clause">
+        <from>
+            <simple-table name="t_order" start-index="129" stop-index="135" />
+        </from>
+        <projections start-index="73" stop-index="122">
+            <column-projection name="order_id" alias="ns1:order_id" start-index="73" stop-index="98"/>
+            <column-projection name="status" alias="ns1:status" start-index="101" stop-index="122"/>
         </projections>
     </select>
 </sql-parser-test-cases>

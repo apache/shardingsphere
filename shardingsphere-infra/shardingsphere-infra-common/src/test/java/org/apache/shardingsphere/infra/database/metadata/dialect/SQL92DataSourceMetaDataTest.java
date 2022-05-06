@@ -29,7 +29,7 @@ public final class SQL92DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorSuccess() {
         SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData("jdbc:sql92_db:ds_0");
-        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is(""));
         assertNull(actual.getSchema());

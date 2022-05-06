@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 
 import java.util.Optional;
 
@@ -30,11 +31,19 @@ import java.util.Optional;
 @Getter
 public final class EncryptColumn {
     
+    private final EncryptColumnDataType logicDataType;
+    
     private final String cipherColumn;
+    
+    private final EncryptColumnDataType cipherDataType;
     
     private final String assistedQueryColumn;
     
+    private final EncryptColumnDataType assistedQueryDataType;
+    
     private final String plainColumn;
+    
+    private final EncryptColumnDataType plainDataType;
     
     private final String encryptorName;
     

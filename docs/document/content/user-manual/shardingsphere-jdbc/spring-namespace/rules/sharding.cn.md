@@ -5,7 +5,7 @@ weight = 1
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.1.xsd)
 
 \<sharding:rule />
 
@@ -26,7 +26,7 @@ weight = 1
 | *名称*                     | *类型* | *说明*          |
 | ------------------------- | ----- | --------------- |
 | logic-table               | 属性  | 逻辑表名称        |
-| actual-data-nodes         | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
+| actual-data-nodes         | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
 | actual-data-sources       | 属性  | 自动分片表数据源名 |
 | database-strategy-ref     | 属性  | 标准分片表分库策略名称      |
 | table-strategy-ref        | 属性  | 标准分片表分表策略名称      |

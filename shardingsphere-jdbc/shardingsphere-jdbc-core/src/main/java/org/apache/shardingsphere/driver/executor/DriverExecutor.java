@@ -19,11 +19,13 @@ package org.apache.shardingsphere.driver.executor;
 
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
 import java.sql.SQLException;
 
@@ -39,12 +41,17 @@ public final class DriverExecutor implements AutoCloseable {
     
     private final FederationExecutor federationExecutor;
     
+    private final TrafficExecutor trafficExecutor;
+    
     public DriverExecutor(final ShardingSphereConnection connection) {
         MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
-        regularExecutor = new DriverJDBCExecutor(connection.getSchema(), metaDataContexts, jdbcExecutor);
+        regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
-        federationExecutor = FederationExecutorFactory.newInstance(connection.getSchema(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
+        DatabaseType databaseType = metaDataContexts.getMetaData(connection.getDatabaseName()).getResource().getDatabaseType();
+        String schemaName = databaseType.getDefaultSchema(connection.getDatabaseName());
+        federationExecutor = FederationExecutorFactory.newInstance(connection.getDatabaseName(), schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
+        trafficExecutor = new TrafficExecutor();
     }
     
     /**
@@ -55,5 +62,6 @@ public final class DriverExecutor implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         federationExecutor.close();
+        trafficExecutor.close();
     }
 }

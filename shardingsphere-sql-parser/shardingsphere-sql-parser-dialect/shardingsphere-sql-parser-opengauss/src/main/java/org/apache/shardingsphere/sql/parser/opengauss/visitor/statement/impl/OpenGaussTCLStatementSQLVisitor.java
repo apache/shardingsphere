@@ -24,19 +24,22 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.EndContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RollbackPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RollbackToSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSetTransactionStatement;
@@ -89,9 +92,8 @@ public final class OpenGaussTCLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        OpenGaussRollbackToSavepointStatement result = new OpenGaussRollbackToSavepointStatement();
-        result.setSavepointName(savepointName);
+        OpenGaussRollbackStatement result = new OpenGaussRollbackStatement();
+        result.setSavepointName(ctx.colId().getText());
         return result;
     }
     
@@ -116,5 +118,15 @@ public final class OpenGaussTCLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
         return new OpenGaussSetConstraintsStatement();
+    }
+    
+    @Override
+    public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
+        return new OpenGaussCommitPreparedStatement();
+    }
+    
+    @Override
+    public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
+        return new OpenGaussRollbackPreparedStatement();
     }
 }

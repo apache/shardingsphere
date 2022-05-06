@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.fixture.CustomizedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.fixture.SchemaMetaDataAwareEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -53,7 +53,7 @@ public final class EncryptRuleTest {
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new TestEncryptAlgorithm()), true);
-        EncryptRule actual = new EncryptRule(ruleConfig);
+        EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
     
@@ -63,7 +63,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", encryptAlgorithmConfig));
-        new EncryptRule(ruleConfig);
+        new EncryptRule(ruleConfig, Collections.emptyMap());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -72,28 +72,28 @@ public final class EncryptRuleTest {
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new TestEncryptAlgorithm()), true);
-        new EncryptRule(ruleConfig);
+        new EncryptRule(ruleConfig, Collections.emptyMap());
     }
     
     @Test
     public void assertFindEncryptTable() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findEncryptTable("t_encrypt").isPresent());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptTable("t_encrypt").isPresent());
     }
     
     @Test
     public void assertFindEncryptor() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findEncryptor(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd").isPresent());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor("t_encrypt", "pwd").isPresent());
     }
     
     @Test
     public void assertNotFindEncryptor() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findEncryptor(DefaultSchema.LOGIC_NAME, "t_encrypt", "other_column").isPresent());
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor("t_encrypt", "other_column").isPresent());
     }
     
     @Test
     public void assertGetEncryptValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", 
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -101,28 +101,28 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetCipherColumnWhenEncryptColumnExist() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
+        assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
     }
     
     @Test(expected = NullPointerException.class)
     public void assertGetCipherColumnWhenNoEncryptColumn() {
-        new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd_cipher");
+        new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getCipherColumn("t_encrypt", "pwd_cipher");
     }
     
     @Test
     public void assertGetLogicAndCipherColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getLogicAndCipherColumns("t_encrypt").isEmpty());
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getLogicAndCipherColumns("t_encrypt").isEmpty());
     }
     
     @Test
     public void assertFindAssistedQueryColumn() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findAssistedQueryColumn("t_encrypt", "pwd_cipher").isPresent());
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findAssistedQueryColumn("t_encrypt", "pwd_cipher").isPresent());
     }
     
     @Test
     public void assertGetEncryptAssistedQueryValues() {
-        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration()).getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", 
-                Collections.singletonList(null));
+        List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
+                .getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -130,44 +130,74 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetAssistedQueryColumns() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getAssistedQueryColumns("t_encrypt").isEmpty());
     }
     
     @Test
     public void assertFindPlainColumn() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findPlainColumn("t_encrypt", "pwd").isPresent());
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findPlainColumn("t_encrypt", "credit_card".toLowerCase()).isPresent());
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findPlainColumn("t_encrypt", "notExistLogicColumn").isPresent());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findPlainColumn("t_encrypt", "pwd").isPresent());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findPlainColumn("t_encrypt", "credit_card".toLowerCase()).isPresent());
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findPlainColumn("t_encrypt", "notExistLogicColumn").isPresent());
+    }
+    
+    @Test
+    public void assertIsQueryWithCipherColumn() {
+        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), true);
+        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
+                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new TestEncryptAlgorithm()), true);
+        EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
+        assertTrue(actual.isQueryWithCipherColumn("t_encrypt"));
     }
     
     @Test
     public void assertGetTables() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
+        assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getTables(), is(Collections.singleton("t_encrypt")));
     }
     
     @Test
-    public void assertGetRuleType() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getType(), is(EncryptRule.class.getSimpleName()));
+    public void assertGetTableWithLowercase() {
+        assertThat(new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables(), is(Collections.singleton("t_encrypt")));
+    }
+    
+    @Test
+    public void assertTheSameLogicTable() {
+        Collection<String> logicTables = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getTables();
+        Collection<String> theSameLogicTables = new EncryptRule(createEncryptRuleConfigurationWithUpperCaseLogicTable(), Collections.emptyMap()).getTables();
+        assertTrue(logicTables.equals(theSameLogicTables));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertSetUpEncryptorSchema() {
-        EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration());
-        encryptRule.setUpEncryptorSchema(mock(ShardingSphereSchema.class));
+    public void assertGetSchemaMetaData() {
+        EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap());
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        encryptRule.setSchemaMetaData("foo_db", Collections.singletonMap("foo_schema", schema));
         Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(CustomizedEncryptAlgorithm.class));
-        assertNotNull(((CustomizedEncryptAlgorithm) actual.get()).getSchema());
+        assertThat(actual.get(), instanceOf(SchemaMetaDataAwareEncryptAlgorithmFixture.class));
+        assertThat(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getDatabaseName(), is("foo_db"));
+        assertThat(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas(), is(Collections.singletonMap("foo_schema", schema)));
+        assertFalse(((SchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getSchemas().isEmpty());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        ShardingSphereAlgorithmConfiguration queryAssistedEncryptor = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
-        ShardingSphereAlgorithmConfiguration customizedEncryptor = new ShardingSphereAlgorithmConfiguration("CUSTOMIZED", new Properties());
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptor, "customized_encryptor", customizedEncryptor));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptConfig, "customized_encryptor", metaDataAwareEncryptConfig));
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
+        ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("QUERY_ASSISTED_TEST", new Properties());
+        ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("METADATA_AWARE.FIXTURE", new Properties());
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
+        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptConfig, "customized_encryptor", metaDataAwareEncryptConfig));
     }
 }

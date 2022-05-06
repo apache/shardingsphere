@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -25,10 +27,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -58,17 +61,17 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         Map<String, ShardingSphereAlgorithmConfiguration> actualSingleRuleSegmentConvertResultLoadBalancers = actualSingleRuleSegmentConvertResult.getLoadBalancers();
         assertThat(actualSingleRuleSegmentConvertResultDataSources.size(), is(1));
         assertThat(actualSingleRuleSegmentConvertResultLoadBalancers.size(), is(1));
-        ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfiguration = actualSingleRuleSegmentConvertResultDataSources.iterator().next();
-        assertThat(actualRuleConfiguration.getName(), is(expectedSingleReadwriteSplittingRuleSegment.getName()));
+        ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualSingleRuleSegmentConvertResultDataSources.iterator().next();
+        assertThat(actualRuleConfig.getName(), is(expectedSingleReadwriteSplittingRuleSegment.getName()));
         String expectedLoadBalancerName = String.format("%s_%s", expectedSingleReadwriteSplittingRuleSegment.getName(), expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer());
-        assertThat(actualRuleConfiguration.getLoadBalancerName(), is(expectedLoadBalancerName));
-        assertThat(actualRuleConfiguration.getWriteDataSourceName(), is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
-        assertThat(actualRuleConfiguration.getReadDataSourceNames(), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
+        assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
+        assertThat(actualRuleConfig.getWriteDataSourceName(), is(Optional.ofNullable(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource())));
+        assertThat(convertToList(actualRuleConfig.getReadDataSourceNames().orElse(null)), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
         String actualLoadBalancerName = actualSingleRuleSegmentConvertResultLoadBalancers.keySet().iterator().next();
         assertThat(actualLoadBalancerName, is(expectedLoadBalancerName));
-        ShardingSphereAlgorithmConfiguration actualSphereAlgorithmConfiguration = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);
-        assertThat(actualSphereAlgorithmConfiguration.getType(), containsString(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer()));
-        assertThat(actualSphereAlgorithmConfiguration.getProps(), is(expectedSingleReadwriteSplittingRuleSegment.getProps()));
+        ShardingSphereAlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);
+        assertThat(actualSphereAlgorithmConfig.getType(), containsString(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer()));
+        assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedSingleReadwriteSplittingRuleSegment.getProps()));
     }
     
     @Test
@@ -81,39 +84,37 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         Map<String, ShardingSphereAlgorithmConfiguration> actualMultipleRuleSegmentConvertResultLoadBalancers = actualMultipleRuleSegmentConvertResult.getLoadBalancers();
         assertThat(actualMultipleRuleSegmentConvertResultDataSources.size(), is(expectedMultipleReadwriteSplittingRuleSegments.size()));
         assertThat(actualMultipleRuleSegmentConvertResultLoadBalancers.size(), is(expectedMultipleReadwriteSplittingRuleSegments.size()));
-        List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigurations = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
+        List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigs = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
         Stream.iterate(0, i -> i + 1)
                 .limit(expectedMultipleReadwriteSplittingRuleSegments.size())
-                .forEach(i -> {
-                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(i);
-                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfiguration = actualRuleConfigurations.get(i);
-                    assertThat(actualRuleConfiguration.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
+                .forEach(each -> {
+                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(each);
+                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(each);
+                    assertThat(actualRuleConfig.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
                     String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer());
-                    assertThat(actualRuleConfiguration.getLoadBalancerName(), is(expectedLoadBalancerName));
-                    assertThat(actualRuleConfiguration.getWriteDataSourceName(), is(expectedReadwriteSplittingRuleSegment.getWriteDataSource()));
-                    assertThat(actualRuleConfiguration.getReadDataSourceNames(),
+                    assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
+                    assertThat(actualRuleConfig.getWriteDataSourceName().orElse(null), is(expectedReadwriteSplittingRuleSegment.getWriteDataSource()));
+                    assertThat(convertToList(actualRuleConfig.getReadDataSourceNames().orElse(null)),
                             equalTo(expectedReadwriteSplittingRuleSegment.getReadDataSources() == null
                                     ? Collections.emptyList()
                                     : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
                     assertTrue(actualMultipleRuleSegmentConvertResultLoadBalancers.containsKey(expectedLoadBalancerName));
-                    ShardingSphereAlgorithmConfiguration actualSphereAlgorithmConfiguration = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfiguration.getLoadBalancerName());
-                    assertThat(actualSphereAlgorithmConfiguration.getType(), containsString(expectedReadwriteSplittingRuleSegment.getLoadBalancer()));
-                    assertThat(actualSphereAlgorithmConfiguration.getProps(), is(expectedReadwriteSplittingRuleSegment.getProps()));
+                    ShardingSphereAlgorithmConfiguration actualSphereAlgorithmConfig = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfig.getLoadBalancerName());
+                    assertThat(actualSphereAlgorithmConfig.getType(), containsString(expectedReadwriteSplittingRuleSegment.getLoadBalancer()));
+                    assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedReadwriteSplittingRuleSegment.getProps()));
                 });
     }
     
-    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name,
-                                                                              final String writeDataSource,
-                                                                              final List<String> readDataSourceList,
-                                                                              final String loadBalancerTypeName,
-                                                                              final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSourceList, loadBalancerTypeName, properties);
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final List<String> readDataSources, final String loadBalancerTypeName,
+                                                                              final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, writeDataSource, readDataSources, loadBalancerTypeName, props);
     }
     
-    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name,
-                                                                              final String autoAwareResource,
-                                                                              final String loadBalancer,
-                                                                              final Properties properties) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, properties);
+    private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
+    }
+    
+    private Collection<String> convertToList(final String readDataSourceNames) {
+        return Strings.isNullOrEmpty(readDataSourceNames) ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(readDataSourceNames);
     }
 }

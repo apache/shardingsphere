@@ -17,42 +17,9 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
-import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import io.seata.core.context.RootContext;
-import io.seata.core.protocol.MergedWarpMessage;
 import io.seata.core.protocol.MergeResultMessage;
+import io.seata.core.protocol.MergedWarpMessage;
 import io.seata.core.protocol.RegisterRMRequest;
 import io.seata.core.protocol.RegisterRMResponse;
 import io.seata.core.protocol.RegisterTMRequest;
@@ -63,13 +30,39 @@ import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-@RunWith(MockitoJUnitRunner.class)
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public final class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
-    
-    private final DataSource dataSource = getDataSource();
     
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
@@ -86,7 +79,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
             }
         }
     }
-
+    
     @AfterClass
     public static void after() {
         MOCK_SEATA_SERVER.shutdown();
@@ -94,7 +87,9 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), new TransactionRule(new TransactionRuleConfiguration("BASE", "Seata")));
+        TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("BASE", "Seata", new Properties());
+        seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"),
+                Collections.singletonList(new ResourceDataSource("foo_ds", new MockedDataSource())), new TransactionRule(ruleConfig));
     }
     
     @After
@@ -108,29 +103,17 @@ public final class SeataATShardingSphereTransactionManagerTest {
         responseQueue.clear();
     }
     
-    private DataSource getDataSource() {
-        BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        result.setUsername("sa");
-        result.setPassword("");
-        return result;
-    }
-    
-    private Collection<ResourceDataSource> getResourceDataSources() {
-        return Collections.singletonList(new ResourceDataSource("demo_ds", dataSource));
-    }
-    
     @Test
     public void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
+        assertThat(actual.get("foo_ds"), instanceOf(DataSourceProxy.class));
         assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("demo_ds");
+        Connection actual = seataTransactionManager.getConnection("foo_ds");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
@@ -142,17 +125,24 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
+    public void assertBeginTimeout() {
+        seataTransactionManager.begin(30);
+        assertTrue(seataTransactionManager.isInTransaction());
+        assertResult();
+    }
+    
+    @Test
     public void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
-        seataTransactionManager.commit();
+        seataTransactionManager.commit(false);
         assertResult();
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.commit();
+        seataTransactionManager.commit(false);
     }
     
     @Test
@@ -171,20 +161,14 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     private void assertResult() {
         int requestQueueSize = requestQueue.size();
-        if (requestQueueSize == 3) {
+        if (3 == requestQueueSize) {
             assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            if (requestQueueSize == 4) {
-                assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            }
             assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
             assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
         }
         int responseQueueSize = responseQueue.size();
-        if (responseQueueSize == 3) {
+        if (3 == responseQueueSize) {
             assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            if (responseQueueSize == 4) {
-                assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            }
             assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
             assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
         }

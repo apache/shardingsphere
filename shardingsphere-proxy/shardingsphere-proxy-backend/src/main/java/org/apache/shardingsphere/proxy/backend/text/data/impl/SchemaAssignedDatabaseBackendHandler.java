@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.metadata.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
@@ -42,17 +46,38 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     private final String sql;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseCommunicationEngine<?> databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+        prepareDatabaseCommunicationEngine();
+        return (ResponseHeader) databaseCommunicationEngine.execute();
+    }
+    
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        try {
+            prepareDatabaseCommunicationEngine();
+            return (Future<ResponseHeader>) databaseCommunicationEngine.execute();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return Future.failedFuture(ex);
+        }
+    }
+    
+    private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
+        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(
+                sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), connectionSession.getDatabaseName());
+        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName()).hasDataSource()) {
+            throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
+        }
+        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName()).isComplete()) {
             throw new RuleNotExistedException();
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
-        return databaseCommunicationEngine.execute();
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
     }
     
     @Override
@@ -67,8 +92,8 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
+        if (databaseCommunicationEngine instanceof JDBCDatabaseCommunicationEngine) {
+            ((JDBCDatabaseCommunicationEngine) databaseCommunicationEngine).close();
         }
     }
 }

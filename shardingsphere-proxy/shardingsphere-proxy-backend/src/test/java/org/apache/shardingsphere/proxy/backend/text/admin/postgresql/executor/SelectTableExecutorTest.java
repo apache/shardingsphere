@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
@@ -28,12 +29,11 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +71,7 @@ public final class SelectTableExecutorTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }
@@ -91,8 +91,8 @@ public final class SelectTableExecutorTest {
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
         return new ShardingSphereMetaData("sharding_db",
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
-                mock(ShardingSphereRuleMetaData.class), new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class))));
+                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
@@ -120,7 +120,7 @@ public final class SelectTableExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
         metaDataMap.put("sharding_db", getMetaData());
         SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
-        selectSchemataExecutor.execute(mock(BackendConnection.class));
+        selectSchemataExecutor.execute(mock(ConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
         int count = 0;
         while (selectSchemataExecutor.getMergedResult().next()) {

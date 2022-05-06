@@ -17,7 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="cached_connections"/>
+        <column name="variable_name"/>
+        <column name="variable_value"/>
     </metadata>
-    <row values="0"/>
+    <row values="cached_connections| 0"/>
 </dataset>

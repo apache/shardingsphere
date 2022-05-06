@@ -17,22 +17,33 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * No data packet for PostgreSQL.
  */
-public final class PostgreSQLNoDataPacket implements PostgreSQLIdentifierPacket {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLNoDataPacket implements PostgreSQLPacket {
     
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.NO_DATA.getValue(), 0, 0, 0, 4};
+    
+    private static final PostgreSQLNoDataPacket INSTANCE = new PostgreSQLNoDataPacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLNoDataPacket}.
+     *
+     * @return instance of {@link PostgreSQLNoDataPacket}
+     */
+    public static PostgreSQLNoDataPacket getInstance() {
+        return INSTANCE;
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.NO_DATA;
+    public void write(final PostgreSQLPacketPayload payload) {
+        payload.getByteBuf().writeBytes(VALUE);
     }
 }

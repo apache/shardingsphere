@@ -56,6 +56,7 @@ DQ_:                 '"';
 SQ_ :                '\'';
 BQ_:                 '`';
 QUESTION_:           '?';
+DOLLAR_:             '$';
 AT_:                 '@';
 SEMI_:               ';';
 TILDE_TILDE_:        '~~';

@@ -17,30 +17,30 @@
 
 dataSources:
   write_ds_0:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:write_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:write_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   write_ds_1:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:write_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:write_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   read_ds_0:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:read_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:read_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   read_ds_1:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:read_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:read_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
@@ -49,26 +49,26 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: pr_ds_${0..1}.t_config
+      actualDataNodes: readwrite_ds_${0..1}.t_config
     t_order: 
-      actualDataNodes: pr_ds_${0..1}.t_order_${0..1}
+      actualDataNodes: readwrite_ds_${0..1}.t_order_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
-        keyGeneratorName: increment
+        keyGeneratorName: keygen_fixture
     t_order_item:
-      actualDataNodes: pr_ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: readwrite_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: id
@@ -80,13 +80,13 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithmName: complex_test
+      shardingAlgorithmName: complex_sharding_fixture
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
-    complex_test:
-      type: COMPLEX_TEST
+    standard_sharding_fixture:
+      type: DRIVER.STANDARD.FIXTURE
+    complex_sharding_fixture:
+      type: DRIVER.COMPLEX.FIXTURE
     database_inline:
       type: INLINE
       props:
@@ -101,20 +101,22 @@ rules:
         algorithm-expression: t_order_item_${id % 2}
   
   keyGenerators:
-    increment:
-      type: INCREMENT
+    keygen_fixture:
+      type: DRIVER.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds_0:
-      writeDataSourceName: write_ds_0
-      readDataSourceNames:
-        - read_ds_0
+    readwrite_ds_0:
+      type: Static
+      props:
+        write-data-source-name: write_ds_0
+        read-data-source-names: read_ds_0
       loadBalancerName: random
-    pr_ds_1:
-      writeDataSourceName: write_ds_1
-      readDataSourceNames:
-        - read_ds_1
+    readwrite_ds_1:
+      type: Static
+      props:
+        write-data-source-name: write_ds_1
+        read-data-source-names: read_ds_1
       loadBalancerName: roundRobin
   loadBalancers:
     random:

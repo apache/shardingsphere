@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -32,7 +31,7 @@ public final class PostgreSQLUnsupportedCommandExecutorTest {
     
     @Test
     public void assertExecute() {
-        PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor(new PostgreSQLConnectionContext());
+        PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor();
         Collection<DatabasePacket<?>> actual = commandExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));

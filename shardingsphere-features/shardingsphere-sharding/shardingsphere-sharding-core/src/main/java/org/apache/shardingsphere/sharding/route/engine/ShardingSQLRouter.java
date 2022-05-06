@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -49,12 +49,12 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         ShardingConditions shardingConditions = createShardingConditions(logicSQL, metaData, rule);
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);
-        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema()));
+        validator.ifPresent(optional -> optional.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData));
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
         RouteContext result = ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(rule);
-        validator.ifPresent(v -> v.postValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData.getSchema(), props, result));
+        validator.ifPresent(optional -> optional.postValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), metaData, props, result));
         return result;
     }
     
@@ -71,7 +71,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, 
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final ShardingRule rule, final ConfigurationProperties props) {
         // TODO
     }

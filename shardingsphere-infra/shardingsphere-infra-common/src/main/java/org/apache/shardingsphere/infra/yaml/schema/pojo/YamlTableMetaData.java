@@ -30,7 +30,11 @@ import java.util.Map;
 @Setter
 public final class YamlTableMetaData implements YamlConfiguration {
     
+    private String name;
+    
     private Map<String, YamlColumnMetaData> columns;
     
     private Map<String, YamlIndexMetaData> indexes;
+    
+    private Map<String, YamlConstraintMetaData> constraints;
 }

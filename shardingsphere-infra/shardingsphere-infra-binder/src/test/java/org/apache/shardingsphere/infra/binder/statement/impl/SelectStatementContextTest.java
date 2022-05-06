@@ -389,7 +389,7 @@ public final class SelectStatementContextTest {
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
         assertThat(actual.getGroupByContext().getItems(), is(Lists.newLinkedList()));
-        assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
+        assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
     }
     
     @Test
@@ -484,7 +484,7 @@ public final class SelectStatementContextTest {
         SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertTrue(actual.isContainsSubquery());
     }
-
+    
     private OrderByItemSegment createOrderByItemSegment(final String type) {
         switch (type) {
             case INDEX_ORDER_BY:
@@ -499,7 +499,7 @@ public final class SelectStatementContextTest {
                 return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
         }
     }
-
+    
     private ProjectionsSegment createProjectionsSegment() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);
@@ -507,13 +507,13 @@ public final class SelectStatementContextTest {
                 getColumnProjectionSegmentWithoutOwner(true), getColumnProjectionSegmentWithoutOwner(false)));
         return projectionsSegment;
     }
-
+    
     private ProjectionSegment getColumnProjectionSegmentWithoutOwner() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
         return new ColumnProjectionSegment(columnSegment);
     }
-
+    
     private ProjectionSegment getColumnProjectionSegmentWithoutOwner(final boolean hasAlias) {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(hasAlias ? "name" : "id"));
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);

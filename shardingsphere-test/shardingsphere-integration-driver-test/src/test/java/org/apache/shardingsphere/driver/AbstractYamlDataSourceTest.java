@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.driver;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -43,25 +40,13 @@ public abstract class AbstractYamlDataSourceTest {
         }
     }
     
-    protected static DataSource createDataSource(final String dsName) {
-        BasicDataSource result = new BasicDataSource();
+    protected static DataSource createDataSource(final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.h2.Driver");
-        result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
+        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dataSourceName));
         result.setUsername("sa");
-        result.setMaxTotal(100);
+        result.setMaximumPoolSize(100);
         return result;
-    }
-    
-    protected final byte[] getYamlBytes(final File yamlFile) throws IOException {
-        try (FileInputStream fis = new FileInputStream(yamlFile);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream(1000)) {
-            byte[] bytes = new byte[1000];
-            int n;
-            while ((n = fis.read(bytes)) != -1) {
-                bos.write(bytes, 0, n);
-            }
-            return bos.toByteArray();
-        }
     }
     
     private static String getFileName(final String dataSetFile) {
@@ -73,7 +58,7 @@ public abstract class AbstractYamlDataSourceTest {
     }
     
     private static List<String> getSchemaFiles() {
-        return Arrays.asList("yaml/schema/sharding/db0.sql", 
+        return Arrays.asList("yaml/schema/sharding/db0.sql",
                 "yaml/schema/sharding/db1.sql",
                 "yaml/schema/readwrite_splitting/write_ds.sql",
                 "yaml/schema/readwrite_splitting/read_ds_0.sql",

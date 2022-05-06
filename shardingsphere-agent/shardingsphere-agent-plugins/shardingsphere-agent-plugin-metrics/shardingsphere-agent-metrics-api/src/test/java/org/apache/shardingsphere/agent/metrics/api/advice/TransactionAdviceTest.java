@@ -21,7 +21,6 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -53,9 +53,9 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();
         assertTrue(MetricsPool.get(MetricIds.TRANSACTION_COMMIT).isPresent());
-        assertThat(commitWrapper.getFixtureValue(), Matchers.is(1.0));
+        assertThat(commitWrapper.getFixtureValue(), is(1.0));
         FixtureWrapper rollbackWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).get();
         assertTrue(MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).isPresent());
-        assertThat(rollbackWrapper.getFixtureValue(), Matchers.is(1.0));
+        assertThat(rollbackWrapper.getFixtureValue(), is(1.0));
     }
 }

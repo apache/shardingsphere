@@ -19,19 +19,11 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
 
 /**
  * Persist repository configuration YAML swapper engine.
  */
 public final class PersistRepositoryConfigurationYamlSwapperEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(PersistRepositoryConfigurationYamlSwapper.class);
-    }
     
     /**
      * Swap to YAML configuration.
@@ -42,7 +34,7 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final String type, final PersistRepositoryConfiguration config) {
-        return (YamlPersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToYamlConfiguration(config);
+        return (YamlPersistRepositoryConfiguration) PersistRepositoryConfigurationYamlSwapperFactory.newInstance(type).swapToYamlConfiguration(config);
     }
     
     /**
@@ -54,6 +46,6 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
-        return (PersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToObject(yamlConfig);
+        return PersistRepositoryConfigurationYamlSwapperFactory.findInstance(type).map(optional -> (PersistRepositoryConfiguration) optional.swapToObject(yamlConfig)).orElse(null);
     }
 }

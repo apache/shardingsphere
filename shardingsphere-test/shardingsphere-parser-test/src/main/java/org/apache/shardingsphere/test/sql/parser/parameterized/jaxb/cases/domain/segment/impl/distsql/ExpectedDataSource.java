@@ -34,8 +34,8 @@ public final class ExpectedDataSource extends AbstractExpectedIdentifierSQLSegme
     @XmlAttribute
     private String url;
     
-    @XmlAttribute(name = "host-name")
-    private String hostName;
+    @XmlAttribute(name = "hostname")
+    private String hostname;
     
     @XmlAttribute
     private String port;

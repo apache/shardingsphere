@@ -14,20 +14,20 @@ weight = 6
 # 数据源名称，多数据源以逗号分隔
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0.jdbc-url= # 数据库 URL 连接
 spring.shardingsphere.datasource.write-ds0.type=  # 数据库连接池类名称
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # 数据库驱动类名
 spring.shardingsphere.datasource.write-ds0.username= # 数据库用户名
 spring.shardingsphere.datasource.write-ds0.password= # 数据库密码
 spring.shardingsphere.datasource.write-ds0.xxx=  # 数据库连接池的其它属性
 
-spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0-read0.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1-read0.jdbc-url= # 数据库 URL 连接
 # 忽略其他数据库配置项
 
 # 分片规则配置
@@ -53,8 +53,8 @@ spring.shardingsphere.rules.sharding.tables.t_user_detail.table-strategy.standar
 
 # 数据加密配置
 # `t_user` 使用分片规则配置的逻辑表名称
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
 
@@ -70,7 +70,7 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # 分片算法配置
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# 表达式`ds_$->{user_id % 2}` 枚举的数据源为读写分离配置的逻辑数据源名称
+# 表达式 `ds_$->{user_id % 2}` 枚举的数据源为读写分离配置的逻辑数据源名称
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds_$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
@@ -80,15 +80,16 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.user-detail-table-strat
 
 # 分布式序列算法配置
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # 读写分离策略配置
-# ds_0,ds_1为读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.write-data-source-name=write-ds0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
+# ds_0,ds_1 为读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.write-data-source-name=write-ds0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.read-data-source-names=write-ds0-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.write-data-source-name=write-ds1
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.write-data-source-name=write-ds1
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.read-data-source-names=write-ds1-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
 
 # 负载均衡算法配置

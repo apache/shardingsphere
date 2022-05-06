@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import BaseRule;
 
 setTransaction
     : SET optionType? TRANSACTION transactionCharacteristics
@@ -52,7 +52,7 @@ begin
     ;
 
 lock
-    : LOCK (INSTANCE FOR BACKUP | (TABLE | TABLES) tableLock (COMMA_ tableLock)* )
+    : LOCK (INSTANCE FOR BACKUP | (TABLES tableLock (COMMA_ tableLock)*))
     ;
 
 unlock
@@ -64,12 +64,12 @@ releaseSavepoint
     ;
 
 xa
-    : XA ((START | BEGIN) xid (JOIN | RESUME)
+    : XA ((START | BEGIN) xid (JOIN | RESUME)?
         | END xid (SUSPEND (FOR MIGRATE)?)?
         | PREPARE xid
         | COMMIT xid (ONE PHASE)?
         | ROLLBACK xid
-        | RECOVER (CONVERT xid)?
+        | RECOVER (CONVERT XID)?
     )
     ;
 
@@ -90,5 +90,6 @@ lockOption
     ;
 
 xid
-    : string_ (COMMA_ string_)* numberLiterals?
+    : gtrid=textString (COMMA_ bqual=textString (COMMA_ formatID=NUMBER_)?)?
     ;
+

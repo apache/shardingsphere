@@ -40,6 +40,6 @@ public final class KillStatementAssert {
      * @param expected expected kill statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLKillStatement actual, final KillStatementTestCase expected) {
-        assertThat(assertContext.getText("Kill statement context does not match: "), actual.getThreadId(), is(expected.getThreadId()));
+        assertThat(assertContext.getText("Kill statement context does not match: "), actual.getProcesslistId(), is(expected.getProcesslistId()));
     }
 }

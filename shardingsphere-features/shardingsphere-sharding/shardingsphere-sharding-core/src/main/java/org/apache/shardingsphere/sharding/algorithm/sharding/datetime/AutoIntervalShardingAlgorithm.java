@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.text.DecimalFormat;
+import java.text.ParsePosition;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -40,7 +40,6 @@ import java.util.Properties;
 /**
  * Auto interval sharding algorithm.
  */
-@Getter
 public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String DATE_TIME_LOWER_KEY = "datetime-lower";
@@ -51,33 +50,35 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
+    @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
-    private LocalDateTime dateTimeLower;
+    private volatile LocalDateTime dateTimeLower;
     
-    private long shardingSeconds;
+    private volatile long shardingSeconds;
     
-    private int autoTablesAmount;
+    @Getter
+    private volatile int autoTablesAmount;
     
     @Override
-    public void init() {
-        dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
-        shardingSeconds = getShardingSeconds();
-        autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
+    public void init(final Properties props) {
+        dateTimeLower = getDateTime(props);
+        shardingSeconds = getShardingSeconds(props);
+        autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
-    private LocalDateTime getDateTime(final String dateTimeKey) {
-        String value = props.getProperty(dateTimeKey);
-        Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
+    private LocalDateTime getDateTime(final Properties props) {
+        String value = props.getProperty(DATE_TIME_LOWER_KEY);
+        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", DATE_TIME_LOWER_KEY, value);
         }
     }
     
-    private long getShardingSeconds() {
+    private long getShardingSeconds(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
@@ -85,12 +86,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
-        for (String each : availableTargetNames) {
-            if (each.endsWith(tableNameSuffix)) {
-                return each;
-            }
-        }
-        return null;
+        return findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -99,22 +95,15 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i))) {
-                    result.add(each);
-                    break;
-                }
-                if (result.size() == availableTargetNames.size()) {
-                    return result;
-                }
-            }
+            String suffix = String.valueOf(i);
+            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }
     
     private int doSharding(final long shardingValue) {
-        String position = new DecimalFormat("0.00").format((float) shardingValue / shardingSeconds);
-        return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
+        String position = new DecimalFormat("0.00").format((double) shardingValue / shardingSeconds);
+        return Math.min(Math.max(0, (int) Math.ceil(Double.parseDouble(position))), autoTablesAmount - 1);
     }
     
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
@@ -126,17 +115,12 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long parseDate(final Comparable<?> shardingValue) {
-        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
+        LocalDateTime dateValue = LocalDateTime.from(DATE_TIME_FORMAT.parse(shardingValue.toString(), new ParsePosition(0)));
         return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     
     @Override
     public String getType() {
         return "AUTO_INTERVAL";
-    }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return Arrays.asList(DATE_TIME_LOWER_KEY, DATE_TIME_UPPER_KEY, SHARDING_SECONDS_KEY);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     private static final String INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, ?, ?, ?), (2, ?, ?, ?)";
     
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
-
+    
     private static final String INSERT_NO_SHARDING_SQL = "INSERT INTO t_sys_0 (param_key, param_value) VALUES (?, ?)";
     
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
@@ -57,10 +57,12 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS = "SELECT item_id, user_id, status FROM t_order_item WHERE  order_id= ? AND user_id = ?";
     
+    private static final String SELECT_WITH_ORDER_BY = "SELECT order_id, user_id, status FROM t_order ORDER BY order_id";
+    
     private static final String SELECT_AUTO_SQL = "SELECT item_id, order_id, status FROM t_order_item_auto WHERE order_id >= ?";
-
+    
     private static final String SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER = "SELECT ?, order_id, status FROM t_order_item_auto";
-
+    
     private static final String UPDATE_SQL = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
     
     private static final String UPDATE_AUTO_SQL = "UPDATE t_order_auto SET status = ? WHERE order_id = ?";
@@ -68,6 +70,16 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
     
     private static final String UPDATE_WITH_ERROR_COLUMN = "UPDATE t_order SET error_column=?";
+    
+    @Test
+    public void assertExecuteBatchWithoutAddBatch() throws SQLException {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
+            int[] actual = preparedStatement.executeBatch();
+            assertThat(actual, is(new int[0]));
+        }
+    }
     
     @Test
     public void assertAddBatch() throws SQLException {
@@ -107,7 +119,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(0);
+            ResetIncrementKeyGenerateAlgorithmFixture.getCOUNT().set(0);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
@@ -149,7 +161,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(10);
+            ResetIncrementKeyGenerateAlgorithmFixture.getCOUNT().set(10);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
@@ -333,8 +345,9 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertGeneratedKeysForBatchInsert() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
             preparedStatement.setString(3, "MULTI");
@@ -353,8 +366,9 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "show");
             preparedStatement.setString(2, "yes");
             preparedStatement.execute();
@@ -372,9 +386,10 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         int orderId = 200;
         String status = "init";
         String updatedStatus = "updated on duplicate key";
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
-             PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
             preparedStatement.setInt(1, itemId);
             preparedStatement.setInt(2, orderId);
             preparedStatement.setInt(3, userId1);
@@ -402,9 +417,10 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             }
         }
         
-        try (Connection connection = getShardingSphereDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
-             PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
             preparedStatement.setInt(1, itemId);
             preparedStatement.setInt(2, orderId);
             preparedStatement.setInt(3, userId1);
@@ -486,7 +502,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             assertNull(preparedStatement.getResultSet());
         }
     }
-
+    
     @Test
     public void assertExecuteSelectColumnGetResultSet() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER)) {
@@ -512,6 +528,21 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
+    public void assertExecuteSelectWithOrderByAndExecuteGetResultSet() throws SQLException {
+        Collection<Integer> result = Arrays.asList(1000, 1001, 1100, 1101);
+        int count = 0;
+        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_WITH_ORDER_BY)) {
+            preparedStatement.executeQuery();
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
+                    count++;
+                }
+            }
+        }
+        assertThat(count, is(result.size()));
+    }
+    
+    @Test
     public void assertClearBatch() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
@@ -524,6 +555,24 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.clearBatch();
             int[] result = preparedStatement.executeBatch();
             assertThat(result.length, is(0));
+        }
+    }
+    
+    @Test
+    public void assertExecuteBatchRepeatedly() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.setString(4, "BATCH");
+            preparedStatement.addBatch();
+            assertThat(preparedStatement.executeBatch().length, is(1));
+            preparedStatement.setInt(1, 3103);
+            preparedStatement.setInt(2, 13);
+            preparedStatement.setInt(3, 13);
+            preparedStatement.setString(4, "BATCH");
+            preparedStatement.addBatch();
+            assertThat(preparedStatement.executeBatch().length, is(1));
         }
     }
     

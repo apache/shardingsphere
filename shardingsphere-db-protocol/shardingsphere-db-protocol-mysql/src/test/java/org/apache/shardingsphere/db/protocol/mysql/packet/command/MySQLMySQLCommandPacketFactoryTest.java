@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.ping.MySQLComPingPacket;
@@ -192,7 +193,7 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComSetOptionPacket() throws SQLException {
-        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, payload, CONNECTION_ID), instanceOf(MySQLUnsupportedCommandPacket.class));
+        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, payload, CONNECTION_ID), instanceOf(MySQLComSetOptionPacket.class));
     }
     
     @Test

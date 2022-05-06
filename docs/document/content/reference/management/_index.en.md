@@ -6,30 +6,40 @@ weight = 1
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `status` node persist the runtime node of database access object, to distinguish different database access instances.
+Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
 
 ```
 namespace
-   ├──rules                                     # Global rule configuration
-   ├──props                                     # Properties configuration
-   ├──metadata                                  # Metadata configuration
-   ├      ├──${schema_1}                        # Schema name 1
-   ├      ├      ├──dataSources                 # Datasource configuration
-   ├      ├      ├──rules                       # Rule configuration
-   ├      ├      ├──schema                      # Table configuration
-   ├      ├──${schema_2}                        # Schema name 2
-   ├      ├      ├──dataSources                 # Datasource configuration
-   ├      ├      ├──rules                       # Rule configuration
-   ├      ├      ├──schema                      # Table configuration
-   ├──status
+   ├──rules                                   # Global rule configuration
+   ├──props                                   # Properties configuration
+   ├──metadata                                # Metadata configuration
+   ├     ├──${schema_1}                       # Schema name 1
+   ├     ├     ├──dataSources                 # Datasource configuration
+   ├     ├     ├──rules                       # Rule configuration
+   ├     ├     ├──tables                      # Table configuration
+   ├     ├     ├     ├──t_1 
+   ├     ├     ├     ├──t_2      
+   ├     ├──${schema_2}                       # Schema name 2
+   ├     ├     ├──dataSources                 # Datasource configuration
+   ├     ├     ├──rules                       # Rule configuration
+   ├     ├     ├──tables                      # Table configuration
+   ├──nodes
    ├    ├──compute_nodes
    ├    ├     ├──online
+   ├    ├     ├     ├──proxy
+   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
+   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
+   ├    ├     ├     ├     ├──....
+   ├    ├     ├     ├──jdbc
+   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_pid_x}
+   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
+   ├    ├     ├     ├     ├──....   
+   ├    ├     ├──attributies
    ├    ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
-   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
-   ├    ├     ├     ├──....
-   ├    ├     ├──circuit_breaker
-   ├    ├     ├     ├──${your_instance_ip_c}@${your_instance_port_v}
-   ├    ├     ├     ├──${your_instance_ip_d}@${your_instance_port_w}
+   ├    ├     ├     ├     ├──status
+   ├    ├     ├     ├     ├──label    
+   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
+   ├    ├     ├     ├     ├──status   
    ├    ├     ├     ├──....
    ├    ├──storage_nodes
    ├    ├     ├──disable
@@ -44,7 +54,7 @@ namespace
 
 ### /rules
 
-global rule configurations， including configure the username and password for ShardingSphere-Proxy.
+global rule configurations, including configure the username and password for ShardingSphere-Proxy.
 
 ```yaml
 - !AUTHORITY
@@ -69,28 +79,34 @@ sql-show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: 
+ds_0:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
-ds_1: 
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-1
+ds_1:
+  initializationFailTimeout: 1
+  validationTimeout: 5000
+  maxLifetime: 1800000
+  leakDetectionThreshold: 0
+  minimumIdle: 1
+  password: root
+  idleTimeout: 60000
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  props:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-    password: null
-    maxPoolSize: 50
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    minPoolSize: 1
-    username: root
-    maxLifetimeMilliseconds: 1800000
+  maximumPoolSize: 50
+  connectionTimeout: 30000
+  username: root
+  poolName: HikariPool-2
 ```
 
 ### /metadata/${schemaName}/rules
@@ -108,43 +124,34 @@ Rule configurations, including sharding, readwrite-splitting, data encryption, s
   xxx
 ```
 
-### /metadata/${schemaName}/schema
+### /metadata/${schemaName}/tables
 
-Dynamic modification of metadata content is not supported currently.
+Use separate node storage for each table, dynamic modification of metadata content is not supported currently.
 
 ```yaml
-tables:                                       # Tables
-  t_order:                                    # table_name
-    columns:                                  # Columns
-      id:                                     # column_name
-        caseSensitive: false
-        dataType: 0
-        generated: false
-        name: id
-        primaryKey: trues
-      order_id:
-        caseSensitive: false
-        dataType: 0
-        generated: false
-        name: order_id
-        primaryKey: false
-    indexs:                                   # Indexes
-      t_user_order_id_index:                  # index_name
-        name: t_user_order_id_index
-  t_order_item:
-    columns:
-      order_id:
-        caseSensitive: false
-        dataType: 0
-        generated: false
-        name: order_id
-        primaryKey: false
+name: t_order                             # Table name
+columns:                                  # Columns
+  id:                                     # Column name
+    caseSensitive: false
+    dataType: 0
+    generated: false
+    name: id
+    primaryKey: trues
+  order_id:
+    caseSensitive: false
+    dataType: 0
+    generated: false
+    name: order_id
+    primaryKey: false
+indexs:                                   # Index
+  t_user_order_id_index:                  # Index name
+    name: t_user_order_id_index
 ```
 
-### /status/compute_nodes
+### /nodes/compute_nodes
 
 It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PORT. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
-### /status/storage_nodes
+### /nodes/storage_nodes
 
 It is able to orchestrate replica database, delete or disable data dynamically.

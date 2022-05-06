@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TypeAssert {
-
+    
     /**
      * Assert actual type segment is correct with expected type.
      *

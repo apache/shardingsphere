@@ -83,4 +83,19 @@
     <set-resource-group sql-case-id="set_resource_group">
         <group name="rg" />
     </set-resource-group>
+    <set-parameter sql-case-id="set_charset_mysql" >
+        <parameter-assign value="'utf8'" >
+            <parameter name="charset" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_charset_postgresql" >
+        <parameter-assign value="'UTF8'" >
+            <parameter name="client_encoding" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_client_encoding" >
+        <parameter-assign value="'UTF8'" >
+            <parameter name="CLIENT_ENCODING" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>

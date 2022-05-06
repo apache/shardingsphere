@@ -32,7 +32,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
@@ -43,7 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTy
  */
 @Slf4j
 public final class ShardingSphereProxy {
-
+    
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
@@ -73,22 +74,31 @@ public final class ShardingSphereProxy {
     }
     
     private void accept(final ChannelFuture future) throws InterruptedException {
-        log.info("ShardingSphere-Proxy start success");
+        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
         future.channel().closeFuture().sync();
     }
     
     private void createEventLoopGroup() {
-        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
+        workerGroup = getWorkerGroup();
+    }
+    
+    private EventLoopGroup getWorkerGroup() {
+        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        boolean reactiveBackendEnabled = "ExperimentalVertx".equalsIgnoreCase(driverType);
+        if (reactiveBackendEnabled) {
+            return VertxBackendDataSource.getInstance().getVertx().nettyEventLoopGroup();
+        }
+        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
+        return Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
     }
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .option(ChannelOption.SO_REUSEADDR, true)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))

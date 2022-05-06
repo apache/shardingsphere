@@ -20,7 +20,11 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?
+    : [a-zA-Z_@#\u0080-\uFFFF][a-zA-Z0-9@$#_\u0080-\uFFFF]*
+    ;
+
+DELIMITED_IDENTIFIER_
+    : (LBT_ | DQ_) [a-zA-Z0-9@$#_.\\/\u0080-\uFFFF ]+ (DQ_ | RBT_)
     ;
 
 STRING_

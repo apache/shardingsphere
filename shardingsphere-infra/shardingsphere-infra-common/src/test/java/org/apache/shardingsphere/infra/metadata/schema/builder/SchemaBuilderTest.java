@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -58,20 +59,18 @@ public final class SchemaBuilderTest {
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
-        Collection<String> tableNames = rules.stream().filter(rule -> rule instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
-        Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
-        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
-        ShardingSphereSchema schemaForFederation = SchemaBuilder.buildFederationSchema(tableMetaDataList, rules);
-        assertThat(schemaForKernel.getTables().keySet().size(), is(2));
-        assertSchemaOfShardingTables(schemaForKernel.getTables().values());
-        assertThat(schemaForFederation.getTables().keySet().size(), is(2));
-        assertSchemaOfShardingTables(schemaForFederation.getTables().values());
+        Collection<String> tableNames = rules.stream().filter(each -> each instanceof TableContainedRule)
+                .flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
+        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(tableNames,
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "sharding_db"));
+        assertThat(actual.size(), is(1));
+        ShardingSphereSchema schema = new ShardingSphereSchema(actual.values().iterator().next().getTables());
+        assertThat(schema.getTables().keySet().size(), is(2));
+        assertSchemaOfShardingTables(schema.getTables().values());
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
-        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, value -> value));
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
         assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));

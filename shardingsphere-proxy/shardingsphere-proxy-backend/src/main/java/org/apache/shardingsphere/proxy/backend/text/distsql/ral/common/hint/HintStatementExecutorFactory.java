@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearHintExecutor;
@@ -53,11 +52,11 @@ public final class HintStatementExecutorFactory {
      * Create hint statement executor instance.
      *
      * @param sqlStatement hint statement
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @return hint command executor
      * @throws SQLException SQL exception
      */
-    public static HintStatementExecutor newInstance(final HintDistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static HintStatementExecutor<? extends HintDistSQLStatement> newInstance(final HintDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetReadwriteSplittingHintStatement) {
             return new SetReadwriteSplittingHintExecutor((SetReadwriteSplittingHintStatement) sqlStatement);
         }
@@ -80,11 +79,11 @@ public final class HintStatementExecutorFactory {
             return new AddShardingHintTableValueExecutor((AddShardingHintTableValueStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowShardingHintStatusStatement) {
-            return new ShowShardingHintStatusExecutor(backendConnection);
+            return new ShowShardingHintStatusExecutor(connectionSession);
         }
         if (sqlStatement instanceof ClearShardingHintStatement) {
             return new ClearShardingHintExecutor();
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

@@ -33,8 +33,8 @@ spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configurati
 ```properties
 spring.shardingsphere.mode.type=Cluster
 spring.shardingsphere.mode.repository.type= # Type of persist repository
-spring.shardingsphere.mode.repository.namespace= # Namespace of registry center
-spring.shardingsphere.mode.repository.serverLists= # Server lists of registry center
+spring.shardingsphere.mode.repository.props.namespace= # Namespace of registry center
+spring.shardingsphere.mode.repository.props.server-lists= # Server lists of registry center
 spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
 spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
 ```

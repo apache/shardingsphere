@@ -39,8 +39,8 @@ public final class EncryptTableTest {
     
     @Before
     public void setUp() {
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", 
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor")), null));
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor")), null), Collections.emptyMap());
     }
     
     @Test
@@ -120,5 +120,12 @@ public final class EncryptTableTest {
     @Test
     public void assertGetLogicAndCipherColumns() {
         assertThat(encryptTable.getLogicAndCipherColumns(), is(ImmutableMap.of("logicColumn", "cipherColumn")));
+    }
+    
+    @Test
+    public void assertGetQueryWithCipherColumn() {
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor")), true), Collections.emptyMap());
+        assertTrue(encryptTable.getQueryWithCipherColumn().get());
     }
 }

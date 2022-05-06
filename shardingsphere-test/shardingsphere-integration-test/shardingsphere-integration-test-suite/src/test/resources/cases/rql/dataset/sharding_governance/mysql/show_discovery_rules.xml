@@ -17,9 +17,10 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="dataSourceNames" />
-        <column name="discoverType" />
-        <column name="discoverProps" />
+        <column name="group_name" />
+        <column name="data_source_names" />
+        <column name="primary_data_source_name" />
+        <column name="discovery_type" />
+        <column name="discovery_heartbeat" />
     </metadata>
 </dataset>

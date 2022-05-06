@@ -19,13 +19,9 @@ package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -35,29 +31,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class NativeAuthorityProviderAlgorithmTest {
-    
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
-    }
-    
-    @Test
-    public void assertAlgorithmType() {
-        Optional<AuthorityProvideAlgorithm> algorithm = TypedSPIRegistry.findRegisteredService(AuthorityProvideAlgorithm.class, "NATIVE", new Properties());
-        assertTrue(algorithm.isPresent());
-        assertThat(algorithm.get().getType(), is("NATIVE"));
-    }
     
     @Test
     public void assertFindPrivileges() throws SQLException {
@@ -113,7 +94,7 @@ public final class NativeAuthorityProviderAlgorithmTest {
         String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
         String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
         String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);

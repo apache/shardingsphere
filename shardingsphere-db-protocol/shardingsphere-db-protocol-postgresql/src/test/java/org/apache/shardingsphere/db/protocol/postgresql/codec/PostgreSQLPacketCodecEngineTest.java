@@ -37,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,14 +66,12 @@ public final class PostgreSQLPacketCodecEngineTest {
     
     @Test
     public void assertIsInvalidHeader() {
-        assertFalse(new PostgreSQLPacketCodecEngine().isValidHeader(4));
+        assertTrue(new PostgreSQLPacketCodecEngine().isValidHeader(4));
     }
     
     @Test
     public void assertDecode() {
-        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(51, 47, 0);
-        when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));

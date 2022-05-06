@@ -70,8 +70,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     }
     
     /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
+     * To make sure SkyWalking will be available at the next release of ShardingSphere, a new plugin should be provided to SkyWalking project if this API changed.
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */

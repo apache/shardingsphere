@@ -40,9 +40,9 @@ import java.util.Map;
  * JDBC executor callback advice.
  */
 public class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
-
+    
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
-
+    
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
@@ -60,18 +60,18 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
         getMetaDataMethod.setAccessible(true);
         DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
-                .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostName())
+                .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())
                 .setAttribute(OpenTelemetryConstants.PEER_PORT, String.valueOf(metaData.getPort()))
                 .setAttribute(OpenTelemetryConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(OpenTelemetryConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
         target.setAttachment(spanBuilder.startSpan());
     }
-
+    
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).end();
     }
-
+    
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);

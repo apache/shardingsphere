@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -38,12 +36,8 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     private volatile Map<Integer, Range<Comparable<?>>> partitionRange;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     @Override
-    public final void init() {
+    public final void init(final Properties props) {
         partitionRange = calculatePartitionRange(props);
     }
     
@@ -51,7 +45,8 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        return availableTargetNames.stream().filter(each -> each.endsWith(String.valueOf(getPartition(shardingValue.getValue())))).findFirst().orElse(null);
+        String suffix = String.valueOf(getPartition(shardingValue.getValue()));
+        return findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -60,11 +55,8 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int partition = firstPartition; partition <= lastPartition; partition++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(partition))) {
-                    result.add(each);
-                }
-            }
+            String suffix = String.valueOf(partition);
+            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

@@ -683,3 +683,12 @@ READONLY
 AT
     : A T
     ;
+
+PASSWORD
+    : P A S S W O R D
+    ;
+
+WITHOUT
+    : W I T H O U T
+    ;
+

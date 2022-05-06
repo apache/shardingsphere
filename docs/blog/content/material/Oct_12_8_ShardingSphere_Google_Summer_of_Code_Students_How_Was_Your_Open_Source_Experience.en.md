@@ -4,19 +4,19 @@ weight = 24
 chapter = true
 +++
 
-![](../../static/img/Blog_24_img_1_ShardingSphere_GSoC.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_1_ShardingSphere_GSoC.png)
 
 Recently the ShardingSphere community had the pleasure of contributing to the Google Summer of Code (GSoC), and mentoring the next generation of open source innovators. Our project was select to be part of this brilliant and long running program, to provide students from all over the world with an experience in open source software.
 
 Thanoshan and Liangda are the students that worked with Apache ShardingSphere mentors during the latest GSoC, and continue contributing to the project ever since.
 
-![](../../static/img/Blog_24_img_2_GSoC_2021_Projects_ss_Students_Snapshot_Thanoshan_Liangda.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_2_GSoC_2021_Projects_ss_Students_Snapshot_Thanoshan_Liangda.png)
 
 They were kind enough to agree to a phone interview with Yacine, one of the ShardingSphere committers and community managers — to share their opinions and experience with the GSoC application process, joining the Apache ShardingSphere project, and their future plans.
 
 ## Students Intro:
 
-![](../../static/img/Blog_24_img_3_Thanoshan_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_3_Thanoshan_Photo.png)
 
 Name: Thanoshan
 
@@ -26,7 +26,7 @@ University: Sabaragamuwa University
 
 Major: Computing & Information Systems
 
-![](../../static/img/Blog_24_img_4_Liangda_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_4_Liangda_Photo.png)
 
 Name:Liangda
 
@@ -156,7 +156,7 @@ ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
 
 ## Author
 
-![](../../static/img/Blog_24_img_5_Yachine_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_5_Yachine_Photo.png)
 
 > **Yacine Si Tayeb**
 

@@ -27,15 +27,15 @@ public final class MySQLServerInfoTest {
     
     @Test
     public void assertSetServerVersion() {
+        String schemaName = "test";
         CommonConstants.PROXY_VERSION.set("5.0.0");
-        MySQLServerInfo.setServerVersion("5.1.47");
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.1.47-ShardingSphere-Proxy 5.0.0"));
+        MySQLServerInfo.setServerVersion(schemaName, "5.1.47");
+        assertThat(MySQLServerInfo.getServerVersion(schemaName), is("5.1.47-ShardingSphere-Proxy 5.0.0"));
     }
     
     @Test
     public void assertSetServerVersionForNull() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
-        MySQLServerInfo.setServerVersion(null);
-        assertThat(MySQLServerInfo.getServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
+        assertThat(MySQLServerInfo.getDefaultServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
     }
 }

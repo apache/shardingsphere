@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
 
@@ -58,17 +58,17 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
+    public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getSchema()));
+        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getSchemaName()));
     }
     
-    private QueryResult getQueryResult(final String schemaName) {
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+    private QueryResult getQueryResult(final String databaseName) {
+        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
+            throw new DatabaseNotExistedException(databaseName);
         }
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        rows.add(new MemoryQueryResultDataRow(Arrays.asList(schemaName, String.format(CREATE_DATABASE_PATTERN, schemaName))));
+        rows.add(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     

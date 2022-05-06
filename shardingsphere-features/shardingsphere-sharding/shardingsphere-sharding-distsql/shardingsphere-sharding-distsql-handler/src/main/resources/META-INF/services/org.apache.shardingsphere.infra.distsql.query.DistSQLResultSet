@@ -18,5 +18,16 @@
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBroadcastTableRuleQueryResultSet
-org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.ShardingScalingRulesQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.CheckScalingQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.ShowScalingListQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.ShowScalingJobStatusQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.ShowScalingCheckAlgorithmsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedKeyGeneratorQueryResultSet

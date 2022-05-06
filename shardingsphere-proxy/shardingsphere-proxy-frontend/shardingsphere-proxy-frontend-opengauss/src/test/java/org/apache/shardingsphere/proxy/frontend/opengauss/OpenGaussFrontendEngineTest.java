@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine;
 import org.junit.Before;
@@ -28,10 +30,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,9 +54,6 @@ public final class OpenGaussFrontendEngineTest {
     private void prepareMock() {
         Field field = OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine");
         field.setAccessible(true);
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }
     
@@ -73,25 +70,18 @@ public final class OpenGaussFrontendEngineTest {
     
     @Test
     public void assertGetCodecEngine() {
-        openGaussFrontendEngine.getCodecEngine();
-        verify(mockPostgreSQLFrontendEngine).getCodecEngine();
+        assertThat(openGaussFrontendEngine.getCodecEngine(), instanceOf(OpenGaussPacketCodecEngine.class));
     }
     
     @Test
     public void assertGetAuthenticationEngine() {
-        openGaussFrontendEngine.getAuthenticationEngine();
-        verify(mockPostgreSQLFrontendEngine).getAuthenticationEngine();
+        assertThat(openGaussFrontendEngine.getAuthenticationEngine(), instanceOf(OpenGaussAuthenticationEngine.class));
     }
     
     @Test
     public void assertRelease() {
-        BackendConnection connection = mock(BackendConnection.class);
+        ConnectionSession connection = mock(ConnectionSession.class);
         openGaussFrontendEngine.release(connection);
         verify(mockPostgreSQLFrontendEngine).release(connection);
-    }
-    
-    @Test
-    public void assertGetDatabaseType() {
-        assertThat(openGaussFrontendEngine.getDatabaseType(), is("openGauss"));
     }
 }

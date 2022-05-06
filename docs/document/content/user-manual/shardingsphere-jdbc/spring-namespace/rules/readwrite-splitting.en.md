@@ -5,7 +5,7 @@ weight = 2
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.1.xsd)
 
 \<readwrite-splitting:rule />
 
@@ -19,8 +19,8 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | *Name*                     | *Type*     | *Description*                                                           |
 | -------------------------- | ---------- | ----------------------------------------------------------------------- |
 | id                         | Attribute  | Readwrite-splitting data source rule name                               |
-| write-data-source-name     | Attribute  | Write data source name                                                  |
-| read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
+| type                       | Attribute  | Readwrite-splitting type, such as: Static, Dynamic                      |
+| props                      | Tag        | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |
 
 \<readwrite-splitting:load-balance-algorithm />

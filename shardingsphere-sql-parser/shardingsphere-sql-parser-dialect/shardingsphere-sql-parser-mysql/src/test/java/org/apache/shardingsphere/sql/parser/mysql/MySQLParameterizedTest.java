@@ -95,14 +95,15 @@ public final class MySQLParameterizedTest {
                 + "`runoob_test` NATIONAL CHAR(40),\n"
                 + "`submission_date` DATE,\n"
                 + "PRIMARY KEY (`runoob_id`)\n"
-                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
-                + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
-                + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
-                + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
-                + "\t`runoob_test` NATIONAL CHAR(40),\n"
-                + "\t`submission_date` DATE,\n"
-                + "\tPRIMARY KEY (`runoob_id`)\n"
-                + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
+                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+                "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
+                        + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
+                        + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
+                        + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
+                        + "\t`runoob_test` NATIONAL CHAR(40),\n"
+                        + "\t`submission_date` DATE,\n"
+                        + "\tPRIMARY KEY (`runoob_id`)\n"
+                        + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
     }
     
     private final String caseId;

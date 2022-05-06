@@ -47,7 +47,7 @@ public class DatabaseDiscoverySpringBootStarterTest {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
-        assertThat(dataSourceRuleConfig.getName(), is("primary_replica_ds"));
+        assertThat(dataSourceRuleConfig.getGroupName(), is("primary_replica_ds"));
         assertThat(dataSourceRuleConfig.getDataSourceNames().size(), is(2));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getDiscoveryHeartbeats().size(), is(1));

@@ -40,7 +40,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
@@ -55,7 +57,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -96,13 +97,15 @@ public final class InsertStatementContextTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertInsertStatementContext(actual);
     }
     
     private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(metaData.getSchema()).thenReturn(schema);
+        String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultSchema.LOGIC_NAME;
+        when(metaData.getSchemaByName(defaultSchemaName)).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), parameters, insertStatement, DefaultSchema.LOGIC_NAME);
     }
@@ -113,6 +116,7 @@ public final class InsertStatementContextTest {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertInsertStatementContext(actual);
     }
     
@@ -122,6 +126,7 @@ public final class InsertStatementContextTest {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertNull(actual.getOnDuplicateKeyUpdateValueContext());
         assertTrue(actual.getOnDuplicateKeyUpdateParameters().isEmpty());
@@ -134,6 +139,7 @@ public final class InsertStatementContextTest {
         setUpInsertValues(insertStatement);
         setUpOnDuplicateValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateValueContext().getColumns().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));
@@ -148,6 +154,7 @@ public final class InsertStatementContextTest {
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);
+        actual.setUpParameters(Collections.singletonList("param"));
         assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
         assertThat(actual.getGroupedParameters().size(), is(1));
         assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));
@@ -163,7 +170,7 @@ public final class InsertStatementContextTest {
     private void setUpOnDuplicateValues(final MySQLInsertStatement insertStatement) {
         List<ColumnSegment> parameterMarkerExpressionAssignmentColumns = new LinkedList<>();
         parameterMarkerExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")));
-        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns, 
+        AssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns,
                 new ParameterMarkerExpressionSegment(0, 0, 4));
         List<ColumnSegment> literalExpressionAssignmentColumns = new LinkedList<>();
         literalExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")));
@@ -174,9 +181,7 @@ public final class InsertStatementContextTest {
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
-        assertNotNull(actual.getTablesContext());
         assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
-        assertNotNull(actual.getAllTables());
         assertThat(actual.getAllTables().size(), is(1));
         SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();
         assertThat(simpleTableSegment.getTableName().getStartIndex(), is(0));
@@ -188,12 +193,18 @@ public final class InsertStatementContextTest {
         assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(0), is(1));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(1), is("Tom"));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(2), is("init"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(0), is(2));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(1), is("Jerry"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(2), is("init"));
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(2).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(2).isPresent());
+        assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(0).get(), is(2));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(1).get(), is("Jerry"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(2).get(), is("init"));
     }
     
     @Test

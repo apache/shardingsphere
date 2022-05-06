@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DenyUserStatementContextTest {
-
+    
     @Test
     public void assertNewInstance() {
         SQLServerDenyUserStatement sqlServerDenyUserStatement = mock(SQLServerDenyUserStatement.class);

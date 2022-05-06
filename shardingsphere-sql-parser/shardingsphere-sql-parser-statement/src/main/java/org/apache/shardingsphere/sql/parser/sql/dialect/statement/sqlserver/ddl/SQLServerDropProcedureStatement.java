@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer drop procedure statement.
  */
 @ToString
-public class SQLServerDropProcedureStatement extends DropProcedureStatement implements SQLServerStatement {
+public final class SQLServerDropProcedureStatement extends DropProcedureStatement implements SQLServerStatement {
 }

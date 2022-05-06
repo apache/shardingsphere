@@ -18,18 +18,15 @@ The binary packages:
 
 Or get binary package from [download page]( https://shardingsphere.apache.org/document/current/en/downloads/ ).
 
-2. Unzip the proxy distribution package, modify the configuration file `conf/server.yaml`, enable `scaling` and `mode`:
-```yaml
-scaling:
-  blockQueueSize: 10000
-  workerThread: 40
-  clusterAutoSwitchAlgorithm:
-    type: IDLE
-    props:
-      incremental-task-idle-minute-threshold: 30
-  dataConsistencyCheckAlgorithm:
-    type: DEFAULT
+> Scaling is an experimental feature, if scaling job fail, you could try nightly version, click here to [download nightly build]( https://github.com/apache/shardingsphere#nightly-builds ).
 
+2. Unzip the proxy distribution package, modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/) for more details.
+
+3. Modify the configuration file `conf/server.yaml`. Please refer to [Mode Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for more details.
+Type of `mode` must be `Cluster` for now, please start the registry center before running proxy.
+
+Configuration Example:
+```yaml
 mode:
   type: Cluster
   repository:
@@ -44,31 +41,156 @@ mode:
   overwrite: false
 ```
 
-Enable `clusterAutoSwitchAlgorithm` indicate system will detect when scaling job is finished and switch cluster configuration automatically. Currently, system supply `IDLE` type implementation.
+4. Enable scaling
 
-Enable `dataConsistencyCheckAlgorithm` indicate system will use this defined algorithm to do data consistency check when it's emitted, if it's disabled, then data consistency check will be ignored. Currently, system supply `DEFAULT` type implementation, it supports following database types: `MySQL`, you could not enable it if you're running other database types for now, support of other database types is under development.
+Way 1. Modify `scalingName` and `scaling` configuration in `conf/config-sharding.yaml`. 
 
-You could customize an auto switch algorithm by implementing `ScalingClusterAutoSwitchAlgorithm` SPI interface, and customize a check algorithm by implementing `ScalingDataConsistencyCheckAlgorithm` SPI interface. Please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+Configuration Items Explanation:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: # Enabled scaling action config name
+  scaling:
+    <scaling-action-config-name> (+):
+      input: # Data read configuration. If it's not configured, then part of its configuration will take effect.
+        workerThread: # Worker thread pool size for inventory data ingestion from source. If it's not configured, then use system default value.
+        batchSize: # Maximum records count of a DML select operation. If it's not configured, then use system default value.
+        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
+          type: # Algorithm type. Options:
+          props: # Algorithm properties
+      output: # Data write configuration. If it's not configured, then part of its configuration will take effect.
+        workerThread: # Worker thread pool size for data importing to target. If it's not configured, then use system default value.
+        batchSize: # Maximum records count of a DML insert/delete/update operation. If it's not configured, then use system default value.
+        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
+          type: # Algorithm type. Options:
+          props: # Algorithm properties
+      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
+        type: # Algorithm type. Options: MEMORY
+        props: # Algorithm properties
+          block-queue-size: # Property: data channel block queue size. Available for types: MEMORY
+      completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
+        type: # Algorithm type. Options: IDLE
+        props: # Algorithm properties
+          incremental-task-idle-minute-threshold: # If incremental tasks is idle more than so much minutes, then it could be considered as almost completed. Available for types: IDLE
+      dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
+        type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
+        props: # Algorithm properties
+          chunk-size: # Maximum records count of a query operation for check
+```
 
-3. Start up ShardingSphere-Proxy:
+`type` of `dataConsistencyChecker` could be got by executing DistSQL `SHOW SCALING CHECK ALGORITHMS`. Simple comparison:
+- `DATA_MATCH` : Support all types of databases, but it's not the best performant one.
+- `CRC32_MATCH` : Support `MySQL`, performance is better than `DATA_MATCH`.
+
+Auto Mode Configuration Example:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: scaling_auto
+  scaling:
+    scaling_auto:
+      input:
+        workerThread: 40
+        batchSize: 1000
+      output:
+        workerThread: 40
+        batchSize: 1000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
+      completionDetector:
+        type: IDLE
+        props:
+          incremental-task-idle-minute-threshold: 30
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+```
+
+Manual Mode Configuration Example:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: scaling_manual
+  scaling:
+    scaling_manual:
+      input:
+        workerThread: 40
+        batchSize: 1000
+      output:
+        workerThread: 40
+        batchSize: 1000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+```
+
+Way 2: Configure scaling by DistSQL
+
+Auto Mode Configuration Example:
+```sql
+CREATE SHARDING SCALING RULE scaling_auto (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+Manual Mode Configuration Example:
+```sql
+CREATE SHARDING SCALING RULE scaling_manual (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
+
+5. Start up ShardingSphere-Proxy:
 
 ```
 sh bin/start.sh
 ```
 
-4. See the proxy log file `logs/stdout.log`，ensure startup successfully.
+6. Check proxy log `logs/stdout.log`:
+
+```
+[INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
+```
+
+It means `proxy` start up successfully.
 
 ## Shutdown
 
 ```
 sh bin/stop.sh
 ```
-
-## Configuration
-
-The existing configuration items are as follows, we can modify them in `conf/server.yaml`:
-
-| Name           | Description                                                                               | Default value |
-| -------------- | ----------------------------------------------------------------------------------------- | ------------- |
-| blockQueueSize | Queue size of data transmission channel                                                   | 10000         |
-| workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 40            |

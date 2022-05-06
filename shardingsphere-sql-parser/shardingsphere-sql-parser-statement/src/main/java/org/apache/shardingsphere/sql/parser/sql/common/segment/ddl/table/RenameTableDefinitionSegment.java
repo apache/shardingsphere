@@ -35,5 +35,7 @@ public final class RenameTableDefinitionSegment implements AlterDefinitionSegmen
     
     private final int stopIndex;
     
+    private SimpleTableSegment table;
+    
     private SimpleTableSegment renameTable;
 }

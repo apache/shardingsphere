@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -40,17 +40,18 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     private final UseStatement useStatement;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
-        String schemaName = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), backendConnection.getGrantee())) {
-            throw new UnknownDatabaseException(schemaName);
+    public void execute(final ConnectionSession connectionSession) {
+        String databaseName = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
+            connectionSession.setCurrentDatabase(databaseName);
+            return;
         }
-        backendConnection.setCurrentSchema(schemaName);
+        throw new UnknownDatabaseException(databaseName);
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        Optional.ofNullable(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName)).ifPresent(each -> result.addAll(each.getRuleMetaData().getRules()));
+        Optional.ofNullable(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName)).ifPresent(optional -> result.addAll(optional.getRuleMetaData().getRules()));
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }

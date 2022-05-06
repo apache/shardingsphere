@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.migration.common.api.ScalingWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Proxy context.
@@ -64,35 +64,35 @@ public final class ProxyContext {
     }
     
     /**
-     * Check schema exists.
+     * Check database exists.
      *
-     * @param schemaName schema name
-     * @return schema exists or not
+     * @param databaseName database name
+     * @return database exists or not
      */
-    public boolean schemaExists(final String schemaName) {
-        return contextManager.getMetaDataContexts().getAllSchemaNames().contains(schemaName);
+    public boolean databaseExists(final String databaseName) {
+        return contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName);
     }
     
     /**
      * Get ShardingSphere meta data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return ShardingSphere meta data
      */
-    public ShardingSphereMetaData getMetaData(final String schemaName) {
-        if (Strings.isNullOrEmpty(schemaName) || !contextManager.getMetaDataContexts().getAllSchemaNames().contains(schemaName)) {
+    public ShardingSphereMetaData getMetaData(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getMetaData(schemaName);
+        return contextManager.getMetaDataContexts().getMetaData(databaseName);
     }
     
     /**
-     * Get all schema names.
+     * Get all database names.
      *
-     * @return all schema names
+     * @return all database names
      */
-    public Collection<String> getAllSchemaNames() {
-        return contextManager.getMetaDataContexts().getAllSchemaNames();
+    public Collection<String> getAllDatabaseNames() {
+        return contextManager.getMetaDataContexts().getAllDatabaseNames();
     }
     
     /**
@@ -100,8 +100,8 @@ public final class ProxyContext {
      * 
      * @return state context
      */
-    public StateContext getStateContext() {
-        return contextManager.getStateContext();
+    public Optional<StateContext> getStateContext() {
+        return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getInstance().getState());
     }
     
     /**
@@ -113,19 +113,10 @@ public final class ProxyContext {
     // TODO performance enhancement: cache when call init() and pay attention for refresh of rule modification
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
             result.addAll(contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
-    }
-    
-    /**
-     * Check if scaling is enabled.
-     * 
-     * @return true if scaling enabled, false if not
-     */
-    public boolean isScalingEnabled() {
-        return ScalingWorker.isEnabled();
     }
 }

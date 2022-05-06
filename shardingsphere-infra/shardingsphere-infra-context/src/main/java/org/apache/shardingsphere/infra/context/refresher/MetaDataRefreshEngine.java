@@ -17,84 +17,58 @@
 
 package org.apache.shardingsphere.infra.context.refresher;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.refresher.FederationMetaDataRefresher;
-import org.apache.shardingsphere.infra.metadata.MetaDataRefresher;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
-import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapperFactory;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * Meta data refresh engine.
  */
+@RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
     
-    private final ShardingSphereMetaData schemaMetaData;
+    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final FederationSchemaMetaData federationMetaData;
+    private final ShardingSphereMetaData metaData;
+    
+    private final FederationDatabaseMetaData federationMetaData;
+    
+    private final Map<String, OptimizerPlannerContext> optimizerPlanners;
     
     private final ConfigurationProperties props;
-    
-    public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData, final ConfigurationProperties props) {
-        this.schemaMetaData = schemaMetaData;
-        this.federationMetaData = federationMetaData;
-        this.props = props;
-    }
     
     /**
      * Refresh.
      *
-     * @param sqlStatement SQL statement
-     * @param logicDataSourceNames logic data source names
+     * @param sqlStatementContext SQL statement context
+     * @param logicDataSourceNamesSupplier logic data source names supplier
      * @throws SQLException SQL exception
      */
-    public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
-        Collection<MetaDataRefresher> metaDataRefreshers = MetaDataRefresherFactory.newInstance(sqlStatement);
-        if (!metaDataRefreshers.isEmpty()) {
-            refresh(sqlStatement, logicDataSourceNames, metaDataRefreshers);
-        }
-        Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
-        if (sqlStatementEventMapper.isPresent()) {
-            ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
-            // TODO Subscribe and handle DCLStatementEvent
-        }
-    }
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames, final Collection<MetaDataRefresher> refreshers) throws SQLException {
-        for (MetaDataRefresher each : refreshers) {
-            if (each instanceof SchemaRefresher) {
-                ((SchemaRefresher) each).refresh(schemaMetaData, logicDataSourceNames, sqlStatement, props);
-            }
-            if (each instanceof FederationMetaDataRefresher) {
-                ((FederationMetaDataRefresher) each).refresh(federationMetaData, logicDataSourceNames, sqlStatement, schemaMetaData, props);
-            }
+    public void refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
+        Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
+        if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+            return;
         }
-        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(schemaMetaData.getName(), loadActualSchema(schemaMetaData)));
-    }
-    
-    private ShardingSphereSchema loadActualSchema(final ShardingSphereMetaData schemaMetaData) throws SQLException {
-        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getResource().getDataSources());
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(schemaMetaData.getName(), schemaMetaData.getRuleMetaData().getConfigurations());
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(dataSourcesMap, schemaRuleConfigs, props.getProps());
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(dataSourcesMap, schemaRuleConfigs, rules, props.getProps()).load();
-        return schemas.get(schemaMetaData.getName());
+        Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.newInstance(sqlStatementClass);
+        if (schemaRefresher.isPresent()) {
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
+            schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
+        } else {
+            IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
+        }
     }
 }

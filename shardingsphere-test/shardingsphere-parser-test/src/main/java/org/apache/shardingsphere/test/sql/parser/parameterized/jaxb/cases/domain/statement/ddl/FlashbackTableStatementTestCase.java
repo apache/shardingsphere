@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class FlashbackTableStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
     

@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  * Oracle privilege handler.
  */
 public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
-
+    
     private static final String CREATE_USER_SQL = "CREATE USER %s IDENTIFIED BY %s";
-
+    
     private static final String GRANT_ALL_SQL = "GRANT ALL PRIVILEGES TO %s";
     
     private static final String SYS_PRIVILEGE_SQL = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
@@ -60,8 +60,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 grantees.add(new Grantee(resultSet.getString("GRANTEE"), ""));
             }
@@ -90,7 +89,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new NativePrivileges()));
+        users.forEach(each -> result.put(each, new NativePrivileges()));
         fillSysPrivileges(result, dataSource, users);
         fillTablePrivileges(result, dataSource, users);
         return result;
@@ -102,8 +101,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
             while (resultSet.next()) {
                 collectTablePrivileges(privilegeCache, resultSet);
             }
@@ -111,7 +109,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
         fillTablePrivileges(privilegeCache, userPrivilegeMap);
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, 
+    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache,
                                      final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap) {
         for (Entry<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> entry : privilegeCache.entrySet()) {
             for (String db : entry.getValue().keySet()) {
@@ -148,8 +146,7 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))
-        ) {
+                ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
             while (resultSet.next()) {
                 collectSysPrivileges(privilegeCache, resultSet);
             }

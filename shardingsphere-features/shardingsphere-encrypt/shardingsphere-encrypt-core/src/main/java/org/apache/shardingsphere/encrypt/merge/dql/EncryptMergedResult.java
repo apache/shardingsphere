@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
@@ -44,15 +45,16 @@ public final class EncryptMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (!metaData.isQueryWithCipherColumn(columnIndex)) {
+        Optional<EncryptContext> encryptContext = metaData.findEncryptContext(columnIndex);
+        if (!encryptContext.isPresent() || !metaData.isQueryWithCipherColumn(encryptContext.get().getTableName())) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(columnIndex);
+        Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(encryptContext.get().getTableName(), encryptContext.get().getColumnName());
         if (!encryptAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
         Object cipherValue = mergedResult.getValue(columnIndex, Object.class);
-        return null == cipherValue ? null : encryptAlgorithm.get().decrypt(cipherValue);
+        return null == cipherValue ? null : encryptAlgorithm.get().decrypt(cipherValue, encryptContext.get());
     }
     
     @Override

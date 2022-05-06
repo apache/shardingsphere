@@ -16,25 +16,39 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-dialect</artifactId>
-    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
         <module>shardingsphere-sql-parser-sql92</module>
-        <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-postgresql</module>
-        <module>shardingsphere-sql-parser-opengauss</module>
+        <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-oracle</module>
         <module>shardingsphere-sql-parser-sqlserver</module>
+        <module>shardingsphere-sql-parser-opengauss</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

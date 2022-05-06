@@ -17,21 +17,26 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+
+import java.util.Properties;
 
 public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
-    @Override
-    public void init() {
-    }
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "encryptValue";
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
     }
     

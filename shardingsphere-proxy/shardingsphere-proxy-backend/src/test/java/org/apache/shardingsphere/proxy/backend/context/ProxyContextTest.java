@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 public final class ProxyContextTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String SCHEMA_PATTERN = "db_%s";
     
     @Test
     public void assertInit() {
@@ -61,69 +61,70 @@ public final class ProxyContextTest {
         proxyContext.init(contextManager);
         assertThat(proxyContext.getContextManager().getMetaDataContexts(), is(metaDataContexts));
         assertThat(proxyContext.getContextManager().getTransactionContexts(), is(transactionContexts));
+        assertTrue(proxyContext.getStateContext().isPresent());
     }
     
     @Test
-    public void assertSchemaExists() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDatabaseExists() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        assertTrue(ProxyContext.getInstance().schemaExists("schema"));
-        assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
+        assertTrue(ProxyContext.getInstance().databaseExists("db"));
+        assertFalse(ProxyContext.getInstance().databaseExists("db_1"));
     }
     
     @Test(expected = NoDatabaseSelectedException.class)
-    public void assertGetSchemaWithNull() {
+    public void assertGetDatabaseWithNull() {
         assertNull(ProxyContext.getInstance().getMetaData(null));
     }
     
     @Test(expected = NoDatabaseSelectedException.class)
-    public void assertGetSchemaWithEmptyString() {
+    public void assertGetDatabaseWithEmptyString() {
         assertNull(ProxyContext.getInstance().getMetaData(""));
     }
     
     @Test(expected = NoDatabaseSelectedException.class)
-    public void assertGetSchemaWhenNotExisted() throws NoSuchFieldException, IllegalAccessException {
+    public void assertGetDatabaseWhenNotExisted() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        ProxyContext.getInstance().getMetaData("schema1");
+        ProxyContext.getInstance().getMetaData("db1");
     }
     
     @Test
-    public void assertGetSchema() throws NoSuchFieldException, IllegalAccessException {
+    public void assertGetDatabase() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        assertThat(metaDataMap.get("schema"), is(ProxyContext.getInstance().getMetaData("schema")));
+        assertThat(metaDataMap.get("db"), is(ProxyContext.getInstance().getMetaData("db")));
     }
     
     @Test
-    public void assertGetAllSchemaNames() throws NoSuchFieldException, IllegalAccessException {
+    public void assertGetAllDatabaseNames() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
+        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(metaDataMap.keySet()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -137,6 +138,6 @@ public final class ProxyContextTest {
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        return Collections.singletonMap("schema", metaData);
+        return Collections.singletonMap("db", metaData);
     }
 }

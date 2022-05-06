@@ -45,8 +45,7 @@ public final class AgentConfigurationLoader {
      */
     public static AgentConfiguration load() throws IOException {
         File configFile = new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH);
-        YamlAgentConfiguration yamlAgentConfiguration = load(configFile);
-        return YamlAgentConfigurationSwapper.swap(yamlAgentConfiguration);
+        return YamlAgentConfigurationSwapper.swap(load(configFile));
     }
     
     private static YamlAgentConfiguration load(final File yamlFile) throws IOException {

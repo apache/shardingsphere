@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OrderByTo
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
@@ -53,6 +55,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final RouteContext routeContext;
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
@@ -70,6 +74,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
         addSQLTokenGenerator(result, new ShardingInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         return result;
     }
     
@@ -83,6 +88,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         if (toBeAddedSQLTokenGenerator instanceof RouteContextAware) {
             ((RouteContextAware) toBeAddedSQLTokenGenerator).setRouteContext(routeContext);
         }
-        sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        }
     }
 }

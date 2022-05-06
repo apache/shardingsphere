@@ -19,9 +19,22 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * ShardingSphere meta data.
@@ -30,13 +43,47 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String name;
+    private final String databaseName;
     
     private final ShardingSphereResource resource;
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
+    
+    /**
+     * Create ShardingSphere meta data.
+     * 
+     * @param databaseName database name
+     * @param schemas schemas
+     * @param databaseConfig database configuration
+     * @param rules rules
+     * @param defaultDatabaseType default database type
+     * @return ShardingSphere meta data
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig,
+                                                final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
+        ShardingSphereResource resource = createResource(databaseConfig.getDataSources(), defaultDatabaseType);
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
+        return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
+    }
+    
+    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap, final DatabaseType defaultDatabaseType) throws SQLException {
+        DatabaseType databaseType = dataSourceMap.isEmpty() ? defaultDatabaseType : DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, dataSourceMap);
+        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
+        return new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, cachedDatabaseMetaData, databaseType);
+    }
+    
+    private static Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return Optional.empty();
+        }
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
+        }
+    }
     
     /**
      * Judge whether is completed.
@@ -54,5 +101,15 @@ public final class ShardingSphereMetaData {
      */
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
+    }
+    
+    /**
+     * Get schema by name.
+     * 
+     * @param schemaName schema name
+     * @return ShardingSphereSchema schema
+     */
+    public ShardingSphereSchema getSchemaByName(final String schemaName) {
+        return schemas.get(schemaName);
     }
 }

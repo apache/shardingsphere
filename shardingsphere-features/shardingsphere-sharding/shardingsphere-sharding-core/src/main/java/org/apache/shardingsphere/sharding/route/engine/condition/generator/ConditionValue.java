@@ -48,10 +48,12 @@ public final class ConditionValue {
     
     private Comparable<?> getValue(final ParameterMarkerExpressionSegment expressionSegment, final List<Object> parameters) {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
-        Preconditions.checkArgument(parameterMarkerIndex < parameters.size(), "Parameter marker expression must have corresponding parameter value.");
-        Object result = parameters.get(parameterMarkerIndex);
-        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
-        return (Comparable<?>) result;
+        if (parameterMarkerIndex < parameters.size()) {
+            Object result = parameters.get(parameterMarkerIndex);
+            Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+            return (Comparable<?>) result;
+        }
+        return null;
     }
     
     private Comparable<?> getValue(final LiteralExpressionSegment expressionSegment) {

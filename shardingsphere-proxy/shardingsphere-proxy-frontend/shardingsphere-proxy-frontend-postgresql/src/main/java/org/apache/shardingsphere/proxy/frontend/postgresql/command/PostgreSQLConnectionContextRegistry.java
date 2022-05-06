@@ -45,7 +45,7 @@ public final class PostgreSQLConnectionContextRegistry {
     /**
      * Get PostgreSQL connection context.
      *
-     * @param connectionId backend connection id
+     * @param connectionId connection id
      * @return PostgreSQL connection context
      */
     public PostgreSQLConnectionContext get(final int connectionId) {
@@ -55,7 +55,7 @@ public final class PostgreSQLConnectionContextRegistry {
     /**
      * Remove PostgreSQL connection context.
      *
-     * @param connectionId backend connection id
+     * @param connectionId connection id
      * @return Removed PostgreSQL connection context
      */
     public PostgreSQLConnectionContext remove(final int connectionId) {

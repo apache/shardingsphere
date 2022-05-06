@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 setShardingHintDatabaseValue
     : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
@@ -37,10 +37,6 @@ showShardingHintStatus
 
 clearShardingHint
     : CLEAR SHARDING HINT
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 shardingValue

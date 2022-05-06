@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DMLStatement;
+parser grammar DMLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import BaseRule;
+
+options {tokenVocab = ModeLexer;}
 
 insert
     : withClause? INSERT INTO insertTarget insertRest optOnConflict? returningClause?
@@ -194,7 +196,7 @@ forLockingItem
 
 nowaitOrSkip
     : NOWAIT
-    | 'skip' LOCKED
+    | APOSTROPHE_SKIP LOCKED
     ;
 
 forLockingStrength
@@ -211,10 +213,6 @@ lockedRelsList
 qualifiedNameList
     : qualifiedName
     | qualifiedNameList COMMA_ qualifiedName
-    ;
-
-qualifiedName
-    : colId | colId indirection
     ;
 
 selectLimit

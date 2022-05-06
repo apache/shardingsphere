@@ -19,12 +19,10 @@ package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandlerFactory;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -36,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -50,24 +48,23 @@ import static org.mockito.Mockito.when;
 
 public final class PostgreSQLPrivilegeHandlerTest {
     
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
-    
     @Test
     public void assertDiff() throws SQLException {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("postgres2", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "PostgreSQL", new Properties()).diff(newUsers, dataSource));
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("PostgreSQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        assertDiffUsers(storagePrivilegeHandler.get().diff(newUsers, dataSource));
     }
     
     @Test
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "PostgreSQL", new Properties()).create(users, dataSource);
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("PostgreSQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        storagePrivilegeHandler.get().create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
     }
     
@@ -75,7 +72,9 @@ public final class PostgreSQLPrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "PostgreSQL", new Properties()).grantAll(users, dataSource);
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("PostgreSQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        storagePrivilegeHandler.get().grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
@@ -83,7 +82,9 @@ public final class PostgreSQLPrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "PostgreSQL", new Properties()).load(users, dataSource));
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("PostgreSQL");
+        assertTrue(storagePrivilegeHandler.isPresent());
+        assertPrivileges(storagePrivilegeHandler.get().load(users, dataSource));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
@@ -129,7 +130,7 @@ public final class PostgreSQLPrivilegeHandlerTest {
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         String diffUsersSQL = "SELECT * FROM pg_roles WHERE rolname IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
         when(connection.createStatement()).thenReturn(statement);
         when(result.getConnection()).thenReturn(connection);
@@ -140,7 +141,7 @@ public final class PostgreSQLPrivilegeHandlerTest {
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable FROM information_schema.table_privileges WHERE grantee IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
         ResultSet rolePrivilegeResultSet = mockRolePrivilegeResultSet();
         String rolePrivilegeSql = "SELECT * FROM pg_roles WHERE rolname IN (%s)";

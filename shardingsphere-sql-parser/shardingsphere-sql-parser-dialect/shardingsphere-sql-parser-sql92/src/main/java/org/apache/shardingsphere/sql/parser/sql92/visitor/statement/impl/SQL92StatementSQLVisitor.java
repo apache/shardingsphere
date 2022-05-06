@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -83,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -112,12 +114,14 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     private int currentParameterIndex;
     
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    
     public SQL92StatementSQLVisitor(final Properties props) {
     }
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -355,7 +359,11 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
+                    parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -374,7 +382,10 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
             return new SubquerySegment(startIndex, stopIndex, (SQL92SelectStatement) visit(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -412,7 +423,8 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+                ? createAggregationSegment(ctx, aggregationType)
+                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -443,7 +455,15 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        ASTNode exprSegment = visit(ctx.expr());
+        if (exprSegment instanceof ColumnSegment) {
+            result.getParameters().add((ColumnSegment) exprSegment);
+        } else if (exprSegment instanceof LiteralExpressionSegment) {
+            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        }
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
     }
     
     @Override
@@ -521,7 +541,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     /**
      * Get original text.
-     * 
+     *
      * @param ctx context
      * @return original text
      */

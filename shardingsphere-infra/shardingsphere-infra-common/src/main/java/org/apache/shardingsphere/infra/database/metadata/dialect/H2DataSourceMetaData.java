@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,9 +35,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final int DEFAULT_PORT = -1;
     
     private static final String DEFAULT_HOST_NAME = "";
-
+    
     private static final String DEFAULT_H2_MODEL = "";
-
+    
     private static final String MODEL_MEM = "mem";
     
     private static final String MODEL_PWD = "~";
@@ -44,13 +45,13 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final String MODEL_FILE = "file:";
     
     private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
-            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostName>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
-    private final String hostName;
-
+    private final String hostname;
+    
     private final String model;
-
+    
     private final int port;
     
     private final String catalog;
@@ -66,10 +67,10 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         String catalogFromMatcher = matcher.group("catalog");
         String nameFromMatcher = matcher.group("name");
         String fileNameFromMatcher = matcher.group("fileName");
-        String hostNameFromMatcher = matcher.group("hostName");
+        String hostnameFromMatcher = matcher.group("hostname");
         boolean setPort = null != portFromMatcher && !portFromMatcher.isEmpty();
         String name = null == nameFromMatcher ? fileNameFromMatcher : nameFromMatcher;
-        hostName = null == hostNameFromMatcher ? DEFAULT_HOST_NAME : hostNameFromMatcher;
+        hostname = null == hostnameFromMatcher ? DEFAULT_HOST_NAME : hostnameFromMatcher;
         port = setPort ? Integer.parseInt(portFromMatcher) : DEFAULT_PORT;
         catalog = null == catalogFromMatcher ? name : catalogFromMatcher;
         schema = null;
@@ -84,6 +85,16 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     }
     
     @Override
+    public Properties getQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         if (!(dataSourceMetaData instanceof H2DataSourceMetaData)) {
             return false;
@@ -91,7 +102,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (!isSameModel(getModel(), ((H2DataSourceMetaData) dataSourceMetaData).getModel())) {
             return false;
         }
-        return DEFAULT_HOST_NAME.equals(hostName) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
+        return DEFAULT_HOST_NAME.equals(hostname) && DEFAULT_PORT == port ? Objects.equals(schema, dataSourceMetaData.getSchema())
                 : DataSourceMetaData.super.isInSameDatabaseInstance(dataSourceMetaData);
     }
     

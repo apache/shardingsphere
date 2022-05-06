@@ -1754,3 +1754,159 @@ WITH_RECOMMENDATIONS
 BATCH_SIZE
     : B A T C H UL_ S I Z E
     ;
+
+SETUSER
+    : S E T U S E R
+    ;
+
+NORESET
+    : N O R E S E T
+    ;
+
+DEFAULT_SCHEMA
+    : D E F A U L T UL_ S C H E M A
+    ;
+
+ALLOW_ENCRYPTED_VALUE_MODIFICATIONS
+    : A L L O W UL_ E N C R Y P T E D UL_ V A L U E UL_ M O D I F I C A T I O N S
+    ;
+
+OLD_PASSWORD
+    : O L D UL_ P A S S W O R D
+    ;
+
+PROVIDER
+    : P R O V I D E R
+    ;
+
+SID
+    : S I D
+    ;
+
+UNCOMMITTED
+    : U N C O M M I T T E D
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
+STOPLIST
+    : S T O P L I S T
+    ;
+
+SEARCH
+    : S E A R C H
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+LIST
+    : L I S T
+    ;
+
+SEND
+    : S E N D
+    ;
+
+MEMBER
+    : M E M B E R
+    ;
+
+HASHED
+    : H A S H E D
+    ;
+
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
+CHECK_EXPIRATION
+    : C H E C K UL_ E X P I R A T I O N
+    ;
+
+CHECK_POLICY
+    : C H E C K UL_ P O L I C Y
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+REVERT
+    : R E V E R T
+    ;
+
+COOKIE
+    : C O O K I E
+    ;
+
+BROWSE
+    : B R O W S E
+    ;
+
+RAW
+    : R A W
+    ;
+
+XMLDATA
+    : X M L D A T A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+ELEMENTS
+    : E L E M E N T S
+    ;
+
+XSINIL
+    : X S I N I L
+    ;
+
+ABSENT
+    : A B S E N T
+    ;
+
+EXPLICIT
+    : E X P L I C I T
+    ;
+
+PATH
+    : P A T H
+    ;
+
+BASE64
+    : B A S E '6' '4'
+    ;
+
+ROOT
+    : R O O T
+    ;
+
+JSON
+    : J S O N
+    ;
+
+INCLUDE_NULL_VALUES
+    : I N C L U D E UL_ N U L L UL_ V A L U E S
+    ;
+
+WITHOUT_ARRAY_WRAPPER
+    : W I T H O U T UL_ A R R A Y UL_ W R A P P E R
+    ;
+
+XMLNAMESPACES
+    : X M L N A M E S P A C E S
+    ;

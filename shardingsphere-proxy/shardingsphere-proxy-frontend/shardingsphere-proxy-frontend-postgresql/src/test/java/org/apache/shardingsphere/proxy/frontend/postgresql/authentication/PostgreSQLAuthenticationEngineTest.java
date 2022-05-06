@@ -28,19 +28,21 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -59,6 +61,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -130,6 +133,15 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertLogin("wrong" + password);
     }
     
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void assertGetIdentifierPacket() {
+        Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
+        method.setAccessible(true);
+        PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);
+        assertThat(packet, instanceOf(PostgreSQLMD5PasswordAuthenticationPacket.class));
+    }
+    
     private void assertLogin(final String inputPassword) {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -142,9 +154,9 @@ public final class PostgreSQLAuthenticationEngineTest {
         AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
         assertFalse(actual.isFinished());
         assertThat(actual.getUsername(), is(username));
-        ArgumentCaptor<PostgreSQLAuthenticationMD5PasswordPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLAuthenticationMD5PasswordPacket.class);
+        ArgumentCaptor<PostgreSQLMD5PasswordAuthenticationPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLMD5PasswordAuthenticationPacket.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        PostgreSQLAuthenticationMD5PasswordPacket md5PasswordPacket = argumentCaptor.getValue();
+        PostgreSQLMD5PasswordAuthenticationPacket md5PasswordPacket = argumentCaptor.getValue();
         byte[] md5Salt = getMd5Salt(md5PasswordPacket);
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         String md5Digest = md5Encode(username, inputPassword, md5Salt);
@@ -165,26 +177,26 @@ public final class PostgreSQLAuthenticationEngineTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), new LinkedHashMap<>(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(authorityRuleConfiguration, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private byte[] getMd5Salt(final PostgreSQLAuthenticationMD5PasswordPacket md5PasswordPacket) {
-        Field field = PostgreSQLAuthenticationMD5PasswordPacket.class.getDeclaredField("md5Salt");
+    private byte[] getMd5Salt(final PostgreSQLMD5PasswordAuthenticationPacket md5PasswordPacket) {
+        Field field = PostgreSQLMD5PasswordAuthenticationPacket.class.getDeclaredField("md5Salt");
         field.setAccessible(true);
         return (byte[]) field.get(md5PasswordPacket);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private String md5Encode(final String username, final String password, final byte[] md5Salt) {
-        Method method = PostgreSQLAuthenticationHandler.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
+        Method method = PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
         method.setAccessible(true);
-        return (String) method.invoke(PostgreSQLAuthenticationHandler.class, username, password, md5Salt);
+        return (String) method.invoke(new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

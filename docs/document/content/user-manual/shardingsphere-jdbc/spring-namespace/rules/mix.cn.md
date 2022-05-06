@@ -1,6 +1,6 @@
 +++
 title = "混合规则"
-weight = 6
+weight = 7
 +++
 
 混合配置的规则项之间的叠加使用是通过数据源名称和表名称关联的。
@@ -56,8 +56,18 @@ weight = 6
     
     <!-- 主从规则配置 -->
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-        <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+        <readwrite-splitting:data-source-rule id="ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
+            <props>
+                <prop key="write-data-source-name">write_ds0</prop>
+                <prop key="read-data-source-names">read_ds0_0, read_ds0_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
+        <readwrite-splitting:data-source-rule id="ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
+            <props>
+                <prop key="write-data-source-name">write_ds1</prop>
+                <prop key="read-data-source-names">read_ds1_0, read_ds1_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
     <!-- 分片策略配置 -->
@@ -107,7 +117,7 @@ weight = 6
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_user">
-            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
             <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
         </encrypt:table>
     </encrypt:rule>

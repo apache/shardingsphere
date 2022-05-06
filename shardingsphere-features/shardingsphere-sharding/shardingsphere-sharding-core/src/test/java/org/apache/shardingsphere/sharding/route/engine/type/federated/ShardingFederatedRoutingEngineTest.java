@@ -33,6 +33,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEngineTest {
@@ -127,10 +128,10 @@ public final class ShardingFederatedRoutingEngineTest extends AbstractRoutingEng
     public void assertRoutingForNonLogicTable() {
         ShardingFederatedRoutingEngine complexRoutingEngine = createShardingFederatedRoutingEngine(Collections.emptyList());
         RouteContext actual = complexRoutingEngine.route(mock(ShardingRule.class));
-        assertThat(actual.getOriginalDataNodes().size(), is(0));
-        assertThat(actual.getRouteUnits().size(), is(0));
-        assertThat(actual.getRouteStageContexts().size(), is(0));
-        assertThat(actual.isFederated(), is(true));
+        assertTrue(actual.getOriginalDataNodes().isEmpty());
+        assertTrue(actual.getRouteUnits().isEmpty());
+        assertTrue(actual.getRouteStageContexts().isEmpty());
+        assertTrue(actual.isFederated());
     }
     
     @Test

@@ -69,9 +69,18 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     void begin();
     
     /**
-     * Commit transaction.
+     * Begin transaction with given timeout.
+     *
+     * @param timeout Transaction timeout in SECONDS
      */
-    void commit();
+    void begin(int timeout);
+    
+    /**
+     * Commit transaction.
+     *
+     * @param rollbackOnly rollback only
+     */
+    void commit(boolean rollbackOnly);
     
     /**
      * Rollback transaction.

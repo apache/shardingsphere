@@ -20,14 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,9 +66,9 @@ public final class PostgreSQLComQueryExecutorTest {
     @Before
     public void setUp() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
-        BackendConnection backendConnection = mock(BackendConnection.class);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(queryPacket.getSql()).thenReturn("");
-        queryExecutor = new PostgreSQLComQueryExecutor(connectionContext, queryPacket, backendConnection);
+        queryExecutor = new PostgreSQLComQueryExecutor(connectionContext, queryPacket, connectionSession);
         setMockFieldIntoExecutor(queryExecutor);
     }
     
@@ -77,9 +76,6 @@ public final class PostgreSQLComQueryExecutorTest {
     private void setMockFieldIntoExecutor(final PostgreSQLComQueryExecutor executor) {
         Field field = PostgreSQLComQueryExecutor.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(executor, textProtocolBackendHandler);
     }
     

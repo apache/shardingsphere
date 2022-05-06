@@ -34,19 +34,12 @@
         <assertion expected-data-file="preview_sql.xml"/>
     </test-case>
     
+    <test-case sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
+        <assertion expected-data-file="preview_federation_select.xml"/>
+    </test-case>
+    
     <test-case sql="show sharding hint status">
         <assertion expected-data-file="default_sharding_hint.xml"/>
-    </test-case>
-    
-    <test-case sql="show readwrite_splitting hint status">
-        <assertion expected-data-file="default_readwrite_splitting_hint.xml"/>
-    </test-case>
-    
-    <test-case sql="show readwrite_splitting hint status">
-        <assertion expected-data-file="set_readwrite_splitting_hint.xml">
-            <initial-sql sql="set readwrite_splitting hint source = write"/>
-            <destroy-sql sql="clear readwrite_splitting hint"/>
-        </assertion>
     </test-case>
     
     <test-case sql="show sharding hint status">
@@ -63,11 +56,21 @@
         </assertion>
     </test-case>
     
-    
     <test-case sql="show sharding hint status">
         <assertion expected-data-file="add_table_value_hint.xml">
             <initial-sql sql="add sharding hint table_value t_user_item= 100"/>
             <destroy-sql sql="clear sharding hint"/>
+        </assertion>
+    </test-case>
+    
+    <test-case sql="show readwrite_splitting hint status">
+        <assertion expected-data-file="default_readwrite_splitting_hint.xml"/>
+    </test-case>
+    
+    <test-case sql="show readwrite_splitting hint status">
+        <assertion expected-data-file="set_readwrite_splitting_hint.xml">
+            <initial-sql sql="set readwrite_splitting hint source = write"/>
+            <destroy-sql sql="clear readwrite_splitting hint"/>
         </assertion>
     </test-case>
 </integration-test-cases>

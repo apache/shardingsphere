@@ -10,9 +10,11 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
-      writeDataSourceName: # 写库数据源名称
-      readDataSourceNames: 
-        - <read-data_source-name> (+) # 读库数据源名称
+        type: # 读写分离类型，比如：Static，Dynamic
+        props:
+          auto-aware-data-source-name: # 自动发现数据源名称（与数据库发现配合使用）
+          write-data-source-name: # 写库数据源名称
+          read-data-source-names: # 读库数据源名称，多个从数据源用逗号分隔
       loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置

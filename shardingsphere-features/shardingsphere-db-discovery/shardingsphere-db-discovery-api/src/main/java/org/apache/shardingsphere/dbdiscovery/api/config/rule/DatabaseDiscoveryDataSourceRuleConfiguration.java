@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 public final class DatabaseDiscoveryDataSourceRuleConfiguration {
     
-    private final String name;
+    private final String groupName;
     
     private final List<String> dataSourceNames;
     

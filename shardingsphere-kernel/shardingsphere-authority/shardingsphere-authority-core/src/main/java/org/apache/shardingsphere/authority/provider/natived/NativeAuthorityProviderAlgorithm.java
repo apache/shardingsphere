@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeBuilder;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -36,18 +36,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @deprecated This algorithm will be removed in a future version.
 */
 @Deprecated
-public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class NativeAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users));
+    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
     }
     
     @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users));
+    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
     }
     
     @Override

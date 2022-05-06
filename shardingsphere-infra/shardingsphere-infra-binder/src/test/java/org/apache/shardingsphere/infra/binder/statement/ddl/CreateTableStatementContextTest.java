@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -44,46 +47,49 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CreateTableStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLCreateTableStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLCreateTableStatement.class));
     }
-
+    
     @Test
     public void assertOracleNewInstance() {
         assertNewInstance(mock(OracleCreateTableStatement.class));
     }
-
+    
     @Test
     public void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerCreateTableStatement.class));
     }
-
+    
     @Test
     public void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92CreateTableStatement.class));
     }
-
+    
     private void assertNewInstance(final CreateTableStatement createTableStatement) {
         CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(createTableStatement.getTable()).thenReturn(table);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
+        assertThat(actual, instanceOf(ConstraintAvailable.class));
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(Collections.singletonList(table));
         when(createTableStatement.getColumnDefinitions()).thenReturn(Collections.singletonList(columnDefinition));
         ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
+        when(constraintDefinition.getConstraintName()).thenReturn(Optional.of(new ConstraintSegment(0, 0, new IdentifierValue("fk_1"))));
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
         when(createTableStatement.getConstraintDefinitions()).thenReturn(Collections.singletonList(constraintDefinition));
         assertThat(actual.getSqlStatement(), is(createTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_1", "tbl_1")));
-        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IdentifierValue("index_1"))));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
+        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_1")))));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
+        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("fk_1")));
     }
 }

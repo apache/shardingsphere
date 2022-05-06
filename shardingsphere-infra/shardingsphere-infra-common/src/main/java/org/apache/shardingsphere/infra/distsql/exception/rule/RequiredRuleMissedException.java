@@ -26,11 +26,23 @@ public final class RequiredRuleMissedException extends RuleDefinitionViolationEx
     
     private static final long serialVersionUID = -8464574460917965546L;
     
-    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
-        super(1112, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    public RequiredRuleMissedException(final String ruleType) {
+        super(1112, String.format("%s rule does not exist", ruleType));
     }
     
-    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1112, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
+    public RequiredRuleMissedException(final String ruleType, final String databaseName) {
+        super(1112, String.format("%s rule does not exist in database `%s`.", ruleType, databaseName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final Collection<String> ruleNames) {
+        super(1112, String.format("%s rules `%s` do not exist.", ruleType, ruleNames));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String databaseName, final String ruleName) {
+        super(1112, String.format("%s rule `%s` do not exist in database `%s`.", ruleType, ruleName, databaseName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
+        super(1112, String.format("%s rules `%s` do not exist in database `%s`.", ruleType, ruleNames, databaseName));
     }
 }

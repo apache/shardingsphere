@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
 
 /**
  * Column value match shadow algorithm.
@@ -26,14 +30,27 @@ public final class ColumnValueMatchShadowAlgorithm extends AbstractColumnMatchSh
     
     private static final String VALUE_PROPS_KEY = "value";
     
+    @Getter
+    @Setter
+    private Properties props;
+    
+    private String shadowValue;
+    
     @Override
-    protected void checkProps() {
-        Preconditions.checkNotNull(getProps().get(VALUE_PROPS_KEY), "Column value match shadow algorithm value cannot be null.");
+    public void init(final Properties props) {
+        super.init(props);
+        shadowValue = getShadowValue(props);
+    }
+    
+    private String getShadowValue(final Properties props) {
+        String result = String.valueOf(props.get(VALUE_PROPS_KEY));
+        Preconditions.checkNotNull(result, "Column value match shadow algorithm value cannot be null.");
+        return result;
     }
     
     @Override
     protected boolean isMatchValue(final Comparable<?> value) {
-        return String.valueOf(getProps().get(VALUE_PROPS_KEY)).equals(String.valueOf(value));
+        return shadowValue.equals(String.valueOf(value));
     }
     
     @Override

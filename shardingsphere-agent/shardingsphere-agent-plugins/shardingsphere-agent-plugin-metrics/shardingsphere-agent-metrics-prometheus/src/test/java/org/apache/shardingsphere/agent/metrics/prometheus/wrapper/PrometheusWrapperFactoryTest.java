@@ -17,27 +17,19 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.junit.Test;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public final class PrometheusWrapperFactoryTest {
     
     @Test
     public void assertCreate() {
         PrometheusWrapperFactory factory = new PrometheusWrapperFactory();
-        Optional<MetricsWrapper> counterWrapper = factory.create("a");
-        assertNotNull(counterWrapper.get());
-        Optional<MetricsWrapper> gaugeWrapper = factory.create("b");
-        assertNotNull(gaugeWrapper.get());
-        Optional<MetricsWrapper> histogramWrapper1 = factory.create("c");
-        assertNotNull(histogramWrapper1.get());
-        Optional<MetricsWrapper> histogramWrapper2 = factory.create("d");
-        assertNotNull(histogramWrapper2.get());
-        Optional<MetricsWrapper> summaryWrapper = factory.create("e");
-        assertNotNull(summaryWrapper.get());
+        assertTrue(factory.create("a").isPresent());
+        assertTrue(factory.create("b").isPresent());
+        assertTrue(factory.create("c").isPresent());
+        assertTrue(factory.create("d").isPresent());
+        assertTrue(factory.create("e").isPresent());
     }
 }

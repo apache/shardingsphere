@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.AfterClass;
@@ -31,8 +31,6 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,11 +52,6 @@ public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
         Statement statement = mock(Statement.class);
         new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
         verify(statement).setFetchSize(1);
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().getType(), is("PostgreSQL"));
     }
     
     @AfterClass

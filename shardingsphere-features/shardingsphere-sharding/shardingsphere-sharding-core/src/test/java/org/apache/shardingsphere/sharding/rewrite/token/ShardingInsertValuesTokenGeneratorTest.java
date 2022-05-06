@@ -26,12 +26,10 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -43,42 +41,32 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingInsertValuesTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        ShardingInsertValuesTokenGenerator shardingInsertValuesTokenGenerator = new ShardingInsertValuesTokenGenerator();
-        assertFalse(shardingInsertValuesTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
+        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(Boolean.TRUE);
-        assertFalse(shardingInsertValuesTokenGenerator.isGenerateSQLToken(insertStatementContext));
+        assertFalse(generator.isGenerateSQLToken(insertStatementContext));
         when(insertStatementContext.getSqlStatement().getValues().isEmpty()).thenReturn(Boolean.FALSE);
-        assertTrue(shardingInsertValuesTokenGenerator.isGenerateSQLToken(insertStatementContext));
+        assertTrue(generator.isGenerateSQLToken(insertStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
-        List<ExpressionSegment> expressionSegmentList = new LinkedList<>();
-        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(1, 2, expressionSegmentList);
-        Collection<InsertValuesSegment> insertValuesSegmentCollection = new LinkedList<>();
-        insertValuesSegmentCollection.add(insertValuesSegment);
-        InsertValueContext insertValueContext = new InsertValueContext(expressionSegmentList, null, 4);
-        List<InsertValueContext> insertValueContextList = new LinkedList<>();
-        insertValueContextList.add(insertValueContext);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(insertValueContextList);
-        when(insertStatementContext.getSqlStatement().getValues()).thenReturn(insertValuesSegmentCollection);
-        ShardingInsertValuesTokenGenerator shardingInsertValuesTokenGenerator = new ShardingInsertValuesTokenGenerator();
-        InsertValuesToken insertValuesToken = shardingInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
+        when(insertStatementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));
+        ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
+        InsertValuesToken insertValuesToken = generator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().size(), is(1));
-        Collection<DataNode> dataNodes = new LinkedList<>();
-        final String testDatasource = "testDatasource";
-        final String testTable = "testTable";
-        dataNodes.add(new DataNode(testDatasource, testTable));
+        String testDatasource = "testDatasource";
+        String testTable = "testTable";
         RouteContext routeContext = new RouteContext();
-        routeContext.getOriginalDataNodes().add(dataNodes);
-        shardingInsertValuesTokenGenerator.setRouteContext(routeContext);
-        insertValuesToken = shardingInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
+        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode(testDatasource, testTable)));
+        generator.setRouteContext(routeContext);
+        insertValuesToken = generator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().get(0), instanceOf(ShardingInsertValue.class));
         ShardingInsertValue generatedShardingInsertValue = (ShardingInsertValue) insertValuesToken.getInsertValues().get(0);
         assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getDataSourceName(), is(testDatasource));

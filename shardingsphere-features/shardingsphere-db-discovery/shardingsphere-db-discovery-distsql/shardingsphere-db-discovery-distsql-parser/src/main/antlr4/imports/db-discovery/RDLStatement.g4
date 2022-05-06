@@ -17,22 +17,62 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
     ;
 
 alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
     ;
 
 dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE ruleName (COMMA ruleName)*
+    : DROP DB_DISCOVERY RULE existClause? ruleName (COMMA ruleName)*
+    ;
+
+createDatabaseDiscoveryType
+    : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
+alterDatabaseDiscoveryType
+    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
+    ;
+
+dropDatabaseDiscoveryType
+    : DROP DB_DISCOVERY TYPE existClause? discoveryTypeName (COMMA discoveryTypeName)*
+    ;
+
+createDatabaseDiscoveryHeartbeat
+    : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+
+alterDatabaseDiscoveryHeartbeat
+    : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
+    ;
+
+dropDatabaseDiscoveryHeartbeat
+    : DROP DB_DISCOVERY HEARTBEAT existClause? discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    ;
+
+databaseDiscoveryRule
+    : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
     ;
 
 databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA algorithmDefinition RP
+    : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
+    ;
+
+databaseDiscoveryRuleConstruction
+    : ruleName LP resources COMMA TYPE EQ discoveryTypeName COMMA HEARTBEAT EQ discoveryHeartbeatName RP
+    ;
+
+databaseDiscoveryTypeDefinition
+    : discoveryTypeName LP typeDefinition RP
+    ;
+
+heartbeatDefinition
+    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
     ;
 
 ruleName
@@ -47,18 +87,30 @@ resourceName
     : IDENTIFIER
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+typeDefinition
+    : TYPE LP NAME EQ discoveryTypeName (COMMA PROPERTIES LP properties RP)? RP
     ;
 
-algorithmName
+discoveryHeartbeat
+    : HEARTBEAT LP PROPERTIES LP properties RP RP
+    ;
+
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+discoveryTypeName
     : IDENTIFIER
     ;
 
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
+discoveryHeartbeatName
+    : IDENTIFIER
     ;
 
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+existClause
+    : IF EXISTS
     ;

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -41,11 +42,11 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Propert
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Collections.singleton(Type.UPDATED);
+        return Arrays.asList(Type.UPDATED, Type.ADDED);
     }
     
     @Override
     public Optional<PropertiesChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
+        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
     }
 }

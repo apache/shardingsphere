@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -70,7 +70,7 @@ public final class JDBCBackendDataSourceTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -80,7 +80,7 @@ public final class JDBCBackendDataSourceTest {
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getName()).thenReturn("schema");
+        when(metaData.getDatabaseName()).thenReturn("schema");
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", metaData);
@@ -137,7 +137,7 @@ public final class JDBCBackendDataSourceTest {
         private final String datasourceName;
         
         private final int connectionSize;
-    
+        
         private final ConnectionMode connectionMode;
         
         @Override

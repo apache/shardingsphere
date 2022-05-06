@@ -28,7 +28,7 @@ import java.sql.Connection;
 public final class LockDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
+    public Connection getConnection(final String databaseName, final ContextManager contextManager) {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");
     }

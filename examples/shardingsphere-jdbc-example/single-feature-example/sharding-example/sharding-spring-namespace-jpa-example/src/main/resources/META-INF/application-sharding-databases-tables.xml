@@ -101,9 +101,6 @@
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemTableAlgorithm" />
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
     </sharding:key-generate-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />

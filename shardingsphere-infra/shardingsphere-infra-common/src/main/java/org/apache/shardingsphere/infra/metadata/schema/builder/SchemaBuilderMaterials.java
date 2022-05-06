@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -41,4 +41,6 @@ public final class SchemaBuilderMaterials {
     private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
+    
+    private final String defaultSchemaName;
 }

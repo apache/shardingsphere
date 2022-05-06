@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.advanced;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 

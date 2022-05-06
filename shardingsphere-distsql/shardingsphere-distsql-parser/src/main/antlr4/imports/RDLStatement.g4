@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 addResource
     : ADD RESOURCE dataSource (COMMA dataSource)*
@@ -28,7 +28,7 @@ alterResource
     ;
 
 dropResource
-    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
+    : DROP RESOURCE existClause? IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 createDefaultSingleTableRule
@@ -40,11 +40,11 @@ alterDefaultSingleTableRule
     ;
 
 dropDefaultSingleTableRule
-    : DROP DEFAULT SINGLE TABLE RULE
+    : DROP  DEFAULT SINGLE TABLE RULE existClause?
     ;
 
 dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? propertiesDefinition? RP
     ;
 
 dataSourceName
@@ -52,23 +52,15 @@ dataSourceName
     ;
 
 simpleSource
-    : HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName
+    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
     ;
 
 urlSource
     : URL EQ url
     ;
 
-hostName
+hostname
     : IDENTIFIER | ip
-    ;
-
-ip
-    : NUMBER+
-    ;
-
-port
-    : INT
     ;
 
 dbName
@@ -88,17 +80,13 @@ password
     | TILDE | NOT | AT | POUND | DL | MOD | CARET 
     | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
     | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
-    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
-    ;
-
-poolProperties
-    : poolProperty (COMMA poolProperty)*
-    ;
-
-poolProperty
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
+    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR | PASSWORD                    
     ;
 
 ignoreSingleTables
     : IGNORE SINGLE TABLES
+    ;
+
+existClause
+    : IF EXISTS
     ;

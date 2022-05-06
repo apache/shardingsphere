@@ -59,7 +59,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1000" start-index="98" stop-index="101" />
-                        <parameter-marker-expression value="0" start-index="98" stop-index="98" />
+                        <parameter-marker-expression parameter-index="0" start-index="98" stop-index="98" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -108,7 +108,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1000" start-index="122" stop-index="125" />
-                        <parameter-marker-expression value="0" start-index="122" stop-index="122" />
+                        <parameter-marker-expression parameter-index="0" start-index="122" stop-index="122" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -143,7 +143,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1000" start-index="81" stop-index="84" />
-                        <parameter-marker-expression value="0" start-index="81" stop-index="81" />
+                        <parameter-marker-expression parameter-index="0" start-index="81" stop-index="81" />
                     </right>
                 </binary-operation-expression>
             </expr>

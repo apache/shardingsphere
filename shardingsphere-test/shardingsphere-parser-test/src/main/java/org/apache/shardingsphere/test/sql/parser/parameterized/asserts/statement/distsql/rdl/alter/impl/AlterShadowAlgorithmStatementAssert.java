@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNull;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterShadowAlgorithmStatementAssert {
-
+    
     /**
      * Assert alter shadow algorithm statement is correct with expected parser result.
      *
@@ -56,7 +56,6 @@ public final class AlterShadowAlgorithmStatementAssert {
     }
     
     private static void assertIsAlgorithmsSegment(final SQLCaseAssertContext assertContext, final ShadowAlgorithmSegment actual, final ExpectedShadowAlgorithm expected) {
-        assertNotNull(actual);
         AlgorithmAssert.assertIs(assertContext, actual.getAlgorithmSegment(), expected.getAlgorithmSegment());
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
@@ -27,8 +25,9 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,8 +37,6 @@ import java.util.Optional;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final ProxyContext PROXY_SCHEMA_CONTEXTS = ProxyContext.getInstance();
-
     private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     
     /**
@@ -54,31 +51,22 @@ public final class MySQLAuthenticationHandler {
     public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
         Grantee grantee = new Grantee(username, hostname);
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getRules(databaseName);
-        if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (byte[]) b), authenticationResponse, rules)) {
+        MySQLAuthenticator authenticator = getAuthenticator(username, hostname);
+        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse, rules)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
-
-    private boolean isPasswordRight(final ShardingSphereUser user, final byte[] authentication) {
-        return Strings.isNullOrEmpty(user.getPassword()) || Arrays.equals(getAuthCipherBytes(user.getPassword()), authentication);
-    }
-
-    private byte[] getAuthCipherBytes(final String password) {
-        byte[] sha1Password = DigestUtils.sha1(password);
-        byte[] doubleSha1Password = DigestUtils.sha1(sha1Password);
-        byte[] concatBytes = new byte[authPluginData.getAuthenticationPluginData().length + doubleSha1Password.length];
-        System.arraycopy(authPluginData.getAuthenticationPluginData(), 0, concatBytes, 0, authPluginData.getAuthenticationPluginData().length);
-        System.arraycopy(doubleSha1Password, 0, concatBytes, authPluginData.getAuthenticationPluginData().length, doubleSha1Password.length);
-        byte[] sha1ConcatBytes = DigestUtils.sha1(concatBytes);
-        return xor(sha1Password, sha1ConcatBytes);
-    }
     
-    private byte[] xor(final byte[] input, final byte[] secret) {
-        byte[] result = new byte[input.length];
-        for (int i = 0; i < input.length; ++i) {
-            result[i] = (byte) (input[i] ^ secret[i]);
-        }
-        return result;
+    /**
+     * Get authenticator.
+     *
+     * @param username username
+     * @param hostname hostname
+     * @return authenticator
+     */
+    public MySQLAuthenticator getAuthenticator(final String username, final String hostname) {
+        // TODO get authenticator by username and hostname
+        return new MySQLNativePasswordAuthenticator(authPluginData);
     }
 }

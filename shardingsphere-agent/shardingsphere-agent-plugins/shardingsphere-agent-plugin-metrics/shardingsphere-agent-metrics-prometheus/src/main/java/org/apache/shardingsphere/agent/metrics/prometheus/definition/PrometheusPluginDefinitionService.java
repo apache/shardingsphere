@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
 import org.apache.shardingsphere.agent.core.entity.Interceptor;
 import org.apache.shardingsphere.agent.core.entity.Interceptors;
 import org.apache.shardingsphere.agent.core.entity.TargetPoint;
@@ -36,14 +36,13 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
     
     @Override
     public void defineInterceptors() {
-        Yaml yaml = new Yaml();
-        InputStream in = this.getClass().getResourceAsStream("/prometheus/interceptors.yaml");
-        Interceptors interceptors = yaml.loadAs(in, Interceptors.class);
+        InputStream inputStream = getClass().getResourceAsStream("/prometheus/interceptors.yaml");
+        Interceptors interceptors = new Yaml().loadAs(inputStream, Interceptors.class);
         for (Interceptor each : interceptors.getInterceptors()) {
             if (null == each.getTarget()) {
                 continue;
             }
-            PluginInterceptorPoint.Builder builder = defineInterceptor(each.getTarget());
+            Builder builder = defineInterceptor(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
                 log.debug("Init construct: {}", each.getConstructAdvice());
@@ -51,28 +50,14 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             if (null == each.getPoints()) {
                 continue;
             }
-            String[] instancePoints = each
-                    .getPoints()
-                    .stream()
-                    .filter(i -> "instance".equals(i.getType()))
-                    .map(TargetPoint::getName)
-                    .toArray(String[]::new);
-            String[] staticPoints = each
-                    .getPoints()
-                    .stream()
-                    .filter(i -> "static".equals(i.getType()))
-                    .map(TargetPoint::getName)
-                    .toArray(String[]::new);
+            String[] instancePoints = each.getPoints().stream().filter(i -> "instance".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
+            String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             if (instancePoints.length > 0) {
-                builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints))
-                        .implement(each.getInstanceAdvice())
-                        .build();
+                builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints)).implement(each.getInstanceAdvice()).build();
                 log.debug("Init instance: {}", each.getInstanceAdvice());
             }
             if (staticPoints.length > 0) {
-                builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints))
-                        .implement(each.getStaticAdvice())
-                        .build();
+                builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
                 log.debug("Init static: {}", each.getStaticAdvice());
             }
         }

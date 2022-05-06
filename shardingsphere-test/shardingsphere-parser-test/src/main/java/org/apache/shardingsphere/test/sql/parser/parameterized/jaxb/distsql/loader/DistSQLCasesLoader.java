@@ -36,11 +36,11 @@ import java.util.Map;
  * DistSQL test cases loader.
  */
 public final class DistSQLCasesLoader extends CasesLoader {
-
+    
     public DistSQLCasesLoader(final String rootDirection) {
         super(rootDirection);
     }
-
+    
     @Override
     public void buildCaseMap(final Map<String, Case> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         DistSQLCases sqlCases = (DistSQLCases) JAXBContext.newInstance(DistSQLCases.class).createUnmarshaller().unmarshal(inputStream);
@@ -49,7 +49,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
             sqlCaseMap.put(each.getId(), each);
         }
     }
-
+    
     @Override
     public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
@@ -60,9 +60,9 @@ public final class DistSQLCasesLoader extends CasesLoader {
         }
         return result;
     }
-
+    
     @Override
-    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters, final String databaseType) {
         Map<String, Case> sqlCaseMap = super.getCases();
         Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can't find case of ID: %s", sqlCaseId);
         DistSQLCase statement = (DistSQLCase) sqlCaseMap.get(sqlCaseId);

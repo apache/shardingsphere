@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.9. </b>"
+pre = "<b>6.11. </b>"
 title = "Scaling"
-weight = 9
+weight = 11
 chapter = true
 +++
 
@@ -15,23 +15,25 @@ chapter = true
 | ---------------------- | --------------------------- |
 | MySQLScalingEntry      | MySQL entry of scaling      |
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
+| OpenGaussScalingEntry  | openGauss entry of scaling  |
 
-## ScalingClusterAutoSwitchAlgorithm
-
-| *SPI Name*                                  | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| ScalingClusterAutoSwitchAlgorithm           | Scaling job completion check algorithm      |
-
-| *Implementation Class*                      | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| ScalingIdleClusterAutoSwitchAlgorithm       | Incremental task idle time based algorithm  |
-
-## ScalingDataConsistencyCheckAlgorithm
+## JobCompletionDetectAlgorithm
 
 | *SPI Name*                                  | *Description*                               |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDataConsistencyCheckAlgorithm        | Data consistency check algorithm on source and target database cluster |
+| JobCompletionDetectAlgorithm                | Job completion check algorithm              |
 
 | *Implementation Class*                      | *Description*                               |
 | ------------------------------------------- | ------------------------------------------- |
-| ScalingDefaultDataConsistencyCheckAlgorithm | Default implementation with CRC32 of all records. |
+| IdleRuleAlteredJobCompletionDetectAlgorithm | Incremental task idle time based algorithm  |
+
+## DataConsistencyCalculateAlgorithm
+
+| *SPI Name*                                  | *Description*                                        |
+| ------------------------------------------- | ---------------------------------------------------- |
+| DataConsistencyCalculateAlgorithm           | Check data consistency algorithm                     |
+
+| *Implementation Class*                      | *Description*                                        |
+| ------------------------------------------- | ---------------------------------------------------- |
+| DataMatchDataConsistencyCalculateAlgorithm  | Check data consistency with every recodes one by one |
+| CRC32MatchDataConsistencyCalculateAlgorithm | Use CRC32 to check data consistency                  |

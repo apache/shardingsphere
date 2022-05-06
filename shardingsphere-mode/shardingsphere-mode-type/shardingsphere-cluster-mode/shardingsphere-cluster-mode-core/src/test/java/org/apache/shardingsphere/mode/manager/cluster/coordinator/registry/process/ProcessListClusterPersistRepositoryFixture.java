@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -25,7 +26,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -56,6 +57,11 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public String getSequentialId(final String key, final String value) {
+        return null;
+    }
+    
+    @Override
     public void delete(final String key) {
         REGISTRY_DATA.remove(key);
     }
@@ -65,12 +71,17 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        return false;
+    public void watchSessionConnection(final InstanceContext instanceContext) {
     }
     
     @Override
-    public void releaseLock(final String key) {
+    public Lock getGlobalLock(final String lockName) {
+        return null;
+    }
+    
+    @Override
+    public Lock getStandardLock(final String lockName) {
+        return null;
     }
     
     @Override

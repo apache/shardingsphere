@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
 
 import java.util.Collection;
 
 /**
  * XA data source definition.
  */
-public interface XADataSourceDefinition extends DatabaseTypeAwareSPI {
+public interface XADataSourceDefinition extends StatelessTypedSPI {
     
     /**
      * Get XA driver class names.

@@ -5,38 +5,6 @@ weight = 3
 chapter = true
 +++
 
-## DatabaseType
-
-| *SPI Name*             | *Description*           |
-| ---------------------- | ----------------------- |
-| DatabaseType           | Supported database type |
-
-| *Implementation Class* | *Description*           |
-| ---------------------- | ----------------------- |
-| SQL92DatabaseType      | SQL92 database type     |
-| MySQLDatabaseType      | MySQL database          |
-| MariaDBDatabaseType    | MariaDB database        |
-| PostgreSQLDatabaseType | PostgreSQL database     |
-| OracleDatabaseType     | Oracle database         |
-| SQLServerDatabaseType  | SQLServer database      |
-| H2DatabaseType         | H2 database             |
-| OpenGaussDatabaseType  | OpenGauss database      |
-
-## DialectTableMetaDataLoader
-
-| *SPI Name*                   | *Description*                             |
-| ---------------------------- | ----------------------------------------- |
-| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly |
-
-| *Implementation Class*       | *Description*                             |
-| ---------------------------- | ----------------------------------------- |
-| MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
-| OracleTableMetaDataLoader    | Use Oracle dialect to load meta data      |
-| PostgreSQLTableMetaDataLoader| Use PostgreSQL dialect to load meta data  |
-| SQLServerTableMetaDataLoader | Use SQLServer dialect to load meta data   |
-| H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
-| OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
-
 ## SQLRouter
 
 | *SPI Name*                          | *Description*                                         |
@@ -61,7 +29,6 @@ chapter = true
 | ---------------------------------- | ---------------------------------------------- |
 | ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results   |
 | EncryptSQLRewriteContextDecorator  | Used to process encryption SQL rewrite results |
-| ShadowSQLRewriteContextDecorator   | Used to process shadow SQL rewrite results     |
 
 ## SQLExecutionHook
 
@@ -96,3 +63,13 @@ chapter = true
 | SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata  |
 | OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata     |
 | MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata      |
+
+## DynamicDataSourceStrategy
+
+| *SPI Name*                                 | *Description*                                       |
+| ------------------------------------------ | --------------------------------------------------- |
+| DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                  |
+
+| *Implementation Class*                     | *Description*                                       |
+| ------------------------------------------ | --------------------------------------------------- |
+| DatabaseDiscoveryDynamicDataSourceStrategy | Use database discovery to dynamic fetch data source |

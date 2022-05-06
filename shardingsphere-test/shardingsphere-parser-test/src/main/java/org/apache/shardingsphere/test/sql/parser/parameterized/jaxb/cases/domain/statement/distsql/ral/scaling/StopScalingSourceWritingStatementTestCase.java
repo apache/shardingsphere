@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,9 +28,8 @@ import java.util.List;
  * Stop scaling source writing statement test case.
  */
 @Getter
-@Setter
 public final class StopScalingSourceWritingStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<Long> jobIds = new LinkedList<>();
+    private final List<String> jobIds = new LinkedList<>();
 }

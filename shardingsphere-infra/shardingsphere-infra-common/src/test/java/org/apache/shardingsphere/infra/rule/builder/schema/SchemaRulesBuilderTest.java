@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -31,14 +31,13 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class SchemaRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(
-                "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap(), new ConfigurationProperties(new Properties())));
+        Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(
+                "schema_name", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(TestShardingSphereRule.class));
     }

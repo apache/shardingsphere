@@ -17,7 +17,7 @@
 
 grammar OpenGaussStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -36,7 +36,9 @@ execute
     | startTransaction
     | end
     | commit
+    | commitPrepared
     | rollback
+    | rollbackPrepared
     | abort
     | savepoint
     | releaseSavepoint
@@ -53,11 +55,19 @@ execute
     | set
     | resetParameter
     | call
+    | alterAggregate
     | alterFunction
     | alterDatabase
+    | alterDomain
+    | alterDefaultPrivileges
+    | alterForeignTable
+    | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence
+    | alterView
+    | comment
     | createDatabase
     | createFunction
     | createProcedure
@@ -65,6 +75,14 @@ execute
     | createTrigger
     | createView
     | createSequence
+    | createDomain
+    | createRule
+    | createSchema
+    | alterSchema
+    | dropSchema
+    | createType
+    | createTextSearch
+    | declare
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -72,6 +90,7 @@ execute
     | dropTrigger
     | dropView
     | dropSequence
+    | dropDomain
     | vacuum
     | prepare
     | executeStmt
@@ -83,5 +102,19 @@ execute
     | alterTablespace
     | dropTablespace
     | setConstraints
-    ) SEMI_?
+    | copy
+    | createLanguage
+    | alterLanguage
+    | dropLanguage
+    | createConversion
+    | alterConversion
+    | dropConversion
+    | alterTextSearchDictionary
+    | alterTextSearchTemplate
+    | alterTextSearchParser
+    | createExtension
+    | alterExtension
+    | dropExtension
+    | dropTextSearch
+    ) SEMI_? EOF
     ;

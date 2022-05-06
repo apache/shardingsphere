@@ -29,11 +29,23 @@ public final class EncryptColumnRuleConfiguration {
     
     private final String logicColumn;
     
+    private final String logicDataType;
+    
     private final String cipherColumn;
+    
+    private final String cipherDataType;
     
     private final String assistedQueryColumn;
     
+    private final String assistedQueryDataType;
+    
     private final String plainColumn;
     
+    private final String plainDataType;
+    
     private final String encryptorName;
+    
+    public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName) {
+        this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null, encryptorName);
+    }
 }

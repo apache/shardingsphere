@@ -18,24 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Command execute executor for PostgreSQL.
@@ -47,65 +38,17 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     private final PostgreSQLComExecutePacket packet;
     
-    private long dataRows;
-    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
-        for (CommandExecutor each : connectionContext.getPendingExecutors()) {
-            result.addAll(each.execute());
-        }
-        connectionContext.getPendingExecutors().clear();
-        result.addAll(doExecute());
-        result.add(createExecutionCompletedPacket());
-        return result;
-    }
-    
-    private Collection<? extends DatabasePacket<?>> doExecute() throws SQLException {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
-        while (!isPortalSuspended()) {
-            Optional<DatabasePacket<?>> packet = getPacketFromPortal();
-            if (!packet.isPresent()) {
-                break;
-            }
-            dataRows++;
-            result.add(packet.get());
-        }
-        return result;
-    }
-    
-    private Optional<DatabasePacket<?>> getPacketFromPortal() throws SQLException {
-        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
-        return portal.next() ? Optional.of(portal.nextPacket()) : Optional.empty();
-    }
-    
-    private PostgreSQLIdentifierPacket createExecutionCompletedPacket() {
-        if (isPortalSuspended()) {
-            return new PostgreSQLPortalSuspendedPacket();
-        }
-        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
-        if (portal.getSqlStatement() instanceof EmptyStatement) {
-            return new PostgreSQLEmptyQueryResponsePacket();
-        }
-        String sqlCommand = PostgreSQLCommand.valueOf(portal.getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
-        return new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, portal.getUpdateCount()));
+    public List execute() throws SQLException {
+        return connectionContext.getPortal(packet.getPortal()).execute(packet.getMaxRows());
     }
     
     @Override
     public void close() throws SQLException {
-        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
-        if (isPortalSuspended()) {
-            portal.suspend();
-            return;
-        }
+        Portal<?> portal = connectionContext.getPortal(packet.getPortal());
         if (portal.getSqlStatement() instanceof CommitStatement || portal.getSqlStatement() instanceof RollbackStatement) {
             connectionContext.closeAllPortals();
-        } else {
-            connectionContext.closePortal(packet.getPortal());
         }
-    }
-    
-    private boolean isPortalSuspended() {
-        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
     }
 }

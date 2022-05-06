@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-proxy-boot-mybatis-example</module>
         <module>shardingsphere-proxy-hint-example</module>
+        <module>shardingsphere-proxy-distsql-example</module>
     </modules>
 
     <build>

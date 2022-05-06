@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowProcedureStatusExecutorTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     private ShowProcedureStatusExecutor showProcedureStatusExecutor;
     
@@ -58,7 +58,7 @@ public final class ShowProcedureStatusExecutorTest {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
@@ -70,21 +70,21 @@ public final class ShowProcedureStatusExecutorTest {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.isComplete()).thenReturn(false);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }
     
     @Test
     public void assertExecute() throws SQLException {
-        showProcedureStatusExecutor.execute(mockBackendConnection());
+        showProcedureStatusExecutor.execute(mockConnectionSession());
         assertThat(showProcedureStatusExecutor.getQueryResultMetaData().getColumnCount(), is(11));
     }
     
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
+    private ConnectionSession mockConnectionSession() {
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

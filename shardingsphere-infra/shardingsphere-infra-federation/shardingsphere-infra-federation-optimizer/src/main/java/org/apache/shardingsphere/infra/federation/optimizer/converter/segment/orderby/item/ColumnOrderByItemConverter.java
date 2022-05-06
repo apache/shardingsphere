@@ -42,7 +42,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     public Optional<SqlNode> convertToSQLNode(final ColumnOrderByItemSegment segment) {
         Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
         if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
-            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {result.get()}, SqlParserPos.ZERO));
+            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[]{result.get()}, SqlParserPos.ZERO));
         }
         return result;
     }
@@ -50,7 +50,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     @Override
     public Optional<ColumnOrderByItemSegment> convertToSQLSegment(final SqlNode sqlNode) {
         if (!(sqlNode instanceof SqlIdentifier)) {
-            return Optional.empty(); 
+            return Optional.empty();
         }
         SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
         if (sqlIdentifier.names.size() > 1) {

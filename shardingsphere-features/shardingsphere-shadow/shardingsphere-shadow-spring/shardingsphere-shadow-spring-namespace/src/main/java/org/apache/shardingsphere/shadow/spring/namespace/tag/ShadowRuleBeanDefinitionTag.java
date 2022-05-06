@@ -28,8 +28,6 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     
-    public static final String SHADOW_ENABLE_TAG = "enable";
-    
     public static final String DATA_SOURCE_TAG = "data-source";
     
     public static final String DATA_SOURCE_ID_ATTRIBUTE = "id";

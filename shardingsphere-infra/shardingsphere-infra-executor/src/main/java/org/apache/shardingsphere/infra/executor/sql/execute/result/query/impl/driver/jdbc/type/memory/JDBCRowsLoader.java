@@ -37,6 +37,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCRowsLoader {
     
+    private static final String YEAR_DATA_TYPE = "YEAR";
+    
     /**
      * Load rows.
      * 
@@ -89,6 +91,10 @@ public final class JDBCRowsLoader {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
+                if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
+                    Object result = resultSet.getObject(columnIndex);
+                    return resultSet.wasNull() ? null : result;
+                }
                 return resultSet.getDate(columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
@@ -97,14 +103,19 @@ public final class JDBCRowsLoader {
             case Types.CLOB:
                 return resultSet.getClob(columnIndex);
             case Types.BLOB:
+                return resultSet.getBlob(columnIndex);
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
-                return resultSet.getBlob(columnIndex);
+                return resultSet.getBytes(columnIndex);
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
                 return resultSet.getObject(columnIndex);
         }
+    }
+    
+    private static boolean isYearDataType(final String columnDataTypeName) {
+        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
     }
 }

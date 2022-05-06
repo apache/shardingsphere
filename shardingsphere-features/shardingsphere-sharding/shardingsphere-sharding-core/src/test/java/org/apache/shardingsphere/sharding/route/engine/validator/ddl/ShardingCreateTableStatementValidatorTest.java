@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,76 +59,77 @@ public final class ShardingCreateTableStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Mock
-    private ShardingSphereSchema schema;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereMetaData metaData;
     
     @Mock
     private RouteContext routeContext;
     
     @Test(expected = TableExistsException.class)
-    public void assertValidateMySQLCreateTable() {
+    public void assertPreValidateCreateTableForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         sqlStatement.setContainsNotExistClause(false);
-        assertValidateCreateTable(sqlStatement);
+        assertPreValidateCreateTable(sqlStatement, "sharding_db");
     }
     
     @Test(expected = TableExistsException.class)
-    public void assertValidateOracleCreateTable() {
+    public void assertPreValidateCreateTableForOracle() {
         OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertValidateCreateTable(sqlStatement);
+        assertPreValidateCreateTable(sqlStatement, "sharding_db");
     }
     
     @Test(expected = TableExistsException.class)
-    public void assertValidatePostgreSQLCreateTable() {
+    public void assertPreValidateCreateTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         sqlStatement.setContainsNotExistClause(false);
-        assertValidateCreateTable(sqlStatement);
+        assertPreValidateCreateTable(sqlStatement, "public");
     }
     
     @Test(expected = TableExistsException.class)
-    public void assertValidateSQL92CreateTable() {
+    public void assertPreValidateCreateTableForSQL92() {
         SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertValidateCreateTable(sqlStatement);
+        assertPreValidateCreateTable(sqlStatement, "sharding_db");
     }
     
     @Test(expected = TableExistsException.class)
-    public void assertValidateSQLServerCreateTable() {
+    public void assertPreValidateCreateTableForSQLServer() {
         SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertValidateCreateTable(sqlStatement);
+        assertPreValidateCreateTable(sqlStatement, "sharding_db");
     }
     
-    private void assertValidateCreateTable(final CreateTableStatement sqlStatement) {
+    private void assertPreValidateCreateTable(final CreateTableStatement sqlStatement, final String schemaName) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getDatabaseName()).thenReturn("sharding_db");
+        when(metaData.getSchemaByName(schemaName).containsTable("t_order")).thenReturn(true);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test
-    public void assertValidateMySQLCreateTableIfNotExists() {
+    public void assertPreValidateCreateTableIfNotExistsForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         sqlStatement.setContainsNotExistClause(true);
-        assertValidateCreateTableIfNotExists(sqlStatement);
+        assertPreValidateCreateTableIfNotExists(sqlStatement);
     }
     
     @Test
-    public void assertValidatePostgreSQLCreateTableIfNotExists() {
+    public void assertPreValidateCreateTableIfNotExistsForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         sqlStatement.setContainsNotExistClause(true);
-        assertValidateCreateTableIfNotExists(sqlStatement);
+        assertPreValidateCreateTableIfNotExists(sqlStatement);
     }
     
-    private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
+    private void assertPreValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test
@@ -139,8 +142,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), Collections.emptyList(), 
-                schema, mock(ConfigurationProperties.class), routeContext);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -152,8 +155,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), Collections.emptyList(), 
-                schema, mock(ConfigurationProperties.class), routeContext);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -166,8 +169,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), Collections.emptyList(), 
-                schema, mock(ConfigurationProperties.class), routeContext);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -179,7 +182,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), Collections.emptyList(), 
-                schema, mock(ConfigurationProperties.class), routeContext);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
     }
 }

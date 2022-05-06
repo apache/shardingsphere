@@ -43,7 +43,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     private static final String TYPE = "type";
     
-    private static final String PROPERTIES = "properties";
+    private static final String PROPS = "props";
     
     private static final String DEFAULT = "is_default";
     
@@ -55,15 +55,15 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(configuration -> {
-            data = configuration.getShadowAlgorithms().entrySet().iterator();
-            defaultAlgorithm = configuration.getDefaultShadowAlgorithmName();
+        rule.ifPresent(optional -> {
+            data = optional.getShadowAlgorithms().entrySet().iterator();
+            defaultAlgorithm = optional.getDefaultShadowAlgorithmName();
         });
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPERTIES, DEFAULT);
+        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPS, DEFAULT);
     }
     
     @Override
@@ -77,7 +77,7 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     }
     
     private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()), data.getKey().equals(defaultAlgorithm));
+        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()), Boolean.valueOf(data.getKey().equals(defaultAlgorithm)).toString());
     }
     
     private String convertToString(final Properties props) {
@@ -86,6 +86,6 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShadowAlgorithmsStatement.class.getCanonicalName();
+        return ShowShadowAlgorithmsStatement.class.getName();
     }
 }

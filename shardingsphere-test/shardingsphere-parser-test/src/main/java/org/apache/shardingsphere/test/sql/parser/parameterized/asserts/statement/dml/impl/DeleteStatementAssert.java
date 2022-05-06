@@ -43,9 +43,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Delete statement assert.
@@ -126,7 +126,7 @@ public final class DeleteStatementAssert {
             assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
         }
     }
-
+    
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(actual);
         if (null != expected.getLimitClause()) {

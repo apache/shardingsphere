@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,25 +48,43 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     private final String sql;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
+    
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(ResourceNotExistedException::new);
+        String originalDatabase = connectionSession.getDatabaseName();
+        List<Future> futures = new ArrayList<>(databaseNames.size());
+        for (String each : databaseNames) {
+            connectionSession.setCurrentDatabase(each);
+            futures.add(databaseCommunicationEngineFactory.<VertxDatabaseCommunicationEngine>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute());
+        }
+        return CompositeFuture.all(futures)
+                .compose(unused -> Future.succeededFuture((ResponseHeader) new UpdateResponseHeader(sqlStatementContext.getSqlStatement())))
+                .eventually(unused -> {
+                    connectionSession.setCurrentDatabase(originalDatabase);
+                    return Future.succeededFuture();
+                });
+    }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
-        String originalSchema = backendConnection.getSchemaName();
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(ResourceNotExistedException::new);
+        String originalDatabase = connectionSession.getDatabaseName();
         try {
-            for (String each : schemaNames) {
-                backendConnection.setCurrentSchema(each);
-                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
+            for (String each : databaseNames) {
+                connectionSession.setCurrentDatabase(each);
+                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute();
             }
         } finally {
-            backendConnection.setCurrentSchema(originalSchema);
+            connectionSession.setCurrentDatabase(originalDatabase);
         }
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
     
-    private Optional<List<String>> getSchemaNamesWithDataSource() {
-        List<String> result = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
+    private Optional<List<String>> getDatabaseNamesWithDataSource() {
+        List<String> result = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
         return Optional.of(result).filter(each -> !each.isEmpty());
     }
 }

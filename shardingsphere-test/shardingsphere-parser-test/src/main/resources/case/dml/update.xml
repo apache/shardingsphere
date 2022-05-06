@@ -25,7 +25,7 @@
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
                     <literal-expression value="update" start-index="28" stop-index="35" />
                 </assignment-value>
             </assignment>
@@ -41,7 +41,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="54" stop-index="54" />
-                                <parameter-marker-expression value="1" start-index="47" stop-index="47" />
+                                <parameter-marker-expression parameter-index="1" start-index="47" stop-index="47" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -54,7 +54,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="70" stop-index="70" />
-                                <parameter-marker-expression value="2" start-index="63" stop-index="63" />
+                                <parameter-marker-expression parameter-index="2" start-index="63" stop-index="63" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -73,7 +73,7 @@
                     <owner name="o" start-index="24" stop-index="24" />
                 </column>
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="35" stop-index="35" />
+                    <parameter-marker-expression parameter-index="0" start-index="35" stop-index="35" />
                     <literal-expression value="update" start-index="35" stop-index="42" />
                 </assignment-value>
             </assignment>
@@ -91,7 +91,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="63" stop-index="63" />
-                                <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -106,7 +106,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="81" stop-index="81" />
-                                <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                                <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -123,7 +123,7 @@
             <assignment start-index="24" stop-index="33" literal-stop-index="40">
                 <column name="status" start-index="24" stop-index="29" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="33" stop-index="33" />
+                    <parameter-marker-expression parameter-index="0" start-index="33" stop-index="33" />
                     <literal-expression value="update" start-index="33" stop-index="40" />
                 </assignment-value>
             </assignment>
@@ -141,7 +141,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="61" stop-index="61" />
-                                <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                                <parameter-marker-expression parameter-index="1" start-index="54" stop-index="54" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -156,7 +156,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="79" stop-index="79" />
-                                <parameter-marker-expression value="2" start-index="72" stop-index="72" />
+                                <parameter-marker-expression parameter-index="2" start-index="72" stop-index="72" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -173,7 +173,7 @@
             <assignment start-index="19" stop-index="32" literal-stop-index="43">
                 <column name="start_time" start-index="19" stop-index="28" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
+                    <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
                     <literal-expression value="2017-06-07" start-index="32" stop-index="43" />
                 </assignment-value>
             </assignment>
@@ -186,27 +186,46 @@
             <assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
                 <column name="start_point" start-index="47" stop-index="57" literal-start-index="58" literal-stop-index="68" />
                 <assignment-value>
+                    <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131">
+                        <parameter>
+                            <literal-expression value="SRID=4326;POINT(" literal-start-index="93" start-index="82" literal-stop-index="110" stop-index="99"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="100" literal-start-index="113" literal-stop-index="115"/>
+                            <parameter-marker-expression parameter-index="1" start-index="102" stop-index="102"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=" " literal-start-index="118" literal-stop-index="120" start-index="105" stop-index="107"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="200" literal-start-index="123" literal-stop-index="125"/>
+                            <parameter-marker-expression parameter-index="2" start-index="110" stop-index="110"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=")" literal-start-index="128" literal-stop-index="130" start-index="113" stop-index="115"/>
+                        </parameter>
+                    </function>
                     <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131"/>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">
                 <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
                 <assignment-value>
-                    <parameter-marker-expression value="3" start-index="126" stop-index="133" />
+                    <parameter-marker-expression parameter-index="3" start-index="126" stop-index="133" />
                     <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" start-index="141" stop-index="166" />
                 </assignment-value>
             </assignment>
             <assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
                 <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
                 <assignment-value>
-                    <parameter-marker-expression value="4" start-index="152" stop-index="152" />
+                    <parameter-marker-expression parameter-index="4" start-index="152" stop-index="152" />
                     <literal-expression value="3" start-index="185" stop-index="185" />
                 </assignment-value>
             </assignment>
             <assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
                 <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
                 <assignment-value>
-                    <parameter-marker-expression value="5" start-index="168" stop-index="168" />
+                    <parameter-marker-expression parameter-index="5" start-index="168" stop-index="168" />
                     <literal-expression value="5" start-index="201" stop-index="201" />
                 </assignment-value>
             </assignment>
@@ -222,7 +241,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="7" start-index="219" stop-index="219" />
-                                <parameter-marker-expression value="6" start-index="186" stop-index="186" />
+                                <parameter-marker-expression parameter-index="6" start-index="186" stop-index="186" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -235,7 +254,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="200" start-index="236" stop-index="238" />
-                                <parameter-marker-expression value="7" start-index="203" stop-index="203" />
+                                <parameter-marker-expression parameter-index="7" start-index="203" stop-index="203" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -268,7 +287,7 @@
             <assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
                 <column name="status" start-index="39" stop-index="44" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="48" stop-index="48" />
+                    <parameter-marker-expression parameter-index="0" start-index="48" stop-index="48" />
                     <literal-expression value="update" start-index="48" stop-index="55" />
                 </assignment-value>
             </assignment>
@@ -284,7 +303,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="74" stop-index="74" />
-                                <parameter-marker-expression value="1" start-index="67" stop-index="67" />
+                                <parameter-marker-expression parameter-index="1" start-index="67" stop-index="67" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -297,7 +316,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="90" stop-index="90" />
-                                <parameter-marker-expression value="2" start-index="83" stop-index="83" />
+                                <parameter-marker-expression parameter-index="2" start-index="83" stop-index="83" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -314,7 +333,7 @@
             <assignment start-index="21" stop-index="32" literal-stop-index="39">
                 <column name="status" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="28" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
+                    <parameter-marker-expression parameter-index="0" start-index="32" stop-index="32" />
                     <literal-expression value="update" start-index="32" stop-index="39" />
                 </assignment-value>
             </assignment>
@@ -330,7 +349,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="60" stop-index="60" />
-                                <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                                <parameter-marker-expression parameter-index="1" start-index="53" stop-index="53" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -343,7 +362,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="76" stop-index="76" />
-                                <parameter-marker-expression value="2" start-index="69" stop-index="69" />
+                                <parameter-marker-expression parameter-index="2" start-index="69" stop-index="69" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -420,7 +439,7 @@
                                     <operator>=</operator>
                                     <right>
                                         <literal-expression value="1000" start-index="55" stop-index="58" />
-                                        <parameter-marker-expression value="0" start-index="55" stop-index="55" />
+                                        <parameter-marker-expression parameter-index="0" start-index="55" stop-index="55" />
                                     </right>
                                 </binary-operation-expression>
                             </left>
@@ -433,7 +452,7 @@
                                     <operator>=</operator>
                                     <right>
                                         <literal-expression value="0" start-index="74" stop-index="74" />
-                                        <parameter-marker-expression value="1" start-index="71" stop-index="71" />
+                                        <parameter-marker-expression parameter-index="1" start-index="71" stop-index="71" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -448,7 +467,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="10" start-index="91" stop-index="92" />
-                                <parameter-marker-expression value="2" start-index="88" stop-index="88" />
+                                <parameter-marker-expression parameter-index="2" start-index="88" stop-index="88" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -480,7 +499,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="2" start-index="56" stop-index="56" />
-                                <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -493,7 +512,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="3" start-index="72" stop-index="72" />
-                                <parameter-marker-expression value="2" start-index="72" stop-index="72" />
+                                <parameter-marker-expression parameter-index="2" start-index="72" stop-index="72" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -510,7 +529,7 @@
             <assignment start-index="19" stop-index="28" literal-stop-index="28">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
                     <literal-expression value="1" start-index="28" stop-index="28" />
                 </assignment-value>
             </assignment>
@@ -532,7 +551,7 @@
                                     <operator>-</operator>
                                     <right>
                                         <literal-expression value="2" start-index="58" stop-index="58" />
-                                        <parameter-marker-expression value="1" start-index="58" stop-index="58" />
+                                        <parameter-marker-expression parameter-index="1" start-index="58" stop-index="58" />
                                     </right>
                                 </binary-operation-expression>
                                 <common-expression text="order_id - ?" literal-text="order_id - 2" start-index="47" stop-index="58" />
@@ -548,7 +567,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="3" start-index="74" stop-index="74" />
-                                <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                                <parameter-marker-expression parameter-index="2" start-index="74" stop-index="74" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -599,7 +618,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="97" stop-index="97" />
-                                <parameter-marker-expression value="0" start-index="97" stop-index="97" />
+                                <parameter-marker-expression parameter-index="0" start-index="97" stop-index="97" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -641,7 +660,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="jd" start-index="291" stop-index="294" />
-                        <parameter-marker-expression value="14" start-index="251" stop-index="251" />
+                        <parameter-marker-expression parameter-index="14" start-index="251" stop-index="251" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -656,7 +675,7 @@
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
                     <literal-expression value="update" start-index="28" stop-index="35" />
                 </assignment-value>
             </assignment>
@@ -672,7 +691,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="54" stop-index="54" />
-                                <parameter-marker-expression value="1" start-index="47" stop-index="47" />
+                                <parameter-marker-expression parameter-index="1" start-index="47" stop-index="47" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -685,7 +704,7 @@
                             <operator>=</operator>
                             <right>
                                 <literal-expression value="1" start-index="70" stop-index="70" />
-                                <parameter-marker-expression value="2" start-index="63" stop-index="63" />
+                                <parameter-marker-expression parameter-index="2" start-index="63" stop-index="63" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -708,7 +727,7 @@
             <assignment start-index="19" stop-index="30" literal-stop-index="30">
                 <column name="order_id" start-index="19" stop-index="26" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="30" stop-index="30" />
+                    <parameter-marker-expression parameter-index="0" start-index="30" stop-index="30" />
                     <literal-expression value="1" start-index="30" stop-index="30" />
                 </assignment-value>
             </assignment>
@@ -722,7 +741,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="48" stop-index="48" />
-                        <parameter-marker-expression value="1" start-index="48" stop-index="48" />
+                        <parameter-marker-expression parameter-index="1" start-index="48" stop-index="48" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -758,7 +777,7 @@
             <assignment start-index="107" stop-index="116" literal-stop-index="116">
                 <column name="status" start-index="107" stop-index="112" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="116" stop-index="116" />
+                    <parameter-marker-expression parameter-index="0" start-index="116" stop-index="116" />
                     <literal-expression value="1" start-index="116" stop-index="116" />
                 </assignment-value>
             </assignment>
@@ -774,7 +793,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="196" stop-index="196" />
-                        <parameter-marker-expression value="1" start-index="196" stop-index="196" />
+                        <parameter-marker-expression parameter-index="1" start-index="196" stop-index="196" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -789,7 +808,7 @@
             <assignment start-index="27" stop-index="38" literal-stop-index="38">
                 <column name="order_id" start-index="27" stop-index="34" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                    <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
                     <literal-expression value="1" start-index="38" stop-index="38" />
                 </assignment-value>
             </assignment>
@@ -803,7 +822,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="56" stop-index="56" />
-                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                        <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -818,7 +837,7 @@
             <assignment start-index="35" stop-index="46" literal-stop-index="46">
                 <column name="order_id" start-index="35" stop-index="42" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="46" stop-index="46" />
+                    <parameter-marker-expression parameter-index="0" start-index="46" stop-index="46" />
                     <literal-expression value="1" start-index="46" stop-index="46" />
                 </assignment-value>
             </assignment>
@@ -832,7 +851,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="64" stop-index="64" />
-                        <parameter-marker-expression value="1" start-index="64" stop-index="64" />
+                        <parameter-marker-expression parameter-index="1" start-index="64" stop-index="64" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -847,7 +866,7 @@
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <parameter-marker-expression parameter-index="0" start-index="28" stop-index="28" />
                     <literal-expression value="update" start-index="28" stop-index="35" />
                 </assignment-value>
             </assignment>
@@ -861,7 +880,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="54" stop-index="54" />
-                        <parameter-marker-expression value="1" start-index="47" stop-index="47" />
+                        <parameter-marker-expression parameter-index="1" start-index="47" stop-index="47" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1093,5 +1112,34 @@
                 </assignment-value>
             </assignment>
         </set>
+    </update>
+
+    <update sql-case-id="update_with_force_index" parameters="'update', 1">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13"/>
+        </table>
+        <set start-index="37" stop-index="50" literal-stop-index="57">
+            <assignment start-index="41" stop-index="50" literal-stop-index="57">
+                <column name="status" start-index="41" stop-index="46" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                    <literal-expression value="update" start-index="50" stop-index="57" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="52" stop-index="69" literal-start-index="59" literal-stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="58" stop-index="69" literal-start-index="65" literal-stop-index="76">
+                    <left>
+                        <column name="order_id" start-index="58" stop-index="65" literal-start-index="65" literal-stop-index="72" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </update>
 </sql-parser-test-cases>

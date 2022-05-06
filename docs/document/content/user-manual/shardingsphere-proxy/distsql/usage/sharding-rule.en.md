@@ -34,7 +34,7 @@ CREATE SHARDING TABLE RULE t_order(
 RESOURCES(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 );
 ```
 

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ public final class ExecuteProcessEngineTest {
     @Test
     public void assertClean() {
         ExecuteProcessEngine.clean();
-        assertThat(ExecutorDataMap.getValue().size(), is(0));
+        assertTrue(ExecutorDataMap.getValue().isEmpty());
     }
     
     private LogicSQL createLogicSQL() {

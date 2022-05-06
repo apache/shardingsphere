@@ -18,50 +18,59 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
+public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
     private String defaultDataSource;
     
     private final Collection<String> dataSourceNames;
     
-    private final Map<String, SingleTableDataNode> singleTableDataNodes;
+    private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType, 
+    private final Map<String, String> tableNames;
+    
+    public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
-        config.getDefaultDataSource().ifPresent(op -> defaultDataSource = op);
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
+        config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -93,10 +102,22 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @param singleTableNames single table names
      * @return whether single tables are in same data source or not
      */
-    public boolean isSingleTablesInSameDataSource(final Collection<String> singleTableNames) {
-        Set<String> dataSourceNames = singleTableNames.stream().map(each -> singleTableDataNodes.get(each.toLowerCase()))
-                .filter(Objects::nonNull).map(SingleTableDataNode::getDataSourceName).collect(Collectors.toSet());
-        return dataSourceNames.size() <= 1;
+    public boolean isSingleTablesInSameDataSource(final Collection<QualifiedTable> singleTableNames) {
+        String firstFoundDataSourceName = null;
+        for (QualifiedTable each : singleTableNames) {
+            Optional<DataNode> dataNode = findSingleTableDataNode(each.getSchemaName(), each.getTableName());
+            if (!dataNode.isPresent()) {
+                continue;
+            }
+            if (null == firstFoundDataSourceName) {
+                firstFoundDataSourceName = dataNode.get().getDataSourceName();
+                continue;
+            }
+            if (!firstFoundDataSourceName.equals(dataNode.get().getDataSourceName())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -106,14 +127,17 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
      * @param singleTableNames single table names
      * @return whether all tables are in same data source or not
      */
-    public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<String> singleTableNames) {
+    public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<QualifiedTable> singleTableNames) {
         if (!isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
-        SingleTableDataNode dataNode = singleTableDataNodes.get(singleTableNames.iterator().next().toLowerCase());
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
-                return false;
+        QualifiedTable sampleTable = singleTableNames.iterator().next();
+        Optional<DataNode> dataNode = findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        if (dataNode.isPresent()) {
+            for (RouteUnit each : routeContext.getRouteUnits()) {
+                if (!each.getDataSourceMapper().getLogicName().equals(dataNode.get().getDataSourceName())) {
+                    return false;
+                }
             }
         }
         return true;
@@ -129,31 +153,69 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     /**
-     * Get sharding logic table names.
+     * Get single table names.
      *
-     * @param logicTableNames logic table names
-     * @return sharding logic table names
+     * @param qualifiedTables qualified tables
+     * @return single table names
      */
-    public Collection<String> getSingleTableNames(final Collection<String> logicTableNames) {
-        Collection<String> result = new LinkedList<>();
-        for (String each : logicTableNames) {
-            if (singleTableDataNodes.containsKey(each.toLowerCase())) {
+    public Collection<QualifiedTable> getSingleTableNames(final Collection<QualifiedTable> qualifiedTables) {
+        Collection<QualifiedTable> result = new LinkedList<>();
+        for (QualifiedTable each : qualifiedTables) {
+            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName(), new LinkedList<>());
+            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes)) {
                 result.add(each);
             }
         }
         return result;
     }
     
+    private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
+        for (DataNode each : dataNodes) {
+            if (qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
-    public void put(final String tableName, final String dataSourceName) {
+    public void put(final String dataSourceName, final String schemaName, final String tableName) {
         if (dataSourceNames.contains(dataSourceName)) {
-            singleTableDataNodes.put(tableName.toLowerCase(), new SingleTableDataNode(tableName, dataSourceName));
+            Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName.toLowerCase(), key -> new LinkedHashSet<>());
+            DataNode dataNode = new DataNode(dataSourceName, tableName);
+            dataNode.setSchemaName(schemaName);
+            dataNodes.add(dataNode);
+            tableNames.put(tableName.toLowerCase(), tableName);
         }
     }
     
     @Override
-    public void remove(final String tableName) {
-        singleTableDataNodes.remove(tableName.toLowerCase());
+    public void remove(final String schemaName, final String tableName) {
+        remove(Collections.singleton(schemaName.toLowerCase()), tableName);
+    }
+    
+    @Override
+    public void remove(final Collection<String> schemaNames, final String tableName) {
+        if (!singleTableDataNodes.containsKey(tableName.toLowerCase())) {
+            return;
+        }
+        Collection<DataNode> dataNodes = singleTableDataNodes.get(tableName.toLowerCase());
+        dataNodes.removeIf(each -> schemaNames.contains(each.getSchemaName().toLowerCase()));
+        if (dataNodes.isEmpty()) {
+            singleTableDataNodes.remove(tableName.toLowerCase());
+            tableNames.remove(tableName.toLowerCase());
+        }
+    }
+    
+    @Override
+    public Optional<DataNode> findSingleTableDataNode(final String schemaName, final String tableName) {
+        Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());
+        for (DataNode each : dataNodes) {
+            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
@@ -163,13 +225,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return singleTableDataNodes.values().stream().map(each -> new DataNode(each.getDataSourceName(), each.getTableName()))
-                .collect(Collectors.groupingBy(DataNode::getTableName, LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
+        return singleTableDataNodes;
     }
     
     @Override
-    public Collection<String> getAllActualTables() {
-        return Collections.emptyList();
+    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        return singleTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
     @Override
@@ -194,16 +255,23 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Collection<String> getAllTables() {
-        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
+        return new HashSet<>(tableNames.values());
     }
     
     @Override
     public Collection<String> getTables() {
-        return singleTableDataNodes.values().stream().map(SingleTableDataNode::getTableName).collect(Collectors.toList());
+        return new HashSet<>(tableNames.values());
     }
     
     @Override
     public String getType() {
         return SingleTableRule.class.getSimpleName();
+    }
+    
+    @Override
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
+        return result;
     }
 }

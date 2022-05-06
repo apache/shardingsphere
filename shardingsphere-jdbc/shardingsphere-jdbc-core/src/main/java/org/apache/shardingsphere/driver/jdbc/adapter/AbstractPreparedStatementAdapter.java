@@ -285,7 +285,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     private void addParameters(final List<Object> parameters) {
         int i = 0;
         for (Object each : parameters) {
-            int index = i++ + 1;
+            int index = ++i;
             setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
         }
     }

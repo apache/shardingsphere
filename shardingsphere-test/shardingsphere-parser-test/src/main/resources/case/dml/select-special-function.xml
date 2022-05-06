@@ -46,7 +46,14 @@
         <projections start-index="7" stop-index="27">
             <expression-projection text="CAST('1' AS UNSIGNED)" start-index="7" stop-index="27">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="27" text="CAST('1' AS UNSIGNED)" />
+                    <function function-name="CAST" start-index="7" stop-index="27" text="CAST('1' AS UNSIGNED)">
+                        <parameter>
+                            <literal-expression value="1" start-index="12" stop-index="14"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="19" stop-index="26"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -128,7 +135,11 @@
         <projections start-index="7" stop-index="22">
             <expression-projection text="VALUES(order_id)" start-index="7" stop-index="22">
                 <expr>
-                    <function function-name="VALUES" start-index="7" stop-index="22" text="VALUES(order_id)" />
+                    <function function-name="VALUES" start-index="7" stop-index="22" text="VALUES(order_id)">
+                        <parameter>
+                            <column name="order_id" start-index="14" stop-index="21" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -141,5 +152,39 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_extract_function">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')">
+                        <parameter>
+                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mod_function">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="MOD(order_id, 1)" start-index="7" stop-index="22">
+                <expr>
+                    <function function-name="MOD" start-index="7" stop-index="22" text="MOD(order_id, 1)">
+                        <parameter>
+                            <column name="order_id" start-index="11" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="21" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="29" stop-index="35" />
+        </from>
     </select>
 </sql-parser-test-cases>

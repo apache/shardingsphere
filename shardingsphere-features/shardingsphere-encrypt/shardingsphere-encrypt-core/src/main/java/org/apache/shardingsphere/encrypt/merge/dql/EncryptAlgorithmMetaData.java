@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +39,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
-    private final ShardingSphereSchema schema;
+    private final String databaseName;
+    
+    private final ShardingSphereMetaData metaData;
     
     private final EncryptRule encryptRule;
     
@@ -44,51 +49,41 @@ public final class EncryptAlgorithmMetaData {
     
     /**
      * Find encryptor.
-     *
-     * @param columnIndex column index
+     * 
+     * @param tableName table name
+     * @param columnName column name
      * @return encryptor
      */
-    public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
-        Optional<ColumnProjection> columnProjection = findColumnProjection(columnIndex);
-        if (!columnProjection.isPresent()) {
-            return Optional.empty();
-        }
-        Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
-        Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnProjection.get().getExpression()));
-        String schemaName = selectStatementContext.getSchemaName();
-        String columnName = columnProjection.get().getName();
-        return tableName.isPresent() ? findEncryptor(schemaName, tableName.get(), columnName) : findEncryptor(schemaName, columnName);
-    }
-    
-    private Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String tableName, final String columnName) {
-        return encryptRule.findEncryptor(schemaName, tableName, columnName);
-    }
-    
-    private Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String columnName) {
-        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            Optional<EncryptAlgorithm> result = encryptRule.findEncryptor(schemaName, each, columnName);
-            if (result.isPresent()) {
-                return result;
-            }
-        }
-        return Optional.empty();
+    public Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findEncryptor(tableName, columnName);
     }
     
     /**
      * Judge whether table is support QueryWithCipherColumn or not.
      *
-     * @param columnIndex column index
+     * @param tableName table name
      * @return whether table is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final int columnIndex) {
+    public boolean isQueryWithCipherColumn(final String tableName) {
+        return encryptRule.isQueryWithCipherColumn(tableName);
+    }
+    
+    /**
+     * Find encrypt context.
+     * 
+     * @param columnIndex column index
+     * @return encrypt context
+     */
+    public Optional<EncryptContext> findEncryptContext(final int columnIndex) {
         Optional<ColumnProjection> columnProjection = findColumnProjection(columnIndex);
-        Optional<String> tableName = Optional.empty();
-        if (columnProjection.isPresent()) {
-            Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
-            tableName = Optional.ofNullable(columnTableNames.get(columnProjection.get().getExpression()));
+        if (!columnProjection.isPresent()) {
+            return Optional.empty();
         }
-        return encryptRule.isQueryWithCipherColumn(tableName.orElse(""));
-
+        TablesContext tablesContext = selectStatementContext.getTablesContext();
+        String schemaName = tablesContext.getSchemaName().orElse(selectStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
+        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection.get()), metaData.getSchemaByName(schemaName));
+        Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
+        return tableName.map(optional -> EncryptContextBuilder.build(databaseName, schemaName, optional, columnProjection.get().getName(), encryptRule));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
@@ -98,5 +93,18 @@ public final class EncryptAlgorithmMetaData {
         }
         Projection projection = expandProjections.get(columnIndex - 1);
         return projection instanceof ColumnProjection ? Optional.of((ColumnProjection) projection) : Optional.empty();
+    }
+    
+    private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
+        String tableName = columnTableNames.get(columnProjection.getExpression());
+        if (null != tableName) {
+            return Optional.of(tableName);
+        }
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            if (encryptRule.findEncryptor(each, columnProjection.getName()).isPresent()) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
 }

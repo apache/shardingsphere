@@ -23,21 +23,22 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.check.SQLChecker;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -67,10 +69,6 @@ public final class MySQLAuthenticationHandlerTest {
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
     
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
-    
-    static {
-        ShardingSphereServiceLoader.register(SQLChecker.class);
-    }
     
     @Before
     public void setUp() {
@@ -125,6 +123,13 @@ public final class MySQLAuthenticationHandlerTest {
         assertThat(authenticationHandler.getAuthPluginData().getAuthenticationPluginData(), is(Bytes.concat(part1, part2)));
     }
     
+    @Test
+    public void assertGetAuthenticator() {
+        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
+        assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
+        assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
+    }
+    
     private void setAuthority(final ShardingSphereUser user) {
         NativeAuthorityProviderAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.emptyList());
@@ -143,7 +148,7 @@ public final class MySQLAuthenticationHandlerTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                buildGlobalRuleMetaData(user, isNeedSuper), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

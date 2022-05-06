@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -69,14 +68,14 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
     }
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_0").getWriteDataSourceName(), is("write_ds_0"));
-        assertThat(actual.getDataSources().get("ds_0").getReadDataSourceNames(), is(Arrays.asList("write_ds_0_read_0", "write_ds_0_read_1")));
+        assertThat(actual.getDataSources().get("ds_0").getType(), is("Static"));
+        assertThat(actual.getDataSources().get("ds_0").getProps().getProperty("write-data-source-name"), is("write_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_1").getWriteDataSourceName(), is("write_ds_1"));
-        assertThat(actual.getDataSources().get("ds_1").getReadDataSourceNames(), is(Arrays.asList("write_ds_1_read_0", "write_ds_1_read_1")));
+        assertThat(actual.getDataSources().get("ds_1").getType(), is("Static"));
+        assertThat(actual.getDataSources().get("ds_1").getProps().getProperty("write-data-source-name"), is("write_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }

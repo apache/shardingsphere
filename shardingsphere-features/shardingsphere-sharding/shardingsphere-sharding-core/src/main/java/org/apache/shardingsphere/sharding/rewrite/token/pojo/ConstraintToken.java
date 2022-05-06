@@ -41,11 +41,11 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
     
     private final IdentifierValue identifier;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
-    public ConstraintToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public ConstraintToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
@@ -61,7 +61,7 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
     private String getConstraintValue(final RouteUnit routeUnit) {
         StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        sqlStatementContext.getTablesContext().getTableNames().stream().findFirst().map(logicAndActualTables::get).ifPresent(tableName -> result.append("_").append(tableName));
+        sqlStatementContext.getTablesContext().getTableNames().stream().findFirst().map(logicAndActualTables::get).ifPresent(optional -> result.append("_").append(optional));
         return result.toString();
     }
     

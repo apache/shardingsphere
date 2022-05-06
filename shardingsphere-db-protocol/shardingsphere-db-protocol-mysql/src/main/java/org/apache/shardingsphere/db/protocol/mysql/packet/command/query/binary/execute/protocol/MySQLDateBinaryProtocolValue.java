@@ -42,7 +42,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
                 return getTimestampForDatetime(payload);
             case 11:
                 Timestamp result = getTimestampForDatetime(payload);
-                result.setNanos(payload.readInt4());
+                result.setNanos(payload.readInt4() * 1000);
                 return result;
             default:
                 throw new IllegalArgumentException(String.format("Wrong length '%d' of MYSQL_TYPE_TIME", length));

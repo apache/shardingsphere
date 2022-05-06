@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Empty statement.
  */
-public final class EmptyStatement implements SQLStatement {
+public final class EmptyStatement extends AbstractSQLStatement {
     
     @Override
     public int getParameterCount() {

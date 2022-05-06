@@ -17,22 +17,33 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Bind complete packet for PostgreSQL.
  */
-public final class PostgreSQLBindCompletePacket implements PostgreSQLIdentifierPacket {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLBindCompletePacket implements PostgreSQLPacket {
     
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.BIND_COMPLETE.getValue(), 0, 0, 0, 4};
+    
+    private static final PostgreSQLBindCompletePacket INSTANCE = new PostgreSQLBindCompletePacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLBindCompletePacket}.
+     *
+     * @return instance of {@link PostgreSQLBindCompletePacket}
+     */
+    public static PostgreSQLBindCompletePacket getInstance() {
+        return INSTANCE;
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.BIND_COMPLETE;
+    public void write(final PostgreSQLPacketPayload payload) {
+        payload.getByteBuf().writeBytes(VALUE);
     }
 }

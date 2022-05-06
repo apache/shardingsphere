@@ -17,23 +17,23 @@
 
 dataSources:
   db_write:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_write;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:db_write;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   read_ds_0:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:read_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:read_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   read_ds_1:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:read_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:read_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
@@ -41,11 +41,11 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: db_write
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: db_write
+        read-data-source-names: read_ds_0,read_ds_1
 
 mode:
   type: Cluster

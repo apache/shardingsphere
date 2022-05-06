@@ -39,9 +39,9 @@ mode:
   type: Cluster
   repository:
     type: # 持久化仓库类型
-    namespace: # 注册中心命名空间
-    serverLists: # 注册中心连接地址
     props: # 持久化仓库所需属性
+      namespace: # 注册中心命名空间
+      server-lists: # 注册中心连接地址
       foo_key: foo_value
       bar_key: bar_value
   overwrite: # 是否使用本地配置覆盖持久化配置

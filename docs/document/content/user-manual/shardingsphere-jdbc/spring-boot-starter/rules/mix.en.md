@@ -8,7 +8,7 @@ weight = 6
 # data source configuration
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds0.jdbc-url= # Database URL connection
 spring.shardingsphere.datasource.write-ds0.type=  # Database connection pool type name
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # Database driver class name
 spring.shardingsphere.datasource.write-ds0.username= # Database username
@@ -43,8 +43,8 @@ spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.shard
 
 # Data encrypt configuration
 # Table `t_user` is the name of the logical table that uses for data sharding configuration.
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
 
@@ -67,15 +67,16 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inl
 
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # read query configuration
 # ds_0,ds_1 is the logical data source name of the readwrite-splitting
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.write-data-source-name=write-ds0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.write-data-source-name=write-ds0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.read-data-source-names=write-ds0-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.write-data-source-name=write-ds1
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.write-data-source-name=write-ds1
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.read-data-source-names=write-ds1-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
 
 # Load balance algorithm configuration

@@ -22,16 +22,19 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe.PostgreSQLComDescribeExecutor;
@@ -41,7 +44,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Command executor factory for PostgreSQL.
@@ -55,37 +59,67 @@ public final class PostgreSQLCommandExecutorFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param commandPacket command packet for PostgreSQL
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
      * @param connectionContext PostgreSQL connection context
      * @return command executor
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
-                                              final BackendConnection backendConnection, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                              final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
+            return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
+        }
+        PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
+        if (aggregatedCommandPacket.isContainsBatchedStatements()) {
+            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, connectionContext));
+        }
+        List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
+        for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        return new PostgreSQLAggregatedCommandExecutor(result);
+    }
+    
+    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket, final ConnectionSession connectionSession,
+                                                                                   final PostgreSQLConnectionContext connectionContext) throws SQLException {
+        List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
+        int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
+        int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
+        List<CommandExecutor> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
+        for (int i = 0; i < firstBindIndex; i++) {
+            PostgreSQLCommandPacket each = packets.get(i);
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        result.add(new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
+        for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
+            PostgreSQLCommandPacket each = packets.get(i);
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        return result;
+    }
+    
+    private static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
+                                                      final PostgreSQLConnectionContext connectionContext) throws SQLException {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, backendConnection);
+                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);
             case PARSE_COMMAND:
-                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
+                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, connectionSession);
             case BIND_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, backendConnection));
-                break;
+                return new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
             case DESCRIBE_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket));
-                break;
+                return new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
             case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor(connectionContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:
-                return new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
+                return new PostgreSQLComSyncExecutor(connectionSession);
             case CLOSE_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, backendConnection));
-                break;
+                return new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, connectionSession);
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();
             default:
-                return new PostgreSQLUnsupportedCommandExecutor(connectionContext);
+                return new PostgreSQLUnsupportedCommandExecutor();
         }
-        return Collections::emptyList;
     }
 }
