@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.route.strategy;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreHintShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
@@ -43,19 +43,19 @@ public final class ShardingStrategyFactoryTest {
     private StandardShardingStrategyConfiguration standardShardingStrategyConfig;
     
     @Mock
-    private StandardShardingAlgorithmFixture standardShardingAlgorithmFixture;
+    private CoreStandardShardingAlgorithmFixture standardShardingAlgorithmFixture;
     
     @Mock
     private ComplexShardingStrategyConfiguration complexShardingStrategyConfig;
     
     @Mock
-    private ComplexKeysShardingAlgorithmFixture complexKeysShardingAlgorithmFixture;
+    private CoreComplexKeysShardingAlgorithmFixture complexKeysShardingAlgorithmFixture;
     
     @Mock
     private HintShardingStrategyConfiguration hintShardingStrategyConfig;
     
     @Mock
-    private HintShardingAlgorithmFixture hintShardingAlgorithmFixture;
+    private CoreHintShardingAlgorithmFixture hintShardingAlgorithmFixture;
     
     @Test
     public void assertNewInstance() {

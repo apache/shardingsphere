@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.HashSet;
 
-public final class StandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class CoreStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -51,6 +51,6 @@ public final class StandardShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public String getType() {
-        return "STANDARD.FIXTURE";
+        return "CORE.STANDARD.FIXTURE";
     }
 }

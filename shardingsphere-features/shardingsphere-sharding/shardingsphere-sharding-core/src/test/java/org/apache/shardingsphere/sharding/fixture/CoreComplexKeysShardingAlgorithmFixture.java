@@ -17,26 +17,20 @@
 
 package org.apache.shardingsphere.sharding.fixture;
 
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
-import java.util.Collections;
 
-public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+public final class CoreComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
-                return Collections.singletonList(each);
-            }
-        }
-        return null;
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
     }
     
     @Override
     public String getType() {
-        return "HINT.FIXTURE";
+        return "CORE.COMPLEX.FIXTURE";
     }
 }
