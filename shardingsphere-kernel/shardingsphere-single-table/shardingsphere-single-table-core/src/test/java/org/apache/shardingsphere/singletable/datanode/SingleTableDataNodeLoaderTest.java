@@ -87,7 +87,7 @@ public final class SingleTableDataNodeLoaderTest {
     @Test
     public void assertLoad() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load("databaseName", mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
         assertTrue(dataNodeMap.containsKey("employee"));
         assertTrue(dataNodeMap.containsKey("dept"));
         assertTrue(dataNodeMap.containsKey("salary"));
