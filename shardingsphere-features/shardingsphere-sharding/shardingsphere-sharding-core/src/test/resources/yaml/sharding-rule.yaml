@@ -31,11 +31,11 @@ rules:
       databaseStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithmName: complex_test
+          shardingAlgorithmName: complex_fixture
       tableStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithmName: complex_test
+          shardingAlgorithmName: complex_fixture
     t_stock:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 
@@ -74,7 +74,7 @@ rules:
   shardingAlgorithms:
     standard_test:
       type: STANDARD.FIXTURE
-    complex_test:
+    complex_fixture:
       type: COMPLEX.FIXTURE
     hint_test:
       type: HINT.FIXTURE

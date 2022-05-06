@@ -86,9 +86,9 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getTables().get("t_user").getActualDataNodes(), is("ds_${0..1}.t_user_${0..15}"));
         assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithmName(), is("complex_test"));
+        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithmName(), is("complex_fixture"));
         assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithmName(), is("complex_test"));
+        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithmName(), is("complex_fixture"));
     }
     
     private void assertTStock(final YamlShardingRuleConfiguration actual) {
