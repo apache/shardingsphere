@@ -74,7 +74,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         }
     }
     
-    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+    private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                    final String schemaName, final String renameSchemaName, final Collection<String> logicDataSourceNames) {
         ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
         metaData.getSchemas().put(renameSchemaName, schema);
