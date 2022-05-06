@@ -18,9 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 
 public final class FixtureDataSourcePreparer implements DataSourcePreparer {
+    
+    @Override
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
+    }
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {

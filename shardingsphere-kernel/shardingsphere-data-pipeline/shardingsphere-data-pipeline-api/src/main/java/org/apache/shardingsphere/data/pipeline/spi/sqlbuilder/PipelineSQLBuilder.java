@@ -34,6 +34,16 @@ import java.util.Set;
 public interface PipelineSQLBuilder extends StatefulTypedSPI {
     
     /**
+     * Build create schema SQL.
+     *
+     * @param schemaName schema name
+     * @return create schema SQL
+     */
+    default String buildCreateSchemaSQL(String schemaName) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
      * Build inventory dump SQL.
      *
      * @param schemaName schema name

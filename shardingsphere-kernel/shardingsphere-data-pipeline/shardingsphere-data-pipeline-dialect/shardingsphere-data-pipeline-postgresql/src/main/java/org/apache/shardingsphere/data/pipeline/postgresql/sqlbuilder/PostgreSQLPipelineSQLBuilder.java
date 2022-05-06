@@ -32,6 +32,11 @@ import java.util.Set;
 public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
+    public String buildCreateSchemaSQL(final String schemaName) {
+        return "CREATE SCHEMA IF NOT EXISTS " + quote(schemaName);
+    }
+    
+    @Override
     public String getLeftIdentifierQuoteString() {
         return "\"";
     }
