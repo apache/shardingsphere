@@ -108,7 +108,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (!shardingRuleTableNames.isEmpty()) {
             return shardingRuleTableNames;
         }
-        return sqlStatementContext instanceof IndexAvailable ? getTableNames(metaData, 
+        return sqlStatementContext instanceof IndexAvailable ? getTableNames(metaData,
                 ((IndexAvailable) sqlStatementContext).getIndexes(), sqlStatementContext.getDatabaseType()) : Collections.emptyList();
     }
     

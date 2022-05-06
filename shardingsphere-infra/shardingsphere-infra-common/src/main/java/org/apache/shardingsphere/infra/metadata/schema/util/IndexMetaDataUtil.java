@@ -91,7 +91,7 @@ public class IndexMetaDataUtil {
         String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName), 
+            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName),
                     each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(createQualifiedTable(actualSchemaName, optional)));
         }
         return result;

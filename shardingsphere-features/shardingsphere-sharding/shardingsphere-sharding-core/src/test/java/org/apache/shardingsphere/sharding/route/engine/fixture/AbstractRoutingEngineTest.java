@@ -242,10 +242,17 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
+    /**
+     * Create single table rule.
+     * 
+     * @param rules rules
+     * @return single table rule
+     */
+    protected SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        singleTableRule.put(dataSourceMap.keySet().iterator().next(), DefaultSchema.LOGIC_NAME, "t_category");
-        return singleTableRule;
+        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        result.put(dataSourceMap.keySet().iterator().next(), DefaultSchema.LOGIC_NAME, "t_category");
+        return result;
     }
 }

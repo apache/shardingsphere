@@ -69,7 +69,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(routeContext, rule);
     }
     
-    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData, 
+    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
                                                            final SingleTableRule rule, final RouteContext routeContext) {
         Collection<QualifiedTable> result = getQualifiedTables(metaData, sqlStatementContext.getTablesContext().getTables(), sqlStatementContext.getDatabaseType());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.singletable.datanode;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Before;
@@ -86,7 +87,7 @@ public final class SingleTableDataNodeLoaderTest {
     @Test
     public void assertLoad() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load("databaseName", mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), props);
         assertTrue(dataNodeMap.containsKey("employee"));
         assertTrue(dataNodeMap.containsKey("dept"));
         assertTrue(dataNodeMap.containsKey("salary"));
@@ -105,7 +106,7 @@ public final class SingleTableDataNodeLoaderTest {
     public void assertLoadWithExcludeTables() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, props);
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables, props);
         assertFalse(dataNodeMap.containsKey("employee"));
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));
@@ -121,7 +122,7 @@ public final class SingleTableDataNodeLoaderTest {
     public void assertLoadWithCheckOption() {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.TRUE.toString());
-        SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), new ConfigurationProperties(props));
+        SingleTableDataNodeLoader.load(DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), new ConfigurationProperties(props));
     }
     
     @Test
@@ -129,7 +130,8 @@ public final class SingleTableDataNodeLoaderTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.TRUE.toString());
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, excludedTables, new ConfigurationProperties(props));
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(
+                DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables, new ConfigurationProperties(props));
         assertFalse(dataNodeMap.containsKey("employee"));
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));

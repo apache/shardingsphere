@@ -64,11 +64,11 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private final Map<String, String> tableNames;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final DatabaseType databaseType,
+    public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
         config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
     }
@@ -171,7 +171,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
         for (DataNode each : dataNodes) {
-            if (qualifiedTable.getTableName().equalsIgnoreCase(each.getTableName()) && qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
+            if (null != qualifiedTable.getSchemaName() && qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
                 return true;
             }
         }
@@ -202,7 +202,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public Optional<DataNode> findSingleTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());
         for (DataNode each : dataNodes) {
-            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
+            if (null != schemaName && schemaName.equalsIgnoreCase(each.getSchemaName())) {
                 return Optional.of(each);
             }
         }

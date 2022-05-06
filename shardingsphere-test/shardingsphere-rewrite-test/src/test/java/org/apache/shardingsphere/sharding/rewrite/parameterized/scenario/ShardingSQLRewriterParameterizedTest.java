@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -72,16 +71,16 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules) {
+    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().put("db", DefaultSchema.LOGIC_NAME, "t_single");
-            singleTableRule.get().put("db", DefaultSchema.LOGIC_NAME, "t_single_extend");
+            singleTableRule.get().put("db", schemaName, "t_single");
+            singleTableRule.get().put("db", schemaName, "t_single_extend");
         }
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String databaseName) {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
@@ -97,7 +96,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
-        return Collections.singletonMap(databaseName, result);
+        return Collections.singletonMap(schemaName, result);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

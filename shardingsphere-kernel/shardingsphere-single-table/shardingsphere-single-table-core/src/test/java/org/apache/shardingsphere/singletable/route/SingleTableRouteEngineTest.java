@@ -53,7 +53,7 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("ds_0", "t_order")));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(createDataNode("ds_0", "t_order_item")));
@@ -86,7 +86,7 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteInDifferentDataSource() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(getDataNode()));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(createDataNode("ds_1", "t_order_item")));
@@ -114,7 +114,7 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteWithoutSingleTableRule() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
@@ -130,7 +130,7 @@ public final class SingleTableRouteEngineTest {
     @Test
     public void assertRouteWithDefaultSingleTableRule() {
         SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
