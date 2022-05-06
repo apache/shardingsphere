@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class DriverKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
@@ -32,6 +32,6 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public String getType() {
-        return "INCREMENT";
+        return "DRIVER.FIXTURE";
     }
 }
