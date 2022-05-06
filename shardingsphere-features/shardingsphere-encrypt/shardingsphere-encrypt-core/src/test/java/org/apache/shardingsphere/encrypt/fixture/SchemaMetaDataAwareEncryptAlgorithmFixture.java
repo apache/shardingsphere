@@ -19,27 +19,16 @@ package org.apache.shardingsphere.encrypt.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Map;
-import java.util.Properties;
 
-/**
- * Customized encrypt algorithm.
- */
 @Getter
 @Setter
-public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
-    
-    private static final String TEST_KEY = "TEST";
-    
-    private Properties props;
-    
-    private byte[] key = DigestUtils.sha256(TEST_KEY);
+public final class SchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
     
     private String databaseName;
     
@@ -47,42 +36,16 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     
     @Override
     public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {
-        byte[] bytes = toBytes(plainValue);
-        for (int index = 0; index < 32; index++) {
-            bytes[index % 4] = (byte) (key[index] ^ bytes[index % 4]);
-        }
-        return toInt(bytes);
+        return plainValue;
     }
     
     @Override
     public Integer decrypt(final Integer cipherValue, final EncryptContext encryptContext) {
-        byte[] bytes = toBytes(cipherValue);
-        for (int index = 0; index < 32; index++) {
-            bytes[index % 4] = (byte) (key[index] ^ bytes[index % 4]);
-        }
-        return toInt(bytes);
+        return cipherValue;
     }
     
     @Override
     public String getType() {
-        return "CUSTOMIZED";
-    }
-    
-    private int toInt(final byte[] bytes) {
-        int result = 0;
-        for (int index = 0; index < 4; index++) {
-            result <<= 8;
-            result |= bytes[index] & 0xff;
-        }
-        return result;
-    }
-    
-    private byte[] toBytes(final int intValue) {
-        byte[] result = new byte[4];
-        result[0] = (byte) (intValue >>> 24);
-        result[1] = (byte) (intValue >>> 16);
-        result[2] = (byte) (intValue >>> 8);
-        result[3] = (byte) intValue;
-        return result;
+        return "METADATA_AWARE.FIXTURE";
     }
 }
