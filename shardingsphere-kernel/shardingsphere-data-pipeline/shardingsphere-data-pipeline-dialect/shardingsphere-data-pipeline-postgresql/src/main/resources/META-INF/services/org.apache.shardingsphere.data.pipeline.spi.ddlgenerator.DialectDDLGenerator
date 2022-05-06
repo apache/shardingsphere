@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreDDLSQLGenerator
+org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreDDLGenerator
