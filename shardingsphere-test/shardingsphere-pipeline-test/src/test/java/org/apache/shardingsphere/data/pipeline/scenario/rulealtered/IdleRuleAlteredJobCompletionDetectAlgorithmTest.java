@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.IdleRuleAlteredJobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
@@ -92,7 +91,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test
     public void assertTrueWhenJobAlmostCompleted() {
         int jobShardingCount = 1;
-        long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1800L + IdleRuleAlteredJobCompletionDetectAlgorithm.DEFAULT_IDLE_SECONDS_THRESHOLD);
+        long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1800L + 1800L);
         JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);

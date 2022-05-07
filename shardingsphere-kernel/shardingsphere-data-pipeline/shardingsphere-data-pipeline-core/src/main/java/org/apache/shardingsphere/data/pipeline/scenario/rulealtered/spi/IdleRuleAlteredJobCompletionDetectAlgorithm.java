@@ -38,7 +38,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     
     private static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-seconds-threshold";
     
-    public static final long DEFAULT_IDLE_SECONDS_THRESHOLD = 1800L;
+    private static final long DEFAULT_IDLE_SECONDS_THRESHOLD = 1800L;
     
     @Getter
     @Setter
