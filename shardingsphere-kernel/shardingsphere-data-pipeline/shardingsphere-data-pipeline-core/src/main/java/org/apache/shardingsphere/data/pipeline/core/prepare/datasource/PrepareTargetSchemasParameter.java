@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
-public final class FixtureDataSourcePreparer implements DataSourcePreparer {
+/**
+ * Prepare target schemas parameter.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class PrepareTargetSchemasParameter {
     
-    @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-    }
+    private final TaskConfiguration taskConfig;
     
-    @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
-    }
+    private final PipelineDataSourceManager dataSourceManager;
+    
+    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
 }

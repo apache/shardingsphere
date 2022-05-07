@@ -85,7 +85,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         log.info("prepareTargetTables, actualTableDefinitions={}", actualTableDefinitions);
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
         try (
-                Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
+                Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);

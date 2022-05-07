@@ -19,17 +19,25 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,12 +61,48 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
+    @Override
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
+        DatabaseType sourceDatabaseType = DatabaseTypeRegistry.getActualDatabaseType(parameter.getTaskConfig().getJobConfig().getSourceDatabaseType());
+        DatabaseType targetDatabaseType = DatabaseTypeRegistry.getActualDatabaseType(parameter.getTaskConfig().getJobConfig().getTargetDatabaseType());
+        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
+            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
+            return;
+        }
+        Set<String> schemaNames = getSchemaNames(parameter);
+        log.info("prepareTargetSchemas, schemaNames={}", schemaNames);
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(targetDatabaseType.getName());
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+            for (String each : schemaNames) {
+                String sql = pipelineSQLBuilder.buildCreateSchemaSQL(each);
+                try (Statement statement = targetConnection.createStatement()) {
+                    statement.execute(sql);
+                } catch (final SQLException ignored) {
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineJobPrepareFailedException("Can not get connection.", ex);
+        }
+    }
+    
+    private Set<String> getSchemaNames(final PrepareTargetSchemasParameter parameter) {
+        Set<String> result = new HashSet<>();
+        for (String each : parameter.getTaskConfig().getJobConfig().splitLogicTableNames()) {
+            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each);
+            if (null == schemaName) {
+                throw new PipelineJobPrepareFailedException("Can not get schemaName by logic table name " + each);
+            }
+            result.add(schemaName);
+        }
+        return result;
+    }
+    
     protected final PipelineDataSourceWrapper getSourceCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }
     
-    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
-        return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter()));
+    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(taskConfig.getImporterConfig().getDataSourceConfig());
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

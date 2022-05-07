@@ -23,6 +23,13 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 public interface DataSourcePreparer {
     
     /**
+     * Prepare target schemas.
+     *
+     * @param parameter prepare target schemas parameter
+     */
+    void prepareTargetSchemas(PrepareTargetSchemasParameter parameter);
+    
+    /**
      * Prepare target tables.
      *
      * @param parameter prepare target tables parameter
