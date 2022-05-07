@@ -64,6 +64,6 @@ public final class KeyGenerateAlgorithmFactory {
      * @return contains key generate algorithm or not
      */
     public static boolean contains(final String keyGenerateAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType, null).isPresent();
     }
 }

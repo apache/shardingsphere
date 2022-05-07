@@ -64,6 +64,6 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      * @return contains replica load-balance algorithm or not
      */
     public static boolean contains(final String replicaLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType, null).isPresent();
     }
 }

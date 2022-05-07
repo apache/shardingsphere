@@ -54,6 +54,6 @@ public final class TrafficLoadBalanceAlgorithmFactory {
      * @return contains traffic load balance algorithm or not
      */
     public static boolean contains(final String trafficLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType, null).isPresent();
     }
 }

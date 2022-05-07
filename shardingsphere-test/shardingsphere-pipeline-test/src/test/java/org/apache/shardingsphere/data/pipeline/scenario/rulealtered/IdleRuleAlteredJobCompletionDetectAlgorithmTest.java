@@ -24,6 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.IdleRuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -39,42 +41,30 @@ import static org.junit.Assert.assertTrue;
 
 public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     
-    private final IdleRuleAlteredJobCompletionDetectAlgorithm detectAlgorithm = new IdleRuleAlteredJobCompletionDetectAlgorithm();
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertInitFailNoIdleThresholdKey() {
-        detectAlgorithm.init(new Properties());
-    }
-    
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailInvalidIdleThresholdKey() {
         Properties props = new Properties();
         props.setProperty("incremental-task-idle-second-threshold", "invalid_value");
-        detectAlgorithm.init(props);
+        JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", props));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNegativeIdleThresholdKey() {
         Properties props = new Properties();
         props.setProperty("incremental-task-idle-second-threshold", "-8");
-        detectAlgorithm.init(props);
+        JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", props));
     }
     
-    @Test
-    public void assertInitSuccess() {
-        Properties props = new Properties();
-        props.setProperty("incremental-task-idle-second-threshold", "10");
-        detectAlgorithm.init(props);
-    }
-    
+    @SuppressWarnings("unchecked")
     @Test
     public void assertFalseOnFewJobProgresses() {
         int jobShardingCount = 2;
         Collection<JobProgress> jobProgresses = Collections.singleton(new JobProgress());
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
-        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
+        assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertFalseOnUnFinishedPosition() {
         int jobShardingCount = 1;
@@ -84,9 +74,10 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
         inventoryTaskProgressMap.put("foo_ds", new InventoryTaskProgress(new PlaceholderPosition()));
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
-        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
+        assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertTrueWhenIdleMinutesNotReach() {
         int jobShardingCount = 1;
@@ -94,9 +85,10 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
         JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
-        assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
+        assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertTrueWhenJobAlmostCompleted() {
         int jobShardingCount = 1;
@@ -104,7 +96,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
         JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
-        assertTrue(detectAlgorithm.isAlmostCompleted(parameter));
+        assertTrue(JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
     
     private JobProgress createJobProgress(final long latestActiveTimeMillis) {

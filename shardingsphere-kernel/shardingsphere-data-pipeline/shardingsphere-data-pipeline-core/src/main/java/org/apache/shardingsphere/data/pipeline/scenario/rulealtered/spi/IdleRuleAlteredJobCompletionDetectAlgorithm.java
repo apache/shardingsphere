@@ -44,7 +44,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     @Setter
     private Properties props;
     
-    private long incrementalTaskIdleSecondsThreshold = DEFAULT_IDLE_SECONDS_THRESHOLD;
+    private long incrementalTaskIdleSecondsThreshold;
     
     @Override
     public void init(final Properties props) {
@@ -53,8 +53,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     private long getIncrementalTaskIdleSecondsThreshold(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(IDLE_SECOND_THRESHOLD_KEY), "Incremental task idle threshold seconds can not be null.");
-        long result = Long.parseLong(props.get(IDLE_SECOND_THRESHOLD_KEY).toString());
+        long result = Long.parseLong(props.getOrDefault(IDLE_SECOND_THRESHOLD_KEY, DEFAULT_IDLE_SECONDS_THRESHOLD).toString());
         Preconditions.checkArgument(result > 0, "Incremental task idle threshold seconds must be positive.");
         return result;
     }
