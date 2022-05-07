@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -59,7 +60,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
-        Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
+        Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions, parameter.getTableNameSchemaNameMapping());
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
@@ -112,20 +113,22 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
      * @param actualTableDefinitions actual table definitions. key is logic table name, value is actual table definition.
      * @return all SQLs. key is logic table name, value is collection of logic table SQLs.
      */
-    private Map<String, Collection<String>> getCreateLogicTableSQLs(final Collection<ActualTableDefinition> actualTableDefinitions) {
+    private Map<String, Collection<String>> getCreateLogicTableSQLs(final Collection<ActualTableDefinition> actualTableDefinitions, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         Map<String, Collection<String>> result = new HashMap<>();
         for (ActualTableDefinition each : actualTableDefinitions) {
+            String schemaName = tableNameSchemaNameMapping.getSchemaName(each.getLogicTableName());
             Collection<String> logicTableSQLs = splitTableDefinitionToSQLs(each).stream().map(sql -> {
                 TableDefinitionSQLType sqlType = getTableDefinitionSQLType(sql);
                 switch (sqlType) {
                     // TODO replace constraint and index name
                     case CREATE_TABLE:
                         sql = addIfNotExistsForCreateTableSQL(sql);
-                        // TODO schemaName in create table SQL
+                        sql = appendSchemaName(sql, each.getActualTableName(), schemaName);
                         sql = replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                         sql = skipCreateTableExtendSet(sql);
                         return sql;
                     case ALTER_TABLE:
+                        sql = appendSchemaName(sql, each.getActualTableName(), schemaName);
                         return replaceActualTableNameToLogicTableName(sql, each.getActualTableName(), each.getLogicTableName());
                     default:
                         return "";
@@ -136,17 +139,12 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         return result;
     }
     
-    @Override
-    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
-        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
-        while (true) {
-            int start = logicalTableSQL.indexOf(actualTableName);
-            if (start <= 0) {
-                return logicalTableSQL.toString();
-            }
-            int end = start + actualTableName.length();
-            logicalTableSQL.replace(start, end, logicTableName);
+    private String appendSchemaName(final String createOrAlterTableSQL, final String actualTableName, final String schemaName) {
+        int start = createOrAlterTableSQL.indexOf(actualTableName);
+        if (start <= 0) {
+            return createOrAlterTableSQL;
         }
+        return new StringBuilder(createOrAlterTableSQL).insert(start, schemaName + ".").toString();
     }
     
     private String skipCreateTableExtendSet(final String createSQL) {

@@ -156,11 +156,14 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
-        int start = createOrAlterTableSQL.indexOf(actualTableName);
-        if (start <= 0) {
-            return createOrAlterTableSQL;
+        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
+        while (true) {
+            int start = logicalTableSQL.indexOf(actualTableName);
+            if (start <= 0) {
+                return logicalTableSQL.toString();
+            }
+            int end = start + actualTableName.length();
+            logicalTableSQL.replace(start, end, logicTableName);
         }
-        int end = start + actualTableName.length();
-        return new StringBuilder(createOrAlterTableSQL).replace(start, end, logicTableName).toString();
     }
 }
