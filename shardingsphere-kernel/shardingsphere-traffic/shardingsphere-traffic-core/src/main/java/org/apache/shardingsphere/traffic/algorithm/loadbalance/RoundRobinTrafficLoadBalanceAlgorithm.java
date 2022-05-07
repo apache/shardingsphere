@@ -32,8 +32,7 @@ public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadB
     
     @Override
     public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
-        count.compareAndSet(instanceIds.size(), 0);
-        return instanceIds.get(count.getAndIncrement());
+        return instanceIds.get(Math.abs(count.getAndIncrement()) % instanceIds.size());
     }
     
     @Override
