@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import java.util.Collection;
 import java.util.Collections;
 
-public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
+public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
     
     @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
