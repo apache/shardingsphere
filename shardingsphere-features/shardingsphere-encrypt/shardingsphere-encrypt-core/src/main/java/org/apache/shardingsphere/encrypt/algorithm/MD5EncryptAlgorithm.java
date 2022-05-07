@@ -28,10 +28,10 @@ import java.util.Properties;
 /**
  * MD5 encrypt algorithm.
  */
+@Getter
+@Setter
 public final class MD5EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
-    @Getter
-    @Setter
     private Properties props;
     
     @Override

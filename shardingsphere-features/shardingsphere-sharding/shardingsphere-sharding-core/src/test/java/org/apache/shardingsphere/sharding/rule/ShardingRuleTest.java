@@ -240,7 +240,7 @@ public final class ShardingRuleTest {
     public void assertFindShardingColumnForDefaultTableShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
-        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "STANDARD_TEST"));
+        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "standard_fixture"));
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD.FIXTURE", new Properties()));
         Optional<String> actual = new ShardingRule(shardingRuleConfig, createDataSourceNames()).findShardingColumn("column", "LOGIC_TABLE");
         assertTrue(actual.isPresent());

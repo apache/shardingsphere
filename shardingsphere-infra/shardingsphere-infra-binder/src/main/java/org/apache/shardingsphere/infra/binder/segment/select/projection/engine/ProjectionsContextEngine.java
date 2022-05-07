@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Projections context engine.
@@ -48,8 +49,8 @@ public final class ProjectionsContextEngine {
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final ShardingSphereSchema schema, final DatabaseType databaseType) {
-        projectionEngine = new ProjectionEngine(schema, databaseType);
+    public ProjectionsContextEngine(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseType databaseType) {
+        projectionEngine = new ProjectionEngine(databaseName, schemas, databaseType);
     }
     
     /**

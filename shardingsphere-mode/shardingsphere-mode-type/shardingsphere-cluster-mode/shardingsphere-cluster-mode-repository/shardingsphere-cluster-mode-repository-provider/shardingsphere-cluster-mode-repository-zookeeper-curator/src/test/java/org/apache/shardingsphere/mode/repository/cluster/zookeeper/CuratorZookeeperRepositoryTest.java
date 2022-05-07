@@ -61,9 +61,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -323,19 +321,5 @@ public final class CuratorZookeeperRepositoryTest {
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLock() {
-        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(true);
-        assertTrue(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLockFailed() {
-        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(false);
-        assertFalse(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
     }
 }

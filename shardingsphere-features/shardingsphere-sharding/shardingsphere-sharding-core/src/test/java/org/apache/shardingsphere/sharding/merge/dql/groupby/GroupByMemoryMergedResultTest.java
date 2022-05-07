@@ -45,6 +45,8 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -185,10 +187,17 @@ public final class GroupByMemoryMergedResultTest {
         when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
+        when(metaData.getSchemas()).thenReturn(mockSchemas(schema));
         when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(metaData), metaData);
         assertFalse(actual.next());
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemas(final ShardingSphereSchema schema) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+        result.put(DefaultSchema.LOGIC_NAME, schema);
+        return result;
     }
 }

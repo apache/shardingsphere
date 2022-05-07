@@ -15,36 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.infra.config.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 /**
- * Empty encrypt algorithm.
+ * Instance aware algorithm.
  */
-public final class EmptyEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public interface InstanceAwareAlgorithm {
     
-    @Getter
-    @Setter
-    private Properties props;
-    
-    @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return String.valueOf(plainValue);
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
-    }
-    
-    @Override
-    public String getType() {
-        return "EMPTY";
-    }
+    /**
+     * Set instance context.
+     * 
+     * @param instanceContext instance context
+     */
+    void setInstanceContext(InstanceContext instanceContext);
 }
