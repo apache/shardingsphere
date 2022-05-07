@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,21 +63,27 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final List<String> columnNames;
     
+    private final Map<Integer, List<String>> columnNamesMap = new LinkedHashMap<>();
+    
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final String defaultDatabaseName;
     
     private final List<String> insertColumnNames;
     
-    private final List<List<ExpressionSegment>> valueExpressions;
+    private final Map<Integer, List<List<ExpressionSegment>>> valueExpressions = new LinkedHashMap<>();
     
     private List<InsertValueContext> insertValueContexts;
+    
+    private Map<Integer, List<InsertValueContext>> insertValueContextsMap = new LinkedHashMap<>();
     
     private InsertSelectContext insertSelectContext;
     
     private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
-    private GeneratedKeyContext generatedKeyContext;
+    private Map<Integer, OnDuplicateUpdateContext> onDuplicateKeyUpdateValueContexts = new LinkedHashMap<>();
+    
+    private Map<Integer, GeneratedKeyContext> generatedKeyContexts = new LinkedHashMap<>();
     
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                   final InsertStatement sqlStatement, final String defaultDatabaseName) {
@@ -84,16 +91,27 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         this.metaDataMap = metaDataMap;
         this.defaultDatabaseName = defaultDatabaseName;
         insertColumnNames = getInsertColumnNames();
-        valueExpressions = getAllValueExpressions(sqlStatement);
-        AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
+        
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
-                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        
+        AtomicInteger parametersOffset = new AtomicInteger(0);
+        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(sqlStatement);
+        for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
+            InsertStatement insertStatement = insertStatements.get(cursor);
+            List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
+            valueExpressions.put(cursor, valueExpression);
+            insertValueContextsMap.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
+            parametersOffset.getAndAdd(valueExpression.size());
+            onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
+            columnNamesMap.put(cursor, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
+            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema)
+                    .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(insertStatement), parameters).orElse(null));
+        }
+        onDuplicateKeyUpdateValueContext = onDuplicateKeyUpdateValueContexts.get(0);
+        insertValueContexts = insertValueContextsMap.get(0);
+        columnNames = columnNamesMap.get(0);
+        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultDatabaseName) {
@@ -108,7 +126,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        tableExtractor.extractTablesFromInsert(InsertStatementContextUtil.getInsertStatements(getSqlStatement()));
         return tableExtractor.getRewriteTables();
     }
     
@@ -176,10 +194,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        if (null == onDuplicateKeyUpdateValueContext) {
+        if (null == onDuplicateKeyUpdateValueContexts.get(0)) {
             return new ArrayList<>(0);
         }
-        return onDuplicateKeyUpdateValueContext.getParameters();
+        return onDuplicateKeyUpdateValueContexts.get(0).getParameters();
     }
     
     /**
@@ -188,7 +206,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return generated key context
      */
     public Optional<GeneratedKeyContext> getGeneratedKeyContext() {
-        return Optional.ofNullable(generatedKeyContext);
+        return Optional.ofNullable(generatedKeyContexts.get(0));
     }
     
     @Override
@@ -224,7 +242,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = getSqlStatement();
+        InsertStatement insertStatement = InsertStatementContextUtil.getInsertStatements(getSqlStatement()).get(0);
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
@@ -270,10 +288,18 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     @Override
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
+        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(getSqlStatement());
+        for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
+            InsertStatement insertStatement = insertStatements.get(cursor);
+            List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
+            insertValueContextsMap.put(cursor, insertValueContext);
+            onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
+            parametersOffset.getAndAdd(insertValueContext.size());
+            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(insertColumnNames,
+                    valueExpressions.get(cursor), parameters).orElse(null));
+        }
+        insertValueContexts = insertValueContextsMap.get(0);
+        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
 }

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContextUtil;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -53,10 +54,11 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+        if (null == insertStatementContext.getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        String tableName = InsertStatementContextUtil.getTable(insertStatementContext).getTableName().getIdentifier().getValue();
         Optional<SubquerySegment> insertSelectSegment = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
                 && !isContainsKeyGenerateColumn(shardingRule, sqlStatementContext.getSqlStatement().getColumns(), tableName)) {
@@ -84,12 +86,13 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
-        Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+        Optional<SubquerySegment> insertSelect = insertStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
             Preconditions.checkState(singleRoutingOrSameShardingCondition, "Subquery sharding conditions must be same with primary query.");
         }
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        String tableName = InsertStatementContextUtil.getTable(insertStatementContext).getTableName().getIdentifier().getValue();
         Collection<AssignmentSegment> assignments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatementContext.getSqlStatement())
                 .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
         Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, parameters);
