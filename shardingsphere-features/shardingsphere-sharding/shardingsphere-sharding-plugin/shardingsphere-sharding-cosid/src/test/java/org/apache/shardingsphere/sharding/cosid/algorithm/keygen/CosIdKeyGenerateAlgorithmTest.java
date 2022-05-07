@@ -22,7 +22,10 @@ import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.util.MockIdGenerator;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,44 +43,47 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
-        Properties props = new Properties();
-        props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init(props);
-        assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", createAsLongProperties(idName)));
+        assertThat(algorithm.generateKey(), is(1L));
+        assertThat(algorithm.generateKey(), is(2L));
+    }
+    
+    private Properties createAsLongProperties(final String idName) {
+        Properties result = new Properties();
+        result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
+        return result;
     }
     
     @Test
     public void assertGenerateKeyWhenNotSetIdName() {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init(new Properties());
-        assertThat(keyGenerateAlgorithm.generateKey(), is(1L));
-        assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", new Properties()));
+        assertThat(algorithm.generateKey(), is(1L));
+        assertThat(algorithm.generateKey(), is(2L));
     }
     
     @Test(expected = NotFoundIdGeneratorException.class)
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init(new Properties());
-        keyGenerateAlgorithm.generateKey();
+        KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", new Properties())).generateKey();
     }
     
     @Test
     public void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         DefaultIdGeneratorProvider.INSTANCE.set(idName, MockIdGenerator.INSTANCE);
-        Properties props = new Properties();
-        props.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        props.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
-        CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();
-        keyGenerateAlgorithm.init(props);
-        Comparable<?> actual = keyGenerateAlgorithm.generateKey();
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", createAsStringProperties(idName)));
+        Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith("test_"));
         assertTrue(actual.toString().length() <= 16);
+    }
+    
+    private Properties createAsStringProperties(final String idName) {
+        Properties result = new Properties();
+        result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
+        result.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
+        return result;
     }
 }
