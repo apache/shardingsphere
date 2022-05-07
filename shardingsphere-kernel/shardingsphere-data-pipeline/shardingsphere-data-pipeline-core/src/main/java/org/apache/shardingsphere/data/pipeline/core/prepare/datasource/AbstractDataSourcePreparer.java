@@ -70,11 +70,16 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             return;
         }
         Set<String> schemaNames = getSchemaNames(parameter);
-        log.info("prepareTargetSchemas, schemaNames={}", schemaNames);
+        String defaultSchema = targetDatabaseType.getDefaultSchema(parameter.getTaskConfig().getJobConfig().getDatabaseName());
+        log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
         PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(targetDatabaseType.getName());
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String each : schemaNames) {
+                if (each.equalsIgnoreCase(defaultSchema)) {
+                    continue;
+                }
                 String sql = pipelineSQLBuilder.buildCreateSchemaSQL(each);
+                log.info("prepareTargetSchemas, sql={}", sql);
                 try (Statement statement = targetConnection.createStatement()) {
                     statement.execute(sql);
                 } catch (final SQLException ignored) {
