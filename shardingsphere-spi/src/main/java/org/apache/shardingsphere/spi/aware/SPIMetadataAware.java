@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed;
+package org.apache.shardingsphere.spi.aware;
 
 import java.util.Collection;
 
 /**
- * Typed sPI metadata aware.
+ * SPI metadata aware.
  */
-public interface TypedSPIMetadataAware {
+public interface SPIMetadataAware {
     
     /**
      * Get supported database types.

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
@@ -64,8 +65,9 @@ public final class TypedSPIRegistry {
                 // TODO for contains judge only, should fix here
                 if (null != props && !props.isEmpty() && each instanceof SPIPostProcessor) {
                     init((SPIPostProcessor) each, props);
-                } else if (each instanceof SPIPostProcessor) {
-                    ((SPIPostProcessor) each).setProps(new Properties());
+                }
+                if (each instanceof SPIPropertiesAware) {
+                    ((SPIPropertiesAware) each).setProps(null == props ? new Properties() : props);
                 }
                 return Optional.of(each);
             }
@@ -81,7 +83,6 @@ public final class TypedSPIRegistry {
         Properties newProps = new Properties();
         props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
         spiPostProcessor.init(newProps);
-        spiPostProcessor.setProps(newProps);
     }
     
     /**

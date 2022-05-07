@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -94,9 +93,9 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     @Override
     public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
-        if (bean instanceof SPIPostProcessor) {
-            SPIPostProcessor postProcessor = (SPIPostProcessor) bean;
-            postProcessor.init(postProcessor.getProps());
+        if (bean instanceof ShardingSphereAlgorithm) {
+            ShardingSphereAlgorithm algorithm = (ShardingSphereAlgorithm) bean;
+            algorithm.init(algorithm.getProps());
         }
         return bean;
     }
