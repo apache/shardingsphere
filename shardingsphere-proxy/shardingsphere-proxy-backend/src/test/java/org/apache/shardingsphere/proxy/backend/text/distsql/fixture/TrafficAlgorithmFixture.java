@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
-public final class TestTrafficAlgorithm implements TrafficAlgorithm {
+public final class TrafficAlgorithmFixture implements TrafficAlgorithm {
     
     @Override
     public String getType() {

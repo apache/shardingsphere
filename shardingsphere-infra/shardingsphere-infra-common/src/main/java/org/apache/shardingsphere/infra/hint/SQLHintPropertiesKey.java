@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 /**
  * Typed property key of SQL Hint.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public enum SQLHintPropertiesKey implements TypedPropertyKey {
     
     /**
