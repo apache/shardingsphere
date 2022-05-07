@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
  */
 public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
     
+    private static final Integer PG_CONSTRAINTS_INCLUDE_VERSION = 11;
+    
     public PostgresConstraintsLoader(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
@@ -85,15 +87,15 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
                 columns.add(column);
             }
             each.put("columns", columns);
-            getConstraintInclude(each);
+            appendConstraintsInclude(each);
         }
     }
     
-    private void getConstraintInclude(final Map<String, Object> constraintsProp) {
+    private void appendConstraintsInclude(final Map<String, Object> constraintsProp) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("cid", constraintsProp.get("oid"));
         Collection<Object> includes = new LinkedList<>();
-        if (getMajorVersion() >= 11) {
+        if (getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
             for (Map<String, Object> each : executeByTemplate(parameters, "index_constraint/%s/get_constraint_include.ftl")) {
                 includes.add(each.get("colname"));
             }
@@ -161,7 +163,7 @@ public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
         Map<String, Object> map = new HashMap<>();
         map.put("cid", exclusionConstraintsProps.get("oid"));
         Collection<String> include = new LinkedList<>();
-        if (getMajorVersion() >= 11) {
+        if (getMajorVersion() >= PG_CONSTRAINTS_INCLUDE_VERSION) {
             for (Map<String, Object> each : executeByTemplate(map, "exclusion_constraint/%s/get_constraint_include.ftl")) {
                 include.add(each.get("colname").toString());
             }
