@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
 /**
  * Database admin executor factory.
  */
-public interface DatabaseAdminExecutorFactory extends StatelessTypedSPI {
+@SingletonSPI
+public interface DatabaseAdminExecutorFactory extends TypedSPI {
     
     /**
      * Create an instance of database admin executor,

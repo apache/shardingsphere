@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.spi.type.typed.fixture.stateless;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-public interface StatelessTypedSPIFixture extends StatelessTypedSPI {
+@SingletonSPI
+public interface StatelessTypedSPIFixture extends TypedSPI {
 }

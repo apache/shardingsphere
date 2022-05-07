@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.spi.type.typed;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+
 /**
  * Stateless typed SPI.
  */
+@SingletonSPI
 public interface StatelessTypedSPI extends TypedSPI {
 }
