@@ -30,6 +30,7 @@
         `t_char` CHAR ( 128 ) NULL,
         `t_double` DOUBLE NULL,
         `t_json` json NULL COMMENT 'json test',
+        `t_unsigned_int` int UNSIGNED NULL,
         PRIMARY KEY ( `id` ),
         INDEX ( `order_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -44,10 +45,6 @@
         PRIMARY KEY (item_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order-item>
-    
-    <use-database>
-        USE sharding_db
-    </use-database>
     
     <add-resource>
         ADD RESOURCE %s (URL='jdbc:mysql://%s/%s?serverTimezone=UTC&amp;useSSL=false&amp;rewriteBatchedStatements=true',USER=root,PASSWORD=root)
@@ -67,8 +64,9 @@
         t_decimal,
         t_char,
         t_double,
-        t_json
+        t_json,
+        t_unsigned_int
         )
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     </insert-order>
 </command>
