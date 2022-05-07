@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -33,7 +34,8 @@ import java.util.Map;
  *
  * @param <T> type of SQL statement
  */
-public interface MetaDataRefresher<T extends SQLStatement> extends StatelessTypedSPI {
+@SingletonSPI
+public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     
     /**
      * Refresh schema.

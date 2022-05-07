@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +32,8 @@ import java.util.LinkedList;
 /**
  * Dialect schema meta data loader.
  */
-public interface DialectSchemaMetaDataLoader extends StatelessTypedSPI {
+@SingletonSPI
+public interface DialectSchemaMetaDataLoader extends TypedSPI {
     
     /**
      * Load schema meta data.

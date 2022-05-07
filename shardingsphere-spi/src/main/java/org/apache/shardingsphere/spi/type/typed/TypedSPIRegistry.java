@@ -34,13 +34,13 @@ public final class TypedSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param spiClass stateless typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
-        for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);
             }
@@ -58,7 +58,7 @@ public final class TypedSPIRegistry {
      * @return registered service
      */
     public static <T extends StatefulTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
-        for (T each : ShardingSphereServiceLoader.newServiceInstances(spiClass)) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 // TODO for contains judge only, should fix here
                 if (null != props && !props.isEmpty()) {
@@ -86,12 +86,12 @@ public final class TypedSPIRegistry {
     /**
      * Get registered service.
      *
-     * @param spiClass stateless typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatelessTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
         Optional<T> result = findRegisteredService(spiClass, type);
         if (result.isPresent()) {
             return result.get();

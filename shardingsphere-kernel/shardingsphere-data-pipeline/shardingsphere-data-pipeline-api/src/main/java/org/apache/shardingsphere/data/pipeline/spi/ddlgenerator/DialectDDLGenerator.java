@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -25,7 +26,8 @@ import java.sql.SQLException;
 /**
  * Dialect DDL SQL generator.
  */
-public interface DialectDDLGenerator extends StatelessTypedSPI {
+@SingletonSPI
+public interface DialectDDLGenerator extends TypedSPI {
     
     /**
     * Generate DDL SQL.
