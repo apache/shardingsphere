@@ -70,8 +70,8 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
         tableRuleConfig.setName("t_encrypt");
         result.getTables().put("t_encrypt", tableRuleConfig);
         YamlShardingSphereAlgorithmConfiguration algorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
-        algorithmConfig.setType("TEST");
-        result.getEncryptors().put("test", algorithmConfig);
+        algorithmConfig.setType("CORE.FIXTURE");
+        result.getEncryptors().put("fixture_encryptor", algorithmConfig);
         return result;
     }
     

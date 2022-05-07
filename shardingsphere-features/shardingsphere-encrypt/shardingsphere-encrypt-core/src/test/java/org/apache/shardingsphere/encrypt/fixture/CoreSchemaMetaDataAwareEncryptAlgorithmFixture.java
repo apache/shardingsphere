@@ -21,27 +21,31 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
-import java.util.Properties;
+import java.util.Map;
 
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+@Getter
+@Setter
+public final class CoreSchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
     
-    @Getter
-    @Setter
-    private Properties props;
+    private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
+    public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {
+        return plainValue;
     }
     
     @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public Integer decrypt(final Integer cipherValue, final EncryptContext encryptContext) {
+        return cipherValue;
     }
     
     @Override
     public String getType() {
-        return "TEST";
+        return "CORE.METADATA_AWARE.FIXTURE";
     }
 }

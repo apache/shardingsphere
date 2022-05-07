@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
+package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
-import java.util.Properties;
+import javax.sql.DataSource;
 
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
-    
-    @Getter
-    @Setter
-    private Properties props;
+public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements DatabaseDiscoveryProviderAlgorithm {
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
     }
     
     @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public boolean isPrimaryInstance(final DataSource dataSource) {
+        return false;
+    }
+    
+    @Override
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        return new ReplicaDataSourceStatus(true, 0L);
     }
     
     @Override
     public String getType() {
-        return "test";
+        return "DISTSQL.FIXTURE";
     }
 }

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
+package org.apache.shardingsphere.sharding.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.Collection;
+import java.util.Collections;
 
-@Getter
-@Setter
-public final class TestReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
-    
-    private Properties props = new Properties();
+public final class CoreHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
     @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
+            }
+        }
         return null;
     }
     
     @Override
     public String getType() {
-        return "TEST";
+        return "CORE.HINT.FIXTURE";
     }
 }

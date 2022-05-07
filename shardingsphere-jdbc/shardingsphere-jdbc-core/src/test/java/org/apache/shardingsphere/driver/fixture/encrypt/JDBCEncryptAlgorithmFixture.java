@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.fixture;
+package org.apache.shardingsphere.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import javax.sql.DataSource;
-
-public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
     }
     
     @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
-        return true;
-    }
-    
-    @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
-        return new ReplicaDataSourceStatus(true, 0L);
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
     }
     
     @Override
     public String getType() {
-        return "CORE.FIXTURE";
+        return "JDBC.FIXTURE";
     }
 }

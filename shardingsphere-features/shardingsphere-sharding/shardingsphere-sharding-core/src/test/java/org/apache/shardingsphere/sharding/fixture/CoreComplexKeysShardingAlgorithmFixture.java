@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.fixture;
+package org.apache.shardingsphere.sharding.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-import java.util.Properties;
+import java.util.Collection;
 
-public final class HintShadowAlgorithmFixture implements ShadowAlgorithm {
+public final class CoreComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
-    @Getter
-    @Setter
-    private Properties props;
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
     
     @Override
     public String getType() {
-        return "HINT_TEST";
+        return "CORE.COMPLEX.FIXTURE";
     }
 }

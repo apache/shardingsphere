@@ -15,37 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.fixture;
+package org.apache.shardingsphere.driver.fixture.encrypt;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
-import java.util.Map;
-
-@Getter
-@Setter
-public final class SchemaMetaDataAwareEncryptAlgorithmFixture implements EncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
-    
-    private String databaseName;
-    
-    private Map<String, ShardingSphereSchema> schemas;
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
-    public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {
-        return plainValue;
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
     }
     
     @Override
-    public Integer decrypt(final Integer cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "assistedEncryptValue";
     }
     
     @Override
     public String getType() {
-        return "METADATA_AWARE.FIXTURE";
+        return "JDBC.QUERY_ASSISTED.FIXTURE";
     }
 }
