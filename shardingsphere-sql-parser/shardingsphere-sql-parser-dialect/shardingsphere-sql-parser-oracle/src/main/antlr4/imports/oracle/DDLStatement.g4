@@ -60,6 +60,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropPackage
+    : DROP PACKAGE BODY? packageName
+    ;
+
 dropTrigger
     : DROP TRIGGER triggerName
     ;
