@@ -22,11 +22,11 @@ import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
 
-public final class TrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
+public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
     @Override
     public String getType() {
-        return "TEST";
+        return "DISTSQL.FIXTURE";
     }
     
     @Override

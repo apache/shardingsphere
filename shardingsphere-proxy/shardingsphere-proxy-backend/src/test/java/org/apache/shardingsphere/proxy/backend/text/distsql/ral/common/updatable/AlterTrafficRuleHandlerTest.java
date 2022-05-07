@@ -70,7 +70,7 @@ public final class AlterTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         new AlterTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
     }
     
@@ -80,9 +80,9 @@ public final class AlterTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_2", Collections.emptyList(),
-                new AlgorithmSegment("TEST", new Properties()), null);
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         new AlterTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2)).execute();
     }
     
