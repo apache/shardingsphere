@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -51,20 +52,20 @@ public final class TypedSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param spiClass stateful typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatefulTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 // TODO for contains judge only, should fix here
-                if (null != props && !props.isEmpty()) {
-                    init(each, props);
-                } else {
-                    each.setProps(new Properties());
+                if (null != props && !props.isEmpty() && each instanceof SPIPostProcessor) {
+                    init((SPIPostProcessor) each, props);
+                } else if (each instanceof SPIPostProcessor) {
+                    ((SPIPostProcessor) each).setProps(new Properties());
                 }
                 return Optional.of(each);
             }
@@ -76,11 +77,11 @@ public final class TypedSPIRegistry {
         return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
     }
     
-    private static <T extends StatefulTypedSPI> void init(final T statefulTypedSPI, final Properties props) {
+    private static <T extends SPIPostProcessor> void init(final T spiPostProcessor, final Properties props) {
         Properties newProps = new Properties();
         props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        statefulTypedSPI.init(newProps);
-        statefulTypedSPI.setProps(newProps);
+        spiPostProcessor.init(newProps);
+        spiPostProcessor.setProps(newProps);
     }
     
     /**
@@ -102,13 +103,13 @@ public final class TypedSPIRegistry {
     /**
      * Get registered service.
      * 
-     * @param spiClass stateful typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatefulTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         Optional<T> result = findRegisteredService(spiClass, type, props);
         if (result.isPresent()) {
             return result.get();
