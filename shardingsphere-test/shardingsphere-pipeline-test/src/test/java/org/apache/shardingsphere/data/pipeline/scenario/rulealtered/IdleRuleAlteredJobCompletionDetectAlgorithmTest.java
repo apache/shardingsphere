@@ -23,13 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.IdleRuleAlteredJobCompletionDetectAlgorithm;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,45 +36,34 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
-    
-    @Mock
-    private Properties props;
     
     private final IdleRuleAlteredJobCompletionDetectAlgorithm detectAlgorithm = new IdleRuleAlteredJobCompletionDetectAlgorithm();
     
-    @Before
-    public void setup() throws Exception {
-        ReflectionUtil.setFieldValue(detectAlgorithm, "props", props);
-    }
-    
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNoIdleThresholdKey() {
-        when(props.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn(false);
-        detectAlgorithm.init(props);
+        detectAlgorithm.init(new Properties());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailInvalidIdleThresholdKey() {
-        when(props.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn(true);
-        when(props.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn("@");
+        Properties props = new Properties();
+        props.setProperty("incremental-task-idle-second-threshold", "invalid_value");
         detectAlgorithm.init(props);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNegativeIdleThresholdKey() {
-        when(props.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn(true);
-        when(props.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn("-8");
+        Properties props = new Properties();
+        props.setProperty("incremental-task-idle-second-threshold", "-8");
         detectAlgorithm.init(props);
     }
     
     @Test
     public void assertInitSuccess() {
-        when(props.containsKey(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn(true);
-        when(props.getProperty(IdleRuleAlteredJobCompletionDetectAlgorithm.IDLE_MINUTE_THRESHOLD_KEY)).thenReturn("4");
+        Properties props = new Properties();
+        props.setProperty("incremental-task-idle-second-threshold", "10");
         detectAlgorithm.init(props);
     }
     
@@ -97,7 +81,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
         JobProgress jobProgress = new JobProgress();
         Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new LinkedHashMap<>();
         jobProgress.setInventoryTaskProgressMap(inventoryTaskProgressMap);
-        inventoryTaskProgressMap.put("ds_0", new InventoryTaskProgress(new PlaceholderPosition()));
+        inventoryTaskProgressMap.put("foo_ds", new InventoryTaskProgress(new PlaceholderPosition()));
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
@@ -106,34 +90,29 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test
     public void assertTrueWhenIdleMinutesNotReach() {
         int jobShardingCount = 1;
-        long latestActiveTimeMillis = System.currentTimeMillis() - ThreadLocalRandom.current().nextLong(1, detectAlgorithm.getIncrementalTaskIdleSecondThreshold());
+        long latestActiveTimeMillis = System.currentTimeMillis() - ThreadLocalRandom.current().nextLong(1, 1800L);
         JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(detectAlgorithm.isAlmostCompleted(parameter));
     }
     
-    private JobProgress createJobProgress(final long latestActiveTimeMillis) {
-        JobProgress result = new JobProgress();
-        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new LinkedHashMap<>();
-        result.setInventoryTaskProgressMap(inventoryTaskProgressMap);
-        inventoryTaskProgressMap.put("ds_0", new InventoryTaskProgress(new FinishedPosition()));
-        Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new LinkedHashMap<>();
-        result.setIncrementalTaskProgressMap(incrementalTaskProgressMap);
-        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
-        incrementalTaskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(latestActiveTimeMillis);
-        incrementalTaskProgressMap.put("ds_0", incrementalTaskProgress);
-        return result;
-    }
-    
     @Test
     public void assertTrueWhenJobAlmostCompleted() {
         int jobShardingCount = 1;
-        long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(detectAlgorithm.getIncrementalTaskIdleSecondThreshold()
-                + IdleRuleAlteredJobCompletionDetectAlgorithm.DEFAULT_IDLE_SECOND_THRESHOLD);
+        long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1800L + IdleRuleAlteredJobCompletionDetectAlgorithm.DEFAULT_IDLE_SECONDS_THRESHOLD);
         JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertTrue(detectAlgorithm.isAlmostCompleted(parameter));
+    }
+    
+    private JobProgress createJobProgress(final long latestActiveTimeMillis) {
+        JobProgress result = new JobProgress();
+        result.setInventoryTaskProgressMap(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new FinishedPosition())));
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
+        incrementalTaskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(latestActiveTimeMillis);
+        result.setIncrementalTaskProgressMap(Collections.singletonMap("foo_ds", incrementalTaskProgress));
+        return result;
     }
 }
