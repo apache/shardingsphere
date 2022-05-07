@@ -62,11 +62,22 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
-        if (synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING) && isOwner.compareAndSet(false, true)) {
-            return acquire(lockName, timeout) ? synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)
-                    : isOwner.compareAndSet(true, false) && synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.UNLOCKED);
+        if (!synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING)) {
+            log.debug("Inner try Lock failed, lockName: {} is locking", lockName);
+            return false;
         }
-        log.debug("innerTryLock locking, lockName={}", lockName);
+        if (!isOwner.compareAndSet(false, true)) {
+            log.debug("Inner try Lock set owner failed, lockName: {}", lockName);
+            return false;
+        }
+        if (acquire(lockName, timeout)) {
+            if (synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)) {
+                log.debug("Inner try Lock locked success, lockName: {}", lockName);
+                return true;
+            }
+        }
+        reSetLock();
+        log.debug("Inner try Lock locked failed, lockName: {}", lockName);
         return false;
     }
     
@@ -88,6 +99,11 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         } while (timeout > consumeTime);
         log.debug("inner try lock acquire timeout, lockName={}", lockName);
         return false;
+    }
+    
+    private void reSetLock() {
+        isOwner.set(false);
+        synchronizedLockState.set(LockState.UNLOCKED);
     }
     
     private String getCurrentInstanceId() {
@@ -121,9 +137,8 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
             String currentInstanceId = getCurrentInstanceId();
             if (isOwner.get()) {
                 lockService.releaseLock(lockName);
-                isOwner.compareAndSet(true, false);
                 lockedInstances.remove(currentInstanceId);
-                synchronizedLockState.compareAndSet(LockState.LOCKED, LockState.UNLOCKED);
+                reSetLock();
                 return;
             }
             lockService.removeLock(lockName);
