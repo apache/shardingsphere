@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
@@ -82,11 +81,18 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Pre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandProjClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QuerySpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectListItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
@@ -673,16 +679,59 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
+        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.queryExprClause());
         result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
     @Override
-    public ASTNode visitAggregationClause(final AggregationClauseContext ctx) {
+    public ASTNode visitQueryExprClause(final QueryExprClauseContext ctx) {
         // TODO :Unsupported for union | except | intersect SQL.
-        return visit(ctx.selectClause(0));
+        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
+            Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
+            WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
+            result.setWithSegment(withSegment);
+        }
+        result = visitQueryExpr(result, ctx.queryExpr());
+        if (null != ctx.orderByClause()) {
+            visitOrderBy(result, ctx.orderByClause());
+        }
+        return result;
+    }
+    
+    private SQLServerSelectStatement visitQueryExpr(final SQLServerSelectStatement selectStatement, final QueryExprContext ctx) {
+        return (SQLServerSelectStatement) visit(ctx.queryExprItem());
+    }
+    
+    @Override
+    public ASTNode visitQueryExprItem(final QueryExprItemContext ctx) {
+        if (null != ctx.querySpecification()) {
+            return visit(ctx.querySpecification());
+        } else {
+            return visit(ctx.queryExpr());
+        }
+    }
+    
+    private SQLServerSelectStatement visitQuerySpecification(final SQLServerSelectStatement selectStatement, final QuerySpecificationContext ctx) {
+        SQLServerSelectStatement result = selectStatement;
+        
+    }
+    
+    private SQLServerSelectStatement visitSelectClause(final SQLServerSelectStatement selectStatement, final SelectClauseContext ctx) {
+        SQLServerSelectStatement result = selectStatement;
+        if (null != ctx.duplicateSpecification()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
+        }
+        if (null != ctx.top()) {
+            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
+                    alias == null ? null : alias.getIdentifier().getValue());
+        }
+//        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
+        return result;
     }
     
     @Override
@@ -714,6 +763,46 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result = visitOrderBy(result, ctx.orderByClause());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectList(final SelectListContext ctx) {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        for (SelectListItemContext each : ctx.selectListItem()) {
+            projections.add((ProjectionSegment) visit(each));
+        }
+        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.getProjections().addAll(projections);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectListItem(final SelectListItemContext ctx) {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.unqualifiedShorthand()) {
+            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+        }
+        // FIXME :The stop index of project is the stop index of projection, instead of alias.
+        if (null != ctx.qualifiedShorthand()) {
+            QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
+            IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
+            result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
+            return result;
+        }
+        AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
+        if (null != ctx.top()) {
+            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
+                    alias == null ? null : alias.getIdentifier().getValue());
+        }
+        if (null != ctx.columnName()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
+            result.setAlias(alias);
+            return result;
+        }
+        return createProjection(ctx, alias);
     }
     
     private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {

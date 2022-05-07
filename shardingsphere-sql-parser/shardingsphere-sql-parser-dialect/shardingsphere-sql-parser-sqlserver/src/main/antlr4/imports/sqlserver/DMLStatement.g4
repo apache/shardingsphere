@@ -73,14 +73,89 @@ multipleTableNames
     ;
 
 select
-    : aggregationClause
+    : queryExprClause
+    ;
+
+queryExprClause
+    : selectWithClause? queryExpr orderByClause? forClause?
+    ;
+
+queryExpr
+    : queryExprItem joinedQueryExprItem*
+    ;
+
+queryExprItem
+    : querySpecification | LP_ queryExpr RP_
+    ;
+
+joinedQueryExprItem
+    : (UNION ALL? | EXCEPT | INTERSECT) queryExprItem
+    ;
+
+querySpecification
+    : selectClause fromClause? whereClause? groupByClause? havingClause?
+    ;
+
+selectClause
+    : SELECT duplicateSpecification? top? selectList
+    ;
+
+selectList
+    : selectListItem (COMMA_ selectListItem)*
+    ;
+
+selectListItem
+    : unqualifiedShorthand
+    | qualifiedShorthand
+    | (dotProjectionClause | udtColumnProjectionClause | exprProjectionClause)
+    | aliasAssignExprProjClause
+    ;
+
+qualifiedShorthand
+    : shorthandIdentifier DOT_ASTERISK_
+    ;
+
+shorthandIdentifier
+    : tableName | viewName | AS? alias
+    ;
+
+dotProjectionClause
+    : (shorthandIdentifier DOT_)? (columnName | '$IDENTITY' | '$ROWGUID')
+    ;
+
+udtColumnProjectionClause
+    : columnName ((DOT_ | COLON_ COLON_) ((propertyName | fieldName) | methodName LP_ argument (COMMA_ argument)* RP_))?
+    ;
+
+exprProjectionClause
+    : expr (AS? alias)?
+    ;
+
+aliasAssignExprProjClause
+    : (AS? alias) EQ_ expr
+    ;
+
+propertyName
+    : identifier
+    ;
+
+fieldName
+    : identifier
+    ;
+
+methodName
+    : identifier
+    ;
+
+argument
+    : identifier
     ;
 
 aggregationClause
     : selectClause ((UNION (ALL)? | EXCEPT | INTERSECT) selectClause)*
     ;
 
-selectClause
+selectClausee
     : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
@@ -108,7 +183,7 @@ unqualifiedShorthand
     : ASTERISK_
     ;
 
-qualifiedShorthand
+qualifiedShorthandd
     : identifier DOT_ASTERISK_
     ;
 
@@ -150,7 +225,7 @@ havingClause
     ;
 
 subquery
-    : LP_ aggregationClause RP_
+    : LP_ select RP_
     ;
 
 withClause
