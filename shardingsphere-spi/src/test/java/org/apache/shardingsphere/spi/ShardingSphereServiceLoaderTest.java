@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 import org.apache.shardingsphere.spi.fixture.NonSingletonFixtureService;
 import org.apache.shardingsphere.spi.fixture.SingletonFixtureService;
-import org.apache.shardingsphere.spi.type.typed.fixture.stateful.StatefulTypedSPIFixture;
+import org.apache.shardingsphere.spi.type.typed.fixture.TypedSPIFixture;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -46,10 +46,10 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertGetSingletonServiceInstanceWhenIsExist() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class);
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class);
         assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), is(ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class).iterator().next()));
+        assertThat(collection.iterator().next(), is(ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class).iterator().next()));
     }
     
     @Test
@@ -61,19 +61,19 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertNewServiceInstanceWhenIsExist() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), not(ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class).iterator().next()));
+        assertThat(collection.iterator().next(), not(ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class).iterator().next()));
     }
     
     @Test
     public void assertRegisterTwice() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> actualFirstRegister = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection<?> actualFirstRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(actualFirstRegister.size(), is(1));
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> actualSecondRegister = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection<?> actualSecondRegister = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(actualSecondRegister.size(), is(actualFirstRegister.size()));
     }
     
@@ -83,7 +83,7 @@ public final class ShardingSphereServiceLoaderTest {
         method.setAccessible(true);
         Throwable targetException = null;
         try {
-            method.invoke(null, StatefulTypedSPIFixture.class);
+            method.invoke(null, TypedSPIFixture.class);
         } catch (final InvocationTargetException ex) {
             targetException = ex.getTargetException();
         }
