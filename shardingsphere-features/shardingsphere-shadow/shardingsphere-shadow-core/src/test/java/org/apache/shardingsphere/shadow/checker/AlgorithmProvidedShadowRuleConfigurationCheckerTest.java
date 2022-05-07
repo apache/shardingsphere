@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
 
@@ -65,15 +66,7 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user-id-insert-match-algorithm", createColumnRegexMatchShadowAlgorithm());
-        return result;
-    }
-    
-    private ShadowAlgorithm createColumnRegexMatchShadowAlgorithm() {
-        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        Properties props = createProperties();
-        result.init(props);
-        result.setProps(props);
+        result.put("user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties())));
         return result;
     }
     
