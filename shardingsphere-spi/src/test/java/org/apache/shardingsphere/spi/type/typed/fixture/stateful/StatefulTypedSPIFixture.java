@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.spi.type.typed.fixture.stateful;
 
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-public interface StatefulTypedSPIFixture extends StatefulTypedSPI {
+public interface StatefulTypedSPIFixture extends TypedSPI, SPIPostProcessor {
 }
