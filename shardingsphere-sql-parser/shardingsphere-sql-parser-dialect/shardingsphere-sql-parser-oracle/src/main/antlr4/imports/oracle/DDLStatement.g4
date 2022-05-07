@@ -72,6 +72,10 @@ dropView
     : DROP VIEW viewName (CASCADE CONSTRAINTS)?
     ;
 
+dropEdition
+    : DROP EDITION editionName CASCADE?
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;

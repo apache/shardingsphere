@@ -79,5 +79,6 @@ execute
     | createSynonym
     | createDirectory
     | dropSynonym
+    | dropEdition
     ) SEMI_?
     ;
