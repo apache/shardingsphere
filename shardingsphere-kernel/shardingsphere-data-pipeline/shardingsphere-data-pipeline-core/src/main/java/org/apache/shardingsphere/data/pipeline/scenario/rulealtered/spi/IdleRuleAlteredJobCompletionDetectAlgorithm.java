@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
-    private static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-second-threshold";
+    private static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-seconds-threshold";
     
     public static final long DEFAULT_IDLE_SECONDS_THRESHOLD = 1800L;
     

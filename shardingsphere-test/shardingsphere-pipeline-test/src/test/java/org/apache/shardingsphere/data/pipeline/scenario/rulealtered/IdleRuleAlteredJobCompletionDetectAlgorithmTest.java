@@ -44,14 +44,14 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailInvalidIdleThresholdKey() {
         Properties props = new Properties();
-        props.setProperty("incremental-task-idle-second-threshold", "invalid_value");
+        props.setProperty("incremental-task-idle-seconds-threshold", "invalid_value");
         JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", props));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitFailNegativeIdleThresholdKey() {
         Properties props = new Properties();
-        props.setProperty("incremental-task-idle-second-threshold", "-8");
+        props.setProperty("incremental-task-idle-seconds-threshold", "-8");
         JobCompletionDetectAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("IDLE", props));
     }
     
