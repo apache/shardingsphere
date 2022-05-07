@@ -31,7 +31,7 @@ dataConverters:
     completionDetector:
       type: IDLE
       props:
-        incremental-task-idle-minute-threshold: 1
+        incremental-task-idle-seconds-threshold: 60
     dataConsistencyChecker:
       type: DATA_MATCH
       props:

@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Replica load-balance algorithm factory.
  */
@@ -64,6 +62,6 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      * @return contains replica load-balance algorithm or not
      */
     public static boolean contains(final String replicaLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType, null).isPresent();
     }
 }

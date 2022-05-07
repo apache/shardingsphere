@@ -62,8 +62,8 @@ public final class TypedSPIRegistry {
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                // TODO for contains judge only, should fix here
-                if (null != props && !props.isEmpty() && each instanceof SPIPostProcessor) {
+                // TODO for AlgorithmFactory contains judge only, should fix here
+                if (null != props && each instanceof SPIPostProcessor) {
                     init((SPIPostProcessor) each, props);
                 }
                 if (each instanceof SPIPropertiesAware) {

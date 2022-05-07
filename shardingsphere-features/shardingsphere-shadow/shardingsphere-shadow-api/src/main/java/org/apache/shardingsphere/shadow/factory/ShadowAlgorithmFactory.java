@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Shadow algorithm factory.
  */
@@ -54,6 +52,6 @@ public final class ShadowAlgorithmFactory {
      * @return contains shadow algorithm or not
      */
     public static boolean contains(final String shadowAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType, null).isPresent();
     }
 }
