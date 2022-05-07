@@ -31,23 +31,4 @@ public interface SPIPostProcessor {
      */
     default void init(Properties props) {
     }
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    // TODO consider about to remove it, for spring algorithm only for now
-    default Properties getProps() {
-        return new Properties();
-    }
-    
-    /**
-     * Set properties.
-     *
-     * @param props properties
-     */
-    // TODO consider about to remove it, for spring algorithm only for now
-    default void setProps(Properties props) {
-    }
 }

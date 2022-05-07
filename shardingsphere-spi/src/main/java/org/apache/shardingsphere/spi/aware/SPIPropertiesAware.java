@@ -15,14 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.spi.aware;
 
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
-import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import java.util.Properties;
 
 /**
- * ShardingSphere algorithm.
+ * SPI properties aware.
  */
-public interface ShardingSphereAlgorithm extends TypedSPI, SPIPostProcessor, SPIPropertiesAware {
+public interface SPIPropertiesAware {
+    
+    /**
+     * Get properties.
+     *
+     * @return properties
+     */
+    default Properties getProps() {
+        return new Properties();
+    }
+    
+    /**
+     * Set properties.
+     *
+     * @param props properties
+     */
+    default void setProps(Properties props) {
+    }
 }
