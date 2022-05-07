@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
@@ -155,9 +156,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
+    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final @NonNull String actualTableName, final @NonNull String logicTableName) {
+        if (actualTableName.equalsIgnoreCase(logicTableName)) {
+            return createOrAlterTableSQL;
+        }
         StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
-        while (true) {
+        for (int i = 0; i < 10_000; i++) {
             int start = logicalTableSQL.indexOf(actualTableName);
             if (start <= 0) {
                 return logicalTableSQL.toString();
@@ -165,5 +169,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             int end = start + actualTableName.length();
             logicalTableSQL.replace(start, end, logicTableName);
         }
+        log.error("replaceActualTableNameToLogicTableName, too many times loop, createOrAlterTableSQL={}, actualTableName={}, logicTableName={}",
+                createOrAlterTableSQL, actualTableName, logicalTableSQL);
+        throw new RuntimeException("Too many times loop");
     }
 }
