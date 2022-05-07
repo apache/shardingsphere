@@ -72,8 +72,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     private static boolean isAllProgressesFilled(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
-        return jobShardingCount == jobProgresses.size()
-                && jobProgresses.stream().allMatch(Objects::nonNull);
+        return jobShardingCount == jobProgresses.size() && jobProgresses.stream().allMatch(Objects::nonNull);
     }
     
     private static boolean isAllInventoryTasksCompleted(final Collection<JobProgress> jobProgresses) {
