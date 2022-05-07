@@ -110,24 +110,24 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
-     * Whether enable sql federation.
+     * Whether enable SQL federation.
      */
     SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * Proxy backend driver type. Default driver is JDBC.
+     * Proxy backend driver type..
      */
     PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
     
     /**
-     * Proxy mysql default version, default 5.7.22.
+     * Proxy MySQL default version.
      */
     PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
     
     /**
-     * Proxy default port, default 3307.
+     * Proxy default start port.
      */
-    PROXY_DEFAULT_PORT("proxy-default-port", "3307", String.class, false);
+    PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true);
     
     private final String key;
     
