@@ -72,7 +72,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         props.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
                 new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", props));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), 
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
                 new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         Comparable<?> actualKey = algorithm.generateKey();
         assertThat(actualKey, instanceOf(String.class));
