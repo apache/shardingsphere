@@ -98,7 +98,7 @@ public final class ShadowRuleTest {
     }
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>(2, 1);
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
         return result;
