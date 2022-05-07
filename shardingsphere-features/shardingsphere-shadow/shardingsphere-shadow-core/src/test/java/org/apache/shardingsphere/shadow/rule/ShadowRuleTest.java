@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.rule;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
@@ -59,23 +58,15 @@ public final class ShadowRuleTest {
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
         result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
-        result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
-        result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm("user_id", "update"));
-        result.put("order-id-insert-regex-algorithm", createColumnShadowAlgorithm("order_id", "insert"));
+        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
+        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
+        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
         return result;
     }
     
     private Properties createHintProperties() {
         Properties result = new Properties();
         result.setProperty("shadow", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
-        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        Properties props = createColumnProperties(column, operation);
-        result.init(props);
-        result.setProps(props);
         return result;
     }
     
