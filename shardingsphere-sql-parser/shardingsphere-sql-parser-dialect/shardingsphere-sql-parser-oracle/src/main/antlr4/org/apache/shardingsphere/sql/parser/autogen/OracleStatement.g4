@@ -79,6 +79,7 @@ execute
     | createSynonym
     | createDirectory
     | dropSynonym
+    | dropPackage
     | dropEdition
     ) SEMI_?
     ;

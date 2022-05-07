@@ -35,10 +35,9 @@ public interface LockContext {
      * Try lock write database.
      *
      * @param databaseName database name
-     * @param timeoutMillis timeout millis
      * @return is write locked or not
      */
-    boolean tryLockWriteDatabase(String databaseName, long timeoutMillis);
+    boolean tryLockWriteDatabase(String databaseName);
     
     /**
      * Release lock write of database.
@@ -61,7 +60,7 @@ public interface LockContext {
      * @param lockName lock name
      * @return global lock
      */
-    ShardingSphereLock getOrCreateGlobalLock(String lockName);
+    ShardingSphereLock getGlobalLock(String lockName);
     
     /**
      * Get or create standard lock.
@@ -69,13 +68,5 @@ public interface LockContext {
      * @param lockName lock name
      * @return standard lock
      */
-    ShardingSphereLock getOrCreateStandardLock(String lockName);
-    
-    /**
-     * Get global lock.
-     *
-     * @param lockName lock name
-     * @return global lock
-     */
-    ShardingSphereLock getGlobalLock(String lockName);
+    ShardingSphereLock getStandardLock(String lockName);
 }

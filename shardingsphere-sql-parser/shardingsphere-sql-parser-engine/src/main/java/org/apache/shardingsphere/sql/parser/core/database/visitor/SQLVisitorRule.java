@@ -170,6 +170,8 @@ public enum SQLVisitorRule {
     
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
     
+    DROP_PACKAGE("DropPackage", SQLStatementType.DDL),
+    
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
     ANALYZE("Analyze", SQLStatementType.DDL),

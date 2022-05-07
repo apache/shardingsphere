@@ -347,6 +347,10 @@ BOOLEAN
     : B O O L E A N
     ;
 
+BODY
+    : B O D Y
+    ;
+    
 DOUBLE
     : D O U B L E
     ;

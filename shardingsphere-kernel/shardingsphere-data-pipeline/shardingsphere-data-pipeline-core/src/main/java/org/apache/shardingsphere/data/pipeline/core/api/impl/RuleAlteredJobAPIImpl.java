@@ -186,7 +186,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateGlobalLock(databaseName);
+        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
         if (lock.isLocked()) {
             log.info("stopClusterWriteDB, already stopped");
             return;

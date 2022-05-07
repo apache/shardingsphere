@@ -285,29 +285,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            return internalLockHolder.getGlobalLock(key).tryLock(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        try {
-            internalLockHolder.getGlobalLock(key).unlock();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
     public void close() {
         caches.values().forEach(CuratorCache::close);
         waitForCacheClose();
