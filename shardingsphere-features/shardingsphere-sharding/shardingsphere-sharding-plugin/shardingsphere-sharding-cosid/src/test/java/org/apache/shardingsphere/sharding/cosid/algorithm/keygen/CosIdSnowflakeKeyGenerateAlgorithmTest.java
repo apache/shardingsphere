@@ -22,20 +22,22 @@ import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdState;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
+import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
@@ -49,12 +51,12 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKey() {
-        CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(Mockito.mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
-                new ModeConfiguration("Memory", null, false), Mockito.mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.init(new Properties());
-        long firstActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
-        long secondActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        long firstActualKey = (Long) algorithm.generateKey();
+        long secondActualKey = (Long) algorithm.generateKey();
         SnowflakeIdState firstActualState = snowflakeIdStateParser.parse(firstActualKey);
         SnowflakeIdState secondActualState = snowflakeIdStateParser.parse(secondActualKey);
         assertThat(firstActualState.getMachineId(), is(FIXTURE_WORKER_ID));
@@ -66,14 +68,13 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyAsString() {
-        CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(Mockito.mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
-                new ModeConfiguration("Memory", null, false), Mockito.mock(LockContext.class)));
         Properties props = new Properties();
         props.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
-        cosIdSnowflakeKeyGenerateAlgorithm.init(props);
-        cosIdSnowflakeKeyGenerateAlgorithm.setProps(props);
-        Comparable<?> actualKey = cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", props));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), 
+                new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        Comparable<?> actualKey = algorithm.generateKey();
         assertThat(actualKey, instanceOf(String.class));
         String actualStringKey = (String) actualKey;
         assertThat(actualStringKey.length(), is(Radix62IdConverter.MAX_CHAR_SIZE));
@@ -85,26 +86,24 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = NullPointerException.class)
     public void assertGenerateKeyWhenNoneInstanceContext() {
-        CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        cosIdSnowflakeKeyGenerateAlgorithm.init(new Properties());
-        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
+        KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties())).generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenNegative() {
-        CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(Mockito.mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1),
-                new ModeConfiguration("Memory", null, false), Mockito.mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.init(new Properties());
-        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        algorithm.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenGreaterThen1023() {
-        CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(Mockito.mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(1024),
-                new ModeConfiguration("Memory", null, false), Mockito.mock(LockContext.class)));
-        cosIdSnowflakeKeyGenerateAlgorithm.init(new Properties());
-        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(1024),
+                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        algorithm.generateKey();
     }
 }
