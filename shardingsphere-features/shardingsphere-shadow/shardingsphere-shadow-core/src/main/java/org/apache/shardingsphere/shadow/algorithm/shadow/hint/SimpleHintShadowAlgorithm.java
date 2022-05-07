@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -69,11 +70,10 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
     }
     
     private boolean containsHint(final Map<String, String> preciseHint) {
-        for (Map.Entry<String, String> entry : simpleHint.entrySet()) {
-            if (entry.getValue().equals(preciseHint.get(entry.getKey()))) {
-                continue;
+        for (Entry<String, String> entry : simpleHint.entrySet()) {
+            if (!entry.getValue().equals(preciseHint.get(entry.getKey()))) {
+                return false;
             }
-            return false;
         }
         return true;
     }
