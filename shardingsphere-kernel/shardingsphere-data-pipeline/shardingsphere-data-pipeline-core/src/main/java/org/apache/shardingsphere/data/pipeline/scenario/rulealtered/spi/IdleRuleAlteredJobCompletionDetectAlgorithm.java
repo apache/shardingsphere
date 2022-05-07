@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Idle rule altered job completion detect algorithm.
  */
+@Getter
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
     public static final String IDLE_MINUTE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
@@ -41,21 +43,27 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     
     public static final long DEFAULT_IDLE_SECOND_THRESHOLD = TimeUnit.MINUTES.toSeconds(30);
     
+    @Setter
     private Properties props;
     
-    @Getter
     private long incrementalTaskIdleSecondThreshold = DEFAULT_IDLE_SECOND_THRESHOLD;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        incrementalTaskIdleSecondThreshold = getIncrementalTaskIdleSecondThreshold(props);
+    }
+    
+    private long getIncrementalTaskIdleSecondThreshold(final Properties props) {
         Preconditions.checkArgument(props.containsKey(IDLE_MINUTE_THRESHOLD_KEY) || props.containsKey(IDLE_SECOND_THRESHOLD_KEY), "incremental task idle threshold can not be null.");
+        long result;
         if (props.containsKey(IDLE_SECOND_THRESHOLD_KEY)) {
-            incrementalTaskIdleSecondThreshold = Long.parseLong(props.getProperty(IDLE_SECOND_THRESHOLD_KEY));
+            result = Long.parseLong(props.getProperty(IDLE_SECOND_THRESHOLD_KEY));
         } else {
-            incrementalTaskIdleSecondThreshold = TimeUnit.MINUTES.toSeconds(Long.parseLong(props.getProperty(IDLE_MINUTE_THRESHOLD_KEY)));
+            result = TimeUnit.MINUTES.toSeconds(Long.parseLong(props.getProperty(IDLE_MINUTE_THRESHOLD_KEY)));
         }
         Preconditions.checkArgument(incrementalTaskIdleSecondThreshold > 0, "incremental task idle threshold must be positive.");
+        return result;
     }
     
     @Override
