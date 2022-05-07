@@ -25,23 +25,35 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Simple hint shadow algorithm.
  */
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
-    // TODO convert to static key, or use HashMap
     @Getter
     @Setter
     private Properties props;
     
+    private Map<String, String> simpleHint;
+    
     @Override
     public void init(final Properties props) {
         checkPropsSize(props);
-        this.props = props;
+        simpleHint = initSimpleHint(props);
+    }
+    
+    private Map<String, String> initSimpleHint(final Properties props) {
+        Map<String, String> result = new HashMap<>(props.size(), 1.0f);
+        Set<String> strings = props.stringPropertyNames();
+        for (String each : strings) {
+            result.put(each, props.getProperty(each));
+        }
+        return result;
     }
     
     private void checkPropsSize(final Properties props) {
@@ -53,8 +65,17 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
         if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        return ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue())
-                .filter(optional -> props.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), optional.get(String.valueOf(entry.getKey()))))).isPresent();
+        return ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue()).filter(this::containsHint).isPresent();
+    }
+    
+    private boolean containsHint(final Map<String, String> preciseHint) {
+        for (Map.Entry<String, String> entry : simpleHint.entrySet()) {
+            if (entry.getValue().equals(preciseHint.get(entry.getKey()))) {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
     
     @Override
