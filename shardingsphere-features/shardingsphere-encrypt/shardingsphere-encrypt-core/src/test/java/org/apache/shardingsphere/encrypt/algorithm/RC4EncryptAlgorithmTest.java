@@ -53,7 +53,7 @@ public final class RC4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    public void assertEncryptNullValue() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
@@ -78,7 +78,7 @@ public final class RC4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecryptWithNullCiphertext() {
+    public void assertDecryptNullValue() {
         assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }
