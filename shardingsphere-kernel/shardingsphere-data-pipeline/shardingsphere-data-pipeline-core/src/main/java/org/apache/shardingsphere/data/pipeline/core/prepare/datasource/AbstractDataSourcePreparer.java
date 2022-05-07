@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
@@ -70,11 +71,16 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             return;
         }
         Set<String> schemaNames = getSchemaNames(parameter);
-        log.info("prepareTargetSchemas, schemaNames={}", schemaNames);
+        String defaultSchema = targetDatabaseType.getDefaultSchema(parameter.getTaskConfig().getJobConfig().getDatabaseName());
+        log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
         PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(targetDatabaseType.getName());
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String each : schemaNames) {
+                if (each.equalsIgnoreCase(defaultSchema)) {
+                    continue;
+                }
                 String sql = pipelineSQLBuilder.buildCreateSchemaSQL(each);
+                log.info("prepareTargetSchemas, sql={}", sql);
                 try (Statement statement = targetConnection.createStatement()) {
                     statement.execute(sql);
                 } catch (final SQLException ignored) {
@@ -150,12 +156,21 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final String actualTableName, final String logicTableName) {
-        int start = createOrAlterTableSQL.indexOf(actualTableName);
-        if (start <= 0) {
+    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final @NonNull String actualTableName, final @NonNull String logicTableName) {
+        if (actualTableName.equalsIgnoreCase(logicTableName)) {
             return createOrAlterTableSQL;
         }
-        int end = start + actualTableName.length();
-        return new StringBuilder(createOrAlterTableSQL).replace(start, end, logicTableName).toString();
+        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
+        for (int i = 0; i < 10_000; i++) {
+            int start = logicalTableSQL.indexOf(actualTableName);
+            if (start <= 0) {
+                return logicalTableSQL.toString();
+            }
+            int end = start + actualTableName.length();
+            logicalTableSQL.replace(start, end, logicTableName);
+        }
+        log.error("replaceActualTableNameToLogicTableName, too many times loop, createOrAlterTableSQL={}, actualTableName={}, logicTableName={}",
+                createOrAlterTableSQL, actualTableName, logicalTableSQL);
+        throw new RuntimeException("Too many times loop");
     }
 }

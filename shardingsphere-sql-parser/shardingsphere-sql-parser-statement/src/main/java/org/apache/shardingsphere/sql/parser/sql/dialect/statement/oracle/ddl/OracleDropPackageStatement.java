@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic.identifier;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropPackageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Simplified traffic algorithm.
+ * Oracle drop package statement.
  */
-public interface SimplifiedTrafficAlgorithm extends TrafficAlgorithm {
+@ToString
+public final class OracleDropPackageStatement extends DropPackageStatement implements OracleStatement {
 }

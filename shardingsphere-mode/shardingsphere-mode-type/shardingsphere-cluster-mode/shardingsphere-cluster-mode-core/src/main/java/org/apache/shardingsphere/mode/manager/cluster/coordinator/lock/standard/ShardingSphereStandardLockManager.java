@@ -65,11 +65,6 @@ public final class ShardingSphereStandardLockManager implements ShardingSphereLo
     }
     
     @Override
-    public ShardingSphereLock getLock(final String lockName) {
-        return locks.get(lockName);
-    }
-    
-    @Override
     public boolean isLocked(final String lockName) {
         if (locks.isEmpty()) {
             return false;

@@ -47,14 +47,6 @@ public interface ShardingSphereLockManager {
     ShardingSphereLock getOrCreateLock(String lockName);
     
     /**
-     * Get lock.
-     *
-     * @param lockName lock name
-     * @return lock
-     */
-    ShardingSphereLock getLock(String lockName);
-    
-    /**
      * Is locked.
      *
      * @param lockName lock name

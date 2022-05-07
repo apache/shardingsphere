@@ -85,13 +85,13 @@ public final class DistributeLockContext implements LockContext {
     
     @Override
     public synchronized ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
         return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
     }
     
     @Override
     public synchronized ShardingSphereLock getStandardLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create standard lock args lock name can not be null.");
+        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
         return lockManagers.get(LockType.STANDARD).getOrCreateLock(lockName);
     }
 }

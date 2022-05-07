@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic.identifier;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Simplified traffic algorithm.
+ * Drop package statement test case.
  */
-public interface SimplifiedTrafficAlgorithm extends TrafficAlgorithm {
+public final class DropPackageStatementTestCase extends SQLParserTestCase {
 }

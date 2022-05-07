@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.api.traffic.identifier;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Simplified traffic algorithm.
+ * Drop package statement.
  */
-public interface SimplifiedTrafficAlgorithm extends TrafficAlgorithm {
+@ToString
+public abstract class DropPackageStatement extends AbstractSQLStatement implements DDLStatement {
 }

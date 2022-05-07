@@ -59,8 +59,16 @@ public final class AbstractDataSourcePreparerTest {
     @Test
     public void assertReplaceActualTableNameToLogicTableName() {
         String sql = "ALTER TABLE t_order_0 ADD CONSTRAINT t_order_0_uniq UNIQUE (order_id)";
-        String expected = "ALTER TABLE t_order ADD CONSTRAINT t_order_0_uniq UNIQUE (order_id)";
+        String expected = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
         String actual = preparer.replaceActualTableNameToLogicTableName(sql, "t_order_0", "t_order");
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertReplaceActualTableNameToLogicTableNameTheSame() {
+        String sql = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
+        String expected = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
+        String actual = preparer.replaceActualTableNameToLogicTableName(sql, "t_order", "t_order");
         assertThat(actual, is(expected));
     }
 }
