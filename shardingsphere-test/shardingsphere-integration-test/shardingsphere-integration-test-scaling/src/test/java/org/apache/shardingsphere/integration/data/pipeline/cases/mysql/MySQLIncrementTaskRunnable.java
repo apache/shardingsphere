@@ -25,6 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,9 +37,9 @@ public final class MySQLIncrementTaskRunnable implements Runnable {
     
     private static final String INSERT_ORDER_ITEM = "INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)";
     
-    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = 'update',t_unsigned_int = ? WHERE id = ?";
+    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = ?,t_unsigned_int = ? WHERE id = ?";
     
-    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = 'changed' WHERE item_id = ?";
+    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = ? WHERE item_id = ?";
     
     private final JdbcTemplate jdbcTemplate;
     
@@ -73,9 +74,10 @@ public final class MySQLIncrementTaskRunnable implements Runnable {
     }
     
     private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.update(UPDATE_ORDER_BY_ID, null, primaryKey);
-        jdbcTemplate.update(UPDATE_ORDER_BY_ID, 100, primaryKey);
-        jdbcTemplate.update(UPDATE_ORDER_ITEM_BY_ID, primaryKey);
+        jdbcTemplate.update(UPDATE_ORDER_BY_ID, null, null, primaryKey);
+        long epochSecond = Instant.now().getEpochSecond();
+        jdbcTemplate.update(UPDATE_ORDER_BY_ID, "update" + epochSecond, epochSecond, primaryKey);
+        jdbcTemplate.update(UPDATE_ORDER_ITEM_BY_ID, "changed" + epochSecond, primaryKey);
     }
     
     private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
