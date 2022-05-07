@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases;
+package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,15 @@ import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
-public final class IncrementTaskRunnable implements Runnable {
+public final class MySQLIncrementTaskRunnable implements Runnable {
+    
+    private static final String INSERT_ORDER = "INSERT INTO t_order (id,order_id,user_id) VALUES (?, ?, ?)";
+    
+    private static final String INSERT_ORDER_ITEM = "INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)";
+    
+    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = 'update',t_unsigned_int = %s WHERE id = %s";
+    
+    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = 'changed' WHERE item_id = %s";
     
     private final JdbcTemplate jdbcTemplate;
     
@@ -59,14 +67,15 @@ public final class IncrementTaskRunnable implements Runnable {
     
     private long insertOrderAndOrderItem() throws SQLException {
         Pair<Object[], Object[]> dataPair = TableCrudUtil.generateSimpleInsertData();
-        jdbcTemplate.update(commonSQLCommand.getSimpleInsertOrder(), dataPair.getLeft());
-        jdbcTemplate.update(commonSQLCommand.getInsertOrderItem(), dataPair.getRight());
+        jdbcTemplate.update(INSERT_ORDER, dataPair.getLeft());
+        jdbcTemplate.update(INSERT_ORDER_ITEM, dataPair.getRight());
         return Long.parseLong(dataPair.getLeft()[0].toString());
     }
     
     private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.execute(String.format(commonSQLCommand.getUpdateOrder(), primaryKey));
-        jdbcTemplate.execute(String.format(commonSQLCommand.getUpdateOrderItem(), primaryKey));
+        jdbcTemplate.execute(String.format(UPDATE_ORDER_BY_ID, "null", primaryKey));
+        jdbcTemplate.execute(String.format(UPDATE_ORDER_BY_ID, "100", primaryKey));
+        jdbcTemplate.execute(String.format(UPDATE_ORDER_ITEM_BY_ID, primaryKey));
     }
     
     private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
