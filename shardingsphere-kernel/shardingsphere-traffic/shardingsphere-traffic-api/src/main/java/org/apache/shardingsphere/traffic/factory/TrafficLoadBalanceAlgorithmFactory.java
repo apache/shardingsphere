@@ -25,8 +25,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.Properties;
-
 /**
  * Traffic load balance algorithm factory.
  */
