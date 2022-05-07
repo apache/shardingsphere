@@ -368,7 +368,7 @@ The new API also supports a variety of matching algorithms, such as column value
         column: user_id
         regex: "[1]"
     simple-hint-algorithm:
-      type: SIMPLE_NOTE
+      type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar           

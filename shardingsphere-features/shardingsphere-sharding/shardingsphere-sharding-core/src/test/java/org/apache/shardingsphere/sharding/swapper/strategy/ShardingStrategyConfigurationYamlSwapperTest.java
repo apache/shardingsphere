@@ -63,7 +63,7 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithHint() {
         HintShardingAlgorithm hintShardingAlgorithm = mock(HintShardingAlgorithm.class);
-        when(hintShardingAlgorithm.getType()).thenReturn("HINT.FIXTURE");
+        when(hintShardingAlgorithm.getType()).thenReturn("CORE.HINT.FIXTURE");
         YamlShardingStrategyConfiguration actual = new ShardingStrategyConfigurationYamlSwapper().swapToYamlConfiguration(new HintShardingStrategyConfiguration("hint"));
         assertThat(actual.getHint().getShardingAlgorithmName(), is("hint"));
         assertNull(actual.getStandard());

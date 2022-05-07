@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceAwareAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
@@ -740,10 +740,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        keyGenerators.values().stream().filter(each -> each instanceof ShardingSphereInstanceAwareAlgorithm)
-                .forEach(each -> ((ShardingSphereInstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof ShardingSphereInstanceAwareAlgorithm) {
-            ((ShardingSphereInstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm)
+                .forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
+            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
     }
 }

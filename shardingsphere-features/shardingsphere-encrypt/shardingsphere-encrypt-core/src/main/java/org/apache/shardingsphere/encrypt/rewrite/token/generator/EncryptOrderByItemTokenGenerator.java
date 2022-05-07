@@ -45,9 +45,9 @@ import java.util.Optional;
 @Setter
 public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, EncryptRuleAware {
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     private EncryptRule encryptRule;
     

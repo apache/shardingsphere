@@ -52,7 +52,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList(), null));
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = ImmutableMap.of("myEncryptor", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = ImmutableMap.of("myEncryptor", new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()));
         return new EncryptRuleConfiguration(tables, encryptors);
     }
     
@@ -69,8 +69,8 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
         tableRuleConfig.setName("t_encrypt");
         result.getTables().put("t_encrypt", tableRuleConfig);
         YamlShardingSphereAlgorithmConfiguration algorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
-        algorithmConfig.setType("TEST");
-        result.getEncryptors().put("test", algorithmConfig);
+        algorithmConfig.setType("CORE.FIXTURE");
+        result.getEncryptors().put("fixture_encryptor", algorithmConfig);
         return result;
     }
     

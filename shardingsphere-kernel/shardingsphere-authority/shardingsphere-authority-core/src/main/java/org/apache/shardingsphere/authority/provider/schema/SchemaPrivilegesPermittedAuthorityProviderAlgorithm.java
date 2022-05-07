@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.authority.provider.schema;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
@@ -30,32 +32,27 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Schema privileges permitted authority provider algorithm.
+ */
 public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
+    @Getter
+    @Setter
     private Properties props;
     
     @Override
-    public void setProps(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public Properties getProps() {
-        return this.props;
-    }
-    
-    @Override
     public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
+        userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
     
     @Override
     public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
+        userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
     
     @Override

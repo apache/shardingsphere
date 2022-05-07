@@ -35,6 +35,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * Schema privilege builder.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaPrivilegeBuilder {
     
@@ -104,7 +107,6 @@ public final class SchemaPrivilegeBuilder {
     
     private static boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser shardingSphereUser) {
         return ("%".equalsIgnoreCase(grantee.getHostname())
-                || grantee.getHostname().equals(shardingSphereUser.getGrantee().getHostname()))
-                && grantee.getUsername().equals(shardingSphereUser.getGrantee().getUsername());
+                || grantee.getHostname().equals(shardingSphereUser.getGrantee().getHostname())) && grantee.getUsername().equals(shardingSphereUser.getGrantee().getUsername());
     }
 }

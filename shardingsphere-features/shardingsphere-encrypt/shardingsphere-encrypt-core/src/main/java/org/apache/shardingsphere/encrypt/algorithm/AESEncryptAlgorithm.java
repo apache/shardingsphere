@@ -47,7 +47,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     @Setter
     private Properties props;
     
-    private byte[] secretKey;
+    private volatile byte[] secretKey;
     
     @Override
     public void init(final Properties props) {

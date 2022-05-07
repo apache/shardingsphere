@@ -54,11 +54,11 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private List<SQLToken> previousSQLTokens;
     
-    private Map<String, ShardingSphereSchema> schemas;
+    private EncryptRule encryptRule;
     
     private String databaseName;
     
-    private EncryptRule encryptRule;
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {

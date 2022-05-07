@@ -33,6 +33,11 @@ import java.util.stream.Collectors;
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
+    public String buildCreateSchemaSQL(final String schemaName) {
+        return "CREATE SCHEMA " + quote(schemaName);
+    }
+    
+    @Override
     public String getLeftIdentifierQuoteString() {
         return "";
     }

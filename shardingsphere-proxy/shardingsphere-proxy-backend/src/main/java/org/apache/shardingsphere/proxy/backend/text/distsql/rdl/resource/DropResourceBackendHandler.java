@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Drop resource backend handler.
  */
-public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
+public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<DropResourceStatement> {
     
     public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);

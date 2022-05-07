@@ -47,7 +47,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -150,31 +149,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 return Type.DELETED;
             default:
                 return Type.IGNORED;
-        }
-    }
-    
-    @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
-            client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
-            return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("EtcdRepository tryLock error, key:{}, time:{}, unit:{}", key, time, unit, ex);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        try {
-            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProps.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("EtcdRepository releaseLock error, key:{}", key, ex);
         }
     }
     

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.traffic.api.traffic.identifier;
 
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+
 /**
  * Simplified traffic algorithm.
  */
-public interface SimplifiedTrafficAlgorithm {
+public interface SimplifiedTrafficAlgorithm extends TrafficAlgorithm {
 }

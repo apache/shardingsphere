@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import java.util.Map;
  * Add resource backend handler.
  */
 @Slf4j
-public final class AddResourceBackendHandler extends SchemaRequiredBackendHandler<AddResourceStatement> {
+public final class AddResourceBackendHandler extends DatabaseRequiredBackendHandler<AddResourceStatement> {
     
     private final DatabaseType databaseType;
     
