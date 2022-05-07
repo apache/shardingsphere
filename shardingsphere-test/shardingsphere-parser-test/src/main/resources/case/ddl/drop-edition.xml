@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-database-link sql-case-id="drop_edition" />
+    <drop-edition sql-case-id="drop_edition" />
 </sql-parser-test-cases>
