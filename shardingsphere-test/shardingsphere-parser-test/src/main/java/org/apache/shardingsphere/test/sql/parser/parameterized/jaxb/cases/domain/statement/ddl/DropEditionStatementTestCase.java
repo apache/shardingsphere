@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Typed sPI metadata aware.
+ * Drop edition statement test case.
  */
-public interface TypedSPIMetadataAware {
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<String> getSupportedDatabaseTypes();
-    
-    /**
-     * Get description.
-     *
-     * @return description
-     */
-    String getDescription();
+public final class DropEditionStatementTestCase extends SQLParserTestCase {
 }

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
 
 import java.util.Properties;
 
@@ -54,7 +54,7 @@ public final class ClassBasedShardingAlgorithmFactory {
         return instance;
     }
     
-    private static <T extends SPIPostProcessor> void setProperties(final T instance, final Properties props) {
+    private static <T extends SPIPropertiesAware> void setProperties(final T instance, final Properties props) {
         if (null == props) {
             return;
         }

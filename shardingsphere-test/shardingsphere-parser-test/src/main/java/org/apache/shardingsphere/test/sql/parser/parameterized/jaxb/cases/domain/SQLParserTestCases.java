@@ -199,6 +199,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEditionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -386,6 +387,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "truncate")
     private final List<TruncateStatementTestCase> truncateTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-edition")
+    private final List<DropEditionStatementTestCase> dropEditionTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
@@ -1326,6 +1330,7 @@ public final class SQLParserTestCases {
         putAll(dropTableTestCases, result);
         putAll(dropTextSearchTestCases, result);
         putAll(truncateTestCases, result);
+        putAll(dropEditionTestCases, result);
         putAll(createIndexTestCases, result);
         putAll(alterIndexTestCases, result);
         putAll(dropIndexTestCases, result);

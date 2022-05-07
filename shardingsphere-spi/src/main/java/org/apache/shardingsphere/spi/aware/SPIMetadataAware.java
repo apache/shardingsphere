@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.spi.aware;
 
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
-import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import java.util.Collection;
 
 /**
- * ShardingSphere algorithm.
+ * SPI metadata aware.
  */
-public interface ShardingSphereAlgorithm extends TypedSPI, SPIPostProcessor, SPIPropertiesAware {
+public interface SPIMetadataAware {
+    
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
+    
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    String getDescription();
 }

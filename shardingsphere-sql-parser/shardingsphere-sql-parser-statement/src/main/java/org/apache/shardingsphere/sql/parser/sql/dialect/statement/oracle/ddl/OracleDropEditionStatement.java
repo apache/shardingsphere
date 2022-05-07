@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
-import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * ShardingSphere algorithm.
+ * Oracle drop edition statement.
  */
-public interface ShardingSphereAlgorithm extends TypedSPI, SPIPostProcessor, SPIPropertiesAware {
+@ToString
+public final class OracleDropEditionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }
